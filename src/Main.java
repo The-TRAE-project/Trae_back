@@ -3,15 +3,16 @@ import java.util.List;
 
 public class Main {
 
-    static List<Employee> employees = init.readEmployees();
+    static List<Employee> employees;// = init.readEmployees();
 
     public static void main(String[] args) {
-        init.readCategories();
-        init.readEmployees();
+
         System.out.println("Hello TRAE!\n");
+        init.writeEmployees();
+        init.writeCategories();
+        employees = init.readEmployees();
         List<Project> projects = new ArrayList<>();
         List<String> categories = init.readCategories();
-
 
 //        вывод категорий в консоль
         System.out.println("  Возможные операции:");
@@ -35,4 +36,5 @@ public class Main {
 //        List<Employee> getEmployees(){
 //            return employees;
 //        }
+//        LinkedHashMap в порядке записи
 }

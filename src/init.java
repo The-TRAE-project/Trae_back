@@ -1,3 +1,5 @@
+import utils.DateUtils;
+
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -6,7 +8,7 @@ import java.util.*;
 public class init {
     static final String fileCategories = "C:\\java\\IdeaProjects\\Trae_back\\files\\categories.bin";
     static final String fileEmployees = "C:\\java\\IdeaProjects\\Trae_back\\files\\employees.bin";
-    static final String fileWorktime = "C:\\java\\IdeaProjects\\Trae_back\\files\\01_2023_worktime.bin";
+    static final String fileWorkTime = "C:\\java\\IdeaProjects\\Trae_back\\files\\01_2023_worktime.bin";
 
     //запись категорий в файл
     public static void writeCategories() {
@@ -66,6 +68,7 @@ public class init {
             emp1.setOperations(op1);
             emp1.setConstructor(false);
             emp1.setAdmin(false);
+            emp1.setWorkNow(false);
             employees.add(emp1);
 
             Employee emp2 = new Employee();
@@ -86,6 +89,7 @@ public class init {
             emp2.setOperations(op2);
             emp2.setConstructor(true);
             emp2.setAdmin(false);
+            emp2.setWorkNow(true);
             employees.add(emp2);
 
             try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(fileEmployees))) {
@@ -96,6 +100,7 @@ public class init {
         }
     }
 
+    //Чтение списка пользователей из файла
     public static List<Employee> readEmployees() {
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fileEmployees))) {
             return (List<Employee>) ois.readObject();
@@ -106,59 +111,42 @@ public class init {
         }
     }
 
+    /**
+     * Ометка пришел и ушел с работы и запись в файл
+     */
     public static void workCheck() {
         boolean exit = false;
         boolean checkIn = false;
         boolean checkOut = false;
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nОтметки времени прихода и ухода работников");
-        while (!exit) {
-            System.out.println("\nНажимте 1 если пришел, нажмите 2 если ушел, чтоб закончить нажмите 0");
-            String input = scanner.nextLine();
-            switch (input) {
-                case "1" -> {
-                    System.out.print("Пришел ");
-                    check(true, false);
-                    checkIn = true;
-                }
-                case "2" -> {
-                    System.out.print("Ушел ");
-                    check(false, true);
-                    checkOut = true;
-                }
-                case "0" -> exit = true;
-                default -> System.out.println("Неверный ввод");
-            }
-        }
-        System.out.println("Выход");
-    }
+        System.out.println("\nОтметка прихода или ухода с работы");
+        System.err.println("Посмотрите на камеру / приложите палец");
+        DateUtils.writeTime();
 
-    private static void check(boolean checkIn, boolean checkOut) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm:ss dd/MM/yyy");
-        LocalDateTime now = LocalDateTime.now();
-        boolean exit = false;
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Введите номер работника или 0 для выхода");
-        System.out.println("Список всех работников:");
+        System.out.println("Введите номер пользователя или 0 для выхода");
+        System.out.println("Список всех пользователей:");
         for (Employee emp : Main.employees) {
-            System.out.println(emp.getUuid() + " " + emp.getSurname() + " " + emp.getName());
+            System.out.print(emp.getUuid() + " " + emp.getSurname() + " " + emp.getName());
+            System.out.println(emp.isWorkNow() ? " - на работе" : " - НЕ на работе");
         }
         while (!exit) {
             int input = scanner.nextInt();
             // если номер>=0, то дописать в файл номер + ФИ + StartDate + StopDate в зависимости от флагов
             int employeeNumber = getEmployeeNumber(Main.employees, input);
             if (employeeNumber >= 0) {
-                System.out.println("Работник " + Main.employees.get(employeeNumber).getSurname());
-                if (checkIn) {
-                    System.out.println("Записано время прихода на работу " + dtf.format(now));
-                    break;
+
+                System.out.println("Определен пользователь " + Main.employees.get(employeeNumber).getSurname());
+                if (Main.employees.get(employeeNumber).isWorkNow()) {
+                    System.out.println("До встречи " + Main.employees.get(employeeNumber).getName());
+                    //break;
                 }
-                if (checkOut) {
-                    System.out.println("Записано время ухода с работы " + dtf.format(now));
-                    break;
+                if (!Main.employees.get(employeeNumber).isWorkNow()) {
+                    System.out.println("Добро пожаловать на работу " + Main.employees.get(employeeNumber).getName());
+                    //break;
                 }
+                Main.employees.get(employeeNumber).changeWorkStatus();
             } else if (employeeNumber == -1 & input != 0) {
-                System.out.println("не нашел");
+                System.err.println("Сотрудник не определен, обратитесь к администратору");
             }
             if (input == 0) {
                 System.out.println("Выход из ввода отметки рабочего времени");

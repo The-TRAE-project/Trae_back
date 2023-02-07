@@ -10,6 +10,7 @@ public class Employee implements Serializable {
     private Map<String, Boolean> operations;
     private Boolean isConstructor;
     private Boolean isAdmin;
+    private Boolean isWorkNow;
 
 
     public int getUuid() {
@@ -60,6 +61,14 @@ public class Employee implements Serializable {
         isAdmin = admin;
     }
 
+    public Boolean isWorkNow() {
+        return isWorkNow;
+    }
+
+    public void setWorkNow(Boolean workNow) {
+        isWorkNow = workNow;
+    }
+
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder();
@@ -71,6 +80,11 @@ public class Employee implements Serializable {
                 ",\n Фамилия " + surname +
                 str +
                 ",\nконструктор " + isConstructor +
+                ",\nработает сейчас " + isWorkNow +"" +
                 ",\nадмин " + isAdmin + ".";
+    }
+
+    public void changeWorkStatus() {
+        isWorkNow = !isWorkNow;
     }
 }
