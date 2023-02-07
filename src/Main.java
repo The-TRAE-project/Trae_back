@@ -1,5 +1,8 @@
+import utils.DateUtils;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
@@ -23,8 +26,25 @@ public class Main {
         for (Employee employee : employees) {
             System.out.println(employee);
         }
+        boolean exit = false;
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("\n\n\n");
+        DateUtils.writeTime();
+        System.out.println("\nГлавная страница");
+        while (!exit) {
+            System.err.println("\nВведите цифру 0-3");
+            System.out.println("1 Этапы в работе");
+            System.out.println("2 Проекты");
+            System.out.println("3 Сотрудники");
+            System.out.println("0 Выход");
+            switch (scanner.nextInt()) {
+                case 1 -> System.err.println("в разработке");
+                case 2 -> System.err.println("в разработке");
+                case 3 -> init.workCheck();
+                case 0 -> exit = true;
+            }
+        }
 
-        init.workCheck();
         // можно ДОписывать данные о чекине м чекауте в файл, объект типа workingTime. если пришел, то время ухода = null
         // брать данные из списка employees и потом по запросу собирать все эти данные в файл отчета
         // сортировка по uuid потом по фамилии потом по имени

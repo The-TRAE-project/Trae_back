@@ -116,14 +116,12 @@ public class init {
      */
     public static void workCheck() {
         boolean exit = false;
-        boolean checkIn = false;
-        boolean checkOut = false;
         Scanner scanner = new Scanner(System.in);
-        System.out.println("\nОтметка прихода или ухода с работы");
+        System.out.println("\nСтраница отметки прихода ухода с работы");
         System.err.println("Посмотрите на камеру / приложите палец");
         DateUtils.writeTime();
 
-        System.out.println("Введите номер пользователя или 0 для выхода");
+        System.out.println("\nВведите номер пользователя или 0 для выхода");
         System.out.println("Список всех пользователей:");
         for (Employee emp : Main.employees) {
             System.out.print(emp.getUuid() + " " + emp.getSurname() + " " + emp.getName());
@@ -131,17 +129,18 @@ public class init {
         }
         while (!exit) {
             int input = scanner.nextInt();
-            // если номер>=0, то дописать в файл номер + ФИ + StartDate + StopDate в зависимости от флагов
             int employeeNumber = getEmployeeNumber(Main.employees, input);
             if (employeeNumber >= 0) {
-
+            // если номер>=0, то дописать в файл номер + ФИ + StartDate + StopDate в зависимости от флагов на работе или нет
                 System.out.println("Определен пользователь " + Main.employees.get(employeeNumber).getSurname());
                 if (Main.employees.get(employeeNumber).isWorkNow()) {
                     System.out.println("До встречи " + Main.employees.get(employeeNumber).getName());
-                    //break;
+                    //TODO приостановить процесс по этому челвеку, если он в работе
+                    //break; // если убрать коммент, то после отметки человека сразу выход из меню
                 }
                 if (!Main.employees.get(employeeNumber).isWorkNow()) {
                     System.out.println("Добро пожаловать на работу " + Main.employees.get(employeeNumber).getName());
+                    //TODO начать процесс по этому челвеку, если он был в работе
                     //break;
                 }
                 Main.employees.get(employeeNumber).changeWorkStatus();
