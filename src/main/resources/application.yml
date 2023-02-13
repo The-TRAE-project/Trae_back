@@ -2,6 +2,9 @@ server:
   port: 8088
 
 spring:
+  liquibase:
+    enabled: false
+
   datasource:
     url: jdbc:postgresql://localhost:5432/traeDB
     username: postgres

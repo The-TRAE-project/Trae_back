@@ -1,0 +1,390 @@
+databaseChangeLog:
+- changeSet:
+    id: 1676292830857-1
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: customers_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: first_name
+            type: VARCHAR(255)
+        - column:
+            name: last_name
+            type: VARCHAR(255)
+        - column:
+            name: middle_name
+            type: VARCHAR(255)
+        - column:
+            name: phone
+            type: INTEGER
+        - column:
+            name: date_of_register
+            type: TIMESTAMP WITHOUT TIME ZONE
+        tableName: customers
+- changeSet:
+    id: 1676292830857-2
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: employees_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: first_name
+            type: VARCHAR(255)
+        - column:
+            name: last_name
+            type: VARCHAR(255)
+        - column:
+            name: middle_name
+            type: VARCHAR(255)
+        - column:
+            name: phone
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: password
+            type: INTEGER
+        - column:
+            name: operation_id
+            type: BIGINT
+        tableName: employees
+- changeSet:
+    id: 1676292830857-3
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: managers_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: first_name
+            type: VARCHAR(255)
+        - column:
+            name: last_name
+            type: VARCHAR(255)
+        - column:
+            name: middle_name
+            type: VARCHAR(255)
+        - column:
+            name: phone
+            type: INTEGER
+        - column:
+            name: email
+            type: VARCHAR(255)
+        - column:
+            name: password
+            type: VARCHAR(255)
+        - column:
+            name: username
+            type: VARCHAR(255)
+        tableName: managers
+- changeSet:
+    id: 1676292830857-4
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: operations_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: is_ended
+            type: BOOLEAN
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: period
+            type: INTEGER
+        - column:
+            name: start_date
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: employee_id
+            type: BIGINT
+        - column:
+            name: project_id
+            type: BIGINT
+        tableName: operations
+- changeSet:
+    id: 1676292830857-5
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: orders_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: is_ended
+            type: BOOLEAN
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: period
+            type: INTEGER
+        - column:
+            name: start_date
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: customer_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: manager_id
+            type: BIGINT
+        tableName: orders
+- changeSet:
+    id: 1676292830857-6
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: projects_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: description
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: is_ended
+            type: BOOLEAN
+        - column:
+            name: name
+            type: VARCHAR(255)
+        - column:
+            constraints:
+              nullable: false
+            name: period
+            type: INTEGER
+        - column:
+            name: start_date
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: manager_id
+            type: BIGINT
+        tableName: projects
+- changeSet:
+    id: 1676292830857-7
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+            name: work_shifting_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: employee_id
+            type: BIGINT
+        tableName: shift_employee
+- changeSet:
+    id: 1676292830857-8
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: work_shiftings_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: end_shift
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: is_ended
+            type: BOOLEAN
+        - column:
+            name: start_shift
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: time_of_day
+            type: INTEGER
+        tableName: work_shiftings
+- changeSet:
+    id: 1676292830857-9
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: employee_id
+        baseTableName: shift_employee
+        constraintName: fk105mw9wyuvxawkkin9iyjn2ds
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: employees
+        validate: true
+- changeSet:
+    id: 1676292830857-10
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: work_shifting_id
+        baseTableName: shift_employee
+        constraintName: fk360uoii4pawrethjfk99lg9ii
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: work_shiftings
+        validate: true
+- changeSet:
+    id: 1676292830857-11
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: manager_id
+        baseTableName: orders
+        constraintName: fk3kb98kmk1xemhxbjomoaec280
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: managers
+        validate: true
+- changeSet:
+    id: 1676292830857-12
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: manager_id
+        baseTableName: projects
+        constraintName: fk62rogc37g51ecobx8o8lmobn
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: managers
+        validate: true
+- changeSet:
+    id: 1676292830857-13
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: operation_id
+        baseTableName: employees
+        constraintName: fk7eenkt0059g425ngpp9yyt8c7
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: operations
+        validate: true
+- changeSet:
+    id: 1676292830857-14
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: employee_id
+        baseTableName: operations
+        constraintName: fkkvikr8owprj3jce640j14rrmu
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: employees
+        validate: true
+- changeSet:
+    id: 1676292830857-15
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: customer_id
+        baseTableName: orders
+        constraintName: fkpxtb8awmi0dk6smoh2vp1litg
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: customers
+        validate: true
+- changeSet:
+    id: 1676292830857-16
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: project_id
+        baseTableName: operations
+        constraintName: fksdp7rlplba1mdr5jinjglwx53
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: projects
+        validate: true
+
