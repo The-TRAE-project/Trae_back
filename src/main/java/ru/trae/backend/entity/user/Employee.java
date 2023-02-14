@@ -26,7 +26,7 @@ public class Employee extends User {
     @JoinColumn(name = "operation_id")
     private Operation operation;
     @ToString.Exclude
-    @ManyToMany(mappedBy = "employees")
+    @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
     private List<WorkShifting> workShiftings;
 
     @Override
