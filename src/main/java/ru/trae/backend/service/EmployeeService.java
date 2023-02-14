@@ -43,7 +43,7 @@ public class EmployeeService {
 
         if (employee.isEmpty())
             throw new EmployeeException(HttpStatus.NOT_FOUND, "Работник с пинкодом " + pin + " не найден");
-        if ()
+        if (!workingShiftService.employeeOnShift(true, employee.get().getId()))
             workingShiftService.arrivalEmployeeOnShift(employee.get());
 
         return new CheckOutDto(employee.get().getId(), employee.get().getFirstName(), employee.get().getLastName());
