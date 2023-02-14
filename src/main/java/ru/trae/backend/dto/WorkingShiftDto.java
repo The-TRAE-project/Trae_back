@@ -5,7 +5,7 @@ import ru.trae.backend.util.DayOrNight;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public record WorkShiftingDto(
+public record WorkingShiftDto(
         LocalDateTime startShift,
         LocalDateTime endShift,
         boolean isEnded,

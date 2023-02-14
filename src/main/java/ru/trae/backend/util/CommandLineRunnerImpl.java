@@ -5,18 +5,18 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import ru.trae.backend.dto.EmployeeDto;
 import ru.trae.backend.service.EmployeeService;
-import ru.trae.backend.service.WorkShiftingService;
+import ru.trae.backend.service.WorkingShiftService;
 
 @Component
 @RequiredArgsConstructor
 public class CommandLineRunnerImpl implements CommandLineRunner {
     private final EmployeeService employeeService;
-    private final WorkShiftingService workShiftingService;
+    private final WorkingShiftService workingShiftService;
 
     @Override
     public void run(String... args) {
         insertEmployees();
-        insertWorkShifting();
+        insertWorkingShift();
     }
 
     public void insertEmployees() {
@@ -38,9 +38,9 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         employeeService.saveNewEmployee(dto8);
     }
 
-    public void insertWorkShifting() {
-        if (workShiftingService.existsActiveWorkShifting()) return;
+    public void insertWorkingShift() {
+        if (workingShiftService.existsActiveWorkingShift()) return;
 
-        workShiftingService.createWorkShifting();
+        workingShiftService.createWorkingShift();
     }
 }

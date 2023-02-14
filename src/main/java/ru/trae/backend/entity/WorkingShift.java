@@ -14,8 +14,8 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@Table(name = "work_shiftings")
-public class WorkShifting {
+@Table(name = "working_shift")
+public class WorkingShift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -37,7 +37,7 @@ public class WorkShifting {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        WorkShifting that = (WorkShifting) o;
+        WorkingShift that = (WorkingShift) o;
         return Objects.equals(id, that.id);
     }
 

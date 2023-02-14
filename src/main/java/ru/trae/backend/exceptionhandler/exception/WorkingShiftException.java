@@ -4,8 +4,8 @@ import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public class WorkShiftingException extends AbstractException {
-    public WorkShiftingException(HttpStatus status, String errorMessage) {
+public class WorkingShiftException extends AbstractException {
+    public WorkingShiftException(HttpStatus status, String errorMessage) {
         super(status, errorMessage);
     }
 }

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.trae.backend.entity.task.Operation;
-import ru.trae.backend.entity.WorkShifting;
+import ru.trae.backend.entity.WorkingShift;
 
 import javax.persistence.*;
 import java.util.List;
@@ -27,7 +27,7 @@ public class Employee extends User {
     private Operation operation;
     @ToString.Exclude
     @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
-    private List<WorkShifting> workShiftings;
+    private List<WorkingShift> workingShifts;
 
     @Override
     public boolean equals(Object o) {

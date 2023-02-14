@@ -17,7 +17,7 @@ import java.util.Optional;
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeDtoMapper employeeDtoMapper;
-    private final WorkShiftingService workShiftingService;
+    private final WorkingShiftService workingShiftService;
 
     public void saveNewEmployee(EmployeeDto dto) {
 
@@ -39,7 +39,7 @@ public class EmployeeService {
         Optional<Employee> employee = employeeRepository.findByPinCode(pin);
         if (employee.isEmpty()) throw new EmployeeException(HttpStatus.NOT_FOUND, "Работник с пинкодом " + pin + " не найден");
 
-        workShiftingService.addOrRemoveEmployeeInShifting(employee.get());
+        workingShiftService.addOrRemoveEmployeeInShift(employee.get());
         return employee.get().getFirstName() + " " + employee.get().getLastName();
     }
 
