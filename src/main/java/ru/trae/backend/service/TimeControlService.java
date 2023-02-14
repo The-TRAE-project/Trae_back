@@ -25,4 +25,12 @@ public class TimeControlService {
         return timeControlRepository.save(tc);
     }
 
+    public TimeControl updateTimeControlForDeparture(Long empId, LocalDateTime time) {
+        TimeControl tc = timeControlRepository.findByEmployee_IdAndIsOnShiftTrueAndWorkingShift_IsEndedFalse(empId);
+        tc.setDeparture(time);
+        tc.setOnShift(false);
+
+        return timeControlRepository.save(tc);
+    }
+
 }

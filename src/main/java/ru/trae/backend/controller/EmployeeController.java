@@ -9,7 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.CheckOutDto;
 import ru.trae.backend.dto.EmployeeDto;
 import ru.trae.backend.service.EmployeeService;
+import ru.trae.backend.service.TimeControlService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -21,6 +23,11 @@ public class EmployeeController {
     @GetMapping("/checkout/{pin}")
     public ResponseEntity<CheckOutDto> employeeCheckOut(@PathVariable int pin) {
         return ResponseEntity.ok(employeeService.checkoutEmployee(pin));
+    }
+
+    @GetMapping("/departure/{id}")
+    public ResponseEntity<CheckOutDto> employeeCheckOut(@PathVariable long id) {
+        return ResponseEntity.ok(employeeService.departureEmployee(id));
     }
 
     @GetMapping("/employees")

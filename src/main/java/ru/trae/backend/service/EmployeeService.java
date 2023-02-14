@@ -10,6 +10,7 @@ import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.EmployeeException;
 import ru.trae.backend.repository.EmployeeRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeDtoMapper employeeDtoMapper;
     private final WorkingShiftService workingShiftService;
+    private final TimeControlService timeControlService;
 
     public void saveNewEmployee(EmployeeDto dto) {
 
@@ -41,8 +43,18 @@ public class EmployeeService {
 
         if (employee.isEmpty())
             throw new EmployeeException(HttpStatus.NOT_FOUND, "Работник с пинкодом " + pin + " не найден");
-        if (workingShiftService.employeeOnShift(false, employee.get().getId()))
+        if ()
             workingShiftService.arrivalEmployeeOnShift(employee.get());
+
+        return new CheckOutDto(employee.get().getId(), employee.get().getFirstName(), employee.get().getLastName());
+    }
+
+    public CheckOutDto departureEmployee(long id) {
+        Optional<Employee> employee = employeeRepository.findById(id);
+
+        if (workingShiftService.employeeOnShift(true, employee.get().getId()))
+            timeControlService.updateTimeControlForDeparture(id, LocalDateTime.now());
+
 
         return new CheckOutDto(employee.get().getId(), employee.get().getFirstName(), employee.get().getLastName());
     }
