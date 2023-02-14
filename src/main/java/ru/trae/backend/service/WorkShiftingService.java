@@ -1,9 +1,11 @@
 package ru.trae.backend.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.entity.WorkShifting;
+import ru.trae.backend.entity.user.Employee;
+import ru.trae.backend.exceptionhandler.exception.WorkShiftingException;
 import ru.trae.backend.repository.WorkShiftingRepository;
 import ru.trae.backend.util.DayOrNight;
 
@@ -31,6 +33,21 @@ public class WorkShiftingService {
         WorkShifting ws = workShiftingRepository.findByIsEndedFalse();
         ws.setEnded(true);
         ws.setEndShift(LocalDateTime.now());
+
+        workShiftingRepository.save(ws);
+    }
+
+    public void addOrRemoveEmployeeInShifting(Employee employee) {
+        if (!existsActiveWorkShifting())
+            throw new WorkShiftingException(HttpStatus.BAD_REQUEST, "Нет активных рабочих смен.");
+
+        WorkShifting ws = workShiftingRepository.findByIsEndedFalse();
+        if (ws.getEmployees().contains(employee)) {
+            ws.getEmployees().remove(employee);
+        } else {
+            ws.getEmployees().add(employee);
+        }
+
         workShiftingRepository.save(ws);
     }
 

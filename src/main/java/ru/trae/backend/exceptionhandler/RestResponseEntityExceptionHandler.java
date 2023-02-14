@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.trae.backend.exceptionhandler.exception.AbstractException;
 import ru.trae.backend.exceptionhandler.exception.EmployeeException;
+import ru.trae.backend.exceptionhandler.exception.WorkShiftingException;
 
 import java.time.LocalDateTime;
 
@@ -14,6 +15,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(EmployeeException.class)
     protected ResponseEntity<Response> handleException(EmployeeException e) {
+        return new ResponseEntity<>(buildResponse(e), e.getStatus());
+    }
+
+    @ExceptionHandler(WorkShiftingException.class)
+    protected ResponseEntity<Response> handleException(WorkShiftingException e) {
         return new ResponseEntity<>(buildResponse(e), e.getStatus());
     }
 

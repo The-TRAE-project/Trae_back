@@ -20,7 +20,7 @@ public class EmployeeController {
 
     @GetMapping("/employee/checkout/{pin}")
     public ResponseEntity<String> employeeCheckOut(@PathVariable int pin) {
-        return ResponseEntity.ok(employeeService.getFirstLastName(pin));
+        return ResponseEntity.ok(employeeService.checkoutEmployee(pin));
     }
 
     @GetMapping("/employee/employees")

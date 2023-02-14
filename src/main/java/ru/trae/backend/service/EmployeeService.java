@@ -17,6 +17,7 @@ import java.util.Optional;
 public class EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final EmployeeDtoMapper employeeDtoMapper;
+    private final WorkShiftingService workShiftingService;
 
     public void saveNewEmployee(EmployeeDto dto) {
 
@@ -34,13 +35,12 @@ public class EmployeeService {
         employeeRepository.save(e);
     }
 
-    public String getFirstLastName(int pin) {
+    public String checkoutEmployee(int pin) {
         Optional<Employee> employee = employeeRepository.findByPinCode(pin);
-        if (employee.isPresent()) {
-            return employee.get().getFirstName() + " " + employee.get().getLastName();
-        } else {
-            throw new EmployeeException(HttpStatus.NOT_FOUND, "Работник с пинкодом " + pin + " не найден");
-        }
+        if (employee.isEmpty()) throw new EmployeeException(HttpStatus.NOT_FOUND, "Работник с пинкодом " + pin + " не найден");
+
+        workShiftingService.addOrRemoveEmployeeInShifting(employee.get());
+        return employee.get().getFirstName() + " " + employee.get().getLastName();
     }
 
     public List<EmployeeDto> getAllEmployees() {
