@@ -1,9 +1,10 @@
 package ru.trae.backend.dto;
 
-public record CustomerDto(
+public record EmployeeDto(
         String firstName,
         String middleName,
         String lastName,
-        Long phone
+        Long phone,
+        Integer pinCode
 ) {
 }

@@ -8,12 +8,12 @@ import java.util.function.Function;
 @Service
 public class CustomerDtoMapper implements Function<Customer, CustomerDto> {
     @Override
-    public CustomerDto apply(Customer customer) {
+    public CustomerDto apply(Customer c) {
         return new CustomerDto(
-                customer.getFirstName(),
-                customer.getMiddleName(),
-                customer.getLastName(),
-                customer.getPhone()
+                c.getFirstName(),
+                c.getMiddleName(),
+                c.getLastName(),
+                c.getPhone()
         );
     }
 }

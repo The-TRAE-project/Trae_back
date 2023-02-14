@@ -14,6 +14,6 @@ public abstract class User {
     private String firstName;
     private String middleName;
     private String lastName;
-    private Integer phone;
+    private Long phone;
 
 }

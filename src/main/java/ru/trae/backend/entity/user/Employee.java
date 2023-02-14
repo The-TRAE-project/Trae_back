@@ -20,7 +20,7 @@ public class Employee extends User {
     @Column(name = "id", nullable = false)
     private Long id;
     @Column(unique = true,nullable = false)
-    private int password;
+    private int pinCode;
     @ToString.Exclude
     @OneToOne
     @JoinColumn(name = "operation_id")
