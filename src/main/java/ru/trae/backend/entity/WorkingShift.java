@@ -3,7 +3,6 @@ package ru.trae.backend.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.util.DayOrNight;
 
 import javax.persistence.*;
@@ -14,7 +13,7 @@ import java.util.Objects;
 @Entity
 @Getter
 @Setter
-@Table(name = "working_shift")
+@Table(name = "working_shifts")
 public class WorkingShift {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,12 +25,8 @@ public class WorkingShift {
     @Column(nullable = false)
     private DayOrNight timeOfDay;
     @ToString.Exclude
-    @ManyToMany
-    @JoinTable(
-            name = "shift_employee",
-            joinColumns = @JoinColumn(name = "work_shifting_id"),
-            inverseJoinColumns = @JoinColumn(name = "employee_id"))
-    private List<Employee> employees;
+    @OneToMany(mappedBy = "workingShift", fetch = FetchType.LAZY)
+    private List<TimeControl> timeControls;
 
     @Override
     public boolean equals(Object o) {

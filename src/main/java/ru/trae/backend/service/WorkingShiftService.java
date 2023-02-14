@@ -18,12 +18,13 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class WorkingShiftService {
     private final WorkingShiftRepository workingShiftRepository;
+    private final TimeControlService timeControlService;
     private final WorkingShiftDtoMapper workingShiftDtoMapper;
 
     public void createWorkingShift() {
         WorkingShift ws = new WorkingShift();
         ws.setStartShift(LocalDateTime.now());
-        ws.setEmployees(new ArrayList<>());
+        ws.setTimeControls(new ArrayList<>());
         ws.setEnded(false);
         ws.setTimeOfDay(LocalDateTime.now().getHour() >= 18 ? DayOrNight.NIGHT : DayOrNight.DAY);
 
@@ -37,10 +38,6 @@ public class WorkingShiftService {
         return workingShiftDtoMapper.apply(workingShiftRepository.findByIsEndedFalse());
     }
 
-    public boolean isEmployeeOnShift(int pinCode) {
-        return workingShiftRepository.existsByIsEndedFalseAndEmployees_PinCode(pinCode);
-    }
-
     public void closeWorkingShift() {
         if (!existsActiveWorkingShift()) return;
 
@@ -51,21 +48,21 @@ public class WorkingShiftService {
         workingShiftRepository.save(ws);
     }
 
-    public void addOrRemoveEmployeeInShift(Employee employee) {
+    public void arrivalEmployeeOnShift(Employee employee) {
         if (!existsActiveWorkingShift())
             throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Нет активных рабочих смен.");
 
         WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
-        if (ws.getEmployees().contains(employee)) {
-            ws.getEmployees().remove(employee);
-        } else {
-            ws.getEmployees().add(employee);
-        }
 
+        ws.getTimeControls().add(timeControlService.createArrivalTimeControl(employee, ws, true, LocalDateTime.now()));
         workingShiftRepository.save(ws);
     }
 
     public boolean existsActiveWorkingShift() {
         return workingShiftRepository.existsByIsEndedFalse();
+    }
+
+    public boolean employeeOnShift(boolean isOnShift, long empId) {
+        return workingShiftRepository.existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(isOnShift, empId);
     }
 }

@@ -10,6 +10,6 @@ public record WorkingShiftDto(
         LocalDateTime endShift,
         boolean isEnded,
         DayOrNight timeOfDay,
-        List<EmployeeDto> employees
+        List<TimeControlDto> timeControls
 ) {
 }

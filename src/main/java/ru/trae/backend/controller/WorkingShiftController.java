@@ -20,8 +20,8 @@ public class WorkingShiftController {
         return ResponseEntity.ok(workingShiftService.getActive());
     }
 
-    @GetMapping("/on-shift/{pinCode}")
-    public ResponseEntity<Boolean> getStatusEmployee(@PathVariable int pinCode) {
-        return ResponseEntity.ok(workingShiftService.isEmployeeOnShift(pinCode));
+    @GetMapping("/on-shift/{id}")
+    public ResponseEntity<Boolean> getStatusEmployee(@PathVariable int id) {
+        return ResponseEntity.ok(workingShiftService.employeeOnShift(true, id));
     }
 }

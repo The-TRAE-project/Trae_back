@@ -3,6 +3,7 @@ package ru.trae.backend.entity.user;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.trae.backend.entity.TimeControl;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.WorkingShift;
 
@@ -26,8 +27,8 @@ public class Employee extends User {
     @JoinColumn(name = "operation_id")
     private Operation operation;
     @ToString.Exclude
-    @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
-    private List<WorkingShift> workingShifts;
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    private List<TimeControl> timeControls;
 
     @Override
     public boolean equals(Object o) {

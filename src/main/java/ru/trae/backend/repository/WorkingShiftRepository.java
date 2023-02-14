@@ -8,8 +8,8 @@ import ru.trae.backend.entity.WorkingShift;
 public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long> {
     boolean existsByIsEndedFalse();
 
-    boolean existsByIsEndedFalseAndEmployees_PinCode(int pinCode);
-
     WorkingShift findByIsEndedFalse();
+
+    boolean existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(boolean isOnShift, Long id);
 
 }
