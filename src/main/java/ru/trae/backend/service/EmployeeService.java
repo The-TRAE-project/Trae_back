@@ -19,7 +19,10 @@ public class EmployeeService {
     private final EmployeeDtoMapper employeeDtoMapper;
 
     public void saveNewEmployee(EmployeeDto dto) {
+
+        //todo make here throwing exception instead return
         if (employeeRepository.existsByPinCode(dto.pinCode())) return;
+//            throw new EmployeeException(HttpStatus.CONFLICT, "Пинкод" + dto.pinCode() + " уже присвоен другому работнику.");
 
         Employee e = new Employee();
         e.setFirstName(dto.firstName());

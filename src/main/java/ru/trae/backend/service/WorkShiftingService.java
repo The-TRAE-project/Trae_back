@@ -1,12 +1,40 @@
 package ru.trae.backend.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.entity.WorkShifting;
 import ru.trae.backend.repository.WorkShiftingRepository;
+import ru.trae.backend.util.DayOrNight;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
 public class WorkShiftingService {
     private final WorkShiftingRepository workShiftingRepository;
 
+    public void createWorkShifting() {
+        WorkShifting ws = new WorkShifting();
+        ws.setStartShift(LocalDateTime.now());
+        ws.setEmployees(new ArrayList<>());
+        ws.setEnded(false);
+        ws.setTimeOfDay(LocalDateTime.now().getHour() > 12 ? DayOrNight.NIGHT : DayOrNight.DAY);
+
+        workShiftingRepository.save(ws);
+    }
+
+    public void closeWorkShifting() {
+        if (!existsActiveWorkShifting()) return;
+
+        WorkShifting ws = workShiftingRepository.findByIsEndedFalse();
+        ws.setEnded(true);
+        ws.setEndShift(LocalDateTime.now());
+        workShiftingRepository.save(ws);
+    }
+
+    public boolean existsActiveWorkShifting() {
+        return workShiftingRepository.existsByIsEndedFalse();
+    }
 }

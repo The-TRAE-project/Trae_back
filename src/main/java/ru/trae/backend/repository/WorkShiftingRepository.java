@@ -6,4 +6,9 @@ import ru.trae.backend.entity.WorkShifting;
 
 @Repository
 public interface WorkShiftingRepository extends JpaRepository<WorkShifting, Long> {
+    boolean existsByIsEndedFalse();
+
+    WorkShifting findByIsEndedFalse();
+
+
 }
