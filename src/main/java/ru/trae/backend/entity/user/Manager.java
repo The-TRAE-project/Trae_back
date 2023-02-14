@@ -19,8 +19,11 @@ public class Manager extends User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    @Column(unique = true,nullable = false)
     private String username;
+    @Column(unique = true,nullable = false)
     private String email;
+    @Column(nullable = false)
     private String password;
     @ToString.Exclude
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)

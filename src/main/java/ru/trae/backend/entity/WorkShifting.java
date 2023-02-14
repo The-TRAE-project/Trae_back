@@ -23,6 +23,7 @@ public class WorkShifting {
     private LocalDateTime startShift;
     private LocalDateTime endShift;
     private boolean isEnded;
+    @Column(nullable = false)
     private DayOrNight timeOfDay;
     @ToString.Exclude
     @ManyToMany

@@ -19,6 +19,7 @@ public class Employee extends User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    @Column(unique = true,nullable = false)
     private int password;
     @ToString.Exclude
     @OneToOne
