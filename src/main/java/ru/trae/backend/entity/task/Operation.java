@@ -17,6 +17,7 @@ public class Operation extends Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    private int priority;
     @ToString.Exclude
     @OneToOne
     @JoinColumn(name = "employee_id")
