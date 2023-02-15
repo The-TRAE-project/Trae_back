@@ -18,7 +18,6 @@ public class OrderController {
 
     @PostMapping("/new")
     public ResponseEntity<OrderDto> orderPersist(@RequestBody NewOrderDto dto) {
-
         OrderDto orderDto = orderService.convertFromOrder(orderService.receiveNewOrder(dto));
         return ResponseEntity.ok(orderDto);
     }
