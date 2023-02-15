@@ -17,14 +17,14 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping("/new")
-    public ResponseEntity<OrderDto> orderHandler(@RequestBody NewOrderDto dto) {
+    public ResponseEntity<OrderDto> orderPersist(@RequestBody NewOrderDto dto) {
 
         OrderDto orderDto = orderService.convertFromOrder(orderService.receiveNewOrder(dto));
         return ResponseEntity.ok(orderDto);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> getOrder(@PathVariable long id) {
+    public ResponseEntity<OrderDto> order(@PathVariable long id) {
         return ResponseEntity.ok(orderService.convertFromOrderById(id));
     }
 

@@ -16,12 +16,12 @@ public class WorkingShiftController {
     private final WorkingShiftService workingShiftService;
 
     @GetMapping("/active")
-    public ResponseEntity<WorkingShiftDto> getActiveWorkingShift() {
+    public ResponseEntity<WorkingShiftDto> activeWorkingShift() {
         return ResponseEntity.ok(workingShiftService.getActive());
     }
 
     @GetMapping("/on-shift/{id}")
-    public ResponseEntity<Boolean> getStatusEmployee(@PathVariable int id) {
+    public ResponseEntity<Boolean> statusEmployee(@PathVariable int id) {
         return ResponseEntity.ok(workingShiftService.employeeOnShift(true, id));
     }
 }

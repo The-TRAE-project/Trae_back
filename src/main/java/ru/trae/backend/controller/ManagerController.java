@@ -17,13 +17,13 @@ public class ManagerController {
     private final ManagerService managerService;
 
     @PostMapping("/register")
-    public ResponseEntity<ManagerDto> registerManager(@RequestBody ManagerRegisterDto dto) {
+    public ResponseEntity<ManagerDto> register(@RequestBody ManagerRegisterDto dto) {
         Manager m = managerService.saveNewManager(dto);
         return ResponseEntity.ok(managerService.convertFromManager(m));
     }
 
     @GetMapping("/{id}")
-    private ResponseEntity<ManagerDto> getManager(@PathVariable long id) {
+    private ResponseEntity<ManagerDto> manager(@PathVariable long id) {
         Manager m = managerService.getManagerById(id);
         return ResponseEntity.ok(managerService.convertFromManager(m));
     }

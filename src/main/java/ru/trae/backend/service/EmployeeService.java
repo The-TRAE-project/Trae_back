@@ -38,6 +38,20 @@ public class EmployeeService {
         employeeRepository.save(e);
     }
 
+    public Employee getEmployeeById(long id) {
+        return employeeRepository.findById(id).orElseThrow(
+                () -> new EmployeeException(HttpStatus.NOT_FOUND, "Работник с ID " + id + " не найден"));
+    }
+
+    public EmployeeDto getEmpDtoById(long id) {
+        return employeeDtoMapper.apply(getEmployeeById(id));
+    }
+
+    public ShortEmployeeDto getShortDtoEmpById(long id) {
+        Employee e = getEmployeeById(id);
+        return new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName());
+    }
+
     public ShortEmployeeDto checkInEmployee(int pin) {
         Optional<Employee> employee = employeeRepository.findByPinCode(pin);
 

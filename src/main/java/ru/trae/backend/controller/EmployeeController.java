@@ -31,8 +31,8 @@ public class EmployeeController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody EmployeeDto dto) {
+    public ResponseEntity<EmployeeDto> register(@RequestBody EmployeeDto dto) {
         employeeService.saveNewEmployee(dto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(employeeService.getEmpDtoById(dto.id()));
     }
 }
