@@ -16,6 +16,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return new ResponseEntity<>(buildResponse(e), e.getStatus());
     }
 
+    @ExceptionHandler(ManagerException.class)
+    protected ResponseEntity<Response> handleException(ManagerException e) {
+        return new ResponseEntity<>(buildResponse(e), e.getStatus());
+    }
+
     @ExceptionHandler(WorkingShiftException.class)
     protected ResponseEntity<Response> handleException(WorkingShiftException e) {
         return new ResponseEntity<>(buildResponse(e), e.getStatus());
