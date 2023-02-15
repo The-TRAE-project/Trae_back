@@ -21,7 +21,7 @@ public class OrderController {
     @PostMapping("/new")
     public ResponseEntity orderHandler(@RequestBody NewOrderDto dto) {
 
-        orderService.receiveNewOrder(dto, managerService.getManager(dto.managerId()));
+        orderService.receiveNewOrder(dto, managerService.getManagerById(dto.managerId()));
         return ResponseEntity.ok().build();
     }
 }
