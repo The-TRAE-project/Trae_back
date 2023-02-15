@@ -3,7 +3,7 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.CheckOutDto;
+import ru.trae.backend.dto.ShortEmployeeDto;
 import ru.trae.backend.dto.EmployeeDto;
 import ru.trae.backend.dto.mapper.EmployeeDtoMapper;
 import ru.trae.backend.entity.user.Employee;
@@ -38,7 +38,7 @@ public class EmployeeService {
         employeeRepository.save(e);
     }
 
-    public CheckOutDto checkoutEmployee(int pin) {
+    public ShortEmployeeDto checkoutEmployee(int pin) {
         Optional<Employee> employee = employeeRepository.findByPinCode(pin);
 
         if (employee.isEmpty())
@@ -46,17 +46,17 @@ public class EmployeeService {
         if (!workingShiftService.employeeOnShift(true, employee.get().getId()))
             workingShiftService.arrivalEmployeeOnShift(employee.get());
 
-        return new CheckOutDto(employee.get().getId(), employee.get().getFirstName(), employee.get().getLastName());
+        return new ShortEmployeeDto(employee.get().getId(), employee.get().getFirstName(), employee.get().getLastName());
     }
 
-    public CheckOutDto departureEmployee(long id) {
+    public ShortEmployeeDto departureEmployee(long id) {
         Optional<Employee> employee = employeeRepository.findById(id);
 
+        if (employee.isEmpty()) throw new EmployeeException(HttpStatus.NOT_FOUND, "Работник с ID " + id + " не найден");
         if (workingShiftService.employeeOnShift(true, employee.get().getId()))
             timeControlService.updateTimeControlForDeparture(id, LocalDateTime.now());
 
-
-        return new CheckOutDto(employee.get().getId(), employee.get().getFirstName(), employee.get().getLastName());
+        return new ShortEmployeeDto(employee.get().getId(), employee.get().getFirstName(), employee.get().getLastName());
     }
 
     public List<EmployeeDto> getAllEmployees() {

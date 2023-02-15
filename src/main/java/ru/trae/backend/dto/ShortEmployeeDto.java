@@ -1,6 +1,6 @@
 package ru.trae.backend.dto;
 
-public record CheckOutDto(
+public record ShortEmployeeDto(
         Long id,
         String firstName,
         String lastName
