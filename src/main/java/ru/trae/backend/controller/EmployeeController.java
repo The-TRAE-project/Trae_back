@@ -32,6 +32,7 @@ public class EmployeeController {
 
     @PostMapping("/register")
     public ResponseEntity<EmployeeDto> register(@RequestBody EmployeeDto dto) {
+        employeeService.checkAvailablePinCode(dto.pinCode());
         employeeService.saveNewEmployee(dto);
         return ResponseEntity.ok(employeeService.getEmpDtoById(dto.id()));
     }

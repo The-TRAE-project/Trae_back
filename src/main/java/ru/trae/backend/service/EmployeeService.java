@@ -23,11 +23,6 @@ public class EmployeeService {
     private final TimeControlService timeControlService;
 
     public void saveNewEmployee(EmployeeDto dto) {
-
-        //todo make here throwing exception instead return
-        if (employeeRepository.existsByPinCode(dto.pinCode())) return;
-//            throw new EmployeeException(HttpStatus.CONFLICT, "Пинкод" + dto.pinCode() + " уже присвоен другому работнику.");
-
         Employee e = new Employee();
         e.setFirstName(dto.firstName());
         e.setMiddleName(dto.middleName());
@@ -64,13 +59,12 @@ public class EmployeeService {
     }
 
     public ShortEmployeeDto departureEmployee(long id) {
-        Optional<Employee> employee = employeeRepository.findById(id);
+        Employee e = getEmployeeById(id);
 
-        if (employee.isEmpty()) throw new EmployeeException(HttpStatus.NOT_FOUND, "Работник с ID " + id + " не найден");
-        if (workingShiftService.employeeOnShift(true, employee.get().getId()))
+        if (workingShiftService.employeeOnShift(true, e.getId()))
             timeControlService.updateTimeControlForDeparture(id, LocalDateTime.now());
 
-        return new ShortEmployeeDto(employee.get().getId(), employee.get().getFirstName(), employee.get().getLastName());
+        return new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName());
     }
 
     public List<EmployeeDto> getAllEmployees() {
@@ -78,6 +72,15 @@ public class EmployeeService {
                 .stream()
                 .map(employeeDtoMapper)
                 .toList();
+    }
+
+    public boolean existsEmpByPinCode(int pinCode) {
+        return employeeRepository.existsByPinCode(pinCode);
+    }
+
+    public void checkAvailablePinCode(int pinCode) {
+        if (existsEmpByPinCode(pinCode))
+            throw new EmployeeException(HttpStatus.CONFLICT, "Пинкод: " + pinCode + " уже используется");
     }
 
 }
