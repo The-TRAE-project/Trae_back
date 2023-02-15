@@ -2,13 +2,12 @@ package ru.trae.backend.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.trae.backend.dto.NewOrderDto;
-import ru.trae.backend.service.ManagerService;
+import ru.trae.backend.dto.OrderDto;
 import ru.trae.backend.service.OrderService;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,12 +15,21 @@ import ru.trae.backend.service.OrderService;
 public class OrderController {
 
     private final OrderService orderService;
-    private final ManagerService managerService;
 
     @PostMapping("/new")
-    public ResponseEntity orderHandler(@RequestBody NewOrderDto dto) {
+    public ResponseEntity<OrderDto> orderHandler(@RequestBody NewOrderDto dto) {
 
-        orderService.receiveNewOrder(dto, managerService.getManagerById(dto.managerId()));
-        return ResponseEntity.ok().build();
+        OrderDto orderDto = orderService.convertFromOrder(orderService.receiveNewOrder(dto));
+        return ResponseEntity.ok(orderDto);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderDto> getOrder(@PathVariable long id) {
+        return ResponseEntity.ok(orderService.convertFromOrderById(id));
+    }
+
+    @GetMapping("/orders")
+    public ResponseEntity<List<OrderDto>> orders() {
+        return ResponseEntity.ok(orderService.getAllOrder());
     }
 }

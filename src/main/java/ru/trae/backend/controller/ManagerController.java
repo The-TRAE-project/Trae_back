@@ -22,6 +22,12 @@ public class ManagerController {
         return ResponseEntity.ok(managerService.convertFromManager(m));
     }
 
+    @GetMapping("/{id}")
+    private ResponseEntity<ManagerDto> getManager(@PathVariable long id) {
+        Manager m = managerService.getManagerById(id);
+        return ResponseEntity.ok(managerService.convertFromManager(m));
+    }
+
     @GetMapping("/managers")
     public ResponseEntity<List<ManagerDto>> managers() {
         return ResponseEntity.ok(managerService.getAllManagers());
