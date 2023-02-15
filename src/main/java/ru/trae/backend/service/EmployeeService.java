@@ -38,7 +38,7 @@ public class EmployeeService {
         employeeRepository.save(e);
     }
 
-    public ShortEmployeeDto checkoutEmployee(int pin) {
+    public ShortEmployeeDto checkInEmployee(int pin) {
         Optional<Employee> employee = employeeRepository.findByPinCode(pin);
 
         if (employee.isEmpty())
@@ -65,6 +65,5 @@ public class EmployeeService {
                 .map(employeeDtoMapper)
                 .toList();
     }
-
 
 }

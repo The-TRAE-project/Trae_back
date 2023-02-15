@@ -19,8 +19,8 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping("/checkin/{pin}")
-    public ResponseEntity<ShortEmployeeDto> employeeCheckOut(@PathVariable int pin) {
-        return ResponseEntity.ok(employeeService.checkoutEmployee(pin));
+    public ResponseEntity<ShortEmployeeDto> employeeCheckIn(@PathVariable int pin) {
+        return ResponseEntity.ok(employeeService.checkInEmployee(pin));
     }
 
     @GetMapping("/checkout/{id}")
