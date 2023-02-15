@@ -18,6 +18,8 @@ public class ManagerController {
 
     @PostMapping("/register")
     public ResponseEntity<ManagerDto> register(@RequestBody ManagerRegisterDto dto) {
+        managerService.checkAvailableEmail(dto.email());
+        managerService.checkAvailableUsername(dto.username());
         Manager m = managerService.saveNewManager(dto);
         return ResponseEntity.ok(managerService.convertFromManager(m));
     }

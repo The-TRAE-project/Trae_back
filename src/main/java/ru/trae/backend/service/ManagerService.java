@@ -53,4 +53,19 @@ public class ManagerService {
     public boolean existsManagerByEmail(String email) {
         return managerRepository.existsByEmailIgnoreCase(email);
     }
+
+    public boolean existsManagerByUsername(String username) {
+        return managerRepository.existsByUsernameIgnoreCase(username);
+    }
+
+    public void checkAvailableEmail(String email) {
+        if (existsManagerByEmail(email))
+            throw new ManagerException(HttpStatus.CONFLICT, "Email: " + email + " уже используется");
+    }
+
+    public void checkAvailableUsername(String username) {
+        if (existsManagerByUsername(username))
+            throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " уже используется");
+    }
+
 }

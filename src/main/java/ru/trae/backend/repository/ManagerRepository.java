@@ -8,4 +8,6 @@ import ru.trae.backend.entity.user.Manager;
 public interface ManagerRepository extends JpaRepository<Manager, Long> {
     boolean existsByEmailIgnoreCase(String email);
 
+    boolean existsByUsernameIgnoreCase(String username);
+
 }
