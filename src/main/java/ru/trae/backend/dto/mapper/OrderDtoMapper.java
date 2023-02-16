@@ -20,6 +20,7 @@ public class OrderDtoMapper implements Function<Order, OrderDto> {
                 o.getName(),
                 o.getDescription(),
                 o.getStartDate(),
+                o.getStartDate(),
                 o.getPeriod(),
                 o.isEnded(),
                 customerDtoMapper.apply(o.getCustomer()),

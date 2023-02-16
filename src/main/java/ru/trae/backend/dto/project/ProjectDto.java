@@ -11,6 +11,7 @@ public record ProjectDto(
         String name,
         String description,
         LocalDateTime startDate,
+        LocalDateTime endDate,
         int period,
         boolean isEnded,
         List<OperationDto> operations,

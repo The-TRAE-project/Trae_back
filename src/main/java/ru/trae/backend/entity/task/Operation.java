@@ -6,6 +6,7 @@ import lombok.ToString;
 import ru.trae.backend.entity.user.Employee;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity

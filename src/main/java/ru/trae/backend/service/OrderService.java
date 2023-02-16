@@ -34,6 +34,7 @@ public class OrderService {
         order.setEnded(false);
         order.setPeriod(dto.period());
         order.setStartDate(LocalDateTime.now());
+        order.setEndDate(null);
         order.setManager(managerService.getManagerById(dto.managerId()));
         order.setCustomer(c);
 

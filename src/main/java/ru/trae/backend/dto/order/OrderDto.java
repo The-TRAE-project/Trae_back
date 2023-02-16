@@ -10,6 +10,7 @@ public record OrderDto(
         String name,
         String description,
         LocalDateTime startDate,
+        LocalDateTime endDate,
         int period,
         boolean isEnded,
         CustomerDto customerDto,

@@ -3,13 +3,15 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.mapper.OperationDtoMapper;
 import ru.trae.backend.dto.mapper.ShortOperationDtoMapper;
+import ru.trae.backend.dto.operation.OpEmpIdDto;
 import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.operation.ShortOperationDto;
 import ru.trae.backend.dto.operation.WrapperNewOperationDto;
-import ru.trae.backend.dto.mapper.OperationDtoMapper;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.OperationException;
 import ru.trae.backend.repository.OperationRepository;
 
@@ -21,6 +23,7 @@ import java.util.List;
 public class OperationService {
     private final OperationRepository operationRepository;
     private final ProjectService projectService;
+    private final EmployeeService employeeService;
     private final OperationDtoMapper operationDtoMapper;
     private final ShortOperationDtoMapper shortOperationDtoMapper;
 
@@ -39,7 +42,7 @@ public class OperationService {
                     o.setDescription(no.description());
                     o.setPeriod(no.period());
                     o.setPriority(no.priority());
-                    o.setStartDate(LocalDateTime.now());
+                    o.setStartDate(null);
                     o.setEnded(false);
                     o.setInWork(false);
 
@@ -56,5 +59,28 @@ public class OperationService {
         return p.getOperations().stream()
                 .map(shortOperationDtoMapper)
                 .toList();
+    }
+
+    public void receiveOperation(OpEmpIdDto dto) {
+        Employee e = employeeService.getEmployeeById(dto.employeeId());
+        Operation o = getOperationById(dto.id());
+
+        o.setInWork(true);
+        o.setEmployee(e);
+        o.setStartDate(LocalDateTime.now());
+
+        operationRepository.save(o);
+    }
+
+    public void finishOperation(OpEmpIdDto dto) {
+        Operation o = getOperationById(dto.id());
+        if (o.getEmployee().getId() != dto.employeeId())
+            throw new OperationException(HttpStatus.BAD_REQUEST, "ID подтверждающего работника не равен ID принявшего операцию");
+
+        o.setInWork(false);
+        o.setEnded(true);
+        o.setEndDate(LocalDateTime.now());
+
+        operationRepository.save(o);
     }
 }

@@ -27,6 +27,7 @@ public class ProjectService {
         p.setDescription(dto.description());
         p.setPeriod(dto.period());
         p.setStartDate(LocalDateTime.now());
+        p.setEndDate(null);
         p.setEnded(false);
         p.setManager(managerService.getManagerById(dto.managerId()));
         p.setOperations(new ArrayList<>());

@@ -15,6 +15,7 @@ public abstract class Task {
     private String name;
     private String description;
     private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private int period;
     private boolean isEnded;
 }
