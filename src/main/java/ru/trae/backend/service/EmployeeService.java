@@ -22,7 +22,7 @@ public class EmployeeService {
     private final WorkingShiftService workingShiftService;
     private final TimeControlService timeControlService;
 
-    public void saveNewEmployee(EmployeeDto dto) {
+    public Employee saveNewEmployee(EmployeeDto dto) {
         Employee e = new Employee();
         e.setFirstName(dto.firstName());
         e.setMiddleName(dto.middleName());
@@ -30,7 +30,7 @@ public class EmployeeService {
         e.setPhone(dto.phone());
         e.setPinCode(dto.pinCode());
 
-        employeeRepository.save(e);
+        return employeeRepository.save(e);
     }
 
     public Employee getEmployeeById(long id) {

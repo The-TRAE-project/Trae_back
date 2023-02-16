@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.trae.backend.dto.ShortEmployeeDto;
 import ru.trae.backend.dto.EmployeeDto;
+import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.service.EmployeeService;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class EmployeeController {
     @PostMapping("/register")
     public ResponseEntity<EmployeeDto> register(@RequestBody EmployeeDto dto) {
         employeeService.checkAvailablePinCode(dto.pinCode());
-        employeeService.saveNewEmployee(dto);
-        return ResponseEntity.ok(employeeService.getEmpDtoById(dto.id()));
+        Employee e = employeeService.saveNewEmployee(dto);
+        return ResponseEntity.ok(employeeService.getEmpDtoById(e.getId()));
     }
 }

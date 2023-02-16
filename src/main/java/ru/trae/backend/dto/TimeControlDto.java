@@ -6,6 +6,6 @@ public record TimeControlDto(
          boolean isOnShift,
          LocalDateTime arrival,
          LocalDateTime departure,
-         EmployeeDto employee
+         ShortEmployeeDto employee
 ) {
 }
