@@ -11,7 +11,7 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class ProjectDtoMapper implements Function<Project, ProjectDto> {
     private final ManagerDtoMapper managerDtoMapper;
-//    private final OperationDtoMapper operationDtoMapper;
+    private final OperationDtoMapper operationDtoMapper;
 
     @Override
     public ProjectDto apply(Project p) {
@@ -22,8 +22,10 @@ public class ProjectDtoMapper implements Function<Project, ProjectDto> {
                 p.getStartDate(),
                 p.getPeriod(),
                 p.isEnded(),
+                p.getOperations().stream()
+                        .map(operationDtoMapper)
+                        .toList(),
                 managerDtoMapper.apply(p.getManager())
-//                operationDtoMapper.apply(p.getOperations())
         );
     }
 }

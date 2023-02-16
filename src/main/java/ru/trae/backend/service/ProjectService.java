@@ -21,7 +21,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProjectService {
     private final ProjectRepository projectRepository;
-
     private final ManagerService managerService;
     private final ProjectDtoMapper projectDtoMapper;
 

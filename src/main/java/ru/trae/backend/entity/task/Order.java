@@ -18,7 +18,6 @@ public class Order extends Task{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    private boolean inWork;
     @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "customer_id")

@@ -18,6 +18,7 @@ public class Operation extends Task {
     @Column(name = "id", nullable = false)
     private Long id;
     private int priority;
+    private boolean inWork;
     @ToString.Exclude
     @OneToOne
     @JoinColumn(name = "employee_id")
