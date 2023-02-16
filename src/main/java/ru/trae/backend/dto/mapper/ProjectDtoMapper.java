@@ -2,7 +2,7 @@ package ru.trae.backend.dto.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.ProjectDto;
+import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.entity.task.Project;
 
 import java.util.function.Function;

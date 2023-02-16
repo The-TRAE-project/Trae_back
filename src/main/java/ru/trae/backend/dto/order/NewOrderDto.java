@@ -1,4 +1,6 @@
-package ru.trae.backend.dto;
+package ru.trae.backend.dto.order;
+
+import ru.trae.backend.dto.CustomerDto;
 
 public record NewOrderDto(
         String name,

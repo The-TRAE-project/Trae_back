@@ -3,9 +3,8 @@ package ru.trae.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.trae.backend.dto.NewProjectDto;
-import ru.trae.backend.dto.ProjectDto;
-import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.dto.project.NewProjectDto;
+import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.service.ProjectService;
 
 import java.util.List;

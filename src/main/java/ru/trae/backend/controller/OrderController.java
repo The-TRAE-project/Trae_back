@@ -3,8 +3,8 @@ package ru.trae.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.trae.backend.dto.NewOrderDto;
-import ru.trae.backend.dto.OrderDto;
+import ru.trae.backend.dto.order.NewOrderDto;
+import ru.trae.backend.dto.order.OrderDto;
 import ru.trae.backend.service.OrderService;
 
 import java.util.List;

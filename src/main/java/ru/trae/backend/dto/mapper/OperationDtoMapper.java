@@ -1,9 +1,9 @@
 package ru.trae.backend.dto.mapper;
 
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.OperationDto;
+import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.ShortEmployeeDto;
-import ru.trae.backend.dto.ShortProjectDto;
+import ru.trae.backend.dto.project.ShortProjectDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;

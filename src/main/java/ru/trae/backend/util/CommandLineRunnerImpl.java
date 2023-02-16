@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import ru.trae.backend.dto.EmployeeDto;
-import ru.trae.backend.dto.ManagerRegisterDto;
+import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.service.EmployeeService;
 import ru.trae.backend.service.ManagerService;
 import ru.trae.backend.service.WorkingShiftService;

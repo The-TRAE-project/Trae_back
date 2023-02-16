@@ -3,13 +3,10 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.NewProjectDto;
-import ru.trae.backend.dto.OrderDto;
-import ru.trae.backend.dto.ProjectDto;
+import ru.trae.backend.dto.project.NewProjectDto;
+import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.dto.mapper.ProjectDtoMapper;
-import ru.trae.backend.entity.task.Order;
 import ru.trae.backend.entity.task.Project;
-import ru.trae.backend.exceptionhandler.exception.OrderException;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.repository.ProjectRepository;
 

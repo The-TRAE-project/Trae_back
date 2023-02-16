@@ -3,17 +3,18 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.OperationDto;
-import ru.trae.backend.dto.ProjectDto;
-import ru.trae.backend.dto.WrapperNewOperationDto;
+import ru.trae.backend.dto.mapper.ShortOperationDtoMapper;
+import ru.trae.backend.dto.operation.OperationDto;
+import ru.trae.backend.dto.operation.ShortOperationDto;
+import ru.trae.backend.dto.operation.WrapperNewOperationDto;
 import ru.trae.backend.dto.mapper.OperationDtoMapper;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.exceptionhandler.exception.OperationException;
-import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.repository.OperationRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +22,7 @@ public class OperationService {
     private final OperationRepository operationRepository;
     private final ProjectService projectService;
     private final OperationDtoMapper operationDtoMapper;
+    private final ShortOperationDtoMapper shortOperationDtoMapper;
 
     public Operation getOperationById(long id) {
         return operationRepository.findById(id).orElseThrow(
@@ -49,4 +51,10 @@ public class OperationService {
         return operationDtoMapper.apply(getOperationById(id));
     }
 
+    public List<ShortOperationDto> getShortOpDtoList(long projectId) {
+        Project p = projectService.getProjectById(projectId);
+        return p.getOperations().stream()
+                .map(shortOperationDtoMapper)
+                .toList();
+    }
 }

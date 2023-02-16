@@ -1,4 +1,4 @@
-package ru.trae.backend.dto;
+package ru.trae.backend.dto.project;
 
 public record ShortProjectDto(
         Long id,

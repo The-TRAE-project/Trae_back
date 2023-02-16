@@ -3,8 +3,8 @@ package ru.trae.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.trae.backend.dto.ManagerDto;
-import ru.trae.backend.dto.ManagerRegisterDto;
+import ru.trae.backend.dto.manager.ManagerDto;
+import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.service.ManagerService;
 

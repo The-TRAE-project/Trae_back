@@ -4,12 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.CustomerDto;
-import ru.trae.backend.dto.NewOrderDto;
-import ru.trae.backend.dto.OrderDto;
+import ru.trae.backend.dto.order.NewOrderDto;
+import ru.trae.backend.dto.order.OrderDto;
 import ru.trae.backend.dto.mapper.OrderDtoMapper;
 import ru.trae.backend.entity.task.Order;
 import ru.trae.backend.entity.user.Customer;
-import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.OrderException;
 import ru.trae.backend.repository.OrderRepository;
 

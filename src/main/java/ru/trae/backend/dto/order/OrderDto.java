@@ -1,6 +1,7 @@
-package ru.trae.backend.dto;
+package ru.trae.backend.dto.order;
 
-import ru.trae.backend.entity.user.Manager;
+import ru.trae.backend.dto.CustomerDto;
+import ru.trae.backend.dto.manager.ManagerDto;
 
 import java.time.LocalDateTime;
 

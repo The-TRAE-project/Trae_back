@@ -1,4 +1,4 @@
-package ru.trae.backend.dto;
+package ru.trae.backend.dto.operation;
 
 import java.util.List;
 

@@ -1,4 +1,7 @@
-package ru.trae.backend.dto;
+package ru.trae.backend.dto.operation;
+
+import ru.trae.backend.dto.ShortEmployeeDto;
+import ru.trae.backend.dto.project.ShortProjectDto;
 
 import java.time.LocalDateTime;
 

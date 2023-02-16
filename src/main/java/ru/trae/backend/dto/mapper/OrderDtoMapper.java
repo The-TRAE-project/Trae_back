@@ -2,8 +2,7 @@ package ru.trae.backend.dto.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.CustomerDto;
-import ru.trae.backend.dto.OrderDto;
+import ru.trae.backend.dto.order.OrderDto;
 import ru.trae.backend.entity.task.Order;
 
 import java.util.function.Function;

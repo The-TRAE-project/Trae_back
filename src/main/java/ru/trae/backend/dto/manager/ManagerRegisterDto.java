@@ -1,4 +1,4 @@
-package ru.trae.backend.dto;
+package ru.trae.backend.dto.manager;
 
 public record ManagerRegisterDto(
         String firstName,

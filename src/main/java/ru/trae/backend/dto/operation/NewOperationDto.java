@@ -1,4 +1,4 @@
-package ru.trae.backend.dto;
+package ru.trae.backend.dto.operation;
 
 public record NewOperationDto(
         String name,

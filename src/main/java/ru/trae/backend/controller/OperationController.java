@@ -3,7 +3,8 @@ package ru.trae.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.trae.backend.dto.WrapperNewOperationDto;
+import ru.trae.backend.dto.operation.ShortOperationDto;
+import ru.trae.backend.dto.operation.WrapperNewOperationDto;
 import ru.trae.backend.service.OperationService;
 import ru.trae.backend.util.Operations;
 
@@ -28,5 +29,10 @@ public class OperationController {
     public ResponseEntity operationPersist(@RequestBody WrapperNewOperationDto wrapper) {
         operationService.saveNewOperations(wrapper);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/short-operations/{projectId}")
+    public ResponseEntity<List<ShortOperationDto>> shortOperations(@PathVariable long projectId) {
+        return ResponseEntity.ok(operationService.getShortOpDtoList(projectId));
     }
 }
