@@ -3,11 +3,12 @@ package ru.trae.backend.util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import ru.trae.backend.dto.CustomerDto;
 import ru.trae.backend.dto.EmployeeDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
-import ru.trae.backend.service.EmployeeService;
-import ru.trae.backend.service.ManagerService;
-import ru.trae.backend.service.WorkingShiftService;
+import ru.trae.backend.dto.order.NewOrderDto;
+import ru.trae.backend.dto.project.NewProjectDto;
+import ru.trae.backend.service.*;
 
 import java.util.List;
 
@@ -17,12 +18,16 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     private final EmployeeService employeeService;
     private final WorkingShiftService workingShiftService;
     private final ManagerService managerService;
+    private final ProjectService projectService;
+    private final OrderService orderService;
 
     @Override
     public void run(String... args) {
         insertEmployees();
         insertWorkingShift();
         insertManager();
+        insertOrder();
+        insertProject();
     }
 
     public void insertEmployees() {
@@ -58,5 +63,32 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
         if (!managerService.existsManagerByEmail(dto.email()))
             managerService.saveNewManager(dto);
+    }
+
+    public void insertOrder() {
+        if (orderService.getAllOrder().size() == 0) {
+            NewOrderDto dto = new NewOrderDto(
+                    "Нужна красивая тумбочка, чтобы поставить в спальне",
+                    "Размер 50х60х70 см, покрасить в черный цвет, покрыть лаком, 3 ящика",
+                    10,
+                    1L,
+                    new CustomerDto(
+                            "Олег", "Александрович", "Сидоров", 89125548722L));
+
+            orderService.receiveNewOrder(dto);
+        }
+    }
+
+    public void insertProject() {
+        if (projectService.getAllProjects().size() == 0) {
+            NewProjectDto dto = new NewProjectDto(
+                    "Прикроватная тумбочка",
+                    "Здесь должно быть правильное описание, пояснение, указания и тд",
+                    10,
+                    1L);
+
+            projectService.saveNewProject(dto);
+        }
+
     }
 }
