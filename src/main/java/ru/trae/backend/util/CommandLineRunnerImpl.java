@@ -82,7 +82,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             NewOrderDto dto = new NewOrderDto(
                     "Нужна красивая тумбочка, чтобы поставить в спальне",
                     "Размер 50х60х70 см, покрасить в черный цвет, покрыть лаком, 3 ящика",
-                    10,
+                    50,
                     1L,
                     new CustomerDto(
                             "Олег", "Александрович", "Сидоров", 89125548722L));
@@ -96,7 +96,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             NewProjectDto dto = new NewProjectDto(
                     "Прикроватная тумбочка",
                     "Здесь должно быть правильное описание, пояснение, указания и тд",
-                    10,
+                    40,
                     1L);
 
             projectService.saveNewProject(dto);

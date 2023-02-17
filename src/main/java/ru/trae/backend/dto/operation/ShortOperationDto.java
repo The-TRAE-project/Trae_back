@@ -6,7 +6,8 @@ public record ShortOperationDto(
         int priority,
         String name,
         String description,
-        int period,
+        String nameTypeWork,
+        long typeWork,
         boolean isEnded,
         boolean inWork
 ) {

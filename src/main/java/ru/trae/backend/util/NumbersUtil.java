@@ -3,7 +3,7 @@ package ru.trae.backend.util;
 import java.security.SecureRandom;
 import java.util.Date;
 
-public class PinCodeUtil {
+public class NumbersUtil {
     public static int generateRandomInteger(int min, int max) {
         SecureRandom random = new SecureRandom();
         random.setSeed(new Date().getTime());

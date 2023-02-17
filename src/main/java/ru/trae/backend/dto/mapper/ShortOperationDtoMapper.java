@@ -20,7 +20,8 @@ public class ShortOperationDtoMapper implements Function<Operation, ShortOperati
                 o.getPriority(),
                 o.getName(),
                 o.getDescription(),
-                o.getPeriod(),
+                o.getTypeWork().getName(),
+                o.getTypeWork().getId(),
                 o.isEnded(),
                 o.isInWork()
         );

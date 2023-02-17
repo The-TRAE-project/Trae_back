@@ -41,11 +41,13 @@ public class OperationService {
                     o.setProject(p);
                     o.setName(no.name());
                     o.setDescription(no.description());
-                    o.setPeriod(no.period());
+                    o.setPeriod(p.getPeriod() / wrapper.operations().size());
                     o.setPriority(no.priority());
                     o.setStartDate(null);
+                    o.setEndDate(null);
                     o.setEnded(false);
                     o.setInWork(false);
+                    o.setTypeWork(typeWorkService.getTypeWorkById(no.typeWorkId()));
 
                     operationRepository.save(o);
                 });

@@ -128,7 +128,7 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: period
+            name: typeWorkId
             type: INTEGER
         - column:
             name: start_date
@@ -168,7 +168,7 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: period
+            name: typeWorkId
             type: INTEGER
         - column:
             name: start_date
@@ -210,7 +210,7 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: period
+            name: typeWorkId
             type: INTEGER
         - column:
             name: start_date
