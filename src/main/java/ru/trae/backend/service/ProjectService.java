@@ -27,7 +27,8 @@ public class ProjectService {
         p.setDescription(dto.description());
         p.setPeriod(dto.period());
         p.setStartDate(LocalDateTime.now());
-        p.setEndDate(LocalDateTime.now().plusDays(dto.period()));
+        p.setPlannedEndDate(LocalDateTime.now().plusDays(dto.period()));
+        p.setRealEndDate(null);
         p.setEnded(false);
         p.setManager(managerService.getManagerById(dto.managerId()));
 
