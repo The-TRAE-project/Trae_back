@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.trae.backend.entity.task.Operation;
-import ru.trae.backend.entity.user.Employee;
 
 import javax.persistence.*;
 import java.util.List;
@@ -19,13 +18,7 @@ public class TypeWork {
     @Column(name = "id", nullable = false)
     private Long id;
     private String name;
-    @ToString.Exclude
-    @ManyToMany
-    @JoinTable(
-            name = "type_work_employee",
-            joinColumns = @JoinColumn(name = "type_work_id"),
-            inverseJoinColumns = @JoinColumn(name = "employee_id"))
-    private List<Employee> employees;
+
     @ToString.Exclude
     @OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)
     private List<Operation> operations;

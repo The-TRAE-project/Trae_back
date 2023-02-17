@@ -19,7 +19,6 @@ public class TypeWorkService {
 
     public TypeWork saveNewTypeWork(NewTypeWorkDto dto) {
         TypeWork tw = new TypeWork();
-        tw.setEmployees(new ArrayList<>());
         tw.setOperations(new ArrayList<>());
         tw.setName(dto.name());
 

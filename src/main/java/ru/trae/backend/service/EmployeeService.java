@@ -3,9 +3,9 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.employee.NewEmployeeDto;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
-import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.mapper.EmployeeDtoMapper;
 import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.user.Employee;
@@ -14,9 +14,9 @@ import ru.trae.backend.repository.EmployeeRepository;
 import ru.trae.backend.util.PinCodeUtil;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,9 +34,9 @@ public class EmployeeService {
             randomPinCode = PinCodeUtil.generateRandomInteger(100, 999);
         } while (existsEmpByPinCode(randomPinCode));
 
-        List<TypeWork> typeWorks = dto.typesId().stream()
+        Set<TypeWork> typeWorks = dto.typesId().stream()
                 .map(typeWorkService::getTypeWorkById)
-                .toList();
+                .collect(Collectors.toSet());
 
         Employee e = new Employee();
         e.setFirstName(dto.firstName());
@@ -44,7 +44,7 @@ public class EmployeeService {
         e.setLastName(dto.lastName());
         e.setPhone(dto.phone());
         e.setPinCode(randomPinCode);
-        e.setTypeWorks(typeWorks);
+        e.getTypeWorks().addAll(typeWorks);
 
         return employeeRepository.save(e);
     }

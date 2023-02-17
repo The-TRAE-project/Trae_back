@@ -9,8 +9,7 @@ import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.WorkingShift;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Getter
@@ -30,9 +29,12 @@ public class Employee extends User {
     @ToString.Exclude
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<TimeControl> timeControls;
-    @ToString.Exclude
-    @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
-    private List<TypeWork> typeWorks;
+
+    @ManyToMany
+    @JoinTable(name = "employees_type_works",
+            joinColumns = @JoinColumn(name = "employee_id"),
+            inverseJoinColumns = @JoinColumn(name = "type_works_id"))
+    private Set<TypeWork> typeWorks = new HashSet<>();
 
     @Override
     public boolean equals(Object o) {
