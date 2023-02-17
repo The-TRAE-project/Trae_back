@@ -19,7 +19,6 @@ public class WorkingShiftDtoMapper implements Function<WorkingShift, WorkingShif
                 ws.getStartShift(),
                 ws.getEndShift(),
                 ws.isEnded(),
-                ws.getTimeOfDay(),
                 ws.getTimeControls().stream()
                         .map(timeControlMapper)
                         .toList()

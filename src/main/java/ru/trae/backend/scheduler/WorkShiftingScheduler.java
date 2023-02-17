@@ -19,18 +19,8 @@ public class WorkShiftingScheduler {
         workingShiftService.createWorkingShift();
     }
 
-    @Scheduled(cron = "${scheduler.start-night}")
-    private void workShiftingNightHandler() {
-        workingShiftService.createWorkingShift();
-    }
-
     @Scheduled(cron = "${scheduler.end-day}")
     private void workShiftingDayEndHandler() {
-        workingShiftService.closeWorkingShift();
-    }
-
-    @Scheduled(cron = "${scheduler.end-night}")
-    private void workShiftingNightEndHandler() {
         workingShiftService.closeWorkingShift();
     }
 

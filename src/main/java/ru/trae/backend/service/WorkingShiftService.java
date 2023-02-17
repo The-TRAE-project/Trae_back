@@ -9,7 +9,6 @@ import ru.trae.backend.entity.WorkingShift;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.WorkingShiftException;
 import ru.trae.backend.repository.WorkingShiftRepository;
-import ru.trae.backend.util.DayOrNight;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,14 +25,13 @@ public class WorkingShiftService {
         ws.setStartShift(LocalDateTime.now());
         ws.setTimeControls(new ArrayList<>());
         ws.setEnded(false);
-        ws.setTimeOfDay(LocalDateTime.now().getHour() >= 18 ? DayOrNight.NIGHT : DayOrNight.DAY);
 
         workingShiftRepository.save(ws);
     }
 
     public WorkingShiftDto getActive() {
         if (!existsActiveWorkingShift())
-            throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Нет активных рабочих смен.");
+            throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Нет активной рабочей смены");
 
         return workingShiftDtoMapper.apply(workingShiftRepository.findByIsEndedFalse());
     }

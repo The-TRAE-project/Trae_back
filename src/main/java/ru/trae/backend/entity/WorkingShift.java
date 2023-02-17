@@ -3,7 +3,6 @@ package ru.trae.backend.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import ru.trae.backend.util.DayOrNight;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,8 +21,6 @@ public class WorkingShift {
     private LocalDateTime startShift;
     private LocalDateTime endShift;
     private boolean isEnded;
-    @Column(nullable = false)
-    private DayOrNight timeOfDay;
     @ToString.Exclude
     @OneToMany(mappedBy = "workingShift", fetch = FetchType.LAZY)
     private List<TimeControl> timeControls;
