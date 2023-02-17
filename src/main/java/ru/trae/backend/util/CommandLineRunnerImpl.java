@@ -24,8 +24,8 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        insertEmployees();
         insertTypeWork();
+        insertEmployees();
         insertManager();
         insertOrder();
         insertProject();
@@ -50,18 +50,18 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     public void insertEmployees() {
         List<NewEmployeeDto> list = List.of(
-                new NewEmployeeDto("Иван", "Петрович", "Шилов", 89183331212L),
-                new NewEmployeeDto("Николай", "Игоревич", "Иванов", 89283332121L),
-                new NewEmployeeDto("Владимир", "Васильевич", "Петров", 89174445632L),
-                new NewEmployeeDto("Александр", "Григорьевич", "Красильников", 89271238899L),
-                new NewEmployeeDto("Никита", "Владимирович", "Бондаренко", 89153334567L),
-                new NewEmployeeDto("Валентин", "Александрович", "Плотников", 89347778294L),
-                new NewEmployeeDto("Петр", "Иванович", "Абраменко", 89183454829L),
-                new NewEmployeeDto("Григорий", "Олегович", "Костромин", 89123345993L),
-                new NewEmployeeDto("Егор", "Антонович", "Карпов", 89155675993L),
-                new NewEmployeeDto("Антон", "Петрович", "Рыбин", 89132245911L),
-                new NewEmployeeDto("Аркадий", "Олегович", "Павлов", 89113335798L),
-                new NewEmployeeDto("Степан", "Степанович", "Никитин", 89223245913L)
+                new NewEmployeeDto("Иван", "Петрович", "Шилов", 89183331212L, List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
+                new NewEmployeeDto("Николай", "Игоревич", "Иванов", 89283332121L, List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
+                new NewEmployeeDto("Владимир", "Васильевич", "Петров", 89174445632L, List.of(8L)),
+                new NewEmployeeDto("Александр", "Григорьевич", "Красильников", 89271238899L, List.of(8L)),
+                new NewEmployeeDto("Никита", "Владимирович", "Бондаренко", 89153334567L, List.of(1L)),
+                new NewEmployeeDto("Валентин", "Александрович", "Плотников", 89347778294L, List.of(1L, 5L, 6L, 7L)),
+                new NewEmployeeDto("Петр", "Иванович", "Абраменко", 89183454829L, List.of(1L, 2L, 3L, 4L)),
+                new NewEmployeeDto("Григорий", "Олегович", "Костромин", 89123345993L, List.of(4L, 5L, 6L, 7L)),
+                new NewEmployeeDto("Егор", "Антонович", "Карпов", 89155675993L, List.of(1L, 2L, 5L, 6L, 7L)),
+                new NewEmployeeDto("Антон", "Петрович", "Рыбин", 89132245911L, List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
+                new NewEmployeeDto("Аркадий", "Олегович", "Павлов", 89113335798L, List.of(1L, 2L, 3L, 4L, 5L)),
+                new NewEmployeeDto("Степан", "Степанович", "Никитин", 89223245913L, List.of(1L, 2L, 5L, 6L, 7L, 8L))
         );
 
         list.stream()

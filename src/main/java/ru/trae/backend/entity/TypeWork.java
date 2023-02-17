@@ -20,11 +20,11 @@ public class TypeWork {
     private Long id;
     private String name;
     @ToString.Exclude
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany
     @JoinTable(
             name = "type_work_employee",
-            joinColumns = @JoinColumn(name = "employee_id"),
-            inverseJoinColumns = @JoinColumn(name = "type_work_id"))
+            joinColumns = @JoinColumn(name = "type_work_id"),
+            inverseJoinColumns = @JoinColumn(name = "employee_id"))
     private List<Employee> employees;
     @ToString.Exclude
     @OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)

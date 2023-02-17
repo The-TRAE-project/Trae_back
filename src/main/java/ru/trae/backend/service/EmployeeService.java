@@ -7,14 +7,17 @@ import ru.trae.backend.dto.employee.NewEmployeeDto;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.mapper.EmployeeDtoMapper;
+import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.EmployeeException;
 import ru.trae.backend.repository.EmployeeRepository;
 import ru.trae.backend.util.PinCodeUtil;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +34,17 @@ public class EmployeeService {
             randomPinCode = PinCodeUtil.generateRandomInteger(100, 999);
         } while (existsEmpByPinCode(randomPinCode));
 
+        List<TypeWork> typeWorks = dto.typesId().stream()
+                .map(typeWorkService::getTypeWorkById)
+                .toList();
+
         Employee e = new Employee();
         e.setFirstName(dto.firstName());
         e.setMiddleName(dto.middleName());
         e.setLastName(dto.lastName());
         e.setPhone(dto.phone());
         e.setPinCode(randomPinCode);
+        e.setTypeWorks(typeWorks);
 
         return employeeRepository.save(e);
     }
