@@ -30,7 +30,6 @@ public class ProjectService {
         p.setEndDate(LocalDateTime.now().plusDays(dto.period()));
         p.setEnded(false);
         p.setManager(managerService.getManagerById(dto.managerId()));
-        p.setOperations(new ArrayList<>());
 
         return projectRepository.save(p);
     }

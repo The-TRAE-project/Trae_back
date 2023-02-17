@@ -9,4 +9,8 @@ public class NumbersUtil {
         random.setSeed(new Date().getTime());
         return random.nextInt((max - min) + 1) + min;
     }
+
+    public static int getPeriodForFirstOperation(int period, int size) {
+        return (int) Math.ceil(((double) period / (double) size));
+    }
 }

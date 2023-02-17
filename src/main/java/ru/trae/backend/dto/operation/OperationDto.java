@@ -3,7 +3,6 @@ package ru.trae.backend.dto.operation;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.project.ShortProjectDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
-import ru.trae.backend.entity.TypeWork;
 
 import java.time.LocalDateTime;
 

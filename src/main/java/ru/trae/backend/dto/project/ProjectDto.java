@@ -1,7 +1,6 @@
 package ru.trae.backend.dto.project;
 
 import ru.trae.backend.dto.manager.ManagerDto;
-import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.operation.ShortOperationDto;
 
 import java.time.LocalDateTime;

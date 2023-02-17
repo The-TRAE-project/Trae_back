@@ -3,19 +3,20 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.NumberUtils;
+import org.springframework.util.comparator.Comparators;
 import ru.trae.backend.dto.mapper.OperationDtoMapper;
 import ru.trae.backend.dto.mapper.ShortOperationDtoMapper;
-import ru.trae.backend.dto.operation.OpEmpIdDto;
-import ru.trae.backend.dto.operation.OperationDto;
-import ru.trae.backend.dto.operation.ShortOperationDto;
-import ru.trae.backend.dto.operation.WrapperNewOperationDto;
+import ru.trae.backend.dto.operation.*;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.OperationException;
 import ru.trae.backend.repository.OperationRepository;
+import ru.trae.backend.util.NumbersUtil;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -35,22 +36,45 @@ public class OperationService {
 
     public void saveNewOperations(WrapperNewOperationDto wrapper) {
         Project p = projectService.getProjectById(wrapper.projectId());
-        wrapper.operations().forEach(
-                no -> {
-                    Operation o = new Operation();
-                    o.setProject(p);
-                    o.setName(no.name());
-                    o.setDescription(no.description());
-                    o.setPeriod(p.getPeriod() / wrapper.operations().size());
-                    o.setPriority(no.priority());
-                    o.setStartDate(null);
-                    o.setEndDate(null);
-                    o.setEnded(false);
-                    o.setInWork(false);
-                    o.setTypeWork(typeWorkService.getTypeWorkById(no.typeWorkId()));
 
-                    operationRepository.save(o);
-                });
+        if (wrapper.operations().size() > 0) {
+            NewOperationDto dto = wrapper.operations().get(0);
+
+            Operation o = new Operation();
+            o.setProject(p);
+            o.setName(dto.name());
+            o.setDescription(dto.description());
+            o.setPeriod(NumbersUtil.getPeriodForFirstOperation(p.getPeriod(), wrapper.operations().size()));
+            o.setPriority(dto.priority());
+            o.setStartDate(LocalDateTime.now());
+            o.setEndDate(LocalDateTime.now().plusDays(o.getPeriod()));
+            o.setEnded(false);
+            o.setInWork(false);
+            o.setTypeWork(typeWorkService.getTypeWorkById(dto.typeWorkId()));
+
+            operationRepository.save(o);
+        }
+
+        if (wrapper.operations().size() > 1)
+            wrapper.operations().stream()
+                    .skip(1)
+                    .sorted(Comparator.comparing(NewOperationDto::priority))
+                    .forEach(
+                            no -> {
+                                Operation o = new Operation();
+                                o.setProject(p);
+                                o.setName(no.name());
+                                o.setDescription(no.description());
+                                o.setPeriod(0);
+                                o.setPriority(no.priority());
+                                o.setStartDate(null);
+                                o.setEndDate(null);
+                                o.setEnded(false);
+                                o.setInWork(false);
+                                o.setTypeWork(typeWorkService.getTypeWorkById(no.typeWorkId()));
+
+                                operationRepository.save(o);
+                            });
     }
 
     public OperationDto getOperationDtoById(long id) {
