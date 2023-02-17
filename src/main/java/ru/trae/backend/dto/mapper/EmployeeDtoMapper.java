@@ -1,7 +1,7 @@
 package ru.trae.backend.dto.mapper;
 
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.EmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.entity.user.Employee;
 
 import java.util.function.Function;

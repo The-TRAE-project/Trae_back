@@ -3,8 +3,9 @@ package ru.trae.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.trae.backend.dto.ShortEmployeeDto;
-import ru.trae.backend.dto.EmployeeDto;
+import ru.trae.backend.dto.employee.NewEmployeeDto;
+import ru.trae.backend.dto.employee.ShortEmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.service.EmployeeService;
 
@@ -32,8 +33,8 @@ public class EmployeeController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<EmployeeDto> register(@RequestBody EmployeeDto dto) {
-        employeeService.checkAvailablePinCode(dto.pinCode());
+    public ResponseEntity<EmployeeDto> register(@RequestBody NewEmployeeDto dto) {
+        employeeService.checkAvailableCredentials(dto.firstName(), dto.middleName(), dto.lastName());
         Employee e = employeeService.saveNewEmployee(dto);
         return ResponseEntity.ok(employeeService.getEmpDtoById(e.getId()));
     }

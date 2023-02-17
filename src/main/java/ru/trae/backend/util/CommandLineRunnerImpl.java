@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import ru.trae.backend.dto.CustomerDto;
-import ru.trae.backend.dto.EmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeDto;
+import ru.trae.backend.dto.employee.NewEmployeeDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.order.NewOrderDto;
 import ru.trae.backend.dto.project.NewProjectDto;
@@ -16,7 +17,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommandLineRunnerImpl implements CommandLineRunner {
     private final EmployeeService employeeService;
-    private final WorkingShiftService workingShiftService;
     private final ManagerService managerService;
     private final ProjectService projectService;
     private final OrderService orderService;
@@ -24,37 +24,30 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     @Override
     public void run(String... args) {
         insertEmployees();
-        insertWorkingShift();
         insertManager();
         insertOrder();
         insertProject();
     }
 
     public void insertEmployees() {
-        List<EmployeeDto> list = List.of(
-                new EmployeeDto(null, "Иван", "Петрович", "Шилов", 89183331212L, 111),
-                new EmployeeDto(null, "Николай", "Игоревич", "Иванов", 89283332121L, 222),
-                new EmployeeDto(null, "Владимир", "Васильевич", "Петров", 89174445632L, 121),
-                new EmployeeDto(null, "Александр", "Григорьевич", "Красильников", 89271238899L, 112),
-                new EmployeeDto(null, "Никита", "Владимирович", "Бондаренко", 89153334567L, 543),
-                new EmployeeDto(null, "Валентин", "Александрович", "Плотников", 89347778294L, 764),
-                new EmployeeDto(null, "Петр", "Иванович", "Абраменко", 89183454829L, 894),
-                new EmployeeDto(null, "Григорий", "Олегович", "Костромин", 89123345993L, 253),
-                new EmployeeDto(null, "Егор", "Антонович", "Карпов", 89155675993L, 113),
-                new EmployeeDto(null, "Антон", "Петрович", "Рыбин", 89132245911L, 115),
-                new EmployeeDto(null, "Аркадий", "Олегович", "Павлов", 89113335798L, 122),
-                new EmployeeDto(null, "Степан", "Степанович", "Никитин", 89223245913L, 134)
+        List<NewEmployeeDto> list = List.of(
+                new NewEmployeeDto("Иван", "Петрович", "Шилов", 89183331212L),
+                new NewEmployeeDto("Николай", "Игоревич", "Иванов", 89283332121L),
+                new NewEmployeeDto("Владимир", "Васильевич", "Петров", 89174445632L),
+                new NewEmployeeDto("Александр", "Григорьевич", "Красильников", 89271238899L),
+                new NewEmployeeDto("Никита", "Владимирович", "Бондаренко", 89153334567L),
+                new NewEmployeeDto("Валентин", "Александрович", "Плотников", 89347778294L),
+                new NewEmployeeDto("Петр", "Иванович", "Абраменко", 89183454829L),
+                new NewEmployeeDto("Григорий", "Олегович", "Костромин", 89123345993L),
+                new NewEmployeeDto("Егор", "Антонович", "Карпов", 89155675993L),
+                new NewEmployeeDto("Антон", "Петрович", "Рыбин", 89132245911L),
+                new NewEmployeeDto("Аркадий", "Олегович", "Павлов", 89113335798L),
+                new NewEmployeeDto("Степан", "Степанович", "Никитин", 89223245913L)
         );
 
         list.stream()
-                .filter(e -> !employeeService.existsEmpByPinCode(e.pinCode()))
+                .filter(e -> !employeeService.existsByCredentials(e.firstName(), e.middleName(), e.lastName()))
                 .forEach(employeeService::saveNewEmployee);
-    }
-
-    public void insertWorkingShift() {
-        if (workingShiftService.existsActiveWorkingShift()) return;
-
-        workingShiftService.createWorkingShift();
     }
 
     public void insertManager() {

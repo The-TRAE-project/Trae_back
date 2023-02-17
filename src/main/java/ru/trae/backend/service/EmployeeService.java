@@ -3,12 +3,14 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.ShortEmployeeDto;
-import ru.trae.backend.dto.EmployeeDto;
+import ru.trae.backend.dto.employee.NewEmployeeDto;
+import ru.trae.backend.dto.employee.ShortEmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.mapper.EmployeeDtoMapper;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.EmployeeException;
 import ru.trae.backend.repository.EmployeeRepository;
+import ru.trae.backend.util.PinCodeUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,13 +24,18 @@ public class EmployeeService {
     private final WorkingShiftService workingShiftService;
     private final TimeControlService timeControlService;
 
-    public Employee saveNewEmployee(EmployeeDto dto) {
+    public Employee saveNewEmployee(NewEmployeeDto dto) {
+        int randomPinCode;
+        do {
+            randomPinCode = PinCodeUtil.generateRandomInteger(100, 999);
+        } while (existsEmpByPinCode(randomPinCode));
+
         Employee e = new Employee();
         e.setFirstName(dto.firstName());
         e.setMiddleName(dto.middleName());
         e.setLastName(dto.lastName());
         e.setPhone(dto.phone());
-        e.setPinCode(dto.pinCode());
+        e.setPinCode(randomPinCode);
 
         return employeeRepository.save(e);
     }
@@ -78,9 +85,13 @@ public class EmployeeService {
         return employeeRepository.existsByPinCode(pinCode);
     }
 
-    public void checkAvailablePinCode(int pinCode) {
-        if (existsEmpByPinCode(pinCode))
-            throw new EmployeeException(HttpStatus.CONFLICT, "Пинкод: " + pinCode + " уже используется");
+    public boolean existsByCredentials(String firstName, String middleName, String lastName) {
+        return employeeRepository.existsByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(firstName, middleName, lastName);
+    }
+
+    public void checkAvailableCredentials(String firstName, String middleName, String lastName) {
+        if (existsByCredentials(firstName, middleName, lastName))
+            throw new EmployeeException(HttpStatus.CONFLICT, "Такие учетные данные уже используется");
     }
 
 }

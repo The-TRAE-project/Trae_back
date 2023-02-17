@@ -1,4 +1,4 @@
-package ru.trae.backend.dto;
+package ru.trae.backend.dto.employee;
 
 public record ShortEmployeeDto(
         Long id,

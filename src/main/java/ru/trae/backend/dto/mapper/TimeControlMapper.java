@@ -2,8 +2,7 @@ package ru.trae.backend.dto.mapper;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.EmployeeDto;
-import ru.trae.backend.dto.ShortEmployeeDto;
+import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.TimeControlDto;
 import ru.trae.backend.entity.TimeControl;
 import ru.trae.backend.entity.user.Employee;

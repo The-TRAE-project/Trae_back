@@ -7,6 +7,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import ru.trae.backend.service.WorkingShiftService;
 
+import javax.annotation.PostConstruct;
+
 @Configuration
 @EnableScheduling
 @ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
@@ -22,6 +24,12 @@ public class WorkShiftingScheduler {
     @Scheduled(cron = "${scheduler.end-day}")
     private void workShiftingDayEndHandler() {
         workingShiftService.closeWorkingShift();
+    }
+
+    @PostConstruct
+    private void createWorkingShiftAfterInit() {
+        if (!workingShiftService.existsActiveWorkingShift())
+            workingShiftService.createWorkingShift();
     }
 
 }
