@@ -3,8 +3,6 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.NumberUtils;
-import org.springframework.util.comparator.Comparators;
 import ru.trae.backend.dto.mapper.OperationDtoMapper;
 import ru.trae.backend.dto.mapper.ShortOperationDtoMapper;
 import ru.trae.backend.dto.operation.*;
@@ -18,6 +16,8 @@ import ru.trae.backend.util.NumbersUtil;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+
+import static java.time.temporal.ChronoUnit.DAYS;
 
 @Service
 @RequiredArgsConstructor
@@ -37,8 +37,13 @@ public class OperationService {
     public void saveNewOperations(WrapperNewOperationDto wrapper) {
         Project p = projectService.getProjectById(wrapper.projectId());
 
-        if (wrapper.operations().size() > 0) {
-            NewOperationDto dto = wrapper.operations().get(0);
+        List<NewOperationDto>  operations = wrapper.operations()
+                .stream()
+                .sorted(Comparator.comparing(NewOperationDto::priority))
+                .toList();
+
+        if (operations.size() > 0) {
+            NewOperationDto dto = operations.get(0);
 
             Operation o = new Operation();
             o.setProject(p);
@@ -56,10 +61,9 @@ public class OperationService {
             operationRepository.save(o);
         }
 
-        if (wrapper.operations().size() > 1)
-            wrapper.operations().stream()
+        if (operations.size() > 1)
+            operations.stream()
                     .skip(1)
-                    .sorted(Comparator.comparing(NewOperationDto::priority))
                     .forEach(
                             no -> {
                                 Operation o = new Operation();
@@ -103,6 +107,7 @@ public class OperationService {
 
     public void finishOperation(OpEmpIdDto dto) {
         Operation o = getOperationById(dto.id());
+
         if (o.getEmployee().getId() != dto.employeeId())
             throw new OperationException(HttpStatus.BAD_REQUEST, "ID подтверждающего работника не равен ID принявшего операцию");
 
@@ -110,6 +115,29 @@ public class OperationService {
         o.setEnded(true);
         o.setRealEndDate(LocalDateTime.now());
 
-        operationRepository.save(o);
+        Operation op = operationRepository.save(o);
+
+        startNextOperation(op);
+    }
+
+    public void startNextOperation(Operation o) {
+        List<Operation> operations = o.getProject().getOperations()
+                .stream()
+                .sorted(Comparator.comparing(Operation::getPriority))
+                .toList();
+
+        if (operations.indexOf(o) + 1 < operations.size()) {
+            Operation nextOp = operations.get(operations.indexOf(o) + 1);
+
+            long remainsPeriod = DAYS.between(LocalDateTime.now(), o.getProject().getPlannedEndDate());
+            long opRemains = operations.stream().filter(op -> !op.isEnded()).count();
+            int newPeriod = NumbersUtil.getPeriodForFirstOperation((int) remainsPeriod, (int) opRemains);
+
+            nextOp.setPeriod(newPeriod);
+            nextOp.setStartDate(LocalDateTime.now());
+            nextOp.setPlannedEndDate(LocalDateTime.now().plusDays(newPeriod));
+
+            operationRepository.save(nextOp);
+        }
     }
 }

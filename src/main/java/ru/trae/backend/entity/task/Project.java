@@ -6,7 +6,7 @@ import lombok.ToString;
 import ru.trae.backend.entity.user.Manager;
 
 import javax.persistence.*;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -25,7 +25,7 @@ public class Project extends Task{
     private Manager manager;
     @ToString.Exclude
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
-    private List<Operation> operations = new LinkedList<>();
+    private List<Operation> operations = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

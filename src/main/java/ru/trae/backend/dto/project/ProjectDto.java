@@ -1,7 +1,7 @@
 package ru.trae.backend.dto.project;
 
 import ru.trae.backend.dto.manager.ManagerDto;
-import ru.trae.backend.dto.operation.ShortOperationDto;
+import ru.trae.backend.dto.operation.OperationDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,7 +15,7 @@ public record ProjectDto(
         LocalDateTime realEndDate,
         int period,
         boolean isEnded,
-        List<ShortOperationDto> operations,
+        List<OperationDto> operations,
         ManagerDto managerDto
 ) {
 
