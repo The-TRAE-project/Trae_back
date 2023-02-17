@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import ru.trae.backend.dto.CustomerDto;
-import ru.trae.backend.dto.NewTypeWorkDto;
+import ru.trae.backend.dto.type.NewTypeWorkDto;
 import ru.trae.backend.dto.employee.NewEmployeeDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.order.NewOrderDto;
