@@ -47,7 +47,8 @@ public class OperationService {
             o.setPeriod(NumbersUtil.getPeriodForFirstOperation(p.getPeriod(), wrapper.operations().size()));
             o.setPriority(dto.priority());
             o.setStartDate(LocalDateTime.now());
-            o.setEndDate(LocalDateTime.now().plusDays(o.getPeriod()));
+            o.setPlannedEndDate(LocalDateTime.now().plusDays(o.getPeriod()));
+            o.setAcceptanceDate(null);
             o.setEnded(false);
             o.setInWork(false);
             o.setTypeWork(typeWorkService.getTypeWorkById(dto.typeWorkId()));
@@ -68,7 +69,8 @@ public class OperationService {
                                 o.setPeriod(0);
                                 o.setPriority(no.priority());
                                 o.setStartDate(null);
-                                o.setEndDate(null);
+                                o.setPlannedEndDate(null);
+                                o.setAcceptanceDate(null);
                                 o.setEnded(false);
                                 o.setInWork(false);
                                 o.setTypeWork(typeWorkService.getTypeWorkById(no.typeWorkId()));
@@ -94,7 +96,7 @@ public class OperationService {
 
         o.setInWork(true);
         o.setEmployee(e);
-        o.setStartDate(LocalDateTime.now());
+        o.setAcceptanceDate(LocalDateTime.now());
 
         operationRepository.save(o);
     }
@@ -106,7 +108,7 @@ public class OperationService {
 
         o.setInWork(false);
         o.setEnded(true);
-        o.setEndDate(LocalDateTime.now());
+        o.setRealEndDate(LocalDateTime.now());
 
         operationRepository.save(o);
     }
