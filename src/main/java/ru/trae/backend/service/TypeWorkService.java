@@ -4,11 +4,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.NewTypeWorkDto;
+import ru.trae.backend.dto.TypeWorkDto;
 import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.exceptionhandler.exception.TypeWorkException;
 import ru.trae.backend.repository.TypeWorkRepository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -24,11 +26,19 @@ public class TypeWorkService {
         typeWorkRepository.save(tw);
     }
 
-    public TypeWork getTypeWorkById(long id){
+    public TypeWork getTypeWorkById(long id) {
         return typeWorkRepository.findById(id).orElseThrow(
-                ()-> new TypeWorkException(HttpStatus.NOT_FOUND, "Вид работы с ID " + id + " не найден")
+                () -> new TypeWorkException(HttpStatus.NOT_FOUND, "Вид работы с ID " + id + " не найден")
         );
     }
+
+    public List<TypeWorkDto> getTypes() {
+        return typeWorkRepository.findAll()
+                .stream()
+                .map(t -> new TypeWorkDto(t.getId(), t.getName()))
+                .toList();
+    }
+
     public boolean existsTypeByName(String name) {
         return typeWorkRepository.existsByName(name);
     }

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import ru.trae.backend.dto.CustomerDto;
+import ru.trae.backend.dto.NewTypeWorkDto;
 import ru.trae.backend.dto.employee.NewEmployeeDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.order.NewOrderDto;
@@ -24,9 +25,27 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     @Override
     public void run(String... args) {
         insertEmployees();
+        insertTypeWork();
         insertManager();
         insertOrder();
         insertProject();
+    }
+
+    public void insertTypeWork() {
+        List<NewTypeWorkDto> list = List.of(
+                new NewTypeWorkDto("Раскрой"),
+                new NewTypeWorkDto("Кромка"),
+                new NewTypeWorkDto("Присадка"),
+                new NewTypeWorkDto("Фрезеровка"),
+                new NewTypeWorkDto("Склейка"),
+                new NewTypeWorkDto("Сборка"),
+                new NewTypeWorkDto("Шлифовка/покраска"),
+                new NewTypeWorkDto("Упаковка"),
+                new NewTypeWorkDto("Отгрузка"));
+
+        list.stream()
+                .filter(t -> !typeWorkService.existsTypeByName(t.name()))
+                .forEach(typeWorkService::saveNewTypeWork);
     }
 
     public void insertEmployees() {

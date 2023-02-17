@@ -23,6 +23,7 @@ public class EmployeeService {
     private final EmployeeDtoMapper employeeDtoMapper;
     private final WorkingShiftService workingShiftService;
     private final TimeControlService timeControlService;
+    private final TypeWorkService typeWorkService;
 
     public Employee saveNewEmployee(NewEmployeeDto dto) {
         int randomPinCode;

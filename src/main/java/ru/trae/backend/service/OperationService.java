@@ -26,6 +26,7 @@ public class OperationService {
     private final EmployeeService employeeService;
     private final OperationDtoMapper operationDtoMapper;
     private final ShortOperationDtoMapper shortOperationDtoMapper;
+    private final TypeWorkService typeWorkService;
 
     public Operation getOperationById(long id) {
         return operationRepository.findById(id).orElseThrow(

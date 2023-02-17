@@ -7,7 +7,6 @@ import ru.trae.backend.dto.operation.OpEmpIdDto;
 import ru.trae.backend.dto.operation.ShortOperationDto;
 import ru.trae.backend.dto.operation.WrapperNewOperationDto;
 import ru.trae.backend.service.OperationService;
-import ru.trae.backend.util.Operations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,13 +17,6 @@ import java.util.List;
 public class OperationController {
 
     private final OperationService operationService;
-
-    @GetMapping("/names")
-    public ResponseEntity<List<String>> names() {
-        return ResponseEntity.ok(Arrays.stream(Operations.values())
-                .map(o -> o.value)
-                .toList());
-    }
 
     @PostMapping("/new")
     public ResponseEntity operationPersist(@RequestBody WrapperNewOperationDto wrapper) {
