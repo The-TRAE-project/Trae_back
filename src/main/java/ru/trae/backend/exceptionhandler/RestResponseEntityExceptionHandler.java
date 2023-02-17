@@ -41,6 +41,11 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return new ResponseEntity<>(buildResponse(e), e.getStatus());
     }
 
+    @ExceptionHandler(TypeWorkException.class)
+    protected ResponseEntity<Response> handleException(TypeWorkException e) {
+        return new ResponseEntity<>(buildResponse(e), e.getStatus());
+    }
+
     private Response buildResponse(AbstractException e) {
         return Response.builder()
                 .timestamp(LocalDateTime.now().toString())

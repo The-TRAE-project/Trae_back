@@ -3,6 +3,7 @@ package ru.trae.backend.entity.task;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.user.Employee;
 
 import javax.persistence.*;
@@ -26,8 +27,12 @@ public class Operation extends Task {
     private Employee employee;
     @ToString.Exclude
     @ManyToOne
-    @JoinColumn(name = "project_id")
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
+    @ToString.Exclude
+    @ManyToOne
+    @JoinColumn(name = "type_work_id", nullable = false)
+    private TypeWork typeWork;
 
     @Override
     public boolean equals(Object o) {

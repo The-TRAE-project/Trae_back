@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import ru.trae.backend.entity.TimeControl;
+import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.WorkingShift;
 
@@ -29,6 +30,9 @@ public class Employee extends User {
     @ToString.Exclude
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<TimeControl> timeControls;
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "employees", fetch = FetchType.LAZY)
+    private List<TypeWork> typeWorks;
 
     @Override
     public boolean equals(Object o) {
