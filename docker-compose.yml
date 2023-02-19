@@ -1,8 +1,17 @@
 version: "3.9"
 services:
-  postgres:
-    image: postgres:15.0
-    container_name: postgres-container
+
+  backend:
+    image: ath31st/trae_back
+    container_name: trae_back
+    ports:
+      - "8088:8088"
+    depends_on:
+      - postgres-backend
+
+  postgres-backend:
+    image: postgres:15.2
+    container_name: postgres_db
     ports:
       - "5432:5432"
     environment:

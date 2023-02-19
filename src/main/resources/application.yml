@@ -11,7 +11,8 @@ spring:
     enabled: false
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/traeDB
+    #url: jdbc:postgresql://localhost:5432/traeDB
+    url: jdbc:postgresql://postgres_db:5432/traeDB
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver
