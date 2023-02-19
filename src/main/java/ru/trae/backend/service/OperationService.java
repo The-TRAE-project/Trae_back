@@ -37,7 +37,7 @@ public class OperationService {
     public void saveNewOperations(WrapperNewOperationDto wrapper) {
         Project p = projectService.getProjectById(wrapper.projectId());
 
-        List<NewOperationDto>  operations = wrapper.operations()
+        List<NewOperationDto> operations = wrapper.operations()
                 .stream()
                 .sorted(Comparator.comparing(NewOperationDto::priority))
                 .toList();
@@ -56,6 +56,7 @@ public class OperationService {
             o.setAcceptanceDate(null);
             o.setEnded(false);
             o.setInWork(false);
+            o.setReadyToAcceptance(true);
             o.setTypeWork(typeWorkService.getTypeWorkById(dto.typeWorkId()));
 
             operationRepository.save(o);
@@ -77,6 +78,7 @@ public class OperationService {
                                 o.setAcceptanceDate(null);
                                 o.setEnded(false);
                                 o.setInWork(false);
+                                o.setReadyToAcceptance(false);
                                 o.setTypeWork(typeWorkService.getTypeWorkById(no.typeWorkId()));
 
                                 operationRepository.save(o);
@@ -99,6 +101,7 @@ public class OperationService {
         Operation o = getOperationById(dto.id());
 
         o.setInWork(true);
+        o.setReadyToAcceptance(false);
         o.setEmployee(e);
         o.setAcceptanceDate(LocalDateTime.now());
 
@@ -133,6 +136,7 @@ public class OperationService {
             long opRemains = operations.stream().filter(op -> !op.isEnded()).count();
             int newPeriod = NumbersUtil.getPeriodForFirstOperation((int) remainsPeriod, (int) opRemains);
 
+            nextOp.setReadyToAcceptance(true);
             nextOp.setPeriod(newPeriod);
             nextOp.setStartDate(LocalDateTime.now());
             nextOp.setPlannedEndDate(LocalDateTime.now().plusDays(newPeriod));

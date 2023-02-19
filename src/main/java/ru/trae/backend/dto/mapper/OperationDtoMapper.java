@@ -31,6 +31,7 @@ public class OperationDtoMapper implements Function<Operation, OperationDto> {
                 o.getPeriod(),
                 o.isEnded(),
                 o.isInWork(),
+                o.isReadyToAcceptance(),
                 new TypeWorkDto(o.getTypeWork().getId(), o.getTypeWork().getName()),
                 new ShortProjectDto(p.getId(), p.getName(), p.getDescription()),
                 e == null ? null : new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName())

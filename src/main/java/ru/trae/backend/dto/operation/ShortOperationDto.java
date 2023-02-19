@@ -9,6 +9,7 @@ public record ShortOperationDto(
         String nameTypeWork,
         long typeWork,
         boolean isEnded,
-        boolean inWork
+        boolean inWork,
+        boolean readyToAcceptance
 ) {
 }

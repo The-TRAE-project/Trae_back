@@ -21,6 +21,7 @@ public class Operation extends Task {
     private Long id;
     private int priority;
     private boolean inWork;
+    private boolean readyToAcceptance;
     private LocalDateTime acceptanceDate;
     @ToString.Exclude
     @OneToOne

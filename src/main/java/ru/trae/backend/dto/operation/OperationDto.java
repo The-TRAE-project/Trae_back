@@ -18,6 +18,7 @@ public record OperationDto(
         int period,
         boolean isEnded,
         boolean inWork,
+        boolean readyToAcceptance,
         TypeWorkDto typeWorkDto,
         ShortProjectDto shortProjectDto,
         ShortEmployeeDto shortEmployeeDto
