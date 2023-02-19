@@ -19,6 +19,7 @@ public class TimeControlMapper implements Function<TimeControl, TimeControlDto> 
 
         return new TimeControlDto(
                 tc.isOnShift(),
+                tc.isAutoClosingShift(),
                 tc.getArrival(),
                 tc.getDeparture(),
                 new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName()));

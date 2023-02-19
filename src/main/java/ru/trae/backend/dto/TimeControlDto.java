@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 public record TimeControlDto(
          boolean isOnShift,
+         boolean autoClosingShift,
          LocalDateTime arrival,
          LocalDateTime departure,
          ShortEmployeeDto employee

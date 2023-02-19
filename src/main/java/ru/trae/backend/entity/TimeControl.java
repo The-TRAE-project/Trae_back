@@ -18,6 +18,7 @@ public class TimeControl {
     @Column(name = "id", nullable = false)
     private Long id;
     private boolean isOnShift;
+    private boolean autoClosingShift;
     private LocalDateTime arrival;
     private LocalDateTime departure;
     @ToString.Exclude

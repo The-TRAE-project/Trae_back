@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.WorkingShiftDto;
 import ru.trae.backend.dto.mapper.WorkingShiftDtoMapper;
+import ru.trae.backend.entity.TimeControl;
 import ru.trae.backend.entity.WorkingShift;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.WorkingShiftException;
@@ -40,6 +41,11 @@ public class WorkingShiftService {
         if (!existsActiveWorkingShift()) return;
 
         WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
+
+        ws.getTimeControls().stream()
+                .filter(TimeControl::isOnShift)
+                .forEach(timeControlService::autoClosingShift);
+
         ws.setEnded(true);
         ws.setEndShift(LocalDateTime.now());
 

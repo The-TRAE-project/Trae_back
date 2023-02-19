@@ -20,6 +20,7 @@ public class TimeControlService {
         tc.setDeparture(null);
         tc.setEmployee(e);
         tc.setOnShift(onShift);
+        tc.setAutoClosingShift(false);
         tc.setWorkingShift(ws);
 
         return timeControlRepository.save(tc);
@@ -31,6 +32,13 @@ public class TimeControlService {
         tc.setOnShift(false);
 
         return timeControlRepository.save(tc);
+    }
+
+    public void autoClosingShift(TimeControl tc) {
+        tc.setOnShift(false);
+        tc.setAutoClosingShift(true);
+
+        timeControlRepository.save(tc);
     }
 
 }
