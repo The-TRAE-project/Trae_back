@@ -1,6 +1,6 @@
 spring:
   liquibase:
-    enabled: false
+    enabled: true
 
   datasource:
     url: jdbc:postgresql://postgres_db:5432/traeDB
@@ -12,4 +12,4 @@ spring:
     database: POSTGRESQL
     show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
