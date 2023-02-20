@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-constraints-employees-table
+      author: Val_Demar
+      changes:
+        - addUniqueConstraint:
+            columnNames: pin_code
+            constraintName: uk_pq01x9w4msfl782fhaer0i755
+            tableName: employees

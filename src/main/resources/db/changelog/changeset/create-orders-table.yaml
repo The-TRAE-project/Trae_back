@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-orders
+      author: Val_Demar
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: orders_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_ended
+                  type: BOOLEAN
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: period
+                  type: INTEGER
+              - column:
+                  name: planned_end_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: real_end_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: start_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: customer_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: manager_id
+                  type: BIGINT
+            tableName: orders

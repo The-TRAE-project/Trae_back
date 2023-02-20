@@ -1,3 +1,47 @@
 databaseChangeLog:
   - include: 
       file: db/changelog/changeset/create-customers-table.yaml
+  - include:
+      file: db/changelog/changeset/create-employees-table.yaml
+  - include:
+      file: db/changelog/changeset/create-employees_type_works-table.yaml
+  - include:
+      file: db/changelog/changeset/create-managers-table.yaml
+  - include:
+      file: db/changelog/changeset/create-operations-table.yaml
+  - include:
+      file: db/changelog/changeset/create-orders-table.yaml
+  - include:
+      file: db/changelog/changeset/create-projects-table.yaml
+  - include:
+      file: db/changelog/changeset/create-time_controls-table.yaml
+  - include:
+      file: db/changelog/changeset/create-types-table.yaml
+  - include:
+      file: db/changelog/changeset/create-working_shifts-table.yaml
+  - include:
+      file: db/changelog/changeset/add-constraints-employees-table.yaml
+  - include:
+      file: db/changelog/changeset/add-constraints-managers-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-employees-operations-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-employees_type_works-types-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-employees_types_works-employees-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-operations-employees-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-operations-projects-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-operations-types-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-orders-customers-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-orders-managers-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-projects-managers-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-time_controls-employees-table.yaml
+  - include:
+      file: db/changelog/changeset/add-foreign-key-time_controls-working_shifts-table.yaml

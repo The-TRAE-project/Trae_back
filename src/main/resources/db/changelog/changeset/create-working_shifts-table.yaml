@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-types
+      author: Val_Demar
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: working_shifts_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: end_shift
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_ended
+                  type: BOOLEAN
+              - column:
+                  name: start_shift
+                  type: TIMESTAMP WITHOUT TIME ZONE
+            tableName: working_shifts

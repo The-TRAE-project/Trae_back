@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-foreign-key-employees_type_works-types-table
+      author: Val_Demar
+      changes:
+      - addForeignKeyConstraint:
+            baseColumnNames: type_works_id
+            baseTableName: employees_type_works
+            constraintName: fkpdji3nur7aj82gvmxwxrx5von
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: types
+            validate: true

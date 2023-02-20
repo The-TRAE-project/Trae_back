@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: 1676292830857-1
+    id: 1676889338928-1
     author: ath31 (generated)
     changes:
     - createTable:
@@ -24,13 +24,13 @@ databaseChangeLog:
             type: VARCHAR(255)
         - column:
             name: phone
-            type: INTEGER
+            type: BIGINT
         - column:
             name: date_of_register
             type: TIMESTAMP WITHOUT TIME ZONE
         tableName: customers
 - changeSet:
-    id: 1676292830857-2
+    id: 1676889338928-2
     author: ath31 (generated)
     changes:
     - createTable:
@@ -54,18 +54,39 @@ databaseChangeLog:
             type: VARCHAR(255)
         - column:
             name: phone
-            type: INTEGER
+            type: BIGINT
         - column:
             constraints:
               nullable: false
-            name: password
+            name: pin_code
             type: INTEGER
         - column:
             name: operation_id
             type: BIGINT
         tableName: employees
 - changeSet:
-    id: 1676292830857-3
+    id: 1676889338928-3
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: employees_type_works_pkey
+            name: employee_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: employees_type_works_pkey
+            name: type_works_id
+            type: BIGINT
+        tableName: employees_type_works
+- changeSet:
+    id: 1676889338928-4
     author: ath31 (generated)
     changes:
     - createTable:
@@ -89,19 +110,25 @@ databaseChangeLog:
             type: VARCHAR(255)
         - column:
             name: phone
-            type: INTEGER
+            type: BIGINT
         - column:
+            constraints:
+              nullable: false
             name: email
             type: VARCHAR(255)
         - column:
+            constraints:
+              nullable: false
             name: password
             type: VARCHAR(255)
         - column:
+            constraints:
+              nullable: false
             name: username
             type: VARCHAR(255)
         tableName: managers
 - changeSet:
-    id: 1676292830857-4
+    id: 1676889338928-5
     author: ath31 (generated)
     changes:
     - createTable:
@@ -128,20 +155,51 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: typeWorkId
+            name: period
             type: INTEGER
+        - column:
+            name: planned_end_date
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: real_end_date
+            type: TIMESTAMP WITHOUT TIME ZONE
         - column:
             name: start_date
             type: TIMESTAMP WITHOUT TIME ZONE
         - column:
+            name: acceptance_date
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: in_work
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: priority
+            type: INTEGER
+        - column:
+            constraints:
+              nullable: false
+            name: ready_to_acceptance
+            type: BOOLEAN
+        - column:
             name: employee_id
             type: BIGINT
         - column:
+            constraints:
+              nullable: false
             name: project_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: type_work_id
             type: BIGINT
         tableName: operations
 - changeSet:
-    id: 1676292830857-5
+    id: 1676889338928-6
     author: ath31 (generated)
     changes:
     - createTable:
@@ -168,8 +226,14 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: typeWorkId
+            name: period
             type: INTEGER
+        - column:
+            name: planned_end_date
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: real_end_date
+            type: TIMESTAMP WITHOUT TIME ZONE
         - column:
             name: start_date
             type: TIMESTAMP WITHOUT TIME ZONE
@@ -183,7 +247,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: orders
 - changeSet:
-    id: 1676292830857-6
+    id: 1676889338928-7
     author: ath31 (generated)
     changes:
     - createTable:
@@ -210,8 +274,14 @@ databaseChangeLog:
         - column:
             constraints:
               nullable: false
-            name: typeWorkId
+            name: period
             type: INTEGER
+        - column:
+            name: planned_end_date
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            name: real_end_date
+            type: TIMESTAMP WITHOUT TIME ZONE
         - column:
             name: start_date
             type: TIMESTAMP WITHOUT TIME ZONE
@@ -222,24 +292,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: projects
 - changeSet:
-    id: 1676292830857-7
-    author: ath31 (generated)
-    changes:
-    - createTable:
-        columns:
-        - column:
-            constraints:
-              nullable: false
-            name: work_shifting_id
-            type: BIGINT
-        - column:
-            constraints:
-              nullable: false
-            name: employee_id
-            type: BIGINT
-        tableName: shift_employee
-- changeSet:
-    id: 1676292830857-8
+    id: 1676889338928-8
     author: ath31 (generated)
     changes:
     - createTable:
@@ -249,7 +302,66 @@ databaseChangeLog:
             constraints:
               nullable: false
               primaryKey: true
-              primaryKeyName: work_shiftings_pkey
+              primaryKeyName: time_controls_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: arrival
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: auto_closing_shift
+            type: BOOLEAN
+        - column:
+            name: departure
+            type: TIMESTAMP WITHOUT TIME ZONE
+        - column:
+            constraints:
+              nullable: false
+            name: is_on_shift
+            type: BOOLEAN
+        - column:
+            constraints:
+              nullable: false
+            name: employee_id
+            type: BIGINT
+        - column:
+            constraints:
+              nullable: false
+            name: working_shift_id
+            type: BIGINT
+        tableName: time_controls
+- changeSet:
+    id: 1676889338928-9
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: types_pkey
+            name: id
+            type: BIGINT
+        - column:
+            name: name
+            type: VARCHAR(255)
+        tableName: types
+- changeSet:
+    id: 1676889338928-10
+    author: ath31 (generated)
+    changes:
+    - createTable:
+        columns:
+        - column:
+            autoIncrement: true
+            constraints:
+              nullable: false
+              primaryKey: true
+              primaryKeyName: working_shifts_pkey
             name: id
             type: BIGINT
         - column:
@@ -263,42 +375,33 @@ databaseChangeLog:
         - column:
             name: start_shift
             type: TIMESTAMP WITHOUT TIME ZONE
-        - column:
-            name: time_of_day
-            type: INTEGER
-        tableName: work_shiftings
+        tableName: working_shifts
 - changeSet:
-    id: 1676292830857-9
+    id: 1676889338928-11
     author: ath31 (generated)
     changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: employee_id
-        baseTableName: shift_employee
-        constraintName: fk105mw9wyuvxawkkin9iyjn2ds
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: NO ACTION
-        onUpdate: NO ACTION
-        referencedColumnNames: id
-        referencedTableName: employees
-        validate: true
+    - addUniqueConstraint:
+        columnNames: username
+        constraintName: uk_47i207jqaocudxi77kquurcr4
+        tableName: managers
 - changeSet:
-    id: 1676292830857-10
+    id: 1676889338928-12
     author: ath31 (generated)
     changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: work_shifting_id
-        baseTableName: shift_employee
-        constraintName: fk360uoii4pawrethjfk99lg9ii
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: NO ACTION
-        onUpdate: NO ACTION
-        referencedColumnNames: id
-        referencedTableName: work_shiftings
-        validate: true
+    - addUniqueConstraint:
+        columnNames: email
+        constraintName: uk_9t1pttj95csyjl4it8lxgl7jj
+        tableName: managers
 - changeSet:
-    id: 1676292830857-11
+    id: 1676889338928-13
+    author: ath31 (generated)
+    changes:
+    - addUniqueConstraint:
+        columnNames: pin_code
+        constraintName: uk_pq01x9w4msfl782fhaer0i755
+        tableName: employees
+- changeSet:
+    id: 1676889338928-14
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -313,7 +416,22 @@ databaseChangeLog:
         referencedTableName: managers
         validate: true
 - changeSet:
-    id: 1676292830857-12
+    id: 1676889338928-15
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: type_work_id
+        baseTableName: operations
+        constraintName: fk48wys1n3xwb6qvngoo40k068a
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: types
+        validate: true
+- changeSet:
+    id: 1676889338928-16
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -328,7 +446,7 @@ databaseChangeLog:
         referencedTableName: managers
         validate: true
 - changeSet:
-    id: 1676292830857-13
+    id: 1676889338928-17
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -343,7 +461,52 @@ databaseChangeLog:
         referencedTableName: operations
         validate: true
 - changeSet:
-    id: 1676292830857-14
+    id: 1676889338928-18
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: employee_id
+        baseTableName: employees_type_works
+        constraintName: fkhdn4ti23ro23wsuad2aklxll1
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: employees
+        validate: true
+- changeSet:
+    id: 1676889338928-19
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: employee_id
+        baseTableName: time_controls
+        constraintName: fkiu0fuk4c32qgnxx23a2x9bkd3
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: employees
+        validate: true
+- changeSet:
+    id: 1676889338928-20
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: working_shift_id
+        baseTableName: time_controls
+        constraintName: fkko2kcs9pjiucn7hl86s3gypy4
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: working_shifts
+        validate: true
+- changeSet:
+    id: 1676889338928-21
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -358,7 +521,22 @@ databaseChangeLog:
         referencedTableName: employees
         validate: true
 - changeSet:
-    id: 1676292830857-15
+    id: 1676889338928-22
+    author: ath31 (generated)
+    changes:
+    - addForeignKeyConstraint:
+        baseColumnNames: type_works_id
+        baseTableName: employees_type_works
+        constraintName: fkpdji3nur7aj82gvmxwxrx5von
+        deferrable: false
+        initiallyDeferred: false
+        onDelete: NO ACTION
+        onUpdate: NO ACTION
+        referencedColumnNames: id
+        referencedTableName: types
+        validate: true
+- changeSet:
+    id: 1676889338928-23
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -373,7 +551,7 @@ databaseChangeLog:
         referencedTableName: customers
         validate: true
 - changeSet:
-    id: 1676292830857-16
+    id: 1676889338928-24
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:

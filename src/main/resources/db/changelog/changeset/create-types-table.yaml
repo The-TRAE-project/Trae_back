@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-types
+      author: Val_Demar
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: types_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+            tableName: types

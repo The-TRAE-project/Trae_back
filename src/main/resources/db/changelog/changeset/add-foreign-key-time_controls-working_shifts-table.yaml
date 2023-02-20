@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-foreign-key-time_controls-working_shifts-table
+      author: Val_Demar
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: working_shift_id
+            baseTableName: time_controls
+            constraintName: fkko2kcs9pjiucn7hl86s3gypy4
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: working_shifts
+            validate: true

@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-operations
+      author: Val_Demar
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: operations_pkey
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: description
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: is_ended
+                  type: BOOLEAN
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: period
+                  type: INTEGER
+              - column:
+                  name: planned_end_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: real_end_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: start_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  name: acceptance_date
+                  type: TIMESTAMP WITHOUT TIME ZONE
+              - column:
+                  constraints:
+                    nullable: false
+                  name: in_work
+                  type: BOOLEAN
+              - column:
+                  constraints:
+                    nullable: false
+                  name: priority
+                  type: INTEGER
+              - column:
+                  constraints:
+                    nullable: false
+                  name: ready_to_acceptance
+                  type: BOOLEAN
+              - column:
+                  name: employee_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: project_id
+                  type: BIGINT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: type_work_id
+                  type: BIGINT
+            tableName: operations

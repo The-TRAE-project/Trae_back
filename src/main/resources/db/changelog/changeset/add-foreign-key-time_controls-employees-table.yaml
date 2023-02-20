@@ -1,0 +1,16 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-foreign-key-time_controls-employees-table
+      author: Val_Demar
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: employee_id
+            baseTableName: time_controls
+            constraintName: fkiu0fuk4c32qgnxx23a2x9bkd3
+            deferrable: false
+            initiallyDeferred: false
+            onDelete: NO ACTION
+            onUpdate: NO ACTION
+            referencedColumnNames: id
+            referencedTableName: employees
+            validate: true
