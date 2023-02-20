@@ -3,13 +3,15 @@ package ru.trae.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.operation.OpEmpIdDto;
 import ru.trae.backend.dto.operation.ShortOperationDto;
 import ru.trae.backend.dto.operation.WrapperNewOperationDto;
+import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.service.OperationService;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,9 +26,14 @@ public class OperationController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/short-operations/{projectId}")
-    public ResponseEntity<List<ShortOperationDto>> shortOperations(@PathVariable long projectId) {
-        return ResponseEntity.ok(operationService.getShortOpDtoList(projectId));
+    @GetMapping("/short-project-operations/{projectId}")
+    public ResponseEntity<List<ShortOperationDto>> shortOperationsByProject(@PathVariable long projectId) {
+        return ResponseEntity.ok(operationService.getShortOpDtoListByProject(projectId));
+    }
+
+    @GetMapping("/operations-by-type-work/{employeeId}")
+    public ResponseEntity<Map<String, List<ShortOperationDto>>> shortOperationsByEmployee(@PathVariable long employeeId) {
+        return ResponseEntity.ok(operationService.getAvailableOperationByTypeWork(employeeId));
     }
 
     @PostMapping("/receive-operation")

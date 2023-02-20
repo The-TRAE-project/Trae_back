@@ -3,9 +3,12 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.mapper.OperationDtoMapper;
 import ru.trae.backend.dto.mapper.ShortOperationDtoMapper;
 import ru.trae.backend.dto.operation.*;
+import ru.trae.backend.dto.type.TypeWorkDto;
+import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
@@ -16,6 +19,10 @@ import ru.trae.backend.util.NumbersUtil;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -89,9 +96,15 @@ public class OperationService {
         return operationDtoMapper.apply(getOperationById(id));
     }
 
-    public List<ShortOperationDto> getShortOpDtoList(long projectId) {
+    public List<ShortOperationDto> getShortOpDtoListByProject(long projectId) {
         Project p = projectService.getProjectById(projectId);
         return p.getOperations().stream()
+                .map(shortOperationDtoMapper)
+                .toList();
+    }
+
+    public List<ShortOperationDto> getShortOpDtoListReadyForAcceptanceByTypeWork(boolean readyForAcceptance, long typeWorkId) {
+        return operationRepository.findByReadyToAcceptanceAndTypeWork_Id(readyForAcceptance, typeWorkId).stream()
                 .map(shortOperationDtoMapper)
                 .toList();
     }
@@ -99,6 +112,9 @@ public class OperationService {
     public void receiveOperation(OpEmpIdDto dto) {
         Employee e = employeeService.getEmployeeById(dto.employeeId());
         Operation o = getOperationById(dto.id());
+
+        checkForAcceptance(o);
+        checkCompatibilityTypeWork(o, e);
 
         o.setInWork(true);
         o.setReadyToAcceptance(false);
@@ -111,8 +127,7 @@ public class OperationService {
     public void finishOperation(OpEmpIdDto dto) {
         Operation o = getOperationById(dto.id());
 
-        if (o.getEmployee().getId() != dto.employeeId())
-            throw new OperationException(HttpStatus.BAD_REQUEST, "ID подтверждающего работника не равен ID принявшего операцию");
+        checkConfirmingEmployee(o, dto.employeeId());
 
         o.setInWork(false);
         o.setEnded(true);
@@ -143,5 +158,28 @@ public class OperationService {
 
             operationRepository.save(nextOp);
         }
+    }
+
+    public Map<String, List<ShortOperationDto>> getAvailableOperationByTypeWork(long employeeId) {
+        Set<TypeWork> typeWorks = employeeService.getEmployeeById(employeeId).getTypeWorks();
+        return typeWorks.stream()
+                .filter(tw -> getShortOpDtoListReadyForAcceptanceByTypeWork(true, tw.getId()).size() != 0)
+                .collect(Collectors.toMap(TypeWork::getName, tw -> getShortOpDtoListReadyForAcceptanceByTypeWork(true, tw.getId())));
+    }
+
+    private void checkForAcceptance(Operation o) {
+        if (!o.isReadyToAcceptance())
+            throw new OperationException(HttpStatus.BAD_REQUEST, "The operation is currently unavailable for acceptance.");
+    }
+
+    private void checkCompatibilityTypeWork(Operation o, Employee e) {
+        if (!e.getTypeWorks().contains(o.getTypeWork()))
+            throw new OperationException(HttpStatus.BAD_REQUEST, "Types of work are not compatible.");
+    }
+
+    private void checkConfirmingEmployee(Operation o, long confirmingEmpId) {
+        if (o.getEmployee().getId() != confirmingEmpId)
+            throw new OperationException(HttpStatus.BAD_REQUEST,
+                    "The ID of the confirming employee is not equal to the ID of the person who accepted the operation");
     }
 }
