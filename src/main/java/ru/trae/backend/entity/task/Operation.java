@@ -24,7 +24,7 @@ public class Operation extends Task {
     private boolean readyToAcceptance;
     private LocalDateTime acceptanceDate;
     @ToString.Exclude
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
     @ToString.Exclude

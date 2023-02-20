@@ -1,6 +1,6 @@
 databaseChangeLog:
 - changeSet:
-    id: 1676889338928-1
+    id: 1676907415133-1
     author: ath31 (generated)
     changes:
     - createTable:
@@ -30,7 +30,7 @@ databaseChangeLog:
             type: TIMESTAMP WITHOUT TIME ZONE
         tableName: customers
 - changeSet:
-    id: 1676889338928-2
+    id: 1676907415133-2
     author: ath31 (generated)
     changes:
     - createTable:
@@ -65,7 +65,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: employees
 - changeSet:
-    id: 1676889338928-3
+    id: 1676907415133-3
     author: ath31 (generated)
     changes:
     - createTable:
@@ -86,7 +86,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: employees_type_works
 - changeSet:
-    id: 1676889338928-4
+    id: 1676907415133-4
     author: ath31 (generated)
     changes:
     - createTable:
@@ -128,7 +128,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: managers
 - changeSet:
-    id: 1676889338928-5
+    id: 1676907415133-5
     author: ath31 (generated)
     changes:
     - createTable:
@@ -199,7 +199,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: operations
 - changeSet:
-    id: 1676889338928-6
+    id: 1676907415133-6
     author: ath31 (generated)
     changes:
     - createTable:
@@ -247,7 +247,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: orders
 - changeSet:
-    id: 1676889338928-7
+    id: 1676907415133-7
     author: ath31 (generated)
     changes:
     - createTable:
@@ -292,7 +292,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: projects
 - changeSet:
-    id: 1676889338928-8
+    id: 1676907415133-8
     author: ath31 (generated)
     changes:
     - createTable:
@@ -333,7 +333,7 @@ databaseChangeLog:
             type: BIGINT
         tableName: time_controls
 - changeSet:
-    id: 1676889338928-9
+    id: 1676907415133-9
     author: ath31 (generated)
     changes:
     - createTable:
@@ -351,7 +351,7 @@ databaseChangeLog:
             type: VARCHAR(255)
         tableName: types
 - changeSet:
-    id: 1676889338928-10
+    id: 1676907415133-10
     author: ath31 (generated)
     changes:
     - createTable:
@@ -377,7 +377,7 @@ databaseChangeLog:
             type: TIMESTAMP WITHOUT TIME ZONE
         tableName: working_shifts
 - changeSet:
-    id: 1676889338928-11
+    id: 1676907415133-11
     author: ath31 (generated)
     changes:
     - addUniqueConstraint:
@@ -385,7 +385,7 @@ databaseChangeLog:
         constraintName: uk_47i207jqaocudxi77kquurcr4
         tableName: managers
 - changeSet:
-    id: 1676889338928-12
+    id: 1676907415133-12
     author: ath31 (generated)
     changes:
     - addUniqueConstraint:
@@ -393,7 +393,7 @@ databaseChangeLog:
         constraintName: uk_9t1pttj95csyjl4it8lxgl7jj
         tableName: managers
 - changeSet:
-    id: 1676889338928-13
+    id: 1676907415133-13
     author: ath31 (generated)
     changes:
     - addUniqueConstraint:
@@ -401,7 +401,7 @@ databaseChangeLog:
         constraintName: uk_pq01x9w4msfl782fhaer0i755
         tableName: employees
 - changeSet:
-    id: 1676889338928-14
+    id: 1676907415133-14
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -416,7 +416,7 @@ databaseChangeLog:
         referencedTableName: managers
         validate: true
 - changeSet:
-    id: 1676889338928-15
+    id: 1676907415133-15
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -431,7 +431,7 @@ databaseChangeLog:
         referencedTableName: types
         validate: true
 - changeSet:
-    id: 1676889338928-16
+    id: 1676907415133-16
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -446,22 +446,7 @@ databaseChangeLog:
         referencedTableName: managers
         validate: true
 - changeSet:
-    id: 1676889338928-17
-    author: ath31 (generated)
-    changes:
-    - addForeignKeyConstraint:
-        baseColumnNames: operation_id
-        baseTableName: employees
-        constraintName: fk7eenkt0059g425ngpp9yyt8c7
-        deferrable: false
-        initiallyDeferred: false
-        onDelete: NO ACTION
-        onUpdate: NO ACTION
-        referencedColumnNames: id
-        referencedTableName: operations
-        validate: true
-- changeSet:
-    id: 1676889338928-18
+    id: 1676907415133-17
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -476,7 +461,7 @@ databaseChangeLog:
         referencedTableName: employees
         validate: true
 - changeSet:
-    id: 1676889338928-19
+    id: 1676907415133-18
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -491,7 +476,7 @@ databaseChangeLog:
         referencedTableName: employees
         validate: true
 - changeSet:
-    id: 1676889338928-20
+    id: 1676907415133-19
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -506,7 +491,7 @@ databaseChangeLog:
         referencedTableName: working_shifts
         validate: true
 - changeSet:
-    id: 1676889338928-21
+    id: 1676907415133-20
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -521,7 +506,7 @@ databaseChangeLog:
         referencedTableName: employees
         validate: true
 - changeSet:
-    id: 1676889338928-22
+    id: 1676907415133-21
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -536,7 +521,7 @@ databaseChangeLog:
         referencedTableName: types
         validate: true
 - changeSet:
-    id: 1676889338928-23
+    id: 1676907415133-22
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:
@@ -551,7 +536,7 @@ databaseChangeLog:
         referencedTableName: customers
         validate: true
 - changeSet:
-    id: 1676889338928-24
+    id: 1676907415133-23
     author: ath31 (generated)
     changes:
     - addForeignKeyConstraint:

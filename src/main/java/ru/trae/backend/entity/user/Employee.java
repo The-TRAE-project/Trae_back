@@ -5,8 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.trae.backend.entity.TimeControl;
 import ru.trae.backend.entity.TypeWork;
-import ru.trae.backend.entity.task.Operation;
-import ru.trae.backend.entity.WorkingShift;
 
 import javax.persistence.*;
 import java.util.*;
@@ -23,13 +21,8 @@ public class Employee extends User {
     @Column(unique = true,nullable = false)
     private int pinCode;
     @ToString.Exclude
-    @OneToOne
-    @JoinColumn(name = "operation_id")
-    private Operation operation;
-    @ToString.Exclude
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
-    private List<TimeControl> timeControls;
-
+    private List<TimeControl> timeControls = new ArrayList<>();
     @ManyToMany
     @JoinTable(name = "employees_type_works",
             joinColumns = @JoinColumn(name = "employee_id"),
