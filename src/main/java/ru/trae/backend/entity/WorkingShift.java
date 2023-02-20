@@ -22,7 +22,7 @@ public class WorkingShift {
     private LocalDateTime endShift;
     private boolean isEnded;
     @ToString.Exclude
-    @OneToMany(mappedBy = "workingShift", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "workingShift", fetch = FetchType.EAGER)
     private List<TimeControl> timeControls;
 
     @Override
