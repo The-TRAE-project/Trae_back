@@ -36,7 +36,7 @@ public class ManagerService {
 
     public Manager getManagerById(long managerId) {
         return managerRepository.findById(managerId).orElseThrow(
-                () -> new ManagerException(HttpStatus.NOT_FOUND, "Менеджер с " + managerId + " не найден"));
+                () -> new ManagerException(HttpStatus.NOT_FOUND, "Manager with ID: " + managerId + " not found"));
     }
 
     public List<ManagerDto> getAllManagers() {
@@ -60,12 +60,12 @@ public class ManagerService {
 
     public void checkAvailableEmail(String email) {
         if (existsManagerByEmail(email))
-            throw new ManagerException(HttpStatus.CONFLICT, "Email: " + email + " уже используется");
+            throw new ManagerException(HttpStatus.CONFLICT, "Email: " + email + " already in use");
     }
 
     public void checkAvailableUsername(String username) {
         if (existsManagerByUsername(username))
-            throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " уже используется");
+            throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " already in use");
     }
 
 }

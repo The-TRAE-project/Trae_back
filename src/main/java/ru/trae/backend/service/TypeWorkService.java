@@ -27,7 +27,7 @@ public class TypeWorkService {
 
     public TypeWork getTypeWorkById(long id) {
         return typeWorkRepository.findById(id).orElseThrow(
-                () -> new TypeWorkException(HttpStatus.NOT_FOUND, "Вид работы с ID " + id + " не найден")
+                () -> new TypeWorkException(HttpStatus.NOT_FOUND, "Type work with ID: " + id + " not found")
         );
     }
 
@@ -44,6 +44,6 @@ public class TypeWorkService {
 
     public void checkAvailableByName(String name) {
         if (existsTypeByName(name))
-            throw new TypeWorkException(HttpStatus.CONFLICT, "Вид работ с названием " + name + " уже существует");
+            throw new TypeWorkException(HttpStatus.CONFLICT, "Type work name: " + name + " already in use");
     }
 }

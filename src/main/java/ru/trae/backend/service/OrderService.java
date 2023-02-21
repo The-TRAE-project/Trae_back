@@ -44,7 +44,7 @@ public class OrderService {
 
     public Order getOrderById(long id) {
         return orderRepository.findById(id).orElseThrow(
-                () -> new OrderException(HttpStatus.NOT_FOUND, "Заказ с ID " + id + " не найден"));
+                () -> new OrderException(HttpStatus.NOT_FOUND, "The order with ID: " + id + " not found"));
     }
 
     public List<OrderDto> getAllOrder() {

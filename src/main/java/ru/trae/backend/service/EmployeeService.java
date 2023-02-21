@@ -52,7 +52,7 @@ public class EmployeeService {
 
     public Employee getEmployeeById(long id) {
         return employeeRepository.findById(id).orElseThrow(
-                () -> new EmployeeException(HttpStatus.NOT_FOUND, "Работник с ID " + id + " не найден"));
+                () -> new EmployeeException(HttpStatus.NOT_FOUND, "Employee with ID: " + id + " not found"));
     }
 
     public EmployeeDto getEmpDtoById(long id) {
@@ -68,7 +68,10 @@ public class EmployeeService {
         Optional<Employee> employee = employeeRepository.findByPinCode(pin);
 
         if (employee.isEmpty())
-            throw new EmployeeException(HttpStatus.NOT_FOUND, "Работник с пинкодом " + pin + " не найден");
+            throw new EmployeeException(HttpStatus.NOT_FOUND, "Employee with pincode: " + pin + " not found");
+        if (!employee.get().isActive())
+            throw new EmployeeException(HttpStatus.FORBIDDEN, "The account is disabled");
+
         if (!workingShiftService.employeeOnShift(true, employee.get().getId()))
             workingShiftService.arrivalEmployeeOnShift(employee.get());
 
@@ -101,7 +104,7 @@ public class EmployeeService {
 
     public void checkAvailableCredentials(String firstName, String middleName, String lastName) {
         if (existsByCredentials(firstName, middleName, lastName))
-            throw new EmployeeException(HttpStatus.CONFLICT, "Такие учетные данные уже используется");
+            throw new EmployeeException(HttpStatus.CONFLICT, "Such credentials are already in use");
     }
 
 }

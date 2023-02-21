@@ -32,7 +32,7 @@ public class WorkingShiftService {
 
     public WorkingShiftDto getActive() {
         if (!existsActiveWorkingShift())
-            throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Нет активной рабочей смены");
+            throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Active work shift not found");
 
         return workingShiftDtoMapper.apply(workingShiftRepository.findByIsEndedFalse());
     }
@@ -54,7 +54,7 @@ public class WorkingShiftService {
 
     public void arrivalEmployeeOnShift(Employee employee) {
         if (!existsActiveWorkingShift())
-            throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Нет активных рабочих смен.");
+            throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Active work shift not found");
 
         WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
 

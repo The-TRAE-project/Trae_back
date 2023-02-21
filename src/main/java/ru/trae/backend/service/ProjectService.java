@@ -37,7 +37,7 @@ public class ProjectService {
 
     public Project getProjectById(long id) {
         return projectRepository.findById(id).orElseThrow(
-                () -> new ProjectException(HttpStatus.NOT_FOUND, "Проект с ID " + id + " не найден"));
+                () -> new ProjectException(HttpStatus.NOT_FOUND, "Project with ID: " + id + " not found"));
     }
 
     public List<ProjectDto> getAllProjects() {
