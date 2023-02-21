@@ -47,6 +47,10 @@ public class ProjectService {
                 .toList();
     }
 
+    public void updatePlannedEndDate(LocalDateTime newPlannedEndDate, long projectId) {
+        projectRepository.updatePlannedEndDateById(newPlannedEndDate, projectId);
+    }
+
     public ProjectDto getProjectDtoById(long id) {
         return projectDtoMapper.apply(getProjectById(id));
     }

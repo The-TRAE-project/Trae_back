@@ -11,6 +11,6 @@ public class NumbersUtil {
     }
 
     public static int getPeriodForFirstOperation(int period, int size) {
-        return (int) Math.ceil(((double) period / (double) size));
+        return (int) Math.floor(((double) period / (double) size));
     }
 }

@@ -3,11 +3,9 @@ package ru.trae.backend.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.mapper.OperationDtoMapper;
 import ru.trae.backend.dto.mapper.ShortOperationDtoMapper;
 import ru.trae.backend.dto.operation.*;
-import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
@@ -21,10 +19,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static java.time.temporal.ChronoUnit.DAYS;
+import static java.time.temporal.ChronoUnit.HOURS;
 
 @Service
 @RequiredArgsConstructor
@@ -135,6 +132,8 @@ public class OperationService {
 
         Operation op = operationRepository.save(o);
 
+        checkAndUpdateProjectEndDate(op);
+
         startNextOperation(op);
     }
 
@@ -147,14 +146,12 @@ public class OperationService {
         if (operations.indexOf(o) + 1 < operations.size()) {
             Operation nextOp = operations.get(operations.indexOf(o) + 1);
 
-            long remainsPeriod = DAYS.between(LocalDateTime.now(), o.getProject().getPlannedEndDate());
-            long opRemains = operations.stream().filter(op -> !op.isEnded()).count();
-            int newPeriod = NumbersUtil.getPeriodForFirstOperation((int) remainsPeriod, (int) opRemains);
+            int newPeriod = recalculationRemainingPeriod(nextOp, operations);
 
             nextOp.setReadyToAcceptance(true);
             nextOp.setPeriod(newPeriod);
             nextOp.setStartDate(LocalDateTime.now());
-            nextOp.setPlannedEndDate(LocalDateTime.now().plusDays(newPeriod));
+            nextOp.setPlannedEndDate(LocalDateTime.now().plusHours(newPeriod));
 
             operationRepository.save(nextOp);
         }
@@ -181,5 +178,26 @@ public class OperationService {
         if (o.getEmployee().getId() != confirmingEmpId)
             throw new OperationException(HttpStatus.BAD_REQUEST,
                     "The ID of the confirming employee is not equal to the ID of the person who accepted the operation");
+    }
+
+    private int recalculationRemainingPeriod(Operation nextOp, List<Operation> operations) {
+        long remainingPeriod = HOURS.between(LocalDateTime.now(), nextOp.getProject().getPlannedEndDate());
+        long opRemaining = operations.stream().filter(op -> !op.isEnded()).count();
+
+        // здесь отслеживается последний этап "отгрузка" = на него всегда 24 часа.
+        if (opRemaining == 1)
+            return 24;
+        // здесь вычитается из оставшися операций - "отгрузка" и время на нее - 24 часа.
+        return NumbersUtil.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
+    }
+
+    private void checkAndUpdateProjectEndDate(Operation o) {
+        if (o.getRealEndDate().isBefore(o.getPlannedEndDate())) return;
+
+        long hours = HOURS.between(o.getPlannedEndDate(), o.getRealEndDate());
+        Project p = o.getProject();
+        LocalDateTime newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
+
+        projectService.updatePlannedEndDate(newPlannedEndDate, p.getId());
     }
 }
