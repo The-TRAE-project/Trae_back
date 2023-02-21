@@ -7,6 +7,7 @@ import ru.trae.backend.entity.task.Order;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,7 +23,7 @@ public class Customer extends User{
     private LocalDateTime dateOfRegister;
     @ToString.Exclude
     @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY)
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

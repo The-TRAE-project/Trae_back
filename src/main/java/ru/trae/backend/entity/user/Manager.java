@@ -7,6 +7,7 @@ import ru.trae.backend.entity.task.Order;
 import ru.trae.backend.entity.task.Project;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -27,10 +28,10 @@ public class Manager extends User {
     private String password;
     @ToString.Exclude
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
-    private List<Order> orders;
+    private List<Order> orders = new ArrayList<>();
     @ToString.Exclude
     @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
-    private List<Project> projects;
+    private List<Project> projects = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

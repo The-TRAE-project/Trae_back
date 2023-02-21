@@ -7,7 +7,6 @@ import ru.trae.backend.entity.user.Customer;
 import ru.trae.backend.repository.CustomerRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -22,7 +21,6 @@ public class CustomerService {
         c.setLastName(dto.lastName());
         c.setPhone(dto.phone());
         c.setDateOfRegister(LocalDateTime.now());
-        c.setOrders(new ArrayList<>());
 
         return customerRepository.save(c);
     }

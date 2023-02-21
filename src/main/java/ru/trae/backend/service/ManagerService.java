@@ -10,7 +10,6 @@ import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,8 +27,6 @@ public class ManagerService {
         m.setEmail(dto.email());
         m.setUsername(dto.username());
         m.setPassword(dto.password());
-        m.setProjects(new ArrayList<>());
-        m.setOrders(new ArrayList<>());
 
         return managerRepository.save(m);
     }

@@ -6,6 +6,7 @@ import lombok.ToString;
 import ru.trae.backend.entity.task.Operation;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,5 +22,5 @@ public class TypeWork {
 
     @ToString.Exclude
     @OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)
-    private List<Operation> operations;
+    private List<Operation> operations = new ArrayList<>();
 }

@@ -6,6 +6,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +24,7 @@ public class WorkingShift {
     private boolean isEnded;
     @ToString.Exclude
     @OneToMany(mappedBy = "workingShift", fetch = FetchType.EAGER)
-    private List<TimeControl> timeControls;
+    private List<TimeControl> timeControls = new ArrayList<>();
 
     @Override
     public boolean equals(Object o) {

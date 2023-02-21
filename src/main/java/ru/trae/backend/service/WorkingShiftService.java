@@ -24,7 +24,6 @@ public class WorkingShiftService {
     public void createWorkingShift() {
         WorkingShift ws = new WorkingShift();
         ws.setStartShift(LocalDateTime.now());
-        ws.setTimeControls(new ArrayList<>());
         ws.setEnded(false);
 
         workingShiftRepository.save(ws);
