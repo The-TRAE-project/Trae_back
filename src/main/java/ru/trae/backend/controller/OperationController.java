@@ -29,7 +29,7 @@ public class OperationController {
         return ResponseEntity.ok(operationService.getShortOpDtoListByProject(projectId));
     }
 
-    @GetMapping("/operations-by-type-work/{employeeId}")
+    @GetMapping("/available-operations-for-employee/{employeeId}")
     public ResponseEntity<Map<String, List<ShortOperationDto>>> shortOperationsByEmployee(@PathVariable long employeeId) {
         return ResponseEntity.ok(operationService.getAvailableOperationByTypeWork(employeeId));
     }
