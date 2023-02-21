@@ -2,5 +2,5 @@ url: jdbc:postgresql://localhost:5432/traeDB
 username: postgres
 password: postgres
 driver: org.postgresql.Driver
-outputChangeLogFile: src/main/resources/db/output/liquibase-outputChangeLog.yaml
+outputChangeLogFile: src/main/resources/db/output/liquibase-outputChangeLog.xml
 changeLogFile: src/main/resources/db/changelog/db.changelog-master.yaml

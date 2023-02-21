@@ -20,6 +20,7 @@ public class Employee extends User {
     private Long id;
     @Column(unique = true,nullable = false)
     private int pinCode;
+    private boolean isActive;
     @ToString.Exclude
     @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
     private List<TimeControl> timeControls = new ArrayList<>();

@@ -3,11 +3,9 @@ package ru.trae.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.operation.OpEmpIdDto;
 import ru.trae.backend.dto.operation.ShortOperationDto;
 import ru.trae.backend.dto.operation.WrapperNewOperationDto;
-import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.service.OperationService;
 
 import java.util.List;

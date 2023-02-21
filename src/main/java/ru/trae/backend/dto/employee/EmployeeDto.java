@@ -9,6 +9,7 @@ public record EmployeeDto(
         String lastName,
         Long phone,
         Integer pinCode,
+        boolean isActive,
         List<String> types
 ) {
 }

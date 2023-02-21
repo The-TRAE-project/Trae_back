@@ -45,6 +45,7 @@ public class EmployeeService {
         e.setPhone(dto.phone());
         e.setPinCode(randomPinCode);
         e.getTypeWorks().addAll(typeWorks);
+        e.setActive(true);
 
         return employeeRepository.save(e);
     }
