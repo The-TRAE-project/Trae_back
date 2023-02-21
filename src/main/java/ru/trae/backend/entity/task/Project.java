@@ -24,6 +24,10 @@ public class Project extends Task{
     @JoinColumn(name = "manager_id", nullable = false)
     private Manager manager;
     @ToString.Exclude
+    @OneToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+    @ToString.Exclude
     @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
     private List<Operation> operations = new ArrayList<>();
 

@@ -19,6 +19,7 @@ import java.util.List;
 public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ManagerService managerService;
+    private final OrderService orderService;
     private final ProjectDtoMapper projectDtoMapper;
 
     public Project saveNewProject(NewProjectDto dto) {
@@ -31,6 +32,7 @@ public class ProjectService {
         p.setRealEndDate(null);
         p.setEnded(false);
         p.setManager(managerService.getManagerById(dto.managerId()));
+        p.setOrder(orderService.getOrderById(dto.orderId()));
 
         return projectRepository.save(p);
     }

@@ -123,18 +123,21 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                     "Шкаф",
                     "Здесь должно быть правильное описание, пояснение, указания и тд",
                     40,
+                    1L,
                     1L);
 
             NewProjectDto dto2 = new NewProjectDto(
                     "Дверь",
                     "Здесь должно быть правильное описание, пояснение, указания и тд",
                     40,
+                    2L,
                     1L);
 
             NewProjectDto dto3 = new NewProjectDto(
                     "Стол",
                     "Здесь должно быть правильное описание, пояснение, указания и тд",
                     40,
+                    3L,
                     1L);
 
             projectService.saveNewProject(dto1);
