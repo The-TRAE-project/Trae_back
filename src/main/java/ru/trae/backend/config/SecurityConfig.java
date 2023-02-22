@@ -33,13 +33,13 @@ public class SecurityConfig {
                 .exceptionHandling().accessDeniedHandler(restAccessDeniedHandler)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/api/auth/login", "/api/auth/token","/api/user/register").permitAll()
-                .antMatchers("/api/user/**").hasAuthority(ROLE_MANAGER.name())
-                .antMatchers("/api/trip/**").hasAuthority(ROLE_EMPLOYEE.name())
-                .antMatchers("/api/user/delete/**").hasAuthority(ROLE_ADMINISTRATOR.name())
+                .antMatchers("/api/auth/login", "/api/auth/token","/api/manager/register").permitAll()
+                .antMatchers("/api/employee/**").hasAuthority(ROLE_MANAGER.name())
+                .antMatchers("/api/operation/**").hasAuthority(ROLE_EMPLOYEE.name())
+                .antMatchers("/api/manager/**").hasAuthority(ROLE_ADMINISTRATOR.name())
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic().disable() //disable basic auth
+                .httpBasic().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

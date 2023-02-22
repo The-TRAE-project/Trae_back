@@ -1,5 +1,6 @@
 package ru.trae.backend.exceptionhandler;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -55,6 +56,12 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     protected ResponseEntity<Response> handleException(LoginCredentialException e) {
         return new ResponseEntity<>(buildResponse(e), e.getStatus());
     }
+
+    @ExceptionHandler(CustomJWTVerificationException.class)
+    protected ResponseEntity<Response> handleException(CustomJWTVerificationException e) {
+        return new ResponseEntity<>(buildResponse(e), e.getStatus());
+    }
+
 
     private Response buildResponse(AbstractException e) {
         return Response.builder()

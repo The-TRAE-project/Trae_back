@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import ru.trae.backend.entity.PayloadRandomPiece;
+import ru.trae.backend.exceptionhandler.exception.CustomJWTVerificationException;
 import ru.trae.backend.exceptionhandler.exception.PayloadPieceException;
 import ru.trae.backend.repository.PayloadRandomPieceRepository;
 
@@ -47,13 +48,17 @@ public class JWTUtil {
         final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
         String uuid = UUID.randomUUID().toString();
 
-        payloadRandomPieceRepository.save(new PayloadRandomPiece(null, username, uuid));
+        if (payloadRandomPieceRepository.existsByUsernameIgnoreCase(username)) {
+            payloadRandomPieceRepository.updateUuidByUsernameIgnoreCase(uuid, username);
+        } else {
+            payloadRandomPieceRepository.save(new PayloadRandomPiece(null, username, uuid));
+        }
 
         return JWT.create()
                 .withSubject("User Details")
                 .withClaim("username", username)
                 .withExpiresAt(refreshExpirationInstant)
-                .withIssuer("Trip Advisor")
+                .withIssuer("Trae project")
                 .withPayload(Collections.singletonMap("UUID", uuid))
                 .sign(Algorithm.HMAC256(refreshSecret));
     }
@@ -61,19 +66,19 @@ public class JWTUtil {
     public String validateAccessTokenAndRetrieveSubject(String token) {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
                 .withSubject("User Details")
-                .withIssuer("Trip Advisor")
+                .withIssuer("Trae project")
                 .build();
         DecodedJWT jwt = verifier.verify(token);
-        return jwt.getClaim("email").asString();
+        return jwt.getClaim("username").asString();
     }
 
     public String validateRefreshTokenAndRetrieveSubject(String token) {
         JWTVerifier verifier = JWT.require(Algorithm.HMAC256(refreshSecret))
                 .withSubject("User Details")
-                .withIssuer("Trip Advisor")
+                .withIssuer("Trae project")
                 .build();
         DecodedJWT jwt = verifier.verify(token);
-        String username = jwt.getClaim("email").asString();
+        String username = jwt.getClaim("username").asString();
 
         Optional<PayloadRandomPiece> prp = payloadRandomPieceRepository.findByUsernameIgnoreCase(username);
         if (prp.isEmpty())
@@ -82,7 +87,7 @@ public class JWTUtil {
         String savedUuid = prp.get().getUuid();
 
         if (!savedUuid.equals(jwt.getClaim("UUID").asString())) {
-            throw new JWTVerificationException("Invalid token UUID");
+            throw new CustomJWTVerificationException(HttpStatus.UNAUTHORIZED, "Invalid token UUID");
         }
         return username;
     }
