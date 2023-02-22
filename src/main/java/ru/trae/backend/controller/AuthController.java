@@ -30,13 +30,13 @@ public class AuthController {
 
     @PostMapping("/token")
     public ResponseEntity<JwtResponse> newAccessToken(@RequestBody RefreshJwtRequest request) {
-        final JwtResponse token = authService.getAccessToken(request.getRefreshToken());
+        final JwtResponse token = authService.getAccessToken(request.refreshToken());
         return ResponseEntity.ok(token);
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<JwtResponse> newRefreshToken(@RequestBody RefreshJwtRequest request) {
-        final JwtResponse token = authService.getRefreshToken(request.getRefreshToken());
+        final JwtResponse token = authService.getRefreshToken(request.refreshToken());
         return ResponseEntity.ok(token);
     }
 

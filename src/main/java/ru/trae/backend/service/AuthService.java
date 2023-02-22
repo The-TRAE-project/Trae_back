@@ -23,8 +23,8 @@ public class AuthService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public JwtResponse login(LoginCredentials credentials) {
-        final Manager manager = managerService.getManagerByUsername(credentials.getUsername());
-        if (bCryptPasswordEncoder.matches(credentials.getPassword(), manager.getPassword())) {
+        final Manager manager = managerService.getManagerByUsername(credentials.username());
+        if (bCryptPasswordEncoder.matches(credentials.password(), manager.getPassword())) {
             final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
             final String refreshToken = jwtUtil.generateRefreshToken(manager.getUsername());
 
