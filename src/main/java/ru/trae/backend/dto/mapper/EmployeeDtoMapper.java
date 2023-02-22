@@ -19,6 +19,7 @@ public class EmployeeDtoMapper implements Function<Employee, EmployeeDto> {
                 e.getPhone(),
                 e.getPinCode(),
                 e.isActive(),
+                e.getDateOfRegister(),
                 e.getTypeWorks().stream()
                         .map(TypeWork::getName)
                         .toList()

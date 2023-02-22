@@ -1,5 +1,6 @@
 package ru.trae.backend.dto.employee;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record EmployeeDto(
@@ -10,6 +11,7 @@ public record EmployeeDto(
         Long phone,
         Integer pinCode,
         boolean isActive,
+        LocalDateTime dateOfRegister,
         List<String> types
 ) {
 }

@@ -33,6 +33,7 @@ public class BeanConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // без этого бина не будут корректно перехватываться исключения, связанные с JWT-фильтром
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();

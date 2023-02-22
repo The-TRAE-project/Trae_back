@@ -13,7 +13,8 @@ public class CustomerDtoMapper implements Function<Customer, CustomerDto> {
                 c.getFirstName(),
                 c.getMiddleName(),
                 c.getLastName(),
-                c.getPhone()
+                c.getPhone(),
+                c.getDateOfRegister()
         );
     }
 }

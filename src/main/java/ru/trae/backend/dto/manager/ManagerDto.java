@@ -6,6 +6,8 @@ public record ManagerDto(
         String middleName,
         String lastName,
         Long phone,
-        String email
+        String email,
+        String role,
+        String dateOfRegister
 ) {
 }

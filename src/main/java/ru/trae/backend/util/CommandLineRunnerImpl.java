@@ -16,6 +16,7 @@ import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.service.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +94,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                     50,
                     1L,
                     new CustomerDto(
-                            "Олег", "Александрович", "Сидоров", 89125548722L));
+                            "Олег", "Александрович", "Сидоров", 89125548722L, LocalDateTime.now()));
 
             NewOrderDto dto2 = new NewOrderDto(
                     "Входная дверь",
@@ -101,7 +102,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                     50,
                     1L,
                     new CustomerDto(
-                            "Андрей", "Владимирович", "Никифоров", 89115437820L));
+                            "Андрей", "Владимирович", "Никифоров", 89115437820L, LocalDateTime.now()));
 
             NewOrderDto dto3 = new NewOrderDto(
                     "Стол в мастерскую",
@@ -109,7 +110,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                     50,
                     1L,
                     new CustomerDto(
-                            "Ольга", "Сергеевна", "Иванова", 89515545612L));
+                            "Ольга", "Сергеевна", "Иванова", 89515545612L, LocalDateTime.now()));
 
             orderService.receiveNewOrder(dto1);
             orderService.receiveNewOrder(dto2);
