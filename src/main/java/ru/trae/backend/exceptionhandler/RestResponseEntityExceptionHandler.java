@@ -1,5 +1,6 @@
 package ru.trae.backend.exceptionhandler;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -65,6 +66,16 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Response> handleValidException(ConstraintViolationException e) {
+        Response response = Response.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .error(e.getMessage())
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(JWTVerificationException.class)
+    protected ResponseEntity<Response> handleJwtException(JWTVerificationException e) {
         Response response = Response.builder()
                 .timestamp(LocalDateTime.now().toString())
                 .error(e.getMessage())

@@ -44,7 +44,7 @@ public class JWTFilter extends OncePerRequestFilter {
                         SecurityContextHolder.getContext().setAuthentication(authToken);
 
                 } catch (JWTVerificationException exc) {
-                    throw new CustomJWTVerificationException(HttpStatus.UNAUTHORIZED, "Invalid JWT Token");
+                    throw new JWTVerificationException("Invalid JWT Token");
                 }
             }
         }
