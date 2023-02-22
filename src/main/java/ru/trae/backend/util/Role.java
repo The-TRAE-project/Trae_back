@@ -1,8 +1,8 @@
 package ru.trae.backend.util;
 
 public enum Role {
-    ADMINISTRATOR,
-    MANAGER,
-    EMPLOYEE,
-    DEVELOPER
+    ROLE_ADMINISTRATOR,
+    ROLE_MANAGER,
+    ROLE_EMPLOYEE,
+    ROLE_DEVELOPER
 }
