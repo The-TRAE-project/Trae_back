@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.MappedSuperclass;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Getter
@@ -16,6 +17,7 @@ public abstract class User {
     private String middleName;
     private String lastName;
     private Long phone;
+    private LocalDateTime dateOfRegister;
 
     @Override
     public boolean equals(Object o) {

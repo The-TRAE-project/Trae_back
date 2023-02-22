@@ -12,6 +12,7 @@ import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 import ru.trae.backend.util.Role;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -33,6 +34,7 @@ public class ManagerService {
         m.setUsername(dto.username());
         m.setPassword(encodedPass);
         m.setRole(Role.ROLE_MANAGER);
+        m.setDateOfRegister(LocalDateTime.now());
 
         m.setEnabled(true);
         m.setAccountNonExpired(true);

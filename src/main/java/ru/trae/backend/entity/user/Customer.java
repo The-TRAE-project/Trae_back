@@ -20,7 +20,6 @@ public class Customer extends User{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    private LocalDateTime dateOfRegister;
     @ToString.Exclude
     @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();

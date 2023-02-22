@@ -46,6 +46,7 @@ public class EmployeeService {
         e.setPinCode(randomPinCode);
         e.getTypeWorks().addAll(typeWorks);
         e.setActive(true);
+        e.setDateOfRegister(LocalDateTime.now());
 
         return employeeRepository.save(e);
     }
