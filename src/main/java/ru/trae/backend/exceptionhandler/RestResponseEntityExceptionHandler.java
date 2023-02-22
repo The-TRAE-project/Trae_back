@@ -1,12 +1,13 @@
 package ru.trae.backend.exceptionhandler;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.trae.backend.exceptionhandler.exception.*;
 
+import javax.validation.ConstraintViolationException;
 import java.time.LocalDateTime;
 
 @ControllerAdvice
@@ -62,6 +63,15 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
         return new ResponseEntity<>(buildResponse(e), e.getStatus());
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    protected ResponseEntity<Response> handleValidException(ConstraintViolationException e) {
+        Response response = Response.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .error(e.getMessage())
+                .status(HttpStatus.BAD_REQUEST)
+                .build();
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
     private Response buildResponse(AbstractException e) {
         return Response.builder()

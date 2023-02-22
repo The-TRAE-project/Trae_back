@@ -3,7 +3,6 @@ package ru.trae.backend.util.jwt;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,16 +23,20 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class JWTUtil {
-    @Value("${jwt.secret}")
+    @Value("${jwt.access.duration}")
+    private int accessDuration;
+    @Value("${jwt.refresh.duration}")
+    private int refreshDuration;
+    @Value("${jwt.access.secret}")
     private String secret;
-    @Value("${jwt.refresh_secret}")
+    @Value("${jwt.refresh.secret}")
     private String refreshSecret;
 
     private final PayloadRandomPieceRepository payloadRandomPieceRepository;
 
     public String generateAccessToken(String username) {
         final LocalDateTime now = LocalDateTime.now();
-        final Instant accessExpirationInstant = now.plusMinutes(50).atZone(ZoneId.systemDefault()).toInstant();
+        final Instant accessExpirationInstant = now.plusMinutes(accessDuration).atZone(ZoneId.systemDefault()).toInstant();
 
         return JWT.create()
                 .withSubject("User Details")
@@ -45,7 +48,7 @@ public class JWTUtil {
 
     public String generateRefreshToken(String username) {
         final LocalDateTime now = LocalDateTime.now();
-        final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
+        final Instant refreshExpirationInstant = now.plusDays(refreshDuration).atZone(ZoneId.systemDefault()).toInstant();
         String uuid = UUID.randomUUID().toString();
 
         if (payloadRandomPieceRepository.existsByUsernameIgnoreCase(username)) {

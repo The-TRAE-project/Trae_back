@@ -2,11 +2,13 @@ package ru.trae.backend.util.jwt;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import ru.trae.backend.exceptionhandler.exception.CustomJWTVerificationException;
 import ru.trae.backend.service.CustomUserDetailsService;
 
 import javax.servlet.FilterChain;
@@ -37,11 +39,12 @@ public class JWTFilter extends OncePerRequestFilter {
                     UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
-                    if (SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                    if (SecurityContextHolder.getContext().getAuthentication() == null)
                         SecurityContextHolder.getContext().setAuthentication(authToken);
-                    }
+
                 } catch (JWTVerificationException exc) {
-                    throw new JWTVerificationException("Invalid JWT Token");
+                    throw new CustomJWTVerificationException(HttpStatus.UNAUTHORIZED, "Invalid JWT Token");
                 }
             }
         }
