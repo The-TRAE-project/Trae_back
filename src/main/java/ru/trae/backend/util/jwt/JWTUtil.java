@@ -90,7 +90,7 @@ public class JWTUtil {
         String savedUuid = prp.get().getUuid();
 
         if (!savedUuid.equals(jwt.getClaim("UUID").asString())) {
-            throw new CustomJWTVerificationException(HttpStatus.UNAUTHORIZED, "Invalid token UUID");
+            throw new CustomJWTVerificationException(HttpStatus.BAD_REQUEST, "Invalid token UUID");
         }
         return username;
     }
