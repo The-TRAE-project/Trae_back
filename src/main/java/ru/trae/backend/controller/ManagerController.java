@@ -3,6 +3,7 @@ package ru.trae.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.trae.backend.dto.jwt.JwtResponse;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
@@ -17,11 +18,10 @@ public class ManagerController {
     private final ManagerService managerService;
 
     @PostMapping("/register")
-    public ResponseEntity<ManagerDto> register(@RequestBody ManagerRegisterDto dto) {
+    public ResponseEntity<JwtResponse> register(@RequestBody ManagerRegisterDto dto) {
         managerService.checkAvailableEmail(dto.email());
         managerService.checkAvailableUsername(dto.username());
-        Manager m = managerService.saveNewManager(dto);
-        return ResponseEntity.ok(managerService.convertFromManager(m));
+        return ResponseEntity.ok(managerService.saveNewManager(dto));
     }
 
     @GetMapping("/{id}")

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.LoginCredentials;
 import ru.trae.backend.dto.jwt.JwtResponse;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.LoginCredentialException;
@@ -21,9 +22,9 @@ public class AuthService {
     private final JWTUtil jwtUtil;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public JwtResponse login(String username, String password) {
-        final Manager manager = managerService.getManagerByUsername(username);
-        if (bCryptPasswordEncoder.matches(password, manager.getPassword())) {
+    public JwtResponse login(LoginCredentials credentials) {
+        final Manager manager = managerService.getManagerByUsername(credentials.getUsername());
+        if (bCryptPasswordEncoder.matches(credentials.getPassword(), manager.getPassword())) {
             final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
             final String refreshToken = jwtUtil.generateRefreshToken(manager.getUsername());
 
