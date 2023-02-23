@@ -3,4 +3,4 @@ username: postgres
 password: postgres
 driver: org.postgresql.Driver
 outputChangeLogFile: src/main/resources/db/output/liquibase-outputChangeLog.xml
-changeLogFile: src/main/resources/db/changelog/db.changelog-master.yaml
+changeLogFile: src/main/resources/db/changelog/db.changelog-master.xml

@@ -1,0 +1,12 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.6.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <changeSet author="Val_Demar" id="init-25">
+        <addForeignKeyConstraint baseColumnNames="project_id" baseTableName="operations"
+                                 constraintName="operation_project_fk" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="projects" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
