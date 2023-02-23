@@ -16,33 +16,35 @@ import java.util.Map;
 @RequestMapping("/api/operation")
 public class OperationController {
 
-    private final OperationService operationService;
+	private final OperationService operationService;
 
-    @PostMapping("/new")
-    public ResponseEntity operationPersist(@RequestBody WrapperNewOperationDto wrapper) {
-        operationService.saveNewOperations(wrapper);
-        return ResponseEntity.ok().build();
-    }
+	@PostMapping("/new")
+	public ResponseEntity operationPersist(@RequestBody WrapperNewOperationDto wrapper) {
+		operationService.saveNewOperations(wrapper);
+		return ResponseEntity.ok().build();
+	}
 
-    @GetMapping("/short-project-operations/{projectId}")
-    public ResponseEntity<List<ShortOperationDto>> shortOperationsByProject(@PathVariable long projectId) {
-        return ResponseEntity.ok(operationService.getShortOpDtoListByProject(projectId));
-    }
+	@GetMapping("/short-project-operations/{projectId}")
+	public ResponseEntity<List<ShortOperationDto>> shortOperationsByProject(@PathVariable long projectId) {
+		return ResponseEntity.ok(operationService.getShortOpDtoListByProject(projectId));
+	}
 
-    @GetMapping("/available-operations-for-employee/{employeeId}")
-    public ResponseEntity<Map<String, List<ShortOperationDto>>> shortOperationsByEmployee(@PathVariable long employeeId) {
-        return ResponseEntity.ok(operationService.getAvailableOperationByTypeWork(employeeId));
-    }
+	@GetMapping("/available-operations-for-employee/{employeeId}")
+	public ResponseEntity<Map<String, List<ShortOperationDto>>> shortOperationsByEmployee(
+			@PathVariable long employeeId) {
+		return ResponseEntity.ok(operationService.getAvailableOperationByTypeWork(employeeId));
+	}
 
-    @PostMapping("/receive-operation")
-    public ResponseEntity receiveOperation(@RequestBody OpEmpIdDto dto) {
-        operationService.receiveOperation(dto);
-        return ResponseEntity.ok().build();
-    }
+	@PostMapping("/receive-operation")
+	public ResponseEntity receiveOperation(@RequestBody OpEmpIdDto dto) {
+		operationService.receiveOperation(dto);
+		return ResponseEntity.ok().build();
+	}
 
-    @PostMapping("/finish-operation")
-    public ResponseEntity finishOperation(@RequestBody OpEmpIdDto dto) {
-        operationService.finishOperation(dto);
-        return ResponseEntity.ok().build();
-    }
+	@PostMapping("/finish-operation")
+	public ResponseEntity finishOperation(@RequestBody OpEmpIdDto dto) {
+		operationService.finishOperation(dto);
+		return ResponseEntity.ok().build();
+	}
+
 }

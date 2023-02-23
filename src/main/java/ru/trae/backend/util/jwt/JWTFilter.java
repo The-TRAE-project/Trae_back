@@ -21,35 +21,37 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
-    private final CustomUserDetailsService customUserDetailsService;
-    private final JWTUtil jwtUtil;
+	private final CustomUserDetailsService customUserDetailsService;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && !authHeader.isBlank() && authHeader.startsWith("Bearer ")) {
-            String jwt = authHeader.substring(7);
-            if (jwt == null || jwt.isBlank()) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token in Bearer Header");
-            } else {
-                try {
-                    String username = jwtUtil.validateAccessTokenAndRetrieveSubject(jwt);
-                    UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
-                    UsernamePasswordAuthenticationToken authToken =
-                            new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
+	private final JWTUtil jwtUtil;
 
-                    if (SecurityContextHolder.getContext().getAuthentication() == null)
-                        SecurityContextHolder.getContext().setAuthentication(authToken);
+	@Override
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		String authHeader = request.getHeader("Authorization");
+		if (authHeader != null && !authHeader.isBlank() && authHeader.startsWith("Bearer ")) {
+			String jwt = authHeader.substring(7);
+			if (jwt == null || jwt.isBlank()) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT Token in Bearer Header");
+			}
+			else {
+				try {
+					String username = jwtUtil.validateAccessTokenAndRetrieveSubject(jwt);
+					UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
+					UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username,
+							userDetails.getPassword(), userDetails.getAuthorities());
 
-                } catch (JWTVerificationException exc) {
-                    throw new JWTVerificationException("Invalid JWT Token");
-                }
-            }
-        }
+					if (SecurityContextHolder.getContext().getAuthentication() == null)
+						SecurityContextHolder.getContext().setAuthentication(authToken);
 
-        filterChain.doFilter(request, response);
-    }
+				}
+				catch (JWTVerificationException exc) {
+					throw new JWTVerificationException("Invalid JWT Token");
+				}
+			}
+		}
+
+		filterChain.doFilter(request, response);
+	}
 
 }

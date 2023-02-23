@@ -6,10 +6,11 @@ import ru.trae.backend.entity.WorkingShift;
 
 @Repository
 public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long> {
-    boolean existsByIsEndedFalse();
 
-    WorkingShift findByIsEndedFalse();
+	boolean existsByIsEndedFalse();
 
-    boolean existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(boolean isOnShift, Long id);
+	WorkingShift findByIsEndedFalse();
+
+	boolean existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(boolean isOnShift, Long id);
 
 }

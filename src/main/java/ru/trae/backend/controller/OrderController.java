@@ -14,21 +14,22 @@ import java.util.List;
 @RequestMapping("/api/order")
 public class OrderController {
 
-    private final OrderService orderService;
+	private final OrderService orderService;
 
-    @PostMapping("/new")
-    public ResponseEntity<OrderDto> orderPersist(@RequestBody NewOrderDto dto) {
-        OrderDto orderDto = orderService.convertFromOrder(orderService.receiveNewOrder(dto));
-        return ResponseEntity.ok(orderDto);
-    }
+	@PostMapping("/new")
+	public ResponseEntity<OrderDto> orderPersist(@RequestBody NewOrderDto dto) {
+		OrderDto orderDto = orderService.convertFromOrder(orderService.receiveNewOrder(dto));
+		return ResponseEntity.ok(orderDto);
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<OrderDto> order(@PathVariable long id) {
-        return ResponseEntity.ok(orderService.convertFromOrderById(id));
-    }
+	@GetMapping("/{id}")
+	public ResponseEntity<OrderDto> order(@PathVariable long id) {
+		return ResponseEntity.ok(orderService.convertFromOrderById(id));
+	}
 
-    @GetMapping("/orders")
-    public ResponseEntity<List<OrderDto>> orders() {
-        return ResponseEntity.ok(orderService.getAllOrder());
-    }
+	@GetMapping("/orders")
+	public ResponseEntity<List<OrderDto>> orders() {
+		return ResponseEntity.ok(orderService.getAllOrder());
+	}
+
 }

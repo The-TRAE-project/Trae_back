@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class OrderException extends AbstractException {
-    public OrderException(HttpStatus status, String errorMessage) {
-        super(status, errorMessage);
-    }
+
+	public OrderException(HttpStatus status, String errorMessage) {
+		super(status, errorMessage);
+	}
+
 }

@@ -5,7 +5,9 @@ import org.springframework.http.HttpStatus;
 
 @Getter
 public class ProjectException extends AbstractException {
-    public ProjectException(HttpStatus status, String errorMessage) {
-        super(status, errorMessage);
-    }
+
+	public ProjectException(HttpStatus status, String errorMessage) {
+		super(status, errorMessage);
+	}
+
 }

@@ -21,31 +21,40 @@ import static ru.trae.backend.util.Role.*;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-    private final RestAccessDeniedHandler restAccessDeniedHandler;
-    private final JWTFilter jwtFilter;
+	private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
-                .and()
-                .exceptionHandling().accessDeniedHandler(restAccessDeniedHandler)
-                .and()
-                .authorizeRequests()
-//                .antMatchers("/api/auth/login", "/api/auth/token","/api/manager/register").permitAll()
-//                .antMatchers("/api/employee/**").hasAuthority(ROLE_MANAGER.name())
-//                .antMatchers("/api/operation/**").hasAuthority(ROLE_EMPLOYEE.name())
-//                .antMatchers("/api/manager/**").hasAuthority(ROLE_ADMINISTRATOR.name())
-//                .anyRequest().authenticated()
-                .anyRequest().permitAll()
-                .and()
-                .httpBasic().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	private final RestAccessDeniedHandler restAccessDeniedHandler;
 
-        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+	private final JWTFilter jwtFilter;
 
-        return httpSecurity.build();
-    }
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+		httpSecurity.csrf()
+			.disable()
+			.exceptionHandling()
+			.authenticationEntryPoint(restAuthenticationEntryPoint)
+			.and()
+			.exceptionHandling()
+			.accessDeniedHandler(restAccessDeniedHandler)
+			.and()
+			.authorizeRequests()
+			// .antMatchers("/api/auth/login",
+			// "/api/auth/token","/api/manager/register").permitAll()
+			// .antMatchers("/api/employee/**").hasAuthority(ROLE_MANAGER.name())
+			// .antMatchers("/api/operation/**").hasAuthority(ROLE_EMPLOYEE.name())
+			// .antMatchers("/api/manager/**").hasAuthority(ROLE_ADMINISTRATOR.name())
+			// .anyRequest().authenticated()
+			.anyRequest()
+			.permitAll()
+			.and()
+			.httpBasic()
+			.disable()
+			.sessionManagement()
+			.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+		httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return httpSecurity.build();
+	}
 
 }

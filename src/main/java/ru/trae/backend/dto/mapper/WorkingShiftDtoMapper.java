@@ -11,17 +11,12 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class WorkingShiftDtoMapper implements Function<WorkingShift, WorkingShiftDto> {
 
-    private final TimeControlMapper timeControlMapper;
+	private final TimeControlMapper timeControlMapper;
 
-    @Override
-    public WorkingShiftDto apply(WorkingShift ws) {
-        return new WorkingShiftDto(
-                ws.getStartShift(),
-                ws.getEndShift(),
-                ws.isEnded(),
-                ws.getTimeControls().stream()
-                        .map(timeControlMapper)
-                        .toList()
-        );
-    }
+	@Override
+	public WorkingShiftDto apply(WorkingShift ws) {
+		return new WorkingShiftDto(ws.getStartShift(), ws.getEndShift(), ws.isEnded(),
+				ws.getTimeControls().stream().map(timeControlMapper).toList());
+	}
+
 }

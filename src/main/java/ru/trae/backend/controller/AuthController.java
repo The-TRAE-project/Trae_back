@@ -15,29 +15,30 @@ import java.util.Map;
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
-    private final AuthService authService;
 
-    @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@RequestBody LoginCredentials credentials) {
-        final JwtResponse token = authService.login(credentials);
-        return ResponseEntity.ok(token);
-    }
+	private final AuthService authService;
 
-    @GetMapping("/logout")
-    public ResponseEntity<Map<String, String>> logout(Principal principal) {
-        return authService.logout(principal);
-    }
+	@PostMapping("/login")
+	public ResponseEntity<JwtResponse> login(@RequestBody LoginCredentials credentials) {
+		final JwtResponse token = authService.login(credentials);
+		return ResponseEntity.ok(token);
+	}
 
-    @PostMapping("/token")
-    public ResponseEntity<JwtResponse> newAccessToken(@RequestBody RefreshJwtRequest request) {
-        final JwtResponse token = authService.getAccessToken(request.refreshToken());
-        return ResponseEntity.ok(token);
-    }
+	@GetMapping("/logout")
+	public ResponseEntity<Map<String, String>> logout(Principal principal) {
+		return authService.logout(principal);
+	}
 
-    @PostMapping("/refresh")
-    public ResponseEntity<JwtResponse> newRefreshToken(@RequestBody RefreshJwtRequest request) {
-        final JwtResponse token = authService.getRefreshToken(request.refreshToken());
-        return ResponseEntity.ok(token);
-    }
+	@PostMapping("/token")
+	public ResponseEntity<JwtResponse> newAccessToken(@RequestBody RefreshJwtRequest request) {
+		final JwtResponse token = authService.getAccessToken(request.refreshToken());
+		return ResponseEntity.ok(token);
+	}
+
+	@PostMapping("/refresh")
+	public ResponseEntity<JwtResponse> newRefreshToken(@RequestBody RefreshJwtRequest request) {
+		final JwtResponse token = authService.getRefreshToken(request.refreshToken());
+		return ResponseEntity.ok(token);
+	}
 
 }

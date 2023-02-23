@@ -15,23 +15,25 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/manager")
 public class ManagerController {
-    private final ManagerService managerService;
 
-    @PostMapping("/register")
-    public ResponseEntity<JwtResponse> register(@RequestBody ManagerRegisterDto dto) {
-        managerService.checkAvailableEmail(dto.email());
-        managerService.checkAvailableUsername(dto.username());
-        return ResponseEntity.ok(managerService.saveNewManager(dto));
-    }
+	private final ManagerService managerService;
 
-    @GetMapping("/{id}")
-    private ResponseEntity<ManagerDto> manager(@PathVariable long id) {
-        Manager m = managerService.getManagerById(id);
-        return ResponseEntity.ok(managerService.convertFromManager(m));
-    }
+	@PostMapping("/register")
+	public ResponseEntity<JwtResponse> register(@RequestBody ManagerRegisterDto dto) {
+		managerService.checkAvailableEmail(dto.email());
+		managerService.checkAvailableUsername(dto.username());
+		return ResponseEntity.ok(managerService.saveNewManager(dto));
+	}
 
-    @GetMapping("/managers")
-    public ResponseEntity<List<ManagerDto>> managers() {
-        return ResponseEntity.ok(managerService.getAllManagers());
-    }
+	@GetMapping("/{id}")
+	private ResponseEntity<ManagerDto> manager(@PathVariable long id) {
+		Manager m = managerService.getManagerById(id);
+		return ResponseEntity.ok(managerService.convertFromManager(m));
+	}
+
+	@GetMapping("/managers")
+	public ResponseEntity<List<ManagerDto>> managers() {
+		return ResponseEntity.ok(managerService.getAllManagers());
+	}
+
 }

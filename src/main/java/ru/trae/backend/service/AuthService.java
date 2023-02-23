@@ -18,43 +18,47 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final ManagerService managerService;
-    private final JWTUtil jwtUtil;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public JwtResponse login(LoginCredentials credentials) {
-        final Manager manager = managerService.getManagerByUsername(credentials.username());
-        if (bCryptPasswordEncoder.matches(credentials.password(), manager.getPassword())) {
-            final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
-            final String refreshToken = jwtUtil.generateRefreshToken(manager.getUsername());
+	private final ManagerService managerService;
 
-            return new JwtResponse(accessToken, refreshToken);
-        } else {
-            throw new LoginCredentialException(HttpStatus.BAD_REQUEST, "Invalid login credentials");
-        }
-    }
+	private final JWTUtil jwtUtil;
 
-    public ResponseEntity<Map<String, String>> logout(Principal principal) {
-        jwtUtil.deletePayloadRandomPieces(principal.getName());
-        return ResponseEntity.ok().body(Collections.singletonMap("status", "You successfully logout!"));
-    }
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public JwtResponse getAccessToken(String refreshToken) {
-        final String login = jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken);
+	public JwtResponse login(LoginCredentials credentials) {
+		final Manager manager = managerService.getManagerByUsername(credentials.username());
+		if (bCryptPasswordEncoder.matches(credentials.password(), manager.getPassword())) {
+			final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
+			final String refreshToken = jwtUtil.generateRefreshToken(manager.getUsername());
 
-        final Manager manager = managerService.getManagerByUsername(login);
-        final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
-        return new JwtResponse(accessToken, null);
-    }
+			return new JwtResponse(accessToken, refreshToken);
+		}
+		else {
+			throw new LoginCredentialException(HttpStatus.BAD_REQUEST, "Invalid login credentials");
+		}
+	}
 
-    public JwtResponse getRefreshToken(String refreshToken) {
-        final String login = jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken);
+	public ResponseEntity<Map<String, String>> logout(Principal principal) {
+		jwtUtil.deletePayloadRandomPieces(principal.getName());
+		return ResponseEntity.ok().body(Collections.singletonMap("status", "You successfully logout!"));
+	}
 
-        final Manager manager = managerService.getManagerByUsername(login);
-        final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
-        final String newRefreshToken = jwtUtil.generateRefreshToken(manager.getUsername());
+	public JwtResponse getAccessToken(String refreshToken) {
+		final String login = jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken);
 
-        return new JwtResponse(accessToken, newRefreshToken);
-    }
+		final Manager manager = managerService.getManagerByUsername(login);
+		final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
+		return new JwtResponse(accessToken, null);
+	}
+
+	public JwtResponse getRefreshToken(String refreshToken) {
+		final String login = jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken);
+
+		final Manager manager = managerService.getManagerByUsername(login);
+		final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
+		final String newRefreshToken = jwtUtil.generateRefreshToken(manager.getUsername());
+
+		return new JwtResponse(accessToken, newRefreshToken);
+	}
 
 }

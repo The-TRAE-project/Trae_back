@@ -14,17 +14,19 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/type-work")
 public class TypeWorkController {
-    private final TypeWorkService typeWorkService;
 
-    @GetMapping("/types")
-    public ResponseEntity<List<TypeWorkDto>> types() {
-        return ResponseEntity.ok(typeWorkService.getTypes());
-    }
+	private final TypeWorkService typeWorkService;
 
-    @PostMapping("/new")
-    public ResponseEntity<TypeWorkDto> typeWorkPersist(@RequestBody NewTypeWorkDto dto) {
-        typeWorkService.checkAvailableByName(dto.name());
-        TypeWork tw = typeWorkService.saveNewTypeWork(dto);
-        return ResponseEntity.ok(new TypeWorkDto(tw.getId(), tw.getName()));
-    }
+	@GetMapping("/types")
+	public ResponseEntity<List<TypeWorkDto>> types() {
+		return ResponseEntity.ok(typeWorkService.getTypes());
+	}
+
+	@PostMapping("/new")
+	public ResponseEntity<TypeWorkDto> typeWorkPersist(@RequestBody NewTypeWorkDto dto) {
+		typeWorkService.checkAvailableByName(dto.name());
+		TypeWork tw = typeWorkService.saveNewTypeWork(dto);
+		return ResponseEntity.ok(new TypeWorkDto(tw.getId(), tw.getName()));
+	}
+
 }

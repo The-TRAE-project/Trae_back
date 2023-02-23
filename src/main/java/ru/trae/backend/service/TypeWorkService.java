@@ -15,34 +15,32 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TypeWorkService {
-    private final TypeWorkRepository typeWorkRepository;
 
-    public TypeWork saveNewTypeWork(NewTypeWorkDto dto) {
-        TypeWork tw = new TypeWork();
-        tw.setName(dto.name());
+	private final TypeWorkRepository typeWorkRepository;
 
-        return typeWorkRepository.save(tw);
-    }
+	public TypeWork saveNewTypeWork(NewTypeWorkDto dto) {
+		TypeWork tw = new TypeWork();
+		tw.setName(dto.name());
 
-    public TypeWork getTypeWorkById(long id) {
-        return typeWorkRepository.findById(id).orElseThrow(
-                () -> new TypeWorkException(HttpStatus.NOT_FOUND, "Type work with ID: " + id + " not found")
-        );
-    }
+		return typeWorkRepository.save(tw);
+	}
 
-    public List<TypeWorkDto> getTypes() {
-        return typeWorkRepository.findAll()
-                .stream()
-                .map(t -> new TypeWorkDto(t.getId(), t.getName()))
-                .toList();
-    }
+	public TypeWork getTypeWorkById(long id) {
+		return typeWorkRepository.findById(id)
+			.orElseThrow(() -> new TypeWorkException(HttpStatus.NOT_FOUND, "Type work with ID: " + id + " not found"));
+	}
 
-    public boolean existsTypeByName(String name) {
-        return typeWorkRepository.existsByNameIgnoreCase(name);
-    }
+	public List<TypeWorkDto> getTypes() {
+		return typeWorkRepository.findAll().stream().map(t -> new TypeWorkDto(t.getId(), t.getName())).toList();
+	}
 
-    public void checkAvailableByName(String name) {
-        if (existsTypeByName(name))
-            throw new TypeWorkException(HttpStatus.CONFLICT, "Type work name: " + name + " already in use");
-    }
+	public boolean existsTypeByName(String name) {
+		return typeWorkRepository.existsByNameIgnoreCase(name);
+	}
+
+	public void checkAvailableByName(String name) {
+		if (existsTypeByName(name))
+			throw new TypeWorkException(HttpStatus.CONFLICT, "Type work name: " + name + " already in use");
+	}
+
 }

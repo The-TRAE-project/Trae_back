@@ -8,6 +8,7 @@ import java.util.List;
 
 @Repository
 public interface OperationRepository extends JpaRepository<Operation, Long> {
-    List<Operation> findByReadyToAcceptanceAndTypeWork_Id(boolean readyToAcceptance, Long id);
+
+	List<Operation> findByReadyToAcceptanceAndTypeWork_Id(boolean readyToAcceptance, Long id);
 
 }

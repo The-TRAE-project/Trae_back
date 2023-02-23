@@ -14,10 +14,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Table(name = "pieces")
 public class PayloadRandomPiece {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
-    private String username;
-    private String uuid;
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
+	private Long id;
+
+	private String username;
+
+	private String uuid;
+
 }

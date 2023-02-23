@@ -14,33 +14,40 @@ import java.util.Objects;
 @Getter
 @Setter
 @Table(name = "projects")
-public class Project extends Task{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
-    @ToString.Exclude
-    @ManyToOne
-    @JoinColumn(name = "manager_id", nullable = false)
-    private Manager manager;
-    @ToString.Exclude
-    @OneToOne
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
-    @ToString.Exclude
-    @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
-    private List<Operation> operations = new ArrayList<>();
+public class Project extends Task {
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Project project = (Project) o;
-        return Objects.equals(id, project.id);
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
+	private Long id;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+	@ToString.Exclude
+	@ManyToOne
+	@JoinColumn(name = "manager_id", nullable = false)
+	private Manager manager;
+
+	@ToString.Exclude
+	@OneToOne
+	@JoinColumn(name = "order_id", nullable = false)
+	private Order order;
+
+	@ToString.Exclude
+	@OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+	private List<Operation> operations = new ArrayList<>();
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Project project = (Project) o;
+		return Objects.equals(id, project.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
 }

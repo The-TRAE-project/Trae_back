@@ -23,171 +23,148 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CommandLineRunnerImpl implements CommandLineRunner {
-    private final EmployeeService employeeService;
-    private final ManagerService managerService;
-    private final ProjectService projectService;
-    private final OrderService orderService;
-    private final TypeWorkService typeWorkService;
-    private final OperationService operationService;
 
-    @Override
-    public void run(String... args) {
-        insertTypeWork();
-        insertEmployees();
-        insertManager();
-        insertOrder();
-        insertProject();
-        insertOperations();
-    }
+	private final EmployeeService employeeService;
 
-    public void insertTypeWork() {
-        List<NewTypeWorkDto> list = List.of(
-                new NewTypeWorkDto("Раскрой"),
-                new NewTypeWorkDto("Кромка"),
-                new NewTypeWorkDto("Присадка"),
-                new NewTypeWorkDto("Фрезеровка"),
-                new NewTypeWorkDto("Склейка"),
-                new NewTypeWorkDto("Сборка"),
-                new NewTypeWorkDto("Шлифовка/покраска"),
-                new NewTypeWorkDto("Упаковка"),
-                new NewTypeWorkDto("Отгрузка"));
+	private final ManagerService managerService;
 
-        list.stream()
-                .filter(t -> !typeWorkService.existsTypeByName(t.name()))
-                .forEach(typeWorkService::saveNewTypeWork);
-    }
+	private final ProjectService projectService;
 
-    public void insertEmployees() {
-        List<NewEmployeeDto> list = List.of(
-                new NewEmployeeDto("Иван", "Петрович", "Шилов", 89183331212L, List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
-                new NewEmployeeDto("Николай", "Игоревич", "Иванов", 89283332121L, List.of(3L, 4L, 5L, 6L, 7L)),
-                new NewEmployeeDto("Владимир", "Васильевич", "Петров", 89174445632L, List.of(8L, 9L)),
-                new NewEmployeeDto("Александр", "Григорьевич", "Красильников", 89271238899L, List.of(8L, 9L)),
-                new NewEmployeeDto("Никита", "Владимирович", "Бондаренко", 89153334567L, List.of(1L)),
-                new NewEmployeeDto("Валентин", "Александрович", "Плотников", 89347778294L, List.of(1L, 5L, 6L, 7L)),
-                new NewEmployeeDto("Петр", "Иванович", "Абраменко", 89183454829L, List.of(1L, 2L, 3L, 4L)),
-                new NewEmployeeDto("Григорий", "Олегович", "Костромин", 89123345993L, List.of(4L, 5L, 6L, 7L)),
-                new NewEmployeeDto("Егор", "Антонович", "Карпов", 89155675993L, List.of(1L, 2L, 5L, 6L, 7L)),
-                new NewEmployeeDto("Антон", "Петрович", "Рыбин", 89132245911L, List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
-                new NewEmployeeDto("Аркадий", "Олегович", "Павлов", 89113335798L, List.of(1L, 2L, 3L, 4L, 5L)),
-                new NewEmployeeDto("Степан", "Степанович", "Никитин", 89223245913L, List.of(1L, 2L, 5L, 6L, 7L, 8L, 9L))
-        );
+	private final OrderService orderService;
 
-        list.stream()
-                .filter(e -> !employeeService.existsByCredentials(e.firstName(), e.middleName(), e.lastName()))
-                .forEach(employeeService::saveNewEmployee);
-    }
+	private final TypeWorkService typeWorkService;
 
-    public void insertManager() {
-        ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович", "Мишин", 89991112233L,
-                "man", "man@mail.ru", "1234");
+	private final OperationService operationService;
 
-        if (!managerService.existsManagerByEmail(dto.email()))
-            managerService.saveNewManager(dto);
-    }
+	@Override
+	public void run(String... args) {
+		insertTypeWork();
+		insertEmployees();
+		insertManager();
+		insertOrder();
+		insertProject();
+		insertOperations();
+	}
 
-    public void insertOrder() {
-        if (orderService.getAllOrder().size() == 0) {
-            NewOrderDto dto1 = new NewOrderDto(
-                    "Платяной шкаф в спальню",
-                    "Размер 220х100х70 см, покрасить в белый цвет",
-                    50,
-                    1L,
-                    new CustomerDto(
-                            "Олег", "Александрович", "Сидоров", 89125548722L, LocalDateTime.now()));
+	public void insertTypeWork() {
+		List<NewTypeWorkDto> list = List.of(new NewTypeWorkDto("Раскрой"), new NewTypeWorkDto("Кромка"),
+				new NewTypeWorkDto("Присадка"), new NewTypeWorkDto("Фрезеровка"), new NewTypeWorkDto("Склейка"),
+				new NewTypeWorkDto("Сборка"), new NewTypeWorkDto("Шлифовка/покраска"), new NewTypeWorkDto("Упаковка"),
+				new NewTypeWorkDto("Отгрузка"));
 
-            NewOrderDto dto2 = new NewOrderDto(
-                    "Входная дверь",
-                    "Размер 200х200х30 см, без покраски, только покрыть лаком",
-                    50,
-                    1L,
-                    new CustomerDto(
-                            "Андрей", "Владимирович", "Никифоров", 89115437820L, LocalDateTime.now()));
+		list.stream()
+			.filter(t -> !typeWorkService.existsTypeByName(t.name()))
+			.forEach(typeWorkService::saveNewTypeWork);
+	}
 
-            NewOrderDto dto3 = new NewOrderDto(
-                    "Стол в мастерскую",
-                    "Размер 500х200х100 см, покрасить в черный цвет",
-                    50,
-                    1L,
-                    new CustomerDto(
-                            "Ольга", "Сергеевна", "Иванова", 89515545612L, LocalDateTime.now()));
+	public void insertEmployees() {
+		List<NewEmployeeDto> list = List.of(
+				new NewEmployeeDto("Иван", "Петрович", "Шилов", 89183331212L, List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
+				new NewEmployeeDto("Николай", "Игоревич", "Иванов", 89283332121L, List.of(3L, 4L, 5L, 6L, 7L)),
+				new NewEmployeeDto("Владимир", "Васильевич", "Петров", 89174445632L, List.of(8L, 9L)),
+				new NewEmployeeDto("Александр", "Григорьевич", "Красильников", 89271238899L, List.of(8L, 9L)),
+				new NewEmployeeDto("Никита", "Владимирович", "Бондаренко", 89153334567L, List.of(1L)),
+				new NewEmployeeDto("Валентин", "Александрович", "Плотников", 89347778294L, List.of(1L, 5L, 6L, 7L)),
+				new NewEmployeeDto("Петр", "Иванович", "Абраменко", 89183454829L, List.of(1L, 2L, 3L, 4L)),
+				new NewEmployeeDto("Григорий", "Олегович", "Костромин", 89123345993L, List.of(4L, 5L, 6L, 7L)),
+				new NewEmployeeDto("Егор", "Антонович", "Карпов", 89155675993L, List.of(1L, 2L, 5L, 6L, 7L)),
+				new NewEmployeeDto("Антон", "Петрович", "Рыбин", 89132245911L, List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
+				new NewEmployeeDto("Аркадий", "Олегович", "Павлов", 89113335798L, List.of(1L, 2L, 3L, 4L, 5L)),
+				new NewEmployeeDto("Степан", "Степанович", "Никитин", 89223245913L,
+						List.of(1L, 2L, 5L, 6L, 7L, 8L, 9L)));
 
-            orderService.receiveNewOrder(dto1);
-            orderService.receiveNewOrder(dto2);
-            orderService.receiveNewOrder(dto3);
-        }
-    }
+		list.stream()
+			.filter(e -> !employeeService.existsByCredentials(e.firstName(), e.middleName(), e.lastName()))
+			.forEach(employeeService::saveNewEmployee);
+	}
 
-    public void insertProject() {
-        if (projectService.getAllProjects().size() == 0) {
-            NewProjectDto dto1 = new NewProjectDto(
-                    "Шкаф",
-                    "Здесь должно быть правильное описание, пояснение, указания и тд",
-                    40,
-                    1L,
-                    1L);
+	public void insertManager() {
+		ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович", "Мишин", 89991112233L, "man",
+				"man@mail.ru", "1234");
 
-            NewProjectDto dto2 = new NewProjectDto(
-                    "Дверь",
-                    "Здесь должно быть правильное описание, пояснение, указания и тд",
-                    40,
-                    2L,
-                    1L);
+		if (!managerService.existsManagerByEmail(dto.email()))
+			managerService.saveNewManager(dto);
+	}
 
-            NewProjectDto dto3 = new NewProjectDto(
-                    "Стол",
-                    "Здесь должно быть правильное описание, пояснение, указания и тд",
-                    40,
-                    3L,
-                    1L);
+	public void insertOrder() {
+		if (orderService.getAllOrder().size() == 0) {
+			NewOrderDto dto1 = new NewOrderDto("Платяной шкаф в спальню",
+					"Размер 220х100х70 см, покрасить в белый цвет", 50, 1L,
+					new CustomerDto("Олег", "Александрович", "Сидоров", 89125548722L, LocalDateTime.now()));
 
-            projectService.saveNewProject(dto1);
-            projectService.saveNewProject(dto2);
-            projectService.saveNewProject(dto3);
-        }
-    }
+			NewOrderDto dto2 = new NewOrderDto("Входная дверь",
+					"Размер 200х200х30 см, без покраски, только покрыть лаком", 50, 1L,
+					new CustomerDto("Андрей", "Владимирович", "Никифоров", 89115437820L, LocalDateTime.now()));
 
-    public void insertOperations() {
-        Project p1 = projectService.getProjectById(1);
-        Project p2 = projectService.getProjectById(2);
-        Project p3 = projectService.getProjectById(3);
+			NewOrderDto dto3 = new NewOrderDto("Стол в мастерскую", "Размер 500х200х100 см, покрасить в черный цвет",
+					50, 1L, new CustomerDto("Ольга", "Сергеевна", "Иванова", 89515545612L, LocalDateTime.now()));
 
-        if (p1.getOperations().isEmpty()) {
-            List<NewOperationDto> operations = new ArrayList<>();
-            operations.add(new NewOperationDto("Раскрой", "Инструкции по раскрою", 1, 10));
-            operations.add(new NewOperationDto("Кромка", "Инструкции по кромке", 2, 20));
-            operations.add(new NewOperationDto("Фрезеровка", "Инструкции по фрезеровке", 4, 30));
-            operations.add(new NewOperationDto("Присадка", "Инструкции по присадке", 3, 40));
-            operations.add(new NewOperationDto("Сборка", "Инструкции по сборке", 6, 50));
-            operations.add(new NewOperationDto("Покраска", "Инструкции по покраске", 7, 60));
-            operations.add(new NewOperationDto("Отгрузка", "Инструкции по отгрузке", 9, 70));
-            WrapperNewOperationDto wrapper = new WrapperNewOperationDto(p1.getId(), operations);
-            operationService.saveNewOperations(wrapper);
-        }
+			orderService.receiveNewOrder(dto1);
+			orderService.receiveNewOrder(dto2);
+			orderService.receiveNewOrder(dto3);
+		}
+	}
 
-        if (p2.getOperations().isEmpty()) {
-            List<NewOperationDto> operations = new ArrayList<>();
-            operations.add(new NewOperationDto("Раскрой", "Инструкции по раскрою", 1, 10));
-            operations.add(new NewOperationDto("Кромка", "Инструкции по кромке", 2, 20));
-            operations.add(new NewOperationDto("Фрезеровка", "Инструкции по фрезеровке", 4, 30));
-            operations.add(new NewOperationDto("Сборка", "Инструкции по сборке", 6, 40));
-            operations.add(new NewOperationDto("Особый вид покраски - лакировка", "Инструкции по покрытию лаком", 7, 50));
-            operations.add(new NewOperationDto("Отгрузка", "Инструкции по отгрузке", 9, 60));
-            WrapperNewOperationDto wrapper = new WrapperNewOperationDto(p2.getId(), operations);
-            operationService.saveNewOperations(wrapper);
-        }
+	public void insertProject() {
+		if (projectService.getAllProjects().size() == 0) {
+			NewProjectDto dto1 = new NewProjectDto("Шкаф",
+					"Здесь должно быть правильное описание, пояснение, указания и тд", 40, 1L, 1L);
 
-        if (p3.getOperations().isEmpty()) {
-            List<NewOperationDto> operations = new ArrayList<>();
-            operations.add(new NewOperationDto("Раскрой", "Инструкции по раскрою", 1, 10));
-            operations.add(new NewOperationDto("Кромка", "Инструкции по кромке", 2, 20));
-            operations.add(new NewOperationDto("Фрезеровка", "Инструкции по фрезеровке", 4, 30));
-            operations.add(new NewOperationDto("Сборка", "Инструкции по сборке", 6, 40));
-            operations.add(new NewOperationDto("Покраска", "Инструкции по покраске, 1-ый слой", 7, 50));
-            operations.add(new NewOperationDto("Покраска", "Инструкции по покраске, 2-ой слой", 7, 60));
-            operations.add(new NewOperationDto("Отгрузка", "Инструкции по отгрузке", 9, 70));
-            WrapperNewOperationDto wrapper = new WrapperNewOperationDto(p3.getId(), operations);
-            operationService.saveNewOperations(wrapper);
-        }
-    }
+			NewProjectDto dto2 = new NewProjectDto("Дверь",
+					"Здесь должно быть правильное описание, пояснение, указания и тд", 40, 2L, 1L);
+
+			NewProjectDto dto3 = new NewProjectDto("Стол",
+					"Здесь должно быть правильное описание, пояснение, указания и тд", 40, 3L, 1L);
+
+			projectService.saveNewProject(dto1);
+			projectService.saveNewProject(dto2);
+			projectService.saveNewProject(dto3);
+		}
+	}
+
+	public void insertOperations() {
+		Project p1 = projectService.getProjectById(1);
+		Project p2 = projectService.getProjectById(2);
+		Project p3 = projectService.getProjectById(3);
+
+		if (p1.getOperations().isEmpty()) {
+			List<NewOperationDto> operations = new ArrayList<>();
+			operations.add(new NewOperationDto("Раскрой", "Инструкции по раскрою", 1, 10));
+			operations.add(new NewOperationDto("Кромка", "Инструкции по кромке", 2, 20));
+			operations.add(new NewOperationDto("Фрезеровка", "Инструкции по фрезеровке", 4, 30));
+			operations.add(new NewOperationDto("Присадка", "Инструкции по присадке", 3, 40));
+			operations.add(new NewOperationDto("Сборка", "Инструкции по сборке", 6, 50));
+			operations.add(new NewOperationDto("Покраска", "Инструкции по покраске", 7, 60));
+			operations.add(new NewOperationDto("Отгрузка", "Инструкции по отгрузке", 9, 70));
+			WrapperNewOperationDto wrapper = new WrapperNewOperationDto(p1.getId(), operations);
+			operationService.saveNewOperations(wrapper);
+		}
+
+		if (p2.getOperations().isEmpty()) {
+			List<NewOperationDto> operations = new ArrayList<>();
+			operations.add(new NewOperationDto("Раскрой", "Инструкции по раскрою", 1, 10));
+			operations.add(new NewOperationDto("Кромка", "Инструкции по кромке", 2, 20));
+			operations.add(new NewOperationDto("Фрезеровка", "Инструкции по фрезеровке", 4, 30));
+			operations.add(new NewOperationDto("Сборка", "Инструкции по сборке", 6, 40));
+			operations
+				.add(new NewOperationDto("Особый вид покраски - лакировка", "Инструкции по покрытию лаком", 7, 50));
+			operations.add(new NewOperationDto("Отгрузка", "Инструкции по отгрузке", 9, 60));
+			WrapperNewOperationDto wrapper = new WrapperNewOperationDto(p2.getId(), operations);
+			operationService.saveNewOperations(wrapper);
+		}
+
+		if (p3.getOperations().isEmpty()) {
+			List<NewOperationDto> operations = new ArrayList<>();
+			operations.add(new NewOperationDto("Раскрой", "Инструкции по раскрою", 1, 10));
+			operations.add(new NewOperationDto("Кромка", "Инструкции по кромке", 2, 20));
+			operations.add(new NewOperationDto("Фрезеровка", "Инструкции по фрезеровке", 4, 30));
+			operations.add(new NewOperationDto("Сборка", "Инструкции по сборке", 6, 40));
+			operations.add(new NewOperationDto("Покраска", "Инструкции по покраске, 1-ый слой", 7, 50));
+			operations.add(new NewOperationDto("Покраска", "Инструкции по покраске, 2-ой слой", 7, 60));
+			operations.add(new NewOperationDto("Отгрузка", "Инструкции по отгрузке", 9, 70));
+			WrapperNewOperationDto wrapper = new WrapperNewOperationDto(p3.getId(), operations);
+			operationService.saveNewOperations(wrapper);
+		}
+	}
+
 }

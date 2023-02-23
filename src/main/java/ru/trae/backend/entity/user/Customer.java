@@ -15,25 +15,30 @@ import java.util.Objects;
 @Getter
 @Setter
 @Table(name = "customers")
-public class Customer extends User{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
-    @ToString.Exclude
-    @OneToMany(mappedBy = "customer",fetch = FetchType.LAZY)
-    private List<Order> orders = new ArrayList<>();
+public class Customer extends User {
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Customer customer = (Customer) o;
-        return Objects.equals(id, customer.id);
-    }
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
+	private Long id;
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
+	@ToString.Exclude
+	@OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+	private List<Order> orders = new ArrayList<>();
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Customer customer = (Customer) o;
+		return Objects.equals(id, customer.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
 }
