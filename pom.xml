@@ -10,7 +10,7 @@
     </parent>
     <groupId>ru.trae</groupId>
     <artifactId>backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.2.0</version>
     <name>backend</name>
     <description>backend</description>
     <properties>

@@ -1,11 +1,12 @@
 spring:
   liquibase:
     enabled: false
+    change-log: classpath:./db/changelog/db.changelog-master.xml
 
   datasource:
-    url: jdbc:postgresql://postgres_db:5432/traeDB
-    username: postgres
-    password: postgres
+    url: ${POSTGRES_URL:jdbc:postgresql://postgres_db:5432/traeDB}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASS:postgres}
     driverClassName: org.postgresql.Driver
 
   jpa:
