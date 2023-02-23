@@ -6,5 +6,4 @@ import ru.trae.backend.entity.task.Order;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
-
 }

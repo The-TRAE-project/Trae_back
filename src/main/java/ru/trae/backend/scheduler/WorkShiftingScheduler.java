@@ -14,23 +14,22 @@ import javax.annotation.PostConstruct;
 @ConditionalOnProperty(name = "scheduler.enabled", matchIfMissing = true)
 @RequiredArgsConstructor
 public class WorkShiftingScheduler {
+    private final WorkingShiftService workingShiftService;
 
-	private final WorkingShiftService workingShiftService;
+    @Scheduled(cron = "${scheduler.start-day}")
+    private void workShiftingDayHandler() {
+        workingShiftService.createWorkingShift();
+    }
 
-	@Scheduled(cron = "${scheduler.start-day}")
-	private void workShiftingDayHandler() {
-		workingShiftService.createWorkingShift();
-	}
+    @Scheduled(cron = "${scheduler.end-day}")
+    private void workShiftingDayEndHandler() {
+        workingShiftService.closeWorkingShift();
+    }
 
-	@Scheduled(cron = "${scheduler.end-day}")
-	private void workShiftingDayEndHandler() {
-		workingShiftService.closeWorkingShift();
-	}
-
-	@PostConstruct
-	private void createWorkingShiftAfterInit() {
-		if (!workingShiftService.existsActiveWorkingShift())
-			workingShiftService.createWorkingShift();
-	}
+    @PostConstruct
+    private void createWorkingShiftAfterInit() {
+        if (!workingShiftService.existsActiveWorkingShift())
+            workingShiftService.createWorkingShift();
+    }
 
 }

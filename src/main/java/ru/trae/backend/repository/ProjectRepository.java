@@ -11,10 +11,8 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-
-	@Transactional
-	@Modifying
-	@Query("update Project p set p.plannedEndDate = ?1 where p.id = ?2")
-	void updatePlannedEndDateById(LocalDateTime plannedEndDate, Long id);
-
+    @Transactional
+    @Modifying
+    @Query("update Project p set p.plannedEndDate = ?1 where p.id = ?2")
+    void updatePlannedEndDateById(LocalDateTime plannedEndDate, Long id);
 }

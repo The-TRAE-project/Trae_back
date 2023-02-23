@@ -13,12 +13,15 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class TimeControlMapper implements Function<TimeControl, TimeControlDto> {
 
-	@Override
-	public TimeControlDto apply(TimeControl tc) {
-		Employee e = tc.getEmployee();
+    @Override
+    public TimeControlDto apply(TimeControl tc) {
+        Employee e = tc.getEmployee();
 
-		return new TimeControlDto(tc.isOnShift(), tc.isAutoClosingShift(), tc.getArrival(), tc.getDeparture(),
-				new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName()));
-	}
-
+        return new TimeControlDto(
+                tc.isOnShift(),
+                tc.isAutoClosingShift(),
+                tc.getArrival(),
+                tc.getDeparture(),
+                new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName()));
+    }
 }

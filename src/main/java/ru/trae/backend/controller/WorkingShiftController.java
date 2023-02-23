@@ -13,17 +13,15 @@ import ru.trae.backend.service.WorkingShiftService;
 @RequiredArgsConstructor
 @RequestMapping("/api/working-shift")
 public class WorkingShiftController {
+    private final WorkingShiftService workingShiftService;
 
-	private final WorkingShiftService workingShiftService;
+    @GetMapping("/active")
+    public ResponseEntity<WorkingShiftDto> activeWorkingShift() {
+        return ResponseEntity.ok(workingShiftService.getActive());
+    }
 
-	@GetMapping("/active")
-	public ResponseEntity<WorkingShiftDto> activeWorkingShift() {
-		return ResponseEntity.ok(workingShiftService.getActive());
-	}
-
-	@GetMapping("/on-shift/{id}")
-	public ResponseEntity<Boolean> statusEmployee(@PathVariable int id) {
-		return ResponseEntity.ok(workingShiftService.employeeOnShift(true, id));
-	}
-
+    @GetMapping("/on-shift/{id}")
+    public ResponseEntity<Boolean> statusEmployee(@PathVariable int id) {
+        return ResponseEntity.ok(workingShiftService.employeeOnShift(true, id));
+    }
 }

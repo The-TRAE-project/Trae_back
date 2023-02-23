@@ -10,16 +10,24 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class ProjectDtoMapper implements Function<Project, ProjectDto> {
+    private final ManagerDtoMapper managerDtoMapper;
+    private final OperationDtoMapper operationDtoMapper;
 
-	private final ManagerDtoMapper managerDtoMapper;
-
-	private final OperationDtoMapper operationDtoMapper;
-
-	@Override
-	public ProjectDto apply(Project p) {
-		return new ProjectDto(p.getId(), p.getName(), p.getDescription(), p.getStartDate(), p.getPlannedEndDate(),
-				p.getRealEndDate(), p.getPeriod(), p.isEnded(),
-				p.getOperations().stream().map(operationDtoMapper).toList(), managerDtoMapper.apply(p.getManager()));
-	}
-
+    @Override
+    public ProjectDto apply(Project p) {
+        return new ProjectDto(
+                p.getId(),
+                p.getName(),
+                p.getDescription(),
+                p.getStartDate(),
+                p.getPlannedEndDate(),
+                p.getRealEndDate(),
+                p.getPeriod(),
+                p.isEnded(),
+                p.getOperations().stream()
+                        .map(operationDtoMapper)
+                        .toList(),
+                managerDtoMapper.apply(p.getManager())
+        );
+    }
 }

@@ -10,16 +10,22 @@ import java.util.function.Function;
 @Service
 @RequiredArgsConstructor
 public class OrderDtoMapper implements Function<Order, OrderDto> {
+    private final CustomerDtoMapper customerDtoMapper;
+    private final ManagerDtoMapper managerDtoMapper;
 
-	private final CustomerDtoMapper customerDtoMapper;
-
-	private final ManagerDtoMapper managerDtoMapper;
-
-	@Override
-	public OrderDto apply(Order o) {
-		return new OrderDto(o.getId(), o.getName(), o.getDescription(), o.getStartDate(), o.getPlannedEndDate(),
-				o.getRealEndDate(), o.getPeriod(), o.isEnded(), customerDtoMapper.apply(o.getCustomer()),
-				managerDtoMapper.apply(o.getManager()));
-	}
-
+    @Override
+    public OrderDto apply(Order o) {
+        return new OrderDto(
+                o.getId(),
+                o.getName(),
+                o.getDescription(),
+                o.getStartDate(),
+                o.getPlannedEndDate(),
+                o.getRealEndDate(),
+                o.getPeriod(),
+                o.isEnded(),
+                customerDtoMapper.apply(o.getCustomer()),
+                managerDtoMapper.apply(o.getManager())
+        );
+    }
 }

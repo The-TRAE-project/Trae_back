@@ -9,12 +9,17 @@ import java.util.function.Function;
 
 @Service
 public class ManagerDtoMapper implements Function<Manager, ManagerDto> {
-
-	@Override
-	public ManagerDto apply(Manager m) {
-		return new ManagerDto(m.getId(), m.getFirstName(), m.getMiddleName(), m.getLastName(), m.getPhone(),
-				m.getEmail(), m.getRole().value,
-				m.getDateOfRegister().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
-	}
-
+    @Override
+    public ManagerDto apply(Manager m) {
+        return new ManagerDto(
+                m.getId(),
+                m.getFirstName(),
+                m.getMiddleName(),
+                m.getLastName(),
+                m.getPhone(),
+                m.getEmail(),
+                m.getRole().value,
+                m.getDateOfRegister().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        );
+    }
 }

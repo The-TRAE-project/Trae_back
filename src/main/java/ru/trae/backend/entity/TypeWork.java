@@ -14,16 +14,13 @@ import java.util.List;
 @Setter
 @Table(name = "types")
 public class TypeWork {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+    private String name;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", nullable = false)
-	private Long id;
-
-	private String name;
-
-	@ToString.Exclude
-	@OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)
-	private List<Operation> operations = new ArrayList<>();
-
+    @ToString.Exclude
+    @OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)
+    private List<Operation> operations = new ArrayList<>();
 }

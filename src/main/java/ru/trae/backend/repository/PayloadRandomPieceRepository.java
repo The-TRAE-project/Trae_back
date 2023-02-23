@@ -11,14 +11,13 @@ import java.util.Optional;
 
 @Repository
 public interface PayloadRandomPieceRepository extends JpaRepository<PayloadRandomPiece, Long> {
+    boolean existsByUsernameIgnoreCase(String username);
 
-	boolean existsByUsernameIgnoreCase(String username);
+    @Transactional
+    @Modifying
+    @Query("update PayloadRandomPiece p set p.uuid = ?1 where upper(p.username) = upper(?2)")
+    void updateUuidByUsernameIgnoreCase(String uuid, String username);
 
-	@Transactional
-	@Modifying
-	@Query("update PayloadRandomPiece p set p.uuid = ?1 where upper(p.username) = upper(?2)")
-	void updateUuidByUsernameIgnoreCase(String uuid, String username);
-
-	Optional<PayloadRandomPiece> findByUsernameIgnoreCase(String username);
+    Optional<PayloadRandomPiece> findByUsernameIgnoreCase(String username);
 
 }

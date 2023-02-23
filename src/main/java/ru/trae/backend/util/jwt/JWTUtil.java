@@ -23,95 +23,85 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 public class JWTUtil {
+    @Value("${jwt.access.duration}")
+    private int accessDuration;
+    @Value("${jwt.refresh.duration}")
+    private int refreshDuration;
+    @Value("${jwt.access.secret}")
+    private String secret;
+    @Value("${jwt.refresh.secret}")
+    private String refreshSecret;
 
-	@Value("${jwt.access.duration}")
-	private int accessDuration;
+    private final PayloadRandomPieceRepository payloadRandomPieceRepository;
 
-	@Value("${jwt.refresh.duration}")
-	private int refreshDuration;
+    public String generateAccessToken(String username) {
+        final LocalDateTime now = LocalDateTime.now();
+        final Instant accessExpirationInstant = now.plusMinutes(accessDuration).atZone(ZoneId.systemDefault()).toInstant();
 
-	@Value("${jwt.access.secret}")
-	private String secret;
+        return JWT.create()
+                .withSubject("User Details")
+                .withClaim("username", username)
+                .withExpiresAt(accessExpirationInstant)
+                .withIssuer("Trae project")
+                .sign(Algorithm.HMAC256(secret));
+    }
 
-	@Value("${jwt.refresh.secret}")
-	private String refreshSecret;
+    public String generateRefreshToken(String username) {
+        final LocalDateTime now = LocalDateTime.now();
+        final Instant refreshExpirationInstant = now.plusDays(refreshDuration).atZone(ZoneId.systemDefault()).toInstant();
+        String uuid = UUID.randomUUID().toString();
 
-	private final PayloadRandomPieceRepository payloadRandomPieceRepository;
+        if (payloadRandomPieceRepository.existsByUsernameIgnoreCase(username)) {
+            payloadRandomPieceRepository.updateUuidByUsernameIgnoreCase(uuid, username);
+        } else {
+            payloadRandomPieceRepository.save(new PayloadRandomPiece(null, username, uuid));
+        }
 
-	public String generateAccessToken(String username) {
-		final LocalDateTime now = LocalDateTime.now();
-		final Instant accessExpirationInstant = now.plusMinutes(accessDuration)
-			.atZone(ZoneId.systemDefault())
-			.toInstant();
+        return JWT.create()
+                .withSubject("User Details")
+                .withClaim("username", username)
+                .withExpiresAt(refreshExpirationInstant)
+                .withIssuer("Trae project")
+                .withPayload(Collections.singletonMap("UUID", uuid))
+                .sign(Algorithm.HMAC256(refreshSecret));
+    }
 
-		return JWT.create()
-			.withSubject("User Details")
-			.withClaim("username", username)
-			.withExpiresAt(accessExpirationInstant)
-			.withIssuer("Trae project")
-			.sign(Algorithm.HMAC256(secret));
-	}
+    public String validateAccessTokenAndRetrieveSubject(String token) {
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
+                .withSubject("User Details")
+                .withIssuer("Trae project")
+                .build();
+        DecodedJWT jwt = verifier.verify(token);
+        return jwt.getClaim("username").asString();
+    }
 
-	public String generateRefreshToken(String username) {
-		final LocalDateTime now = LocalDateTime.now();
-		final Instant refreshExpirationInstant = now.plusDays(refreshDuration)
-			.atZone(ZoneId.systemDefault())
-			.toInstant();
-		String uuid = UUID.randomUUID().toString();
+    public String validateRefreshTokenAndRetrieveSubject(String token) {
+        JWTVerifier verifier = JWT.require(Algorithm.HMAC256(refreshSecret))
+                .withSubject("User Details")
+                .withIssuer("Trae project")
+                .build();
+        DecodedJWT jwt = verifier.verify(token);
+        String username = jwt.getClaim("username").asString();
 
-		if (payloadRandomPieceRepository.existsByUsernameIgnoreCase(username)) {
-			payloadRandomPieceRepository.updateUuidByUsernameIgnoreCase(uuid, username);
-		}
-		else {
-			payloadRandomPieceRepository.save(new PayloadRandomPiece(null, username, uuid));
-		}
+        Optional<PayloadRandomPiece> prp = payloadRandomPieceRepository.findByUsernameIgnoreCase(username);
+        if (prp.isEmpty())
+            throw new PayloadPieceException(HttpStatus.NOT_FOUND, "Payload piece not found!");
 
-		return JWT.create()
-			.withSubject("User Details")
-			.withClaim("username", username)
-			.withExpiresAt(refreshExpirationInstant)
-			.withIssuer("Trae project")
-			.withPayload(Collections.singletonMap("UUID", uuid))
-			.sign(Algorithm.HMAC256(refreshSecret));
-	}
+        String savedUuid = prp.get().getUuid();
 
-	public String validateAccessTokenAndRetrieveSubject(String token) {
-		JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
-			.withSubject("User Details")
-			.withIssuer("Trae project")
-			.build();
-		DecodedJWT jwt = verifier.verify(token);
-		return jwt.getClaim("username").asString();
-	}
+        if (!savedUuid.equals(jwt.getClaim("UUID").asString())) {
+            throw new CustomJWTVerificationException(HttpStatus.BAD_REQUEST, "Invalid token UUID");
+        }
+        return username;
+    }
 
-	public String validateRefreshTokenAndRetrieveSubject(String token) {
-		JWTVerifier verifier = JWT.require(Algorithm.HMAC256(refreshSecret))
-			.withSubject("User Details")
-			.withIssuer("Trae project")
-			.build();
-		DecodedJWT jwt = verifier.verify(token);
-		String username = jwt.getClaim("username").asString();
-
-		Optional<PayloadRandomPiece> prp = payloadRandomPieceRepository.findByUsernameIgnoreCase(username);
-		if (prp.isEmpty())
-			throw new PayloadPieceException(HttpStatus.NOT_FOUND, "Payload piece not found!");
-
-		String savedUuid = prp.get().getUuid();
-
-		if (!savedUuid.equals(jwt.getClaim("UUID").asString())) {
-			throw new CustomJWTVerificationException(HttpStatus.BAD_REQUEST, "Invalid token UUID");
-		}
-		return username;
-	}
-
-	public void deletePayloadRandomPieces(String username) {
-		Optional<PayloadRandomPiece> prp = payloadRandomPieceRepository.findByUsernameIgnoreCase(username);
-		if (prp.isPresent()) {
-			payloadRandomPieceRepository.delete(prp.get());
-		}
-		else {
-			throw new PayloadPieceException(HttpStatus.NOT_FOUND, "Payload piece not found!");
-		}
-	}
+    public void deletePayloadRandomPieces(String username) {
+        Optional<PayloadRandomPiece> prp = payloadRandomPieceRepository.findByUsernameIgnoreCase(username);
+        if (prp.isPresent()) {
+            payloadRandomPieceRepository.delete(prp.get());
+        } else {
+            throw new PayloadPieceException(HttpStatus.NOT_FOUND, "Payload piece not found!");
+        }
+    }
 
 }

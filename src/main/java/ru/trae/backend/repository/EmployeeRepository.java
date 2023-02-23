@@ -8,12 +8,10 @@ import java.util.Optional;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+    Optional<Employee> findByPinCode(int pinCode);
 
-	Optional<Employee> findByPinCode(int pinCode);
+    boolean existsByPinCode(int pinCode);
 
-	boolean existsByPinCode(int pinCode);
-
-	boolean existsByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(String firstName, String middleName,
-			String lastName);
+    boolean existsByFirstNameIgnoreCaseAndMiddleNameIgnoreCaseAndLastNameIgnoreCase(String firstName, String middleName, String lastName);
 
 }

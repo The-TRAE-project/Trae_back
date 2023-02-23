@@ -17,49 +17,47 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
+    private final ProjectRepository projectRepository;
+    private final ManagerService managerService;
+    private final OrderService orderService;
+    private final ProjectDtoMapper projectDtoMapper;
 
-	private final ProjectRepository projectRepository;
+    public Project saveNewProject(NewProjectDto dto) {
+        Project p = new Project();
+        p.setName(dto.name());
+        p.setDescription(dto.description());
+        p.setPeriod(dto.period());
+        p.setStartDate(LocalDateTime.now());
+        p.setPlannedEndDate(LocalDateTime.now().plusDays(dto.period()));
+        p.setRealEndDate(null);
+        p.setEnded(false);
+        p.setManager(managerService.getManagerById(dto.managerId()));
+        p.setOrder(orderService.getOrderById(dto.orderId()));
 
-	private final ManagerService managerService;
+        return projectRepository.save(p);
+    }
 
-	private final OrderService orderService;
+    public Project getProjectById(long id) {
+        return projectRepository.findById(id).orElseThrow(
+                () -> new ProjectException(HttpStatus.NOT_FOUND, "Project with ID: " + id + " not found"));
+    }
 
-	private final ProjectDtoMapper projectDtoMapper;
+    public List<ProjectDto> getAllProjects() {
+        return projectRepository.findAll()
+                .stream()
+                .map(projectDtoMapper)
+                .toList();
+    }
 
-	public Project saveNewProject(NewProjectDto dto) {
-		Project p = new Project();
-		p.setName(dto.name());
-		p.setDescription(dto.description());
-		p.setPeriod(dto.period());
-		p.setStartDate(LocalDateTime.now());
-		p.setPlannedEndDate(LocalDateTime.now().plusDays(dto.period()));
-		p.setRealEndDate(null);
-		p.setEnded(false);
-		p.setManager(managerService.getManagerById(dto.managerId()));
-		p.setOrder(orderService.getOrderById(dto.orderId()));
+    public void updatePlannedEndDate(LocalDateTime newPlannedEndDate, long projectId) {
+        projectRepository.updatePlannedEndDateById(newPlannedEndDate, projectId);
+    }
 
-		return projectRepository.save(p);
-	}
+    public ProjectDto getProjectDtoById(long id) {
+        return projectDtoMapper.apply(getProjectById(id));
+    }
 
-	public Project getProjectById(long id) {
-		return projectRepository.findById(id)
-			.orElseThrow(() -> new ProjectException(HttpStatus.NOT_FOUND, "Project with ID: " + id + " not found"));
-	}
-
-	public List<ProjectDto> getAllProjects() {
-		return projectRepository.findAll().stream().map(projectDtoMapper).toList();
-	}
-
-	public void updatePlannedEndDate(LocalDateTime newPlannedEndDate, long projectId) {
-		projectRepository.updatePlannedEndDateById(newPlannedEndDate, projectId);
-	}
-
-	public ProjectDto getProjectDtoById(long id) {
-		return projectDtoMapper.apply(getProjectById(id));
-	}
-
-	public ProjectDto convertFromProject(Project p) {
-		return projectDtoMapper.apply(p);
-	}
-
+    public ProjectDto convertFromProject(Project p) {
+        return projectDtoMapper.apply(p);
+    }
 }

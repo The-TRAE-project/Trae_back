@@ -18,49 +18,47 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class OrderService {
+    private final OrderRepository orderRepository;
+    private final CustomerService customerService;
+    private final ManagerService managerService;
+    private final OrderDtoMapper orderDtoMapper;
 
-	private final OrderRepository orderRepository;
+    public Order receiveNewOrder(NewOrderDto dto) {
+        CustomerDto cDto = dto.customerDto();
+        Customer c = customerService.getCustomer(cDto.firstName(), cDto.middleName(), cDto.lastName())
+                .orElse(customerService.saveNewCustomer(dto.customerDto()));
 
-	private final CustomerService customerService;
+        Order order = new Order();
+        order.setName(dto.name());
+        order.setDescription(dto.description());
+        order.setEnded(false);
+        order.setPeriod(dto.period());
+        order.setStartDate(LocalDateTime.now());
+        order.setPlannedEndDate(LocalDateTime.now().plusDays(order.getPeriod()));
+        order.setRealEndDate(null);
+        order.setManager(managerService.getManagerById(dto.managerId()));
+        order.setCustomer(c);
 
-	private final ManagerService managerService;
+        return orderRepository.save(order);
+    }
 
-	private final OrderDtoMapper orderDtoMapper;
+    public Order getOrderById(long id) {
+        return orderRepository.findById(id).orElseThrow(
+                () -> new OrderException(HttpStatus.NOT_FOUND, "The order with ID: " + id + " not found"));
+    }
 
-	public Order receiveNewOrder(NewOrderDto dto) {
-		CustomerDto cDto = dto.customerDto();
-		Customer c = customerService.getCustomer(cDto.firstName(), cDto.middleName(), cDto.lastName())
-			.orElse(customerService.saveNewCustomer(dto.customerDto()));
+    public List<OrderDto> getAllOrder() {
+        return orderRepository.findAll()
+                .stream()
+                .map(orderDtoMapper)
+                .toList();
+    }
 
-		Order order = new Order();
-		order.setName(dto.name());
-		order.setDescription(dto.description());
-		order.setEnded(false);
-		order.setPeriod(dto.period());
-		order.setStartDate(LocalDateTime.now());
-		order.setPlannedEndDate(LocalDateTime.now().plusDays(order.getPeriod()));
-		order.setRealEndDate(null);
-		order.setManager(managerService.getManagerById(dto.managerId()));
-		order.setCustomer(c);
+    public OrderDto convertFromOrderById(long id) {
+        return orderDtoMapper.apply(getOrderById(id));
+    }
 
-		return orderRepository.save(order);
-	}
-
-	public Order getOrderById(long id) {
-		return orderRepository.findById(id)
-			.orElseThrow(() -> new OrderException(HttpStatus.NOT_FOUND, "The order with ID: " + id + " not found"));
-	}
-
-	public List<OrderDto> getAllOrder() {
-		return orderRepository.findAll().stream().map(orderDtoMapper).toList();
-	}
-
-	public OrderDto convertFromOrderById(long id) {
-		return orderDtoMapper.apply(getOrderById(id));
-	}
-
-	public OrderDto convertFromOrder(Order o) {
-		return orderDtoMapper.apply(o);
-	}
-
+    public OrderDto convertFromOrder(Order o) {
+        return orderDtoMapper.apply(o);
+    }
 }

@@ -20,79 +20,75 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ManagerService {
+    private final ManagerRepository managerRepository;
+    private final ManagerDtoMapper managerDtoMapper;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JWTUtil jwtUtil;
 
-	private final ManagerRepository managerRepository;
+    public JwtResponse saveNewManager(ManagerRegisterDto dto) {
+        Manager m = new Manager();
 
-	private final ManagerDtoMapper managerDtoMapper;
+        String encodedPass = bCryptPasswordEncoder.encode(dto.password());
+        m.setFirstName(dto.firstName());
+        m.setMiddleName(dto.middleName());
+        m.setLastName(dto.lastName());
+        m.setPhone(dto.phone());
+        m.setEmail(dto.email());
+        m.setUsername(dto.username());
+        m.setPassword(encodedPass);
+        m.setRole(Role.ROLE_MANAGER); //TODO изменить на юзер по дефолту = m.setRole(Role.ROLE_USER);
+        m.setDateOfRegister(LocalDateTime.now());
 
-	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+        m.setEnabled(true);
+        m.setAccountNonExpired(true);
+        m.setAccountNonLocked(true);
+        m.setCredentialsNonExpired(true);
 
-	private final JWTUtil jwtUtil;
+        managerRepository.save(m);
 
-	public JwtResponse saveNewManager(ManagerRegisterDto dto) {
-		Manager m = new Manager();
+        String accessToken = jwtUtil.generateAccessToken(m.getUsername());
+        String refreshToken = jwtUtil.generateRefreshToken(m.getUsername());
 
-		String encodedPass = bCryptPasswordEncoder.encode(dto.password());
-		m.setFirstName(dto.firstName());
-		m.setMiddleName(dto.middleName());
-		m.setLastName(dto.lastName());
-		m.setPhone(dto.phone());
-		m.setEmail(dto.email());
-		m.setUsername(dto.username());
-		m.setPassword(encodedPass);
-		m.setRole(Role.ROLE_MANAGER); // TODO изменить на юзер по дефолту =
-										// m.setRole(Role.ROLE_USER);
-		m.setDateOfRegister(LocalDateTime.now());
+        return new JwtResponse(accessToken, refreshToken);
+    }
 
-		m.setEnabled(true);
-		m.setAccountNonExpired(true);
-		m.setAccountNonLocked(true);
-		m.setCredentialsNonExpired(true);
+    public Manager getManagerById(long managerId) {
+        return managerRepository.findById(managerId).orElseThrow(
+                () -> new ManagerException(HttpStatus.NOT_FOUND, "Manager with ID: " + managerId + " not found"));
+    }
 
-		managerRepository.save(m);
+    public Manager getManagerByUsername(String username) {
+        return managerRepository.findByUsername(username).orElseThrow(
+                () -> new ManagerException(HttpStatus.NOT_FOUND, "Manager with username: " + username + " not found"));
+    }
 
-		String accessToken = jwtUtil.generateAccessToken(m.getUsername());
-		String refreshToken = jwtUtil.generateRefreshToken(m.getUsername());
+    public List<ManagerDto> getAllManagers() {
+        return managerRepository.findAll()
+                .stream()
+                .map(managerDtoMapper)
+                .toList();
+    }
 
-		return new JwtResponse(accessToken, refreshToken);
-	}
+    public ManagerDto convertFromManager(Manager manager) {
+        return managerDtoMapper.apply(manager);
+    }
 
-	public Manager getManagerById(long managerId) {
-		return managerRepository.findById(managerId)
-			.orElseThrow(
-					() -> new ManagerException(HttpStatus.NOT_FOUND, "Manager with ID: " + managerId + " not found"));
-	}
+    public boolean existsManagerByEmail(String email) {
+        return managerRepository.existsByEmailIgnoreCase(email);
+    }
 
-	public Manager getManagerByUsername(String username) {
-		return managerRepository.findByUsername(username)
-			.orElseThrow(() -> new ManagerException(HttpStatus.NOT_FOUND,
-					"Manager with username: " + username + " not found"));
-	}
+    public boolean existsManagerByUsername(String username) {
+        return managerRepository.existsByUsernameIgnoreCase(username);
+    }
 
-	public List<ManagerDto> getAllManagers() {
-		return managerRepository.findAll().stream().map(managerDtoMapper).toList();
-	}
+    public void checkAvailableEmail(String email) {
+        if (existsManagerByEmail(email))
+            throw new ManagerException(HttpStatus.CONFLICT, "Email: " + email + " already in use");
+    }
 
-	public ManagerDto convertFromManager(Manager manager) {
-		return managerDtoMapper.apply(manager);
-	}
-
-	public boolean existsManagerByEmail(String email) {
-		return managerRepository.existsByEmailIgnoreCase(email);
-	}
-
-	public boolean existsManagerByUsername(String username) {
-		return managerRepository.existsByUsernameIgnoreCase(username);
-	}
-
-	public void checkAvailableEmail(String email) {
-		if (existsManagerByEmail(email))
-			throw new ManagerException(HttpStatus.CONFLICT, "Email: " + email + " already in use");
-	}
-
-	public void checkAvailableUsername(String username) {
-		if (existsManagerByUsername(username))
-			throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " already in use");
-	}
+    public void checkAvailableUsername(String username) {
+        if (existsManagerByUsername(username))
+            throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " already in use");
+    }
 
 }

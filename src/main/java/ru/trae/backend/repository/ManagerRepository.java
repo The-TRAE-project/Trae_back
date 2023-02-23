@@ -8,11 +8,10 @@ import java.util.Optional;
 
 @Repository
 public interface ManagerRepository extends JpaRepository<Manager, Long> {
+    Optional<Manager> findByUsername(String username);
 
-	Optional<Manager> findByUsername(String username);
+    boolean existsByEmailIgnoreCase(String email);
 
-	boolean existsByEmailIgnoreCase(String email);
-
-	boolean existsByUsernameIgnoreCase(String username);
+    boolean existsByUsernameIgnoreCase(String username);
 
 }

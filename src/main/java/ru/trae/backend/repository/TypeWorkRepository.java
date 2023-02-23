@@ -6,7 +6,6 @@ import ru.trae.backend.entity.TypeWork;
 
 @Repository
 public interface TypeWorkRepository extends JpaRepository<TypeWork, Long> {
-
-	boolean existsByNameIgnoreCase(String name);
+    boolean existsByNameIgnoreCase(String name);
 
 }

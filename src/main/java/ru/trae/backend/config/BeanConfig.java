@@ -14,30 +14,28 @@ import springfox.documentation.spring.web.plugins.Docket;
 @Configuration
 public class BeanConfig {
 
-	@Bean
-	public Docket api() {
-		return new Docket(DocumentationType.OAS_30).select()
-			.apis(RequestHandlerSelectors.any())
-			.paths(PathSelectors.any())
-			.build();
-	}
+    @Bean
+    public Docket api() {
+        return new Docket(DocumentationType.OAS_30)
+                .select()
+                .apis(RequestHandlerSelectors.any())
+                .paths(PathSelectors.any())
+                .build();
+    }
 
-	@Bean
-	public InternalResourceViewResolver defaultViewResolver() {
-		return new InternalResourceViewResolver();
-	}
+    @Bean
+    public InternalResourceViewResolver defaultViewResolver() {
+        return new InternalResourceViewResolver();
+    }
 
-	@Bean
-	public BCryptPasswordEncoder bCryptPasswordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-	// без этого бина не будут корректно перехватываться исключения, связанные с
-	// JWT-фильтром
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-			throws Exception {
-		return authenticationConfiguration.getAuthenticationManager();
-	}
-
+    // без этого бина не будут корректно перехватываться исключения, связанные с JWT-фильтром
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 }

@@ -11,14 +11,13 @@ import ru.trae.backend.repository.ManagerRepository;
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
-	private final ManagerRepository managerRepository;
+    private final ManagerRepository managerRepository;
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		if (managerRepository.findByUsername(username).isEmpty())
-			throw new UsernameNotFoundException("Manager with username " + username + " not found!");
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        if (managerRepository.findByUsername(username).isEmpty())
+            throw new UsernameNotFoundException("Manager with username " + username + " not found!");
 
-		return managerRepository.findByUsername(username).get();
-	}
-
+        return managerRepository.findByUsername(username).get();
+    }
 }

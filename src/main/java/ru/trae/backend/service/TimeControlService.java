@@ -12,34 +12,33 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class TimeControlService {
+    private final TimeControlRepository timeControlRepository;
 
-	private final TimeControlRepository timeControlRepository;
+    public TimeControl createArrivalTimeControl(Employee e, WorkingShift ws, boolean onShift, LocalDateTime time) {
+        TimeControl tc = new TimeControl();
+        tc.setArrival(time);
+        tc.setDeparture(null);
+        tc.setEmployee(e);
+        tc.setOnShift(onShift);
+        tc.setAutoClosingShift(false);
+        tc.setWorkingShift(ws);
 
-	public TimeControl createArrivalTimeControl(Employee e, WorkingShift ws, boolean onShift, LocalDateTime time) {
-		TimeControl tc = new TimeControl();
-		tc.setArrival(time);
-		tc.setDeparture(null);
-		tc.setEmployee(e);
-		tc.setOnShift(onShift);
-		tc.setAutoClosingShift(false);
-		tc.setWorkingShift(ws);
+        return timeControlRepository.save(tc);
+    }
 
-		return timeControlRepository.save(tc);
-	}
+    public TimeControl updateTimeControlForDeparture(Long empId, LocalDateTime time) {
+        TimeControl tc = timeControlRepository.findByEmployee_IdAndIsOnShiftTrueAndWorkingShift_IsEndedFalse(empId);
+        tc.setDeparture(time);
+        tc.setOnShift(false);
 
-	public TimeControl updateTimeControlForDeparture(Long empId, LocalDateTime time) {
-		TimeControl tc = timeControlRepository.findByEmployee_IdAndIsOnShiftTrueAndWorkingShift_IsEndedFalse(empId);
-		tc.setDeparture(time);
-		tc.setOnShift(false);
+        return timeControlRepository.save(tc);
+    }
 
-		return timeControlRepository.save(tc);
-	}
+    public void autoClosingShift(TimeControl tc) {
+        tc.setOnShift(false);
+        tc.setAutoClosingShift(true);
 
-	public void autoClosingShift(TimeControl tc) {
-		tc.setOnShift(false);
-		tc.setAutoClosingShift(true);
-
-		timeControlRepository.save(tc);
-	}
+        timeControlRepository.save(tc);
+    }
 
 }

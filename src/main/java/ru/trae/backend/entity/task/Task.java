@@ -12,19 +12,11 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class Task {
-
-	private String name;
-
-	private String description;
-
-	private LocalDateTime startDate;
-
-	private LocalDateTime plannedEndDate;
-
-	private LocalDateTime realEndDate;
-
-	private int period;
-
-	private boolean isEnded;
-
+    private String name;
+    private String description;
+    private LocalDateTime startDate;
+    private LocalDateTime plannedEndDate;
+    private LocalDateTime realEndDate;
+    private int period;
+    private boolean isEnded;
 }

@@ -26,186 +26,178 @@ import static java.time.temporal.ChronoUnit.HOURS;
 @Service
 @RequiredArgsConstructor
 public class OperationService {
+    private final OperationRepository operationRepository;
+    private final ProjectService projectService;
+    private final EmployeeService employeeService;
+    private final OperationDtoMapper operationDtoMapper;
+    private final ShortOperationDtoMapper shortOperationDtoMapper;
+    private final TypeWorkService typeWorkService;
 
-	private final OperationRepository operationRepository;
+    public Operation getOperationById(long id) {
+        return operationRepository.findById(id).orElseThrow(
+                () -> new OperationException(HttpStatus.NOT_FOUND, "Операция с ID " + id + " не найдена"));
+    }
 
-	private final ProjectService projectService;
+    public void saveNewOperations(WrapperNewOperationDto wrapper) {
+        Project p = projectService.getProjectById(wrapper.projectId());
 
-	private final EmployeeService employeeService;
+        List<NewOperationDto> operations = wrapper.operations()
+                .stream()
+                .sorted(Comparator.comparing(NewOperationDto::priority))
+                .toList();
 
-	private final OperationDtoMapper operationDtoMapper;
+        if (operations.size() > 0) {
+            NewOperationDto dto = operations.get(0);
 
-	private final ShortOperationDtoMapper shortOperationDtoMapper;
+            Operation o = new Operation();
+            o.setProject(p);
+            o.setName(dto.name());
+            o.setDescription(dto.description());
+            o.setPeriod(NumbersUtil.getPeriodForFirstOperation(p.getPeriod(), wrapper.operations().size()));
+            o.setPriority(dto.priority());
+            o.setStartDate(LocalDateTime.now());
+            o.setPlannedEndDate(LocalDateTime.now().plusDays(o.getPeriod()));
+            o.setAcceptanceDate(null);
+            o.setEnded(false);
+            o.setInWork(false);
+            o.setReadyToAcceptance(true);
+            o.setTypeWork(typeWorkService.getTypeWorkById(dto.typeWorkId()));
 
-	private final TypeWorkService typeWorkService;
+            operationRepository.save(o);
+        }
 
-	public Operation getOperationById(long id) {
-		return operationRepository.findById(id)
-			.orElseThrow(() -> new OperationException(HttpStatus.NOT_FOUND, "Операция с ID " + id + " не найдена"));
-	}
+        if (operations.size() > 1)
+            operations.stream()
+                    .skip(1)
+                    .forEach(
+                            no -> {
+                                Operation o = new Operation();
+                                o.setProject(p);
+                                o.setName(no.name());
+                                o.setDescription(no.description());
+                                o.setPeriod(0);
+                                o.setPriority(no.priority());
+                                o.setStartDate(null);
+                                o.setPlannedEndDate(null);
+                                o.setAcceptanceDate(null);
+                                o.setEnded(false);
+                                o.setInWork(false);
+                                o.setReadyToAcceptance(false);
+                                o.setTypeWork(typeWorkService.getTypeWorkById(no.typeWorkId()));
 
-	public void saveNewOperations(WrapperNewOperationDto wrapper) {
-		Project p = projectService.getProjectById(wrapper.projectId());
+                                operationRepository.save(o);
+                            });
+    }
 
-		List<NewOperationDto> operations = wrapper.operations()
-			.stream()
-			.sorted(Comparator.comparing(NewOperationDto::priority))
-			.toList();
+    public OperationDto getOperationDtoById(long id) {
+        return operationDtoMapper.apply(getOperationById(id));
+    }
 
-		if (operations.size() > 0) {
-			NewOperationDto dto = operations.get(0);
+    public List<ShortOperationDto> getShortOpDtoListByProject(long projectId) {
+        Project p = projectService.getProjectById(projectId);
+        return p.getOperations().stream()
+                .map(shortOperationDtoMapper)
+                .toList();
+    }
 
-			Operation o = new Operation();
-			o.setProject(p);
-			o.setName(dto.name());
-			o.setDescription(dto.description());
-			o.setPeriod(NumbersUtil.getPeriodForFirstOperation(p.getPeriod(), wrapper.operations().size()));
-			o.setPriority(dto.priority());
-			o.setStartDate(LocalDateTime.now());
-			o.setPlannedEndDate(LocalDateTime.now().plusDays(o.getPeriod()));
-			o.setAcceptanceDate(null);
-			o.setEnded(false);
-			o.setInWork(false);
-			o.setReadyToAcceptance(true);
-			o.setTypeWork(typeWorkService.getTypeWorkById(dto.typeWorkId()));
+    public List<ShortOperationDto> getShortOpDtoListReadyForAcceptanceByTypeWork(boolean readyForAcceptance, long typeWorkId) {
+        return operationRepository.findByReadyToAcceptanceAndTypeWork_Id(readyForAcceptance, typeWorkId).stream()
+                .map(shortOperationDtoMapper)
+                .toList();
+    }
 
-			operationRepository.save(o);
-		}
+    public void receiveOperation(OpEmpIdDto dto) {
+        Employee e = employeeService.getEmployeeById(dto.employeeId());
+        Operation o = getOperationById(dto.id());
 
-		if (operations.size() > 1)
-			operations.stream().skip(1).forEach(no -> {
-				Operation o = new Operation();
-				o.setProject(p);
-				o.setName(no.name());
-				o.setDescription(no.description());
-				o.setPeriod(0);
-				o.setPriority(no.priority());
-				o.setStartDate(null);
-				o.setPlannedEndDate(null);
-				o.setAcceptanceDate(null);
-				o.setEnded(false);
-				o.setInWork(false);
-				o.setReadyToAcceptance(false);
-				o.setTypeWork(typeWorkService.getTypeWorkById(no.typeWorkId()));
+        checkForAcceptance(o);
+        checkCompatibilityTypeWork(o, e);
 
-				operationRepository.save(o);
-			});
-	}
+        o.setInWork(true);
+        o.setReadyToAcceptance(false);
+        o.setEmployee(e);
+        o.setAcceptanceDate(LocalDateTime.now());
 
-	public OperationDto getOperationDtoById(long id) {
-		return operationDtoMapper.apply(getOperationById(id));
-	}
+        operationRepository.save(o);
+    }
 
-	public List<ShortOperationDto> getShortOpDtoListByProject(long projectId) {
-		Project p = projectService.getProjectById(projectId);
-		return p.getOperations().stream().map(shortOperationDtoMapper).toList();
-	}
+    public void finishOperation(OpEmpIdDto dto) {
+        Operation o = getOperationById(dto.id());
 
-	public List<ShortOperationDto> getShortOpDtoListReadyForAcceptanceByTypeWork(boolean readyForAcceptance,
-			long typeWorkId) {
-		return operationRepository.findByReadyToAcceptanceAndTypeWork_Id(readyForAcceptance, typeWorkId)
-			.stream()
-			.map(shortOperationDtoMapper)
-			.toList();
-	}
+        checkConfirmingEmployee(o, dto.employeeId());
 
-	public void receiveOperation(OpEmpIdDto dto) {
-		Employee e = employeeService.getEmployeeById(dto.employeeId());
-		Operation o = getOperationById(dto.id());
+        o.setInWork(false);
+        o.setEnded(true);
+        o.setRealEndDate(LocalDateTime.now());
 
-		checkForAcceptance(o);
-		checkCompatibilityTypeWork(o, e);
+        Operation op = operationRepository.save(o);
 
-		o.setInWork(true);
-		o.setReadyToAcceptance(false);
-		o.setEmployee(e);
-		o.setAcceptanceDate(LocalDateTime.now());
+        checkAndUpdateProjectEndDate(op);
 
-		operationRepository.save(o);
-	}
+        startNextOperation(op);
+    }
 
-	public void finishOperation(OpEmpIdDto dto) {
-		Operation o = getOperationById(dto.id());
+    public void startNextOperation(Operation o) {
+        List<Operation> operations = o.getProject().getOperations()
+                .stream()
+                .sorted(Comparator.comparing(Operation::getPriority))
+                .toList();
 
-		checkConfirmingEmployee(o, dto.employeeId());
+        if (operations.indexOf(o) + 1 < operations.size()) {
+            Operation nextOp = operations.get(operations.indexOf(o) + 1);
 
-		o.setInWork(false);
-		o.setEnded(true);
-		o.setRealEndDate(LocalDateTime.now());
+            int newPeriod = recalculationRemainingPeriod(nextOp, operations);
 
-		Operation op = operationRepository.save(o);
+            nextOp.setReadyToAcceptance(true);
+            nextOp.setPeriod(newPeriod);
+            nextOp.setStartDate(LocalDateTime.now());
+            nextOp.setPlannedEndDate(LocalDateTime.now().plusHours(newPeriod));
 
-		checkAndUpdateProjectEndDate(op);
+            operationRepository.save(nextOp);
+        }
+    }
 
-		startNextOperation(op);
-	}
+    public Map<String, List<ShortOperationDto>> getAvailableOperationByTypeWork(long employeeId) {
+        Set<TypeWork> typeWorks = employeeService.getEmployeeById(employeeId).getTypeWorks();
+        return typeWorks.stream()
+                .filter(tw -> getShortOpDtoListReadyForAcceptanceByTypeWork(true, tw.getId()).size() != 0)
+                .collect(Collectors.toMap(TypeWork::getName, tw -> getShortOpDtoListReadyForAcceptanceByTypeWork(true, tw.getId())));
+    }
 
-	public void startNextOperation(Operation o) {
-		List<Operation> operations = o.getProject()
-			.getOperations()
-			.stream()
-			.sorted(Comparator.comparing(Operation::getPriority))
-			.toList();
+    private void checkForAcceptance(Operation o) {
+        if (!o.isReadyToAcceptance())
+            throw new OperationException(HttpStatus.BAD_REQUEST, "The operation is currently unavailable for acceptance.");
+    }
 
-		if (operations.indexOf(o) + 1 < operations.size()) {
-			Operation nextOp = operations.get(operations.indexOf(o) + 1);
+    private void checkCompatibilityTypeWork(Operation o, Employee e) {
+        if (!e.getTypeWorks().contains(o.getTypeWork()))
+            throw new OperationException(HttpStatus.BAD_REQUEST, "Types of work are not compatible.");
+    }
 
-			int newPeriod = recalculationRemainingPeriod(nextOp, operations);
+    private void checkConfirmingEmployee(Operation o, long confirmingEmpId) {
+        if (o.getEmployee().getId() != confirmingEmpId)
+            throw new OperationException(HttpStatus.BAD_REQUEST,
+                    "The ID of the confirming employee is not equal to the ID of the person who accepted the operation");
+    }
 
-			nextOp.setReadyToAcceptance(true);
-			nextOp.setPeriod(newPeriod);
-			nextOp.setStartDate(LocalDateTime.now());
-			nextOp.setPlannedEndDate(LocalDateTime.now().plusHours(newPeriod));
+    private int recalculationRemainingPeriod(Operation nextOp, List<Operation> operations) {
+        long remainingPeriod = HOURS.between(LocalDateTime.now(), nextOp.getProject().getPlannedEndDate());
+        long opRemaining = operations.stream().filter(op -> !op.isEnded()).count();
 
-			operationRepository.save(nextOp);
-		}
-	}
+        // здесь отслеживается последний этап "отгрузка" = на него всегда 24 часа.
+        if (opRemaining == 1)
+            return 24;
+        // здесь вычитается из оставшися операций - "отгрузка" и время на нее - 24 часа.
+        return NumbersUtil.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
+    }
 
-	public Map<String, List<ShortOperationDto>> getAvailableOperationByTypeWork(long employeeId) {
-		Set<TypeWork> typeWorks = employeeService.getEmployeeById(employeeId).getTypeWorks();
-		return typeWorks.stream()
-			.filter(tw -> getShortOpDtoListReadyForAcceptanceByTypeWork(true, tw.getId()).size() != 0)
-			.collect(Collectors.toMap(TypeWork::getName,
-					tw -> getShortOpDtoListReadyForAcceptanceByTypeWork(true, tw.getId())));
-	}
+    private void checkAndUpdateProjectEndDate(Operation o) {
+        if (o.getRealEndDate().isBefore(o.getPlannedEndDate())) return;
 
-	private void checkForAcceptance(Operation o) {
-		if (!o.isReadyToAcceptance())
-			throw new OperationException(HttpStatus.BAD_REQUEST,
-					"The operation is currently unavailable for acceptance.");
-	}
+        long hours = HOURS.between(o.getPlannedEndDate(), o.getRealEndDate());
+        Project p = o.getProject();
+        LocalDateTime newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
 
-	private void checkCompatibilityTypeWork(Operation o, Employee e) {
-		if (!e.getTypeWorks().contains(o.getTypeWork()))
-			throw new OperationException(HttpStatus.BAD_REQUEST, "Types of work are not compatible.");
-	}
-
-	private void checkConfirmingEmployee(Operation o, long confirmingEmpId) {
-		if (o.getEmployee().getId() != confirmingEmpId)
-			throw new OperationException(HttpStatus.BAD_REQUEST,
-					"The ID of the confirming employee is not equal to the ID of the person who accepted the operation");
-	}
-
-	private int recalculationRemainingPeriod(Operation nextOp, List<Operation> operations) {
-		long remainingPeriod = HOURS.between(LocalDateTime.now(), nextOp.getProject().getPlannedEndDate());
-		long opRemaining = operations.stream().filter(op -> !op.isEnded()).count();
-
-		// здесь отслеживается последний этап "отгрузка" = на него всегда 24 часа.
-		if (opRemaining == 1)
-			return 24;
-		// здесь вычитается из оставшися операций - "отгрузка" и время на нее - 24 часа.
-		return NumbersUtil.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
-	}
-
-	private void checkAndUpdateProjectEndDate(Operation o) {
-		if (o.getRealEndDate().isBefore(o.getPlannedEndDate()))
-			return;
-
-		long hours = HOURS.between(o.getPlannedEndDate(), o.getRealEndDate());
-		Project p = o.getProject();
-		LocalDateTime newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
-
-		projectService.updatePlannedEndDate(newPlannedEndDate, p.getId());
-	}
-
+        projectService.updatePlannedEndDate(newPlannedEndDate, p.getId());
+    }
 }

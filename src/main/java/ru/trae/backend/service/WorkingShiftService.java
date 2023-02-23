@@ -17,59 +17,55 @@ import java.util.ArrayList;
 @Service
 @RequiredArgsConstructor
 public class WorkingShiftService {
+    private final WorkingShiftRepository workingShiftRepository;
+    private final TimeControlService timeControlService;
+    private final WorkingShiftDtoMapper workingShiftDtoMapper;
 
-	private final WorkingShiftRepository workingShiftRepository;
+    public void createWorkingShift() {
+        WorkingShift ws = new WorkingShift();
+        ws.setStartShift(LocalDateTime.now());
+        ws.setEnded(false);
 
-	private final TimeControlService timeControlService;
+        workingShiftRepository.save(ws);
+    }
 
-	private final WorkingShiftDtoMapper workingShiftDtoMapper;
+    public WorkingShiftDto getActive() {
+        if (!existsActiveWorkingShift())
+            throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Active work shift not found");
 
-	public void createWorkingShift() {
-		WorkingShift ws = new WorkingShift();
-		ws.setStartShift(LocalDateTime.now());
-		ws.setEnded(false);
+        return workingShiftDtoMapper.apply(workingShiftRepository.findByIsEndedFalse());
+    }
 
-		workingShiftRepository.save(ws);
-	}
+    public void closeWorkingShift() {
+        if (!existsActiveWorkingShift()) return;
 
-	public WorkingShiftDto getActive() {
-		if (!existsActiveWorkingShift())
-			throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Active work shift not found");
+        WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
 
-		return workingShiftDtoMapper.apply(workingShiftRepository.findByIsEndedFalse());
-	}
+        ws.getTimeControls().stream()
+                .filter(TimeControl::isOnShift)
+                .forEach(timeControlService::autoClosingShift);
 
-	public void closeWorkingShift() {
-		if (!existsActiveWorkingShift())
-			return;
+        ws.setEnded(true);
+        ws.setEndShift(LocalDateTime.now());
 
-		WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
+        workingShiftRepository.save(ws);
+    }
 
-		ws.getTimeControls().stream().filter(TimeControl::isOnShift).forEach(timeControlService::autoClosingShift);
+    public void arrivalEmployeeOnShift(Employee employee) {
+        if (!existsActiveWorkingShift())
+            throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Active work shift not found");
 
-		ws.setEnded(true);
-		ws.setEndShift(LocalDateTime.now());
+        WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
 
-		workingShiftRepository.save(ws);
-	}
+        ws.getTimeControls().add(timeControlService.createArrivalTimeControl(employee, ws, true, LocalDateTime.now()));
+        workingShiftRepository.save(ws);
+    }
 
-	public void arrivalEmployeeOnShift(Employee employee) {
-		if (!existsActiveWorkingShift())
-			throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Active work shift not found");
+    public boolean existsActiveWorkingShift() {
+        return workingShiftRepository.existsByIsEndedFalse();
+    }
 
-		WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
-
-		ws.getTimeControls().add(timeControlService.createArrivalTimeControl(employee, ws, true, LocalDateTime.now()));
-		workingShiftRepository.save(ws);
-	}
-
-	public boolean existsActiveWorkingShift() {
-		return workingShiftRepository.existsByIsEndedFalse();
-	}
-
-	public boolean employeeOnShift(boolean isOnShift, long empId) {
-		return workingShiftRepository
-			.existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(isOnShift, empId);
-	}
-
+    public boolean employeeOnShift(boolean isOnShift, long empId) {
+        return workingShiftRepository.existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(isOnShift, empId);
+    }
 }

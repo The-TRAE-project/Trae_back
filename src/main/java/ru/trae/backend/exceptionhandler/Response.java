@@ -8,10 +8,8 @@ import org.springframework.http.HttpStatus;
 @Data
 public class Response {
 
-	String timestamp;
-
-	HttpStatus status;
-
-	String error;
+    String timestamp;
+    HttpStatus status;
+    String error;
 
 }
