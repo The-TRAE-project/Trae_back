@@ -27,12 +27,12 @@ public class OperationController {
     }
 
     @GetMapping("/employee/project-operations/{projectId}")
-    public ResponseEntity<List<OperationForEmpDto>> operationsByProjectIdForEmp(@PathVariable long projectId) {
+    public ResponseEntity<List<OperationForEmpDto>> operationsByProjectId(@PathVariable long projectId) {
         return ResponseEntity.ok(operationService.getOperationsByProjectIdForEmp(projectId));
     }
 
     @GetMapping("/employee/operations-in-work/{employeeId}")
-    public ResponseEntity<List<OperationInWorkForEmpDto>> operationsInWorkByEmpIdForEmp(@PathVariable long employeeId) {
+    public ResponseEntity<List<OperationInWorkForEmpDto>> operationsInWorkByEmpId(@PathVariable long employeeId) {
         return ResponseEntity.ok(operationService.getOperationsInWorkByEmpIdForEmp(employeeId));
     }
 
