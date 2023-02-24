@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.entity.task.Project;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
@@ -15,4 +16,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
     @Modifying
     @Query("update Project p set p.plannedEndDate = ?1 where p.id = ?2")
     void updatePlannedEndDateById(LocalDateTime plannedEndDate, Long id);
+
+    @Query("""
+            select p from Project p inner join p.operations operations
+            where p.isEnded = false and operations.readyToAcceptance = true and operations.typeWork.id = ?1""")
+    List<Project> findAvailableProjectsByTypeWork(long typeWorkId);
 }

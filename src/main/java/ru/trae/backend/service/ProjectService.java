@@ -4,9 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.project.NewProjectDto;
+import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.dto.mapper.ProjectDtoMapper;
+import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.repository.ProjectRepository;
 
@@ -20,6 +23,7 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final ManagerService managerService;
     private final OrderService orderService;
+    private final EmployeeService employeeService;
     private final ProjectDtoMapper projectDtoMapper;
 
     public Project saveNewProject(NewProjectDto dto) {
@@ -47,6 +51,21 @@ public class ProjectService {
                 .stream()
                 .map(projectDtoMapper)
                 .toList();
+    }
+
+    public List<ProjectAvailableForEmpDto> getAvailableProjects(long employeeId) {
+        Employee e = employeeService.getEmployeeById(employeeId);
+        List<Project> projects = new ArrayList<>();
+
+        e.getTypeWorks().forEach(tw -> projects.addAll(projectRepository.findAvailableProjectsByTypeWork(tw.getId())));
+
+        return projects.stream().map(p -> new ProjectAvailableForEmpDto(
+                p.getId(),
+                p.getOrder().getCustomer().getLastName(),
+                p.getName(),
+                p.getOperations().stream().filter(Operation::isReadyToAcceptance).findFirst().get().getName(),
+                p.getPlannedEndDate()
+        )).toList();
     }
 
     public void updatePlannedEndDate(LocalDateTime newPlannedEndDate, long projectId) {
