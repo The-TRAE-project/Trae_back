@@ -1,9 +1,11 @@
 package ru.trae.backend.util;
 
+import ru.trae.backend.entity.task.Project;
+
 import java.security.SecureRandom;
 import java.util.Date;
 
-public class NumbersUtil {
+public class Util {
     public static int generateRandomInteger(int min, int max) {
         SecureRandom random = new SecureRandom();
         random.setSeed(new Date().getTime());
@@ -12,5 +14,15 @@ public class NumbersUtil {
 
     public static int getPeriodForFirstOperation(int period, int size) {
         return (int) Math.floor(((double) period / (double) size));
+    }
+
+    public static int dateSorting(Project p1, Project p2) {
+        if (p1.getPlannedEndDate().isAfter(p2.getPlannedEndDate())) {
+            return 1;
+        } else if (p1.getPlannedEndDate().isEqual(p2.getPlannedEndDate())) {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 }

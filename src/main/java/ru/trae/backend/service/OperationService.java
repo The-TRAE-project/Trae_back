@@ -12,7 +12,7 @@ import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.OperationException;
 import ru.trae.backend.repository.OperationRepository;
-import ru.trae.backend.util.NumbersUtil;
+import ru.trae.backend.util.Util;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -53,7 +53,7 @@ public class OperationService {
             o.setProject(p);
             o.setName(dto.name());
             o.setDescription(dto.description());
-            o.setPeriod(NumbersUtil.getPeriodForFirstOperation(p.getPeriod(), wrapper.operations().size()));
+            o.setPeriod(Util.getPeriodForFirstOperation(p.getPeriod(), wrapper.operations().size()));
             o.setPriority(dto.priority());
             o.setStartDate(LocalDateTime.now());
             o.setPlannedEndDate(LocalDateTime.now().plusDays(o.getPeriod()));
@@ -188,7 +188,7 @@ public class OperationService {
         if (opRemaining == 1)
             return 24;
         // здесь вычитается из оставшися операций - "отгрузка" и время на нее - 24 часа.
-        return NumbersUtil.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
+        return Util.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
     }
 
     private void checkAndUpdateProjectEndDate(Operation o) {

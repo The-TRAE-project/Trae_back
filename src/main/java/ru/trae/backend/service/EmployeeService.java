@@ -11,7 +11,7 @@ import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.EmployeeException;
 import ru.trae.backend.repository.EmployeeRepository;
-import ru.trae.backend.util.NumbersUtil;
+import ru.trae.backend.util.Util;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +31,7 @@ public class EmployeeService {
     public Employee saveNewEmployee(NewEmployeeDto dto) {
         int randomPinCode;
         do {
-            randomPinCode = NumbersUtil.generateRandomInteger(100, 999);
+            randomPinCode = Util.generateRandomInteger(100, 999);
         } while (existsEmpByPinCode(randomPinCode));
 
         Set<TypeWork> typeWorks = dto.typesId().stream()

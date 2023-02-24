@@ -99,7 +99,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             NewOrderDto dto2 = new NewOrderDto(
                     "Входная дверь",
                     "Размер 200х200х30 см, без покраски, только покрыть лаком",
-                    50,
+                    35,
                     1L,
                     new CustomerDto(
                             "Андрей", "Владимирович", "Никифоров", 89115437820L, LocalDateTime.now()));
@@ -107,7 +107,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             NewOrderDto dto3 = new NewOrderDto(
                     "Стол в мастерскую",
                     "Размер 500х200х100 см, покрасить в черный цвет",
-                    50,
+                    45,
                     1L,
                     new CustomerDto(
                             "Ольга", "Сергеевна", "Иванова", 89515545612L, LocalDateTime.now()));
@@ -130,14 +130,14 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             NewProjectDto dto2 = new NewProjectDto(
                     "Дверь",
                     "Здесь должно быть правильное описание, пояснение, указания и тд",
-                    40,
+                    25,
                     2L,
                     1L);
 
             NewProjectDto dto3 = new NewProjectDto(
                     "Стол",
                     "Здесь должно быть правильное описание, пояснение, указания и тд",
-                    40,
+                    35,
                     3L,
                     1L);
 

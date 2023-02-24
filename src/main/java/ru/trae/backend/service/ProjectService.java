@@ -12,6 +12,7 @@ import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.repository.ProjectRepository;
+import ru.trae.backend.util.Util;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -59,13 +60,17 @@ public class ProjectService {
 
         e.getTypeWorks().forEach(tw -> projects.addAll(projectRepository.findAvailableProjectsByTypeWork(tw.getId())));
 
-        return projects.stream().map(p -> new ProjectAvailableForEmpDto(
-                p.getId(),
-                p.getOrder().getCustomer().getLastName(),
-                p.getName(),
-                p.getOperations().stream().filter(Operation::isReadyToAcceptance).findFirst().get().getName(),
-                p.getPlannedEndDate()
-        )).toList();
+        return projects.stream()
+                .sorted(Util::dateSorting)
+                .map(p -> new ProjectAvailableForEmpDto(
+                        p.getId(),
+                        p.getOrder().getCustomer().getLastName(),
+                        p.getName(),
+                        p.getOperations().stream()
+                                .filter(Operation::isReadyToAcceptance)
+                                .findFirst()
+                                .get().getName()
+                )).toList();
     }
 
     public void updatePlannedEndDate(LocalDateTime newPlannedEndDate, long projectId) {
