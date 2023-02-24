@@ -11,4 +11,9 @@ import java.util.List;
 public interface OperationRepository extends JpaRepository<Operation, Long> {
     @Query("select o from Operation o where o.project.id = ?1")
     List<Operation> findByProjectId(long projectId);
+
+    @Query("select o from Operation o where o.inWork = true and o.employee.id = ?1 order by o.acceptanceDate")
+    List<Operation> findByInWorkTrueAndEmployeeIdOrderByAcceptanceDateAsc(long employeeId);
+
+
 }

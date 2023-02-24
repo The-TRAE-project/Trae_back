@@ -1,8 +1,8 @@
 package ru.trae.backend.dto.operation;
 
-public record OperationForEmp(
+public record OperationForEmpDto(
         long operationId,
-        String name,
+        String operationName,
         boolean readyToAcceptance,
         boolean isEnded,
         boolean inWork,

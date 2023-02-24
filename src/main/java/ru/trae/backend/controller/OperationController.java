@@ -7,7 +7,6 @@ import ru.trae.backend.dto.operation.*;
 import ru.trae.backend.service.OperationService;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,18 +26,23 @@ public class OperationController {
         return ResponseEntity.ok(operationService.getOpsDtoListByProject(projectId));
     }
 
-    @GetMapping("/project-operations-for-employee/{projectId}")
-    public ResponseEntity<List<OperationForEmp>> operationsByProjectIdForEmp(@PathVariable long projectId) {
+    @GetMapping("/employee/project-operations/{projectId}")
+    public ResponseEntity<List<OperationForEmpDto>> operationsByProjectIdForEmp(@PathVariable long projectId) {
         return ResponseEntity.ok(operationService.getOperationsByProjectIdForEmp(projectId));
     }
 
-    @PostMapping("/receive-operation")
+    @GetMapping("/employee/operations-in-work/{employeeId}")
+    public ResponseEntity<List<OperationInWorkForEmpDto>> operationsInWorkByEmpIdForEmp(@PathVariable long employeeId) {
+        return ResponseEntity.ok(operationService.getOperationsInWorkByEmpIdForEmp(employeeId));
+    }
+
+    @PostMapping("/employee/receive-operation")
     public ResponseEntity receiveOperation(@RequestBody ReqOpEmpIdDto dto) {
         operationService.receiveOperation(dto);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/finish-operation")
+    @PostMapping("/employee/finish-operation")
     public ResponseEntity finishOperation(@RequestBody ReqOpEmpIdDto dto) {
         operationService.finishOperation(dto);
         return ResponseEntity.ok().build();

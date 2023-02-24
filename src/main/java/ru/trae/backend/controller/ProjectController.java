@@ -33,7 +33,7 @@ public class ProjectController {
         return ResponseEntity.ok(projectService.getAllProjects());
     }
 
-    @GetMapping("/available-projects-for-employee/{employeeId}")
+    @GetMapping("/employee/available-projects/{employeeId}")
     public ResponseEntity<List<ProjectAvailableForEmpDto>> availableProjectsForEmployee(@PathVariable long employeeId) {
         return ResponseEntity.ok(projectService.getAvailableProjects(employeeId));
     }

@@ -141,12 +141,12 @@ public class OperationService {
         }
     }
 
-    public List<OperationForEmp> getOperationsByProjectIdForEmp(long projectId) {
+    public List<OperationForEmpDto> getOperationsByProjectIdForEmp(long projectId) {
         List<Operation> operations = operationRepository.findByProjectId(projectId);
 
         return operations.stream()
                 .sorted(Util::prioritySorting)
-                .map(o -> new OperationForEmp(
+                .map(o -> new OperationForEmpDto(
                         o.getId(),
                         o.getName(),
                         o.isReadyToAcceptance(),
@@ -154,6 +154,20 @@ public class OperationService {
                         o.isInWork(),
                         o.getEmployee() == null ? null : o.getEmployee().getFirstName(),
                         o.getEmployee() == null ? null : o.getEmployee().getLastName()
+                ))
+                .toList();
+    }
+
+    public List<OperationInWorkForEmpDto> getOperationsInWorkByEmpIdForEmp(long employeeId) {
+        List<Operation> operations = operationRepository.findByInWorkTrueAndEmployeeIdOrderByAcceptanceDateAsc(employeeId);
+        return operations.stream()
+                .map(o -> new OperationInWorkForEmpDto(
+                        o.getId(),
+                        o.getProject().getId(),
+                        o.getProject().getName(),
+                        o.getName(),
+                        o.getEmployee().getFirstName(),
+                        o.getEmployee().getLastName()
                 ))
                 .toList();
     }
