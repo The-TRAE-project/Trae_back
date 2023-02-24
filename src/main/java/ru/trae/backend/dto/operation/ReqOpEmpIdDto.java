@@ -1,7 +1,7 @@
 package ru.trae.backend.dto.operation;
 
-public record OpEmpIdDto(
-        long id,
+public record ReqOpEmpIdDto(
+        long operationId,
         long employeeId
 ) {
 }

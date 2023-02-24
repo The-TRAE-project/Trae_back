@@ -3,9 +3,7 @@ package ru.trae.backend.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.trae.backend.dto.operation.OpEmpIdDto;
-import ru.trae.backend.dto.operation.ShortOperationDto;
-import ru.trae.backend.dto.operation.WrapperNewOperationDto;
+import ru.trae.backend.dto.operation.*;
 import ru.trae.backend.service.OperationService;
 
 import java.util.List;
@@ -24,24 +22,24 @@ public class OperationController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/short-project-operations/{projectId}")
-    public ResponseEntity<List<ShortOperationDto>> shortOperationsByProject(@PathVariable long projectId) {
-        return ResponseEntity.ok(operationService.getShortOpDtoListByProject(projectId));
+    @GetMapping("/project-operations/{projectId}")
+    public ResponseEntity<List<OperationDto>> shortOperationsByProject(@PathVariable long projectId) {
+        return ResponseEntity.ok(operationService.getOpsDtoListByProject(projectId));
     }
 
-    @GetMapping("/available-operations-for-employee/{employeeId}")
-    public ResponseEntity<Map<String, List<ShortOperationDto>>> shortOperationsByEmployee(@PathVariable long employeeId) {
-        return ResponseEntity.ok(operationService.getAvailableOperationByTypeWork(employeeId));
+    @GetMapping("/project-operations-for-employee/{projectId}")
+    public ResponseEntity<List<OperationForEmp>> operationsByProjectIdForEmp(@PathVariable long projectId) {
+        return ResponseEntity.ok(operationService.getOperationsByProjectIdForEmp(projectId));
     }
 
     @PostMapping("/receive-operation")
-    public ResponseEntity receiveOperation(@RequestBody OpEmpIdDto dto) {
+    public ResponseEntity receiveOperation(@RequestBody ReqOpEmpIdDto dto) {
         operationService.receiveOperation(dto);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/finish-operation")
-    public ResponseEntity finishOperation(@RequestBody OpEmpIdDto dto) {
+    public ResponseEntity finishOperation(@RequestBody ReqOpEmpIdDto dto) {
         operationService.finishOperation(dto);
         return ResponseEntity.ok().build();
     }

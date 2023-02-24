@@ -1,5 +1,6 @@
 package ru.trae.backend.util;
 
+import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 
 import java.security.SecureRandom;
@@ -24,5 +25,9 @@ public class Util {
         } else {
             return -1;
         }
+    }
+
+    public static int prioritySorting(Operation o1, Operation o2) {
+        return Integer.compare(o1.getPriority(), o2.getPriority());
     }
 }

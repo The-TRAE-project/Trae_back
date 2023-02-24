@@ -4,9 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.mapper.OperationDtoMapper;
-import ru.trae.backend.dto.mapper.ShortOperationDtoMapper;
 import ru.trae.backend.dto.operation.*;
-import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
@@ -17,9 +15,6 @@ import ru.trae.backend.util.Util;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.HOURS;
 
@@ -30,7 +25,6 @@ public class OperationService {
     private final ProjectService projectService;
     private final EmployeeService employeeService;
     private final OperationDtoMapper operationDtoMapper;
-    private final ShortOperationDtoMapper shortOperationDtoMapper;
     private final TypeWorkService typeWorkService;
 
     public Operation getOperationById(long id) {
@@ -89,26 +83,16 @@ public class OperationService {
                             });
     }
 
-    public OperationDto getOperationDtoById(long id) {
-        return operationDtoMapper.apply(getOperationById(id));
-    }
-
-    public List<ShortOperationDto> getShortOpDtoListByProject(long projectId) {
+    public List<OperationDto> getOpsDtoListByProject(long projectId) {
         Project p = projectService.getProjectById(projectId);
         return p.getOperations().stream()
-                .map(shortOperationDtoMapper)
+                .map(operationDtoMapper)
                 .toList();
     }
 
-    public List<ShortOperationDto> getShortOpDtoListReadyForAcceptanceByTypeWork(boolean readyForAcceptance, long typeWorkId) {
-        return operationRepository.findByReadyToAcceptanceAndTypeWork_Id(readyForAcceptance, typeWorkId).stream()
-                .map(shortOperationDtoMapper)
-                .toList();
-    }
-
-    public void receiveOperation(OpEmpIdDto dto) {
+    public void receiveOperation(ReqOpEmpIdDto dto) {
         Employee e = employeeService.getEmployeeById(dto.employeeId());
-        Operation o = getOperationById(dto.id());
+        Operation o = getOperationById(dto.operationId());
 
         checkForAcceptance(o);
         checkCompatibilityTypeWork(o, e);
@@ -121,8 +105,8 @@ public class OperationService {
         operationRepository.save(o);
     }
 
-    public void finishOperation(OpEmpIdDto dto) {
-        Operation o = getOperationById(dto.id());
+    public void finishOperation(ReqOpEmpIdDto dto) {
+        Operation o = getOperationById(dto.operationId());
 
         checkConfirmingEmployee(o, dto.employeeId());
 
@@ -157,11 +141,21 @@ public class OperationService {
         }
     }
 
-    public Map<String, List<ShortOperationDto>> getAvailableOperationByTypeWork(long employeeId) {
-        Set<TypeWork> typeWorks = employeeService.getEmployeeById(employeeId).getTypeWorks();
-        return typeWorks.stream()
-                .filter(tw -> getShortOpDtoListReadyForAcceptanceByTypeWork(true, tw.getId()).size() != 0)
-                .collect(Collectors.toMap(TypeWork::getName, tw -> getShortOpDtoListReadyForAcceptanceByTypeWork(true, tw.getId())));
+    public List<OperationForEmp> getOperationsByProjectIdForEmp(long projectId) {
+        List<Operation> operations = operationRepository.findByProjectId(projectId);
+
+        return operations.stream()
+                .sorted(Util::prioritySorting)
+                .map(o -> new OperationForEmp(
+                        o.getId(),
+                        o.getName(),
+                        o.isReadyToAcceptance(),
+                        o.isEnded(),
+                        o.isInWork(),
+                        o.getEmployee() == null ? null : o.getEmployee().getFirstName(),
+                        o.getEmployee() == null ? null : o.getEmployee().getLastName()
+                ))
+                .toList();
     }
 
     private void checkForAcceptance(Operation o) {
