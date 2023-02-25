@@ -37,10 +37,11 @@ public class AuthService {
   private final BCryptPasswordEncoder encoder;
 
   /**
-   * Method provides user login.
+   * Logs in a manager with the given {@code credentials}.
    *
-   * @param credentials a dto with login and password from the account
-   * @return a dto with a pair of tokens - access and refresh
+   * @param credentials the credentials used to log in the manager
+   * @return a {@link JwtResponse} containing the access token and refresh token
+   * @throws LoginCredentialException if the credentials are invalid
    */
   public JwtResponse login(LoginCredentials credentials) {
     final Manager manager = managerService.getManagerByUsername(credentials.username());
@@ -55,10 +56,10 @@ public class AuthService {
   }
 
   /**
-   * Method provides user logout.
+   * Logout a user
    *
-   * @param principal is the currently logged-in user
-   * @return key "status" with string value
+   * @param principal the user information
+   * @return a response entity with a status message
    */
   public ResponseEntity<Map<String, String>> logout(Principal principal) {
     jwtUtil.deletePayloadRandomPieces(principal.getName());
@@ -66,10 +67,11 @@ public class AuthService {
   }
 
   /**
-   * Method to get a new access token.
+   * This method generates a new {@code accessToken} and returns a {@link JwtResponse}
+   * containing the new {@code accessToken}.
    *
-   * @param refreshToken token with a long lifetime
-   * @return only access token
+   * @param refreshToken the refresh token to validate and retrieve the user's username
+   * @return a {@link JwtResponse} containing the new {@code accessToken}
    */
   public JwtResponse getAccessToken(String refreshToken) {
     final String login = jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken);
@@ -80,10 +82,10 @@ public class AuthService {
   }
 
   /**
-   * Method to get a new pair of tokens.
+   * Get new JwtResponse with new access token and refresh token
    *
-   * @param refreshToken token with a long lifetime
-   * @return a dto with a pair of tokens - access and refresh
+   * @param refreshToken refresh token which will be validated
+   * @return new {@link JwtResponse} with new access token and refresh token
    */
   public JwtResponse getRefreshToken(String refreshToken) {
     final String login = jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken);

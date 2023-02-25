@@ -32,7 +32,7 @@ public class CustomerService {
    * Method for saving new customers to the database.
    *
    * @param dto contains data for creating a new customer
-   * @return a saved customer entity
+   * @return the entity of the new customer
    */
   public Customer saveNewCustomer(CustomerDto dto) {
     Customer c = new Customer();
@@ -45,6 +45,14 @@ public class CustomerService {
     return customerRepository.save(c);
   }
 
+  /**
+   * Gets a customer with the specified first, middle and last name.
+   *
+   * @param firstName  the first name of the customer to get
+   * @param middleName the middle name of the customer to get
+   * @param lastName   the last name of the customer to get
+   * @return an optional containing the customer or an empty optional if no customer was found
+   */
   public Optional<Customer> getCustomer(String firstName, String middleName, String lastName) {
     return customerRepository.findByFirstMiddleLastNameIgnoreCase(firstName, middleName, lastName);
   }

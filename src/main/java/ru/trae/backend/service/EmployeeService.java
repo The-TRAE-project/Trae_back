@@ -72,10 +72,11 @@ public class EmployeeService {
   }
 
   /**
-   * Retrieve <code>Employee</code> from the data store by id.
+   * Retrieves a specific employee by ID.
    *
-   * @param id employee id number
-   * @return a saved Employee entity
+   * @param id The ID of the desired employee
+   * @return The employee with the specified ID
+   * @throws EmployeeException When the employee with the specified ID is not found
    */
   public Employee getEmployeeById(long id) {
     return employeeRepository.findById(id).orElseThrow(
@@ -139,9 +140,9 @@ public class EmployeeService {
   }
 
   /**
-   * Retrieves the entities of all employees from the database and converts them to a dto list.
+   * Method returns all employees in the repository.
    *
-   * @return employees dto list
+   * @return a list of {@link EmployeeDto} objects
    */
   public List<EmployeeDto> getAllEmployees() {
     return employeeRepository.findAll()
@@ -162,12 +163,12 @@ public class EmployeeService {
   }
 
   /**
-   * The method checks if there is an existing account with this data.
-   * If there is a complete match, an exception is thrown.
+   * Checks whether employee with specified credentials already exists.
    *
-   * @param firstName  of employee
-   * @param middleName of employee
-   * @param lastName   of employee
+   * @param firstName employee's first name
+   * @param middleName employee's middle name
+   * @param lastName employee's last name
+   * @throws EmployeeException if such employee already exists
    */
   public void checkAvailableCredentials(String firstName, String middleName, String lastName) {
     if (existsByCredentials(firstName, middleName, lastName)) {
