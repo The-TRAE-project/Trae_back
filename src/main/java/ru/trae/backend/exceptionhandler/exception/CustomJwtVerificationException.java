@@ -10,18 +10,16 @@
 
 package ru.trae.backend.exceptionhandler.exception;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 /**
- * WorkingShiftException is a subclass of AbstractException used to indicate an error relating to a
- * Working Shift.
+ * CustomJwtVerificationException is a custom exception class used to handle errors
+ * related to Jwt Verification.
  *
  * @author Vladimir Olennikov
  */
-@Getter
-public class WorkingShiftException extends AbstractException {
-  public WorkingShiftException(HttpStatus status, String errorMessage) {
+public class CustomJwtVerificationException extends AbstractException {
+  public CustomJwtVerificationException(HttpStatus status, String errorMessage) {
     super(status, errorMessage);
   }
 }

@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import ru.trae.backend.entity.PayloadRandomPiece;
-import ru.trae.backend.exceptionhandler.exception.CustomJWTVerificationException;
+import ru.trae.backend.exceptionhandler.exception.CustomJwtVerificationException;
 import ru.trae.backend.exceptionhandler.exception.PayloadPieceException;
 import ru.trae.backend.repository.PayloadRandomPieceRepository;
 
@@ -133,7 +133,7 @@ public class JwtUtil {
     String savedUuid = prp.get().getUuid();
 
     if (!savedUuid.equals(jwt.getClaim("UUID").asString())) {
-      throw new CustomJWTVerificationException(HttpStatus.BAD_REQUEST, "Invalid token UUID");
+      throw new CustomJwtVerificationException(HttpStatus.BAD_REQUEST, "Invalid token UUID");
     }
     return username;
   }
