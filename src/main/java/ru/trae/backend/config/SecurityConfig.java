@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2023. Vladimir Olennikov.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ru.trae.backend.config;
 
 import lombok.RequiredArgsConstructor;
@@ -13,37 +23,48 @@ import ru.trae.backend.exceptionhandler.RestAccessDeniedHandler;
 import ru.trae.backend.exceptionhandler.RestAuthenticationEntryPoint;
 import ru.trae.backend.util.jwt.JwtFilter;
 
+/**
+ * Security configuration to provide authentication and authorization.
+ *
+ * @author Vladimir Olennikov
+ */
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-    private final RestAccessDeniedHandler restAccessDeniedHandler;
-    private final JwtFilter jwtFilter;
+  private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+  private final RestAccessDeniedHandler restAccessDeniedHandler;
+  private final JwtFilter jwtFilter;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
-                .and()
-                .exceptionHandling().accessDeniedHandler(restAccessDeniedHandler)
-                .and()
-                .authorizeRequests()
-//                .antMatchers("/api/auth/login", "/api/auth/token","/api/manager/register").permitAll()
-//                .antMatchers("/api/employee/**").hasAuthority(ROLE_MANAGER.name())
-//                .antMatchers("/api/operation/**").hasAuthority(ROLE_EMPLOYEE.name())
-//                .antMatchers("/api/manager/**").hasAuthority(ROLE_ADMINISTRATOR.name())
-//                .anyRequest().authenticated()
-                .anyRequest().permitAll()
-                .and()
-                .httpBasic().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+  /**
+   * This method is used to create a bean for SecurityFilterChain.
+   *
+   * @param httpSecurity HttpSecurity object
+   * @return SecurityFilterChain object
+   * @throws Exception exception
+   */
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+    httpSecurity.csrf().disable()
+            .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
+            .and()
+            .exceptionHandling().accessDeniedHandler(restAccessDeniedHandler)
+            .and()
+            .authorizeRequests()
+//    .antMatchers("/api/auth/login", "/api/auth/token","/api/manager/register").permitAll()
+//    .antMatchers("/api/employee/**").hasAuthority(ROLE_MANAGER.name())
+//   .antMatchers("/api/operation/**").hasAuthority(ROLE_EMPLOYEE.name())
+//    .antMatchers("/api/manager/**").hasAuthority(ROLE_ADMINISTRATOR.name())
+//    .anyRequest().authenticated()
+            .anyRequest().permitAll()
+            .and()
+            .httpBasic().disable()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-        httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+    httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
-        return httpSecurity.build();
-    }
-
+    return httpSecurity.build();
+  }
 }

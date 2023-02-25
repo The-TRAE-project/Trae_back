@@ -30,12 +30,14 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
   boolean existsByPinCode(int pinCode);
 
   /**
-   * Checks if an {@link Employee} exists with the given first, middle and last name (case insensitive).
+   * Checks if an {@link Employee} exists with the given first, middle and last name
+   * (case insensitive).
    *
    * @param firstName  the first name to search for
    * @param middleName the middle name to search for
    * @param lastName   the last name to search for
-   * @return true if an {@link Employee} exists with given first, middle and last name, false otherwise
+   * @return true if an {@link Employee} exists with given first, middle and last name,
+   *         false otherwise
    */
   @Query("""
           select (count(e) > 0) from Employee e

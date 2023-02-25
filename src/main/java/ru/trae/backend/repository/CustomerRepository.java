@@ -18,8 +18,8 @@ import ru.trae.backend.entity.user.Customer;
 
 /**
  * This repository interface provides methods for performing CRUD operations on Customer entities.
- * It also provides custom query methods for finding Customer entities by first, middle, and last name,
- * ignoring case.
+ * It also provides custom query methods for finding Customer entities by first, middle, and last
+ * name, ignoring case.
  *
  * @author Vladimir Olennikov
  */

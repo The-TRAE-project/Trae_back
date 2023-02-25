@@ -56,7 +56,7 @@ public class AuthService {
   }
 
   /**
-   * Logout a user
+   * Logout a user.
    *
    * @param principal the user information
    * @return a response entity with a status message
@@ -82,7 +82,7 @@ public class AuthService {
   }
 
   /**
-   * Get new JwtResponse with new access token and refresh token
+   * Get new JwtResponse with new access token and refresh token.
    *
    * @param refreshToken refresh token which will be validated
    * @return new {@link JwtResponse} with new access token and refresh token

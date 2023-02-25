@@ -151,10 +151,25 @@ public class EmployeeService {
             .toList();
   }
 
+  /**
+   * Checks if an employee exists based on their pin code.
+   *
+   * @param pinCode the PIN code of the employee to check
+   * @return true if an employee exists with the specified pin code, false otherwise
+   */
   public boolean existsEmpByPinCode(int pinCode) {
     return employeeRepository.existsByPinCode(pinCode);
   }
 
+  /**
+   * Checks if an employee exists in the database with the given first name, middle name, and last
+   * name.
+   *
+   * @param firstName  the first name of the employee
+   * @param middleName the middle name of the employee
+   * @param lastName   the last name of the employee
+   * @return true if the employee exists, false if the employee does not exist
+   */
   public boolean existsByCredentials(String firstName, String middleName, String lastName) {
     return employeeRepository.existsByFirstMiddleLastNameIgnoreCase(
             firstName,
@@ -165,9 +180,9 @@ public class EmployeeService {
   /**
    * Checks whether employee with specified credentials already exists.
    *
-   * @param firstName employee's first name
+   * @param firstName  employee's first name
    * @param middleName employee's middle name
-   * @param lastName employee's last name
+   * @param lastName   employee's last name
    * @throws EmployeeException if such employee already exists
    */
   public void checkAvailableCredentials(String firstName, String middleName, String lastName) {
