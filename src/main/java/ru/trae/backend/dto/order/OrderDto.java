@@ -1,10 +1,14 @@
 package ru.trae.backend.dto.order;
 
+import java.time.LocalDateTime;
 import ru.trae.backend.dto.CustomerDto;
 import ru.trae.backend.dto.manager.ManagerDto;
 
-import java.time.LocalDateTime;
-
+/**
+ * Data Transfer Object for Order.
+ *
+ * @author Vladimir Olennikov
+ */
 public record OrderDto(
         long id,
         String name,
@@ -17,5 +21,4 @@ public record OrderDto(
         CustomerDto customerDto,
         ManagerDto managerDto
 ) {
-
 }
