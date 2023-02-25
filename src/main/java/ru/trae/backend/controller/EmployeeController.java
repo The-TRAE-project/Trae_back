@@ -39,23 +39,34 @@ public class EmployeeController {
   /**
    * Endpoint for checking in an employee with a given pin.
    *
-   * @param pin the employee's pin
+   * @param pin the employee's pin code
    * @return the employee's information
    */
-  @GetMapping("/checkin/{pin}")
-  public ResponseEntity<ShortEmployeeDto> employeeCheckIn(@PathVariable int pin) {
-    return ResponseEntity.ok(employeeService.checkInEmployee(pin));
+  @GetMapping("/login/{pin}")
+  public ResponseEntity<ShortEmployeeDto> employeeLogin(@PathVariable int pin) {
+    return ResponseEntity.ok(employeeService.employeeLogin(pin));
+  }
+
+  /**
+   * Endpoint for confirming the arrival of an employee for a shift.
+   *
+   * @param employeeId the employee's ID
+   * @return the employee's information
+   */
+  @GetMapping("/checkin/{employeeId}")
+  public ResponseEntity<ShortEmployeeDto> employeeCheckIn(@PathVariable long employeeId) {
+    return ResponseEntity.ok(employeeService.checkInEmployee(employeeId));
   }
 
   /**
    * Endpoint for checking out an employee with a given id.
    *
-   * @param id the employee's id
+   * @param employeeId the employee's id
    * @return the employee's information
    */
-  @GetMapping("/checkout/{id}")
-  public ResponseEntity<ShortEmployeeDto> employeeCheckOut(@PathVariable long id) {
-    return ResponseEntity.ok(employeeService.departureEmployee(id));
+  @GetMapping("/checkout/{employeeId}")
+  public ResponseEntity<ShortEmployeeDto> employeeCheckOut(@PathVariable long employeeId) {
+    return ResponseEntity.ok(employeeService.departureEmployee(employeeId));
   }
 
   /**

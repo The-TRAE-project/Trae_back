@@ -38,6 +38,6 @@ public class TimeControlMapper implements Function<TimeControl, TimeControlDto> 
             tc.isAutoClosingShift(),
             tc.getArrival(),
             tc.getDeparture(),
-            new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName()));
+            new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName(), tc.isOnShift()));
   }
 }

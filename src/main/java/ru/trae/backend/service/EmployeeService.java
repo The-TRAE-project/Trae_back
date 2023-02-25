@@ -72,7 +72,7 @@ public class EmployeeService {
   }
 
   /**
-   * Retrieves a specific employee by ID.
+   * Retrieves a specific employee by id.
    *
    * @param id The ID of the desired employee
    * @return The employee with the specified ID
@@ -88,55 +88,70 @@ public class EmployeeService {
     return employeeDtoMapper.apply(getEmployeeById(id));
   }
 
-  public ShortEmployeeDto getShortDtoEmpById(long id) {
-    Employee e = getEmployeeById(id);
-    return new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName());
+  /**
+   * Method for checking in an employee with a given pin.
+   *
+   * @param pinCode the employee's pin code
+   * @return the shortened dto of the employee
+   */
+  public ShortEmployeeDto employeeLogin(int pinCode) {
+    Optional<Employee> e = employeeRepository.findByPinCode(pinCode);
+
+    if (e.isEmpty()) {
+      throw new EmployeeException(HttpStatus.NOT_FOUND,
+              "Employee with pin code: " + pinCode + " not found");
+    }
+
+    if (!e.get().isActive()) {
+      throw new EmployeeException(HttpStatus.FORBIDDEN, "The account is disabled");
+    }
+
+    return new ShortEmployeeDto(
+            e.get().getId(),
+            e.get().getFirstName(),
+            e.get().getLastName(),
+            workingShiftService.employeeOnShift(true, e.get().getId()));
   }
 
   /**
    * A method for confirming the arrival of an employee for a shift.
-   * The existence of the pin code in the database and the status of the
-   * employee's account are checked.
    *
-   * @param pin employee pin code
+   * @param employeeId employee id
    * @return the shortened dto of the employee
    */
-  public ShortEmployeeDto checkInEmployee(int pin) {
-    Optional<Employee> employee = employeeRepository.findByPinCode(pin);
+  public ShortEmployeeDto checkInEmployee(long employeeId) {
+    Employee e = getEmployeeById(employeeId);
 
-    if (employee.isEmpty()) {
-      throw new EmployeeException(HttpStatus.NOT_FOUND,
-              "Employee with pin code: " + pin + " not found");
+    if (!workingShiftService.employeeOnShift(true, e.getId())) {
+      workingShiftService.arrivalEmployeeOnShift(e);
     }
 
-    if (!employee.get().isActive()) {
-      throw new EmployeeException(HttpStatus.FORBIDDEN, "The account is disabled");
-    }
-
-    if (!workingShiftService.employeeOnShift(true, employee.get().getId())) {
-      workingShiftService.arrivalEmployeeOnShift(employee.get());
-    }
-
-    return new ShortEmployeeDto(employee.get().getId(),
-            employee.get().getFirstName(),
-            employee.get().getLastName());
+    return new ShortEmployeeDto(
+            e.getId(),
+            e.getFirstName(),
+            e.getLastName(),
+            workingShiftService.employeeOnShift(true, e.getId()));
   }
 
   /**
    * Method of confirming the employee's departure from the work shift.
    * Assigns the time of the employee's departure in the active work shift.
    *
-   * @param id employee id number
+   * @param employeeId employee id number
    * @return the shortened dto of the employee
    */
-  public ShortEmployeeDto departureEmployee(long id) {
-    Employee e = getEmployeeById(id);
+  public ShortEmployeeDto departureEmployee(long employeeId) {
+    Employee e = getEmployeeById(employeeId);
 
     if (workingShiftService.employeeOnShift(true, e.getId())) {
-      timeControlService.updateTimeControlForDeparture(id, LocalDateTime.now());
+      timeControlService.updateTimeControlForDeparture(employeeId, LocalDateTime.now());
     }
 
-    return new ShortEmployeeDto(e.getId(), e.getFirstName(), e.getLastName());
+    return new ShortEmployeeDto(
+            e.getId(),
+            e.getFirstName(),
+            e.getLastName(),
+            workingShiftService.employeeOnShift(true, e.getId()));
   }
 
   /**
