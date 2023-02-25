@@ -1,30 +1,61 @@
+/*
+ * Copyright (c) 2023. Vladimir Olennikov.
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package ru.trae.backend.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.type.NewTypeWorkDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.service.TypeWorkService;
 
-import java.util.List;
-
+/**
+ * TypeWorkController is a REST controller for managing type-work related operations. It provides
+ * endpoints for retrieving
+ * a list of types, as well as creating new types of work.
+ *
+ * @author Vladimir Olennikov
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/type-work")
 public class TypeWorkController {
-    private final TypeWorkService typeWorkService;
+  private final TypeWorkService typeWorkService;
 
-    @GetMapping("/types")
-    public ResponseEntity<List<TypeWorkDto>> types() {
-        return ResponseEntity.ok(typeWorkService.getTypes());
-    }
+  /**
+   * This endpoint is used to retrieve a list of types of work.
+   *
+   * @return a list of type work dtos
+   */
+  @GetMapping("/types")
+  public ResponseEntity<List<TypeWorkDto>> types() {
+    return ResponseEntity.ok(typeWorkService.getTypes());
+  }
 
-    @PostMapping("/new")
-    public ResponseEntity<TypeWorkDto> typeWorkPersist(@RequestBody NewTypeWorkDto dto) {
-        typeWorkService.checkAvailableByName(dto.name());
-        TypeWork tw = typeWorkService.saveNewTypeWork(dto);
-        return ResponseEntity.ok(new TypeWorkDto(tw.getId(), tw.getName()));
-    }
+  /**
+   * This endpoint is used to create a new type of work.
+   *
+   * @param dto a dto containing the name of the new type of work
+   * @return the newly created type work DTO
+   */
+  @PostMapping("/new")
+  public ResponseEntity<TypeWorkDto> typeWorkPersist(@RequestBody NewTypeWorkDto dto) {
+    typeWorkService.checkAvailableByName(dto.name());
+    TypeWork tw = typeWorkService.saveNewTypeWork(dto);
+    return ResponseEntity.ok(new TypeWorkDto(tw.getId(), tw.getName()));
+  }
 }
