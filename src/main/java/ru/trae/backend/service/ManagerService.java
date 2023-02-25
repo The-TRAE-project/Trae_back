@@ -24,7 +24,7 @@ import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 import ru.trae.backend.util.Role;
-import ru.trae.backend.util.jwt.JWTUtil;
+import ru.trae.backend.util.jwt.JwtUtil;
 
 /**
  * Service class for working with manager data.
@@ -37,7 +37,7 @@ public class ManagerService {
   private final ManagerRepository managerRepository;
   private final ManagerDtoMapper managerDtoMapper;
   private final BCryptPasswordEncoder encoder;
-  private final JWTUtil jwtUtil;
+  private final JwtUtil jwtUtil;
 
   /**
    * Method for saving new manager to the database.

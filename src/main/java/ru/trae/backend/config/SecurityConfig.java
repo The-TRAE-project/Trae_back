@@ -11,9 +11,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import ru.trae.backend.exceptionhandler.RestAccessDeniedHandler;
 import ru.trae.backend.exceptionhandler.RestAuthenticationEntryPoint;
-import ru.trae.backend.util.jwt.JWTFilter;
-
-import static ru.trae.backend.util.Role.*;
+import ru.trae.backend.util.jwt.JwtFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +21,7 @@ public class SecurityConfig {
 
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
     private final RestAccessDeniedHandler restAccessDeniedHandler;
-    private final JWTFilter jwtFilter;
+    private final JwtFilter jwtFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {

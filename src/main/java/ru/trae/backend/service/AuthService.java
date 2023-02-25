@@ -22,7 +22,7 @@ import ru.trae.backend.dto.LoginCredentials;
 import ru.trae.backend.dto.jwt.JwtResponse;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.LoginCredentialException;
-import ru.trae.backend.util.jwt.JWTUtil;
+import ru.trae.backend.util.jwt.JwtUtil;
 
 /**
  * Service class for JWT processing.
@@ -33,7 +33,7 @@ import ru.trae.backend.util.jwt.JWTUtil;
 @RequiredArgsConstructor
 public class AuthService {
   private final ManagerService managerService;
-  private final JWTUtil jwtUtil;
+  private final JwtUtil jwtUtil;
   private final BCryptPasswordEncoder encoder;
 
   /**
