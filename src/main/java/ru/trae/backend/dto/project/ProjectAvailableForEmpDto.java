@@ -7,8 +7,8 @@ package ru.trae.backend.dto.project;
  * @author Vladimir Olennikov
  */
 public record ProjectAvailableForEmpDto(
-        long projectId,
-        long projectNumber,
+        long id,
+        long number,
         String customerLastName,
         String projectName,
         String availableOperationName
