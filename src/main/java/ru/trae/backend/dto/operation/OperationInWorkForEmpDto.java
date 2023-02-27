@@ -10,7 +10,6 @@ public record OperationInWorkForEmpDto(
         long projectId,
         String projectName,
         String operationName,
-        String employeeFirstName,
-        String employeeLastName
+        String customerLastName
 ) {
 }

@@ -13,8 +13,6 @@ package ru.trae.backend.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -23,7 +21,6 @@ import ru.trae.backend.dto.mapper.ProjectDtoMapper;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
-import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
@@ -107,41 +104,6 @@ public class ProjectService {
 
     return projects.stream()
             .sorted(Util::dateSorting)
-            .map(projectAvailableDtoMapper)
-            .toList();
-  }
-
-  /**
-   * Returns a map of {@link Project} ids grouped by {@link TypeWork} names for a
-   * given {@link Employee}.
-   *
-   * @param employeeId the id of the requested {@link Employee}
-   * @return a map of {@link Project} ids grouped by {@link TypeWork} names for the
-   *         given {@link Employee}
-   */
-  public Map<String, List<Long>> getGroupingAvailableProjectsId(long employeeId) {
-    Employee e = employeeService.getEmployeeById(employeeId);
-
-    return e.getTypeWorks().stream()
-            .collect(Collectors.toMap(TypeWork::getName,
-                    tw -> projectRepository.findAvailableProjectsByTypeWork(tw.getId())
-                            .stream()
-                            .sorted(Util::dateSorting)
-                            .map(Project::getId)
-                            .toList()));
-  }
-
-  /**
-   * Returns a list of {@link ProjectAvailableForEmpDto} objects for the given list
-   * of {@link Project} ids.
-   *
-   * @param projectIds the list of {@link Project} ids
-   * @return a list of {@link ProjectAvailableForEmpDto} objects for the given list
-   *         of {@link Project} ids
-   */
-  public List<ProjectAvailableForEmpDto> getGroupedAvailableProjects(List<Long> projectIds) {
-    return projectIds.stream()
-            .map(this::getProjectById)
             .map(projectAvailableDtoMapper)
             .toList();
   }

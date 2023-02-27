@@ -11,7 +11,6 @@
 package ru.trae.backend.controller;
 
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,17 +57,5 @@ public class ProjectController {
   public ResponseEntity<List<ProjectAvailableForEmpDto>> availableProjectsByEmpId(
           @PathVariable long employeeId) {
     return ResponseEntity.ok(projectService.getAvailableProjects(employeeId));
-  }
-
-  @GetMapping("/employee/grouping-available-projects/{employeeId}")
-  public ResponseEntity<Map<String, List<Long>>> groupingAvailableProjectsByEmpId(
-          @PathVariable long employeeId) {
-    return ResponseEntity.ok(projectService.getGroupingAvailableProjectsId(employeeId));
-  }
-
-  @PostMapping("/employee/grouped-available-projects/")
-  public ResponseEntity<List<ProjectAvailableForEmpDto>> groupingAvailableProjectsByEmpId(
-          @RequestBody List<Long> projectIds) {
-    return ResponseEntity.ok(projectService.getGroupedAvailableProjects(projectIds));
   }
 }

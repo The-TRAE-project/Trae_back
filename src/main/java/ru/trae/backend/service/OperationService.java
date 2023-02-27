@@ -239,8 +239,7 @@ public class OperationService {
                     o.getProject().getId(),
                     o.getProject().getName(),
                     o.getName(),
-                    o.getEmployee().getFirstName(),
-                    o.getEmployee().getLastName()
+                    o.getProject().getOrder().getCustomer().getLastName()
             ))
             .toList();
   }
