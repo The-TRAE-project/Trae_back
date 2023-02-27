@@ -40,9 +40,13 @@ public class Operation extends Task {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
+  @Column(name = "priority")
   private int priority;
+  @Column(name = "in_work")
   private boolean inWork;
+  @Column(name = "ready_to_acceptance")
   private boolean readyToAcceptance;
+  @Column(name = "acceptance_date")
   private LocalDateTime acceptanceDate;
   @ToString.Exclude
   @ManyToOne

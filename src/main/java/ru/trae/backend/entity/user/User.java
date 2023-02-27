@@ -12,6 +12,7 @@ package ru.trae.backend.entity.user;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,10 +28,15 @@ import lombok.Setter;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class User {
+  @Column(name = "first_name")
   private String firstName;
+  @Column(name = "middle_name")
   private String middleName;
+  @Column(name = "last_name")
   private String lastName;
+  @Column(name = "phone")
   private Long phone;
+  @Column(name = "date_of_register", nullable = false)
   private LocalDateTime dateOfRegister;
 
   @Override

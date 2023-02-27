@@ -11,6 +11,7 @@
 package ru.trae.backend.entity.task;
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,12 +27,19 @@ import lombok.Setter;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class Task {
+  @Column(name = "name")
   private String name;
+  @Column(name = "description")
   private String description;
+  @Column(name = "start_date")
   private LocalDateTime startDate;
+  @Column(name = "planned_end_date")
   private LocalDateTime plannedEndDate;
+  @Column(name = "real_end_date")
   private LocalDateTime realEndDate;
+  @Column(name = "period")
   private int period;
+  @Column(name = "is_ended")
   private boolean isEnded;
 
 }

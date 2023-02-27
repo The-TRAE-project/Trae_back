@@ -47,8 +47,9 @@ public class Employee extends User {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
-  @Column(unique = true, nullable = false)
+  @Column(name = "pin_code", unique = true, nullable = false)
   private int pinCode;
+  @Column(name = "is_active")
   private boolean isActive;
   @ToString.Exclude
   @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)

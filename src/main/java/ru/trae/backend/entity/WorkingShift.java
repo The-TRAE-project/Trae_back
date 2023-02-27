@@ -41,8 +41,11 @@ public class WorkingShift {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
+  @Column(name = "start_shift")
   private LocalDateTime startShift;
+  @Column(name = "end_shift")
   private LocalDateTime endShift;
+  @Column(name = "is_ended")
   private boolean isEnded;
   @ToString.Exclude
   @OneToMany(mappedBy = "workingShift", fetch = FetchType.EAGER)

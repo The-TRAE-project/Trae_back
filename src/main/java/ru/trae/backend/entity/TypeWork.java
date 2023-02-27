@@ -40,8 +40,8 @@ public class TypeWork {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
+  @Column(name = "name")
   private String name;
-
   @ToString.Exclude
   @OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)
   private List<Operation> operations = new ArrayList<>();

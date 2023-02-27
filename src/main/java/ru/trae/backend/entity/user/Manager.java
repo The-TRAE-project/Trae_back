@@ -50,20 +50,25 @@ public class Manager extends User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
-  @Column(unique = true, nullable = false)
+  @Column(name = "username", unique = true, nullable = false)
   private String username;
-  @Column(unique = true, nullable = false)
+  @Column(name = "email", unique = true, nullable = false)
   private String email;
-  @Column(nullable = false)
+  @Column(name = "password", nullable = false)
   private String password;
   @JsonIgnore
+  @Column(name = "account_non_expired")
   private boolean accountNonExpired;
   @JsonIgnore
+  @Column(name = "account_non_locked")
   private boolean accountNonLocked;
   @JsonIgnore
+  @Column(name = "credentials_non_expired")
   private boolean credentialsNonExpired;
   @JsonIgnore
+  @Column(name = "enabled")
   private boolean enabled;
+  @Column(name = "role")
   private Role role;
   @ToString.Exclude
   @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)

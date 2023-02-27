@@ -41,9 +41,13 @@ public class TimeControl {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
+  @Column(name = "is_on_shift")
   private boolean isOnShift;
+  @Column(name = "auto_closing_shift")
   private boolean autoClosingShift;
+  @Column(name = "arrival")
   private LocalDateTime arrival;
+  @Column(name = "departure")
   private LocalDateTime departure;
   @ToString.Exclude
   @ManyToOne
