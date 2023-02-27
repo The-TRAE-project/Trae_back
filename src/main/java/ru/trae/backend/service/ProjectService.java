@@ -53,6 +53,7 @@ public class ProjectService {
    */
   public Project saveNewProject(NewProjectDto dto) {
     Project p = new Project();
+    p.setNumber(dto.number());
     p.setName(dto.name());
     p.setDescription(dto.description());
     p.setPeriod(dto.period());

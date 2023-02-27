@@ -31,6 +31,7 @@ public class ProjectAvailableDtoMapper implements Function<Project, ProjectAvail
   public ProjectAvailableForEmpDto apply(Project p) {
     return new ProjectAvailableForEmpDto(
             p.getId(),
+            p.getNumber(),
             p.getOrder().getCustomer().getLastName(),
             p.getName(),
             p.getOperations().stream()

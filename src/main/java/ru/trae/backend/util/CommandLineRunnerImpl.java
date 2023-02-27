@@ -172,6 +172,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   public void insertProject() {
     if (projectService.getAllProjects().size() == 0) {
       NewProjectDto dto1 = new NewProjectDto(
+              345,
               "Шкаф",
               "Здесь должно быть правильное описание, пояснение, указания и тд",
               40,
@@ -179,6 +180,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               1L);
 
       NewProjectDto dto2 = new NewProjectDto(
+              346,
               "Дверь",
               "Здесь должно быть правильное описание, пояснение, указания и тд",
               25,
@@ -186,6 +188,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               1L);
 
       NewProjectDto dto3 = new NewProjectDto(
+              284,
               "Стол",
               "Здесь должно быть правильное описание, пояснение, указания и тд",
               35,

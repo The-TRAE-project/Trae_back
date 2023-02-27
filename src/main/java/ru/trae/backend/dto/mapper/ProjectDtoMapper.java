@@ -31,6 +31,7 @@ public class ProjectDtoMapper implements Function<Project, ProjectDto> {
   public ProjectDto apply(Project p) {
     return new ProjectDto(
             p.getId(),
+            p.getNumber(),
             p.getName(),
             p.getDescription(),
             p.getStartDate(),

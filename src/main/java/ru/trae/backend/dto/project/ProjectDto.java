@@ -7,7 +7,7 @@ import ru.trae.backend.dto.operation.OperationDto;
 
 /**
  * This class represents a Project Data Transfer Object (DTO).
- * It contains the data associated with a project, such as its ID, name, description, start date,
+ * It contains the data associated with a project, such as its ID, number, name, description, start date,
  * planned end date, real end date, period, if it is ended or not, a list of operations and
  * a manager DTO.
  *
@@ -15,6 +15,7 @@ import ru.trae.backend.dto.operation.OperationDto;
  */
 public record ProjectDto(
         long id,
+        long number,
         String name,
         String description,
         LocalDateTime startDate,

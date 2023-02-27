@@ -8,6 +8,7 @@ package ru.trae.backend.dto.project;
  */
 public record ProjectAvailableForEmpDto(
         long projectId,
+        long projectNumber,
         String customerLastName,
         String projectName,
         String availableOperationName

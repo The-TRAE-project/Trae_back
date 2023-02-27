@@ -43,6 +43,8 @@ public class Project extends Task {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
+  @Column(name = "number", unique = true, nullable = false)
+  private long number;
   @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "manager_id", nullable = false)

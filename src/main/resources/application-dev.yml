@@ -1,6 +1,6 @@
 spring:
   liquibase:
-    enabled: false
+    enabled: true
     change-log: classpath:./db/changelog/db.changelog-master.xml
 
   datasource:
@@ -13,7 +13,7 @@ spring:
     database: POSTGRESQL
     show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
 
 #  logging:
 #    level:

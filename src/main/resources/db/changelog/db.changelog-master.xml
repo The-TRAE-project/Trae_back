@@ -28,4 +28,5 @@
     <include file="/db/changelog/changeset/employees_type_works/023-add-foreign-key-constraint-employees-type-works-type-works.xml"/>
     <include file="/db/changelog/changeset/orders/024-add-foreign-key-constraint-orders-customers.xml"/>
     <include file="/db/changelog/changeset/operations/025-add-foreign-key-constraint-operations-projects.xml"/>
+    <include file="/db/changelog/changeset/projects/026-add-column-number-with-constraints.xml"/>
 </databaseChangeLog>
