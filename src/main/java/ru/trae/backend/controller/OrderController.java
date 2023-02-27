@@ -41,9 +41,9 @@ public class OrderController {
     return ResponseEntity.ok(orderDto);
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<OrderDto> order(@PathVariable long id) {
-    return ResponseEntity.ok(orderService.convertFromOrderById(id));
+  @GetMapping("/{orderId}")
+  public ResponseEntity<OrderDto> order(@PathVariable long orderId) {
+    return ResponseEntity.ok(orderService.convertFromOrderById(orderId));
   }
 
   @GetMapping("/orders")

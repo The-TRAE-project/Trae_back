@@ -44,9 +44,9 @@ public class ProjectController {
     return ResponseEntity.ok(projectDto);
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<ProjectDto> project(@PathVariable long id) {
-    return ResponseEntity.ok(projectService.getProjectDtoById(id));
+  @GetMapping("/{projectId}")
+  public ResponseEntity<ProjectDto> project(@PathVariable long projectId) {
+    return ResponseEntity.ok(projectService.getProjectDtoById(projectId));
   }
 
   @GetMapping("/projects")

@@ -36,8 +36,8 @@ public class WorkingShiftController {
     return ResponseEntity.ok(workingShiftService.getActive());
   }
 
-  @GetMapping("/on-shift/{id}")
-  public ResponseEntity<Boolean> statusEmployee(@PathVariable int id) {
-    return ResponseEntity.ok(workingShiftService.employeeOnShift(true, id));
+  @GetMapping("/on-shift/{employeeId}")
+  public ResponseEntity<Boolean> statusEmployee(@PathVariable long employeeId) {
+    return ResponseEntity.ok(workingShiftService.employeeOnShift(true, employeeId));
   }
 }

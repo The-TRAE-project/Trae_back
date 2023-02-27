@@ -52,12 +52,12 @@ public class ManagerController {
   /**
    * Gets a manager by its id.
    *
-   * @param id the id of the manager
+   * @param managerId the id of the manager
    * @return the response entity with the manager data
    */
-  @GetMapping("/{id}")
-  private ResponseEntity<ManagerDto> manager(@PathVariable long id) {
-    Manager m = managerService.getManagerById(id);
+  @GetMapping("/{managerId}")
+  private ResponseEntity<ManagerDto> manager(@PathVariable long managerId) {
+    Manager m = managerService.getManagerById(managerId);
     return ResponseEntity.ok(managerService.convertFromManager(m));
   }
 
