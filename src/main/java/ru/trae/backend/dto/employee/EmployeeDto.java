@@ -9,7 +9,7 @@ import java.util.List;
  * @author Vladimir Olennikov
  */
 public record EmployeeDto(
-        Long id,
+        long id,
         String firstName,
         String middleName,
         String lastName,
