@@ -11,8 +11,11 @@
 package ru.trae.backend.controller;
 
 import java.util.List;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,6 +36,7 @@ import ru.trae.backend.service.EmployeeService;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/employee")
+@Validated
 public class EmployeeController {
   private final EmployeeService employeeService;
 
@@ -43,7 +47,7 @@ public class EmployeeController {
    * @return the employee's information
    */
   @GetMapping("/login/{pin}")
-  public ResponseEntity<ShortEmployeeDto> employeeLogin(@PathVariable int pin) {
+  public ResponseEntity<ShortEmployeeDto> employeeLogin(@PathVariable @Min(100) @Max(999) int pin) {
     return ResponseEntity.ok(employeeService.employeeLogin(pin));
   }
 

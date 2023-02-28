@@ -1,6 +1,6 @@
-url: jdbc:postgresql://localhost:5432/traeDB
-username: postgres
-password: postgres
+url: ${POSTGRES_URL:jdbc:postgresql://localhost:5432/traeDB}
+username: ${POSTGRES_USER:postgres}
+password: ${POSTGRES_PASS:postgres}
 driver: org.postgresql.Driver
 outputChangeLogFile: src/main/resources/db/output/liquibase-outputChangeLog.xml
 changeLogFile: src/main/resources/db/changelog/db.changelog-master.xml
