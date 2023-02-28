@@ -237,6 +237,7 @@ public class OperationService {
             .map(o -> new OperationInWorkForEmpDto(
                     o.getId(),
                     o.getProject().getId(),
+                    o.getProject().getNumber(),
                     o.getProject().getName(),
                     o.getName(),
                     o.getProject().getOrder().getCustomer().getLastName()

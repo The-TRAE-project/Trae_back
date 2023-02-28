@@ -8,6 +8,7 @@ package ru.trae.backend.dto.operation;
 public record OperationInWorkForEmpDto(
         long operationId,
         long projectId,
+        long projectNumber,
         String projectName,
         String operationName,
         String customerLastName
