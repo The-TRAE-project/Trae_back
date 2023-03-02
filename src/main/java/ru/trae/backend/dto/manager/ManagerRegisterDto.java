@@ -10,7 +10,6 @@ public record ManagerRegisterDto(
         String middleName,
         String lastName,
         Long phone,
-        String username,
-        String password
+        String username
 ) {
 }

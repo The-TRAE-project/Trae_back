@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.jwt.JwtResponse;
+import ru.trae.backend.dto.manager.ManagerCredentialsResponse;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
@@ -43,7 +44,7 @@ public class ManagerController {
    * @return the response entity with the jwt token
    */
   @PostMapping("/register")
-  public ResponseEntity<ManagerDto> register(@RequestBody ManagerRegisterDto dto) {
+  public ResponseEntity<ManagerCredentialsResponse> register(@RequestBody ManagerRegisterDto dto) {
     managerService.checkAvailableUsername(dto.username());
     return ResponseEntity.ok(managerService.saveNewManager(dto));
   }

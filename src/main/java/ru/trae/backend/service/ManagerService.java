@@ -12,10 +12,12 @@ package ru.trae.backend.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import liquibase.repackaged.org.apache.commons.lang3.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.manager.ManagerCredentialsResponse;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
@@ -44,10 +46,12 @@ public class ManagerService {
    * @param dto contains data for creating a new manager
    * @return manager dto
    */
-  public ManagerDto saveNewManager(ManagerRegisterDto dto) {
+  public ManagerCredentialsResponse saveNewManager(ManagerRegisterDto dto) {
     Manager m = new Manager();
 
-    String encodedPass = encoder.encode(dto.password());
+    String temporaryRandomPass = RandomStringUtils.randomAlphanumeric(6);
+    String encodedPass = encoder.encode(temporaryRandomPass);
+
     m.setFirstName(dto.firstName());
     m.setMiddleName(dto.middleName());
     m.setLastName(dto.lastName());
@@ -62,7 +66,9 @@ public class ManagerService {
     m.setAccountNonLocked(true);
     m.setCredentialsNonExpired(true);
 
-    return managerDtoMapper.apply(managerRepository.save(m));
+    managerRepository.save(m);
+
+    return new ManagerCredentialsResponse(m.getUsername(), temporaryRandomPass);
   }
 
   /**

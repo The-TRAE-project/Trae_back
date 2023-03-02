@@ -109,10 +109,12 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   public void insertManager() {
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
             "Мишин", 89991112233L,
-            "man", "1234");
+            "man");
 
     if (!managerService.existsManagerByUsername(dto.username())) {
-      managerService.saveNewManager(dto);
+      System.out.println("=================================");
+      System.out.println(managerService.saveNewManager(dto));
+      System.out.println("=================================");
     }
   }
 
