@@ -20,4 +20,20 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: traeDB
+    volumes:
+      - "database:/var/lib/postgresql/data"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d traeDB" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     restart: on-failure
+
+volumes:
+  database:
+
+networks:
+  trae-net:
+    name: trae-net
+    driver: bridge
