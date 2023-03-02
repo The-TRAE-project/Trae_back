@@ -9,7 +9,6 @@ package ru.trae.backend.dto.project;
 public record ShortProjectDto(
         long id,
         long number,
-        String name,
-        String description
+        String name
 ) {
 }

@@ -33,7 +33,6 @@ public class ProjectDtoMapper implements Function<Project, ProjectDto> {
             p.getId(),
             p.getNumber(),
             p.getName(),
-            p.getDescription(),
             p.getStartDate(),
             p.getPlannedEndDate(),
             p.getRealEndDate(),

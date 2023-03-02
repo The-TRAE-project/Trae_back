@@ -14,7 +14,6 @@ public record OperationDto(
         long id,
         int priority,
         String name,
-        String description,
         LocalDateTime startDate,
         LocalDateTime acceptanceDate,
         LocalDateTime plannedEndDate,

@@ -10,25 +10,21 @@
 
 package ru.trae.backend.util;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import ru.trae.backend.dto.CustomerDto;
 import ru.trae.backend.dto.employee.NewEmployeeDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.operation.WrapperNewOperationDto;
-import ru.trae.backend.dto.order.NewOrderDto;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.type.NewTypeWorkDto;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.service.EmployeeService;
 import ru.trae.backend.service.ManagerService;
 import ru.trae.backend.service.OperationService;
-import ru.trae.backend.service.OrderService;
 import ru.trae.backend.service.ProjectService;
 import ru.trae.backend.service.TypeWorkService;
 
@@ -43,7 +39,6 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   private final EmployeeService employeeService;
   private final ManagerService managerService;
   private final ProjectService projectService;
-  private final OrderService orderService;
   private final TypeWorkService typeWorkService;
   private final OperationService operationService;
 
@@ -52,7 +47,6 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     insertTypeWork();
     insertEmployees();
     insertManager();
-    insertOrder();
     insertProject();
     insertOperations();
   }
@@ -129,44 +123,6 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   }
 
   /**
-   * Insert order data.
-   */
-  public void insertOrder() {
-    if (orderService.getAllOrder().size() == 0) {
-      NewOrderDto dto1 = new NewOrderDto(
-              "Платяной шкаф в спальню",
-              "Размер 220х100х70 см, покрасить в белый цвет",
-              50,
-              1L,
-              new CustomerDto(
-                      "Олег", "Александрович", "Сидоров",
-                      89125548722L, LocalDateTime.now()));
-
-      NewOrderDto dto2 = new NewOrderDto(
-              "Входная дверь",
-              "Размер 200х200х30 см, без покраски, только покрыть лаком",
-              35,
-              1L,
-              new CustomerDto(
-                      "Андрей", "Владимирович", "Никифоров",
-                      89115437820L, LocalDateTime.now()));
-
-      NewOrderDto dto3 = new NewOrderDto(
-              "Стол в мастерскую",
-              "Размер 500х200х100 см, покрасить в черный цвет",
-              45,
-              1L,
-              new CustomerDto(
-                      "Ольга", "Сергеевна", "Иванова",
-                      89515545612L, LocalDateTime.now()));
-
-      orderService.receiveNewOrder(dto1);
-      orderService.receiveNewOrder(dto2);
-      orderService.receiveNewOrder(dto3);
-    }
-  }
-
-  /**
    * Inserting project data.
    */
   public void insertProject() {
@@ -174,26 +130,23 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
       NewProjectDto dto1 = new NewProjectDto(
               345,
               "Шкаф",
-              "Здесь должно быть правильное описание, пояснение, указания и тд",
               40,
               1L,
-              1L);
+              "Шишкина М.М.");
 
       NewProjectDto dto2 = new NewProjectDto(
               346,
               "Дверь",
-              "Здесь должно быть правильное описание, пояснение, указания и тд",
               25,
-              2L,
-              1L);
+              1L,
+              "ГосСтройБыт");
 
       NewProjectDto dto3 = new NewProjectDto(
               284,
               "Стол",
-              "Здесь должно быть правильное описание, пояснение, указания и тд",
               35,
-              3L,
-              1L);
+              1L,
+              "Петров В.Г.");
 
       projectService.saveNewProject(dto1);
       projectService.saveNewProject(dto2);
@@ -211,19 +164,19 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     if (p1.getOperations().isEmpty()) {
       List<NewOperationDto> operations = new ArrayList<>();
-      operations.add(new NewOperationDto("Раскрой", "Инструкции по раскрою",
+      operations.add(new NewOperationDto("Раскрой",
               1, 10));
-      operations.add(new NewOperationDto("Кромка", "Инструкции по кромке",
+      operations.add(new NewOperationDto("Кромка",
               2, 20));
-      operations.add(new NewOperationDto("Фрезеровка", "Инструкции по фрезеровке",
+      operations.add(new NewOperationDto("Фрезеровка",
               4, 30));
-      operations.add(new NewOperationDto("Присадка", "Инструкции по присадке",
+      operations.add(new NewOperationDto("Присадка",
               3, 40));
-      operations.add(new NewOperationDto("Сборка", "Инструкции по сборке",
+      operations.add(new NewOperationDto("Сборка",
               6, 50));
-      operations.add(new NewOperationDto("Покраска", "Инструкции по покраске",
+      operations.add(new NewOperationDto("Покраска",
               7, 60));
-      operations.add(new NewOperationDto("Отгрузка", "Инструкции по отгрузке",
+      operations.add(new NewOperationDto("Отгрузка",
               9, 70));
       WrapperNewOperationDto wrapper = new WrapperNewOperationDto(p1.getId(), operations);
       operationService.saveNewOperations(wrapper);
@@ -231,38 +184,26 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
 
     if (p2.getOperations().isEmpty()) {
       List<NewOperationDto> operations = new ArrayList<>();
-      operations.add(new NewOperationDto("Раскрой",
-              "Инструкции по раскрою", 1, 10));
-      operations.add(new NewOperationDto("Кромка",
-              "Инструкции по кромке", 2, 20));
-      operations.add(new NewOperationDto("Фрезеровка",
-              "Инструкции по фрезеровке", 4, 30));
-      operations.add(new NewOperationDto("Сборка",
-              "Инструкции по сборке", 6, 40));
+      operations.add(new NewOperationDto("Раскрой", 1, 10));
+      operations.add(new NewOperationDto("Кромка", 2, 20));
+      operations.add(new NewOperationDto("Фрезеровка", 4, 30));
+      operations.add(new NewOperationDto("Сборка", 6, 40));
       operations.add(new NewOperationDto("Особый вид покраски - лакировка",
-              "Инструкции по покрытию лаком", 7, 50));
-      operations.add(new NewOperationDto("Отгрузка",
-              "Инструкции по отгрузке", 9, 60));
+              7, 50));
+      operations.add(new NewOperationDto("Отгрузка", 9, 60));
       WrapperNewOperationDto wrapper = new WrapperNewOperationDto(p2.getId(), operations);
       operationService.saveNewOperations(wrapper);
     }
 
     if (p3.getOperations().isEmpty()) {
       List<NewOperationDto> operations = new ArrayList<>();
-      operations.add(new NewOperationDto("Раскрой",
-              "Инструкции по раскрою", 1, 10));
-      operations.add(new NewOperationDto("Кромка",
-              "Инструкции по кромке", 2, 20));
-      operations.add(new NewOperationDto("Фрезеровка",
-              "Инструкции по фрезеровке", 4, 30));
-      operations.add(new NewOperationDto("Сборка",
-              "Инструкции по сборке", 6, 40));
-      operations.add(new NewOperationDto("Покраска",
-              "Инструкции по покраске, 1-ый слой", 7, 50));
-      operations.add(new NewOperationDto("Покраска",
-              "Инструкции по покраске, 2-ой слой", 7, 60));
-      operations.add(new NewOperationDto("Отгрузка",
-              "Инструкции по отгрузке", 9, 70));
+      operations.add(new NewOperationDto("Раскрой", 1, 10));
+      operations.add(new NewOperationDto("Кромка", 2, 20));
+      operations.add(new NewOperationDto("Фрезеровка", 4, 30));
+      operations.add(new NewOperationDto("Сборка", 6, 40));
+      operations.add(new NewOperationDto("Покраска", 7, 50));
+      operations.add(new NewOperationDto("Покраска", 7, 60));
+      operations.add(new NewOperationDto("Отгрузка", 9, 70));
       WrapperNewOperationDto wrapper = new WrapperNewOperationDto(p3.getId(), operations);
       operationService.saveNewOperations(wrapper);
     }

@@ -29,7 +29,6 @@ import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import ru.trae.backend.entity.task.Order;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.util.Role;
 
@@ -70,9 +69,6 @@ public class Manager extends User implements UserDetails {
   private boolean enabled;
   @Column(name = "role")
   private Role role;
-  @ToString.Exclude
-  @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
-  private List<Order> orders = new ArrayList<>();
   @ToString.Exclude
   @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
   private List<Project> projects = new ArrayList<>();

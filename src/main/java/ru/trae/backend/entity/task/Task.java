@@ -29,8 +29,6 @@ import lombok.Setter;
 public abstract class Task {
   @Column(name = "name")
   private String name;
-  @Column(name = "description")
-  private String description;
   @Column(name = "start_date")
   private LocalDateTime startDate;
   @Column(name = "planned_end_date")

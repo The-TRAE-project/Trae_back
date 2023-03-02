@@ -32,7 +32,7 @@ public class ProjectAvailableDtoMapper implements Function<Project, ProjectAvail
     return new ProjectAvailableForEmpDto(
             p.getId(),
             p.getNumber(),
-            p.getOrder().getCustomer().getLastName(),
+            p.getCustomer(),
             p.getName(),
             p.getOperations().stream()
                     .filter(Operation::isReadyToAcceptance)

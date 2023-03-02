@@ -9,7 +9,7 @@ package ru.trae.backend.dto.project;
 public record ProjectAvailableForEmpDto(
         long id,
         long number,
-        String customerLastName,
+        String customer,
         String projectName,
         String availableOperationName
 ) {

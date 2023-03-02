@@ -24,7 +24,6 @@ import ru.trae.backend.exceptionhandler.exception.EmployeeException;
 import ru.trae.backend.exceptionhandler.exception.LoginCredentialException;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.exceptionhandler.exception.OperationException;
-import ru.trae.backend.exceptionhandler.exception.OrderException;
 import ru.trae.backend.exceptionhandler.exception.PayloadPieceException;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.exceptionhandler.exception.TypeWorkException;
@@ -58,11 +57,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
   @ExceptionHandler(ProjectException.class)
   protected ResponseEntity<Response> handleException(ProjectException e) {
-    return new ResponseEntity<>(buildResponse(e), e.getStatus());
-  }
-
-  @ExceptionHandler(OrderException.class)
-  protected ResponseEntity<Response> handleException(OrderException e) {
     return new ResponseEntity<>(buildResponse(e), e.getStatus());
   }
 

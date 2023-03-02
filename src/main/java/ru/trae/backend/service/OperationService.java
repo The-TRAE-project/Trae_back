@@ -79,7 +79,6 @@ public class OperationService {
       Operation o = new Operation();
       o.setProject(p);
       o.setName(dto.name());
-      o.setDescription(dto.description());
       o.setPeriod(Util.getPeriodForFirstOperation(p.getPeriod(), wrapper.operations().size()));
       o.setPriority(dto.priority());
       o.setStartDate(LocalDateTime.now());
@@ -101,7 +100,6 @@ public class OperationService {
                         Operation o = new Operation();
                         o.setProject(p);
                         o.setName(no.name());
-                        o.setDescription(no.description());
                         o.setPeriod(0);
                         o.setPriority(no.priority());
                         o.setStartDate(null);
@@ -229,7 +227,7 @@ public class OperationService {
    *
    * @param employeeId The ID of the employee for whom the operations should be retrieved
    * @return A list of objects containing the operation's ID, the project's ID and name,
-   *         the operation's name and the employee's first and last name
+   *         the operation's name and the customer name
    */
   public List<OperationInWorkForEmpDto> getOperationsInWorkByEmpIdForEmp(long employeeId) {
     List<Operation> operations = operationRepository.findByEmpIdAndInWork(employeeId);
@@ -240,7 +238,7 @@ public class OperationService {
                     o.getProject().getNumber(),
                     o.getProject().getName(),
                     o.getName(),
-                    o.getProject().getOrder().getCustomer().getLastName()
+                    o.getProject().getCustomer()
             ))
             .toList();
   }

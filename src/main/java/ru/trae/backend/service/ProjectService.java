@@ -37,7 +37,6 @@ import ru.trae.backend.util.Util;
 public class ProjectService {
   private final ProjectRepository projectRepository;
   private final ManagerService managerService;
-  private final OrderService orderService;
   private final EmployeeService employeeService;
   private final ProjectDtoMapper projectDtoMapper;
   private final ProjectAvailableDtoMapper projectAvailableDtoMapper;
@@ -52,14 +51,13 @@ public class ProjectService {
     Project p = new Project();
     p.setNumber(dto.number());
     p.setName(dto.name());
-    p.setDescription(dto.description());
     p.setPeriod(dto.period());
     p.setStartDate(LocalDateTime.now());
     p.setPlannedEndDate(LocalDateTime.now().plusDays(dto.period()));
     p.setRealEndDate(null);
     p.setEnded(false);
     p.setManager(managerService.getManagerById(dto.managerId()));
-    p.setOrder(orderService.getOrderById(dto.orderId()));
+    p.setCustomer(dto.customer());
 
     return projectRepository.save(p);
   }

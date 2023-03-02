@@ -17,7 +17,6 @@ public record ProjectDto(
         long id,
         long number,
         String name,
-        String description,
         LocalDateTime startDate,
         LocalDateTime plannedEndDate,
         LocalDateTime realEndDate,
