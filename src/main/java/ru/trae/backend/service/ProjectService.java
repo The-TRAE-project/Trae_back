@@ -10,6 +10,8 @@
 
 package ru.trae.backend.service;
 
+import static java.time.temporal.ChronoUnit.HOURS;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +29,6 @@ import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.repository.ProjectRepository;
 import ru.trae.backend.util.Util;
-
-import static java.time.temporal.ChronoUnit.HOURS;
 
 /**
  * A service class that provides methods for managing {@link Project} entities.

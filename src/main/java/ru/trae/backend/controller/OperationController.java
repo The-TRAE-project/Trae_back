@@ -64,7 +64,7 @@ public class OperationController {
   }
 
   /**
-   * Get all operations in work for specified employee
+   * Get all operations in work for specified employee.
    *
    * @param employeeId id of employee
    * @return list of operations in work for specified employee

@@ -10,6 +10,8 @@
 
 package ru.trae.backend.service;
 
+import static java.time.temporal.ChronoUnit.HOURS;
+
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -29,7 +31,6 @@ import ru.trae.backend.exceptionhandler.exception.OperationException;
 import ru.trae.backend.repository.OperationRepository;
 import ru.trae.backend.util.Util;
 
-import static java.time.temporal.ChronoUnit.HOURS;
 
 /**
  * Service class for working with operation data.
@@ -151,7 +152,7 @@ public class OperationService {
   /**
    * Finishes the operation.
    *
-   * @param o The operation to be finished.
+   * @param o          The operation to be finished.
    * @param employeeId The id of the employee confirming the operation.
    */
   public void finishOperation(Operation o, long employeeId) {
