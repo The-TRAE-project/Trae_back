@@ -11,12 +11,13 @@
 package ru.trae.backend.dto.manager;
 
 /**
- * The ManagerCredentialsResponse class is used for containing data related to the credentials of a manager.
+ * The ManagerCredentials class is used for containing data related to the credentials
+ * of a manager.
  * It consists of two fields, username and temporaryRandomPassword.
  *
  * @author Vladimir Olennikov
  */
-public record ManagerCredentialsResponse(
+public record ManagerCredentials(
         String username,
         String temporaryRandomPassword
 ) {

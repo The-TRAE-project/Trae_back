@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.manager.ManagerCredentialsResponse;
+import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
@@ -46,7 +46,7 @@ public class ManagerService {
    * @param dto contains data for creating a new manager
    * @return manager dto
    */
-  public ManagerCredentialsResponse saveNewManager(ManagerRegisterDto dto) {
+  public ManagerCredentials saveNewManager(ManagerRegisterDto dto) {
     Manager m = new Manager();
 
     String temporaryRandomPass = RandomStringUtils.randomAlphanumeric(6);
@@ -68,7 +68,7 @@ public class ManagerService {
 
     managerRepository.save(m);
 
-    return new ManagerCredentialsResponse(m.getUsername(), temporaryRandomPass);
+    return new ManagerCredentials(m.getUsername(), temporaryRandomPass);
   }
 
   /**
@@ -110,6 +110,27 @@ public class ManagerService {
             .toList();
   }
 
+  /**
+   * This method is used to reset a manager's password using their username.
+   * It randomly generates a 6 character alphanumeric password and then encodes the password using
+   * an encoder.
+   * The encoded password is then used to update the password of the manager with the given
+   * username.
+   * Finally, it returns a ManagerCredentials object containing the manager's username and the new,
+   * temporary password.
+   *
+   * @param credentials This is a ManagerCredentials object that contains the manager's username.
+   * @return A ManagerCredentials object containing the manager's username and the new, temporary
+   *         password.
+   */
+  public ManagerCredentials resetPassword(ManagerCredentials credentials) {
+    String temporaryRandomPass = RandomStringUtils.randomAlphanumeric(6);
+    String encodedPass = encoder.encode(temporaryRandomPass);
+
+    managerRepository.updatePasswordByUsername(encodedPass, credentials.username());
+    return new ManagerCredentials(credentials.username(), temporaryRandomPass);
+  }
+
   public ManagerDto convertFromManager(Manager manager) {
     return managerDtoMapper.apply(manager);
   }
@@ -129,5 +150,4 @@ public class ManagerService {
       throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " already in use");
     }
   }
-
 }

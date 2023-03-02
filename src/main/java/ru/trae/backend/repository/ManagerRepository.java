@@ -12,7 +12,10 @@ package ru.trae.backend.repository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.entity.user.Manager;
 
 /**
@@ -37,5 +40,16 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
    * @return true if a {@link Manager} with the given username exists, false otherwise
    */
   boolean existsByUsernameIgnoreCase(String username);
+
+  /**
+   * Updates the password of the Manager with the given username.
+   *
+   * @param password the new password
+   * @param username the username of the Manager
+   */
+  @Transactional
+  @Modifying
+  @Query("update Manager m set m.password = ?1 where m.username = ?2")
+  void updatePasswordByUsername(String password, String username);
 
 }
