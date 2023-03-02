@@ -43,7 +43,7 @@ public class ManagerController {
    * @return the response entity with the jwt token
    */
   @PostMapping("/register")
-  public ResponseEntity<JwtResponse> register(@RequestBody ManagerRegisterDto dto) {
+  public ResponseEntity<ManagerDto> register(@RequestBody ManagerRegisterDto dto) {
     managerService.checkAvailableUsername(dto.username());
     return ResponseEntity.ok(managerService.saveNewManager(dto));
   }

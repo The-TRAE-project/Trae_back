@@ -46,7 +46,7 @@ public class ManagerService {
    * @param dto contains data for creating a new manager
    * @return refresh and accesses tokens
    */
-  public JwtResponse saveNewManager(ManagerRegisterDto dto) {
+  public ManagerDto saveNewManager(ManagerRegisterDto dto) {
     Manager m = new Manager();
 
     String encodedPass = encoder.encode(dto.password());
@@ -64,12 +64,7 @@ public class ManagerService {
     m.setAccountNonLocked(true);
     m.setCredentialsNonExpired(true);
 
-    managerRepository.save(m);
-
-    String accessToken = jwtUtil.generateAccessToken(m.getUsername());
-    String refreshToken = jwtUtil.generateRefreshToken(m.getUsername());
-
-    return new JwtResponse(accessToken, refreshToken);
+    return managerDtoMapper.apply(managerRepository.save(m));
   }
 
   /**

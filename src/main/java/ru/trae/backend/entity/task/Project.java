@@ -22,7 +22,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,6 +44,7 @@ public class Project extends Task {
   private Long id;
   @Column(name = "number", unique = true, nullable = false)
   private long number;
+  @Column(name = "customer", nullable = false)
   private String customer;
   @ToString.Exclude
   @ManyToOne
