@@ -31,14 +31,6 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
   Optional<Manager> findByUsername(String username);
 
   /**
-   * Check if there is a {@link Manager} with the given email ignoring case.
-   *
-   * @param email the email to check
-   * @return true if a {@link Manager} with the given email exists, false otherwise
-   */
-  boolean existsByEmailIgnoreCase(String email);
-
-  /**
    * Check if there is a {@link Manager} with the given username ignoring case.
    *
    * @param username the username to check

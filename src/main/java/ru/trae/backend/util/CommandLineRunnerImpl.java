@@ -115,9 +115,9 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   public void insertManager() {
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
             "Мишин", 89991112233L,
-            "man", "man@mail.ru", "1234");
+            "man", "1234");
 
-    if (!managerService.existsManagerByEmail(dto.email())) {
+    if (!managerService.existsManagerByUsername(dto.username())) {
       managerService.saveNewManager(dto);
     }
   }

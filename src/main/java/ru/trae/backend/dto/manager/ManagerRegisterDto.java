@@ -11,7 +11,6 @@ public record ManagerRegisterDto(
         String lastName,
         Long phone,
         String username,
-        String email,
         String password
 ) {
 }

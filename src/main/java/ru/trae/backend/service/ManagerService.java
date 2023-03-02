@@ -54,10 +54,9 @@ public class ManagerService {
     m.setMiddleName(dto.middleName());
     m.setLastName(dto.lastName());
     m.setPhone(dto.phone());
-    m.setEmail(dto.email());
     m.setUsername(dto.username());
     m.setPassword(encodedPass);
-    m.setRole(Role.ROLE_MANAGER); //TODO изменить на юзер по дефолту = m.setRole(Role.ROLE_USER);
+    m.setRole(Role.ROLE_MANAGER);
     m.setDateOfRegister(LocalDateTime.now());
 
     m.setEnabled(true);
@@ -116,24 +115,8 @@ public class ManagerService {
     return managerDtoMapper.apply(manager);
   }
 
-  public boolean existsManagerByEmail(String email) {
-    return managerRepository.existsByEmailIgnoreCase(email);
-  }
-
   public boolean existsManagerByUsername(String username) {
     return managerRepository.existsByUsernameIgnoreCase(username);
-  }
-
-  /**
-   * Checks if a manager already exists with the given email.
-   *
-   * @param email the email to check
-   * @throws ManagerException if a manager with the same email already exists
-   */
-  public void checkAvailableEmail(String email) {
-    if (existsManagerByEmail(email)) {
-      throw new ManagerException(HttpStatus.CONFLICT, "Email: " + email + " already in use");
-    }
   }
 
   /**

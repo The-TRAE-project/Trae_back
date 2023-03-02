@@ -32,7 +32,6 @@ public class ManagerDtoMapper implements Function<Manager, ManagerDto> {
             m.getMiddleName(),
             m.getLastName(),
             m.getPhone(),
-            m.getEmail(),
             m.getRole().value,
             m.getDateOfRegister().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
     );

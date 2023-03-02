@@ -44,7 +44,6 @@ public class ManagerController {
    */
   @PostMapping("/register")
   public ResponseEntity<JwtResponse> register(@RequestBody ManagerRegisterDto dto) {
-    managerService.checkAvailableEmail(dto.email());
     managerService.checkAvailableUsername(dto.username());
     return ResponseEntity.ok(managerService.saveNewManager(dto));
   }
