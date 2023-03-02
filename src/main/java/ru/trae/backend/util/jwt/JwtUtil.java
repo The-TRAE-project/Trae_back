@@ -146,11 +146,10 @@ public class JwtUtil {
   public void deletePayloadRandomPieces(String username) {
     Optional<PayloadRandomPiece> prp =
             payloadRandomPieceRepository.findByUsernameIgnoreCase(username);
-    if (prp.isPresent()) {
-      payloadRandomPieceRepository.delete(prp.get());
-    } else {
-      throw new PayloadPieceException(HttpStatus.NOT_FOUND, "Payload piece not found!");
-    }
+    prp.ifPresent(payloadRandomPieceRepository::delete);
+//    else {
+//      throw new PayloadPieceException(HttpStatus.NOT_FOUND, "Payload piece not found!");
+//    }
   }
 
 }

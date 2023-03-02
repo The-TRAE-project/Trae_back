@@ -25,6 +25,7 @@ import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 import ru.trae.backend.util.Role;
+import ru.trae.backend.util.jwt.JwtUtil;
 
 /**
  * Service class for working with manager data.
@@ -37,6 +38,7 @@ public class ManagerService {
   private final ManagerRepository managerRepository;
   private final ManagerDtoMapper managerDtoMapper;
   private final BCryptPasswordEncoder encoder;
+  private final JwtUtil jwtUtil;
 
   /**
    * This method allows to save a new manager in the database. It takes an object of type
@@ -124,11 +126,17 @@ public class ManagerService {
    *         password.
    */
   public ManagerCredentials resetPassword(ManagerCredentials credentials) {
+    String username = credentials.username();
+    checkExistsUsername(username);
+
     String temporaryRandomPass = RandomStringUtils.randomAlphanumeric(6);
     String encodedPass = encoder.encode(temporaryRandomPass);
 
-    managerRepository.updatePasswordByUsername(encodedPass, credentials.username());
-    return new ManagerCredentials(credentials.username(), temporaryRandomPass);
+    managerRepository.updatePasswordByUsername(encodedPass, username);
+
+    jwtUtil.deletePayloadRandomPieces(username);
+
+    return new ManagerCredentials(username, temporaryRandomPass);
   }
 
   public ManagerDto convertFromManager(Manager manager) {
@@ -148,6 +156,12 @@ public class ManagerService {
   public void checkAvailableUsername(String username) {
     if (existsManagerByUsername(username)) {
       throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " already in use");
+    }
+  }
+
+  private void checkExistsUsername(String username) {
+    if (!existsManagerByUsername(username)) {
+      throw new ManagerException(HttpStatus.NOT_FOUND, "Username: " + username + " not found");
     }
   }
 }
