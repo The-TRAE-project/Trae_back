@@ -16,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.jwt.JwtResponse;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
@@ -24,7 +23,6 @@ import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 import ru.trae.backend.util.Role;
-import ru.trae.backend.util.jwt.JwtUtil;
 
 /**
  * Service class for working with manager data.
@@ -37,14 +35,14 @@ public class ManagerService {
   private final ManagerRepository managerRepository;
   private final ManagerDtoMapper managerDtoMapper;
   private final BCryptPasswordEncoder encoder;
-  private final JwtUtil jwtUtil;
 
   /**
-   * Method for saving new manager to the database.
-   * Generates access and refresh tokens for this manager.
+   * This method allows to save a new manager in the database. It takes an object of type
+   * ManagerRegisterDto as an argument, encodes the password, sets all the fields and saves the
+   * object into the database. The method returns an object of type ManagerDto.
    *
    * @param dto contains data for creating a new manager
-   * @return refresh and accesses tokens
+   * @return manager dto
    */
   public ManagerDto saveNewManager(ManagerRegisterDto dto) {
     Manager m = new Manager();

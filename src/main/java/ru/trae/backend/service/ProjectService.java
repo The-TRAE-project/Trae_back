@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.mapper.ProjectAvailableDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectDtoMapper;
+import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
@@ -52,7 +53,10 @@ public class ProjectService {
    * @return the newly created {@link Project}
    */
   public Project saveNewProject(NewProjectDto dto) {
+    checkOperationsNotEmpty(dto.operations());
+
     Project p = new Project();
+
     p.setNumber(dto.number());
     p.setName(dto.name());
     p.setPeriod(dto.period());
@@ -159,5 +163,11 @@ public class ProjectService {
    */
   public ProjectDto convertFromProject(Project p) {
     return projectDtoMapper.apply(p);
+  }
+
+  private void checkOperationsNotEmpty(List<NewOperationDto> operations) {
+    if (operations == null || operations.isEmpty()) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST, "List of operations cannot be empty");
+    }
   }
 }
