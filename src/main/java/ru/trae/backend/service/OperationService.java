@@ -10,8 +10,6 @@
 
 package ru.trae.backend.service;
 
-import static java.time.temporal.ChronoUnit.HOURS;
-
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -24,13 +22,14 @@ import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
 import ru.trae.backend.dto.operation.ReqOpEmpIdDto;
-import ru.trae.backend.dto.operation.WrapperNewOperationDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.OperationException;
 import ru.trae.backend.repository.OperationRepository;
 import ru.trae.backend.util.Util;
+
+import static java.time.temporal.ChronoUnit.HOURS;
 
 /**
  * Service class for working with operation data.
@@ -41,7 +40,6 @@ import ru.trae.backend.util.Util;
 @RequiredArgsConstructor
 public class OperationService {
   private final OperationRepository operationRepository;
-  private final ProjectService projectService;
   private final EmployeeService employeeService;
   private final OperationDtoMapper operationDtoMapper;
   private final TypeWorkService typeWorkService;
@@ -60,26 +58,28 @@ public class OperationService {
   }
 
   /**
-   * Saves new operations.
+   * This method saves new operations to the project.
+   * Sorted operations are sorted by priority.
+   * If operations size is greater than 0, the first operation is created.
+   * If operations size is greater than 1, the rest operations are created.
    * The first operation gets a start time and the status "Ready to acceptance".
    *
-   * @param wrapper data to save new operations
+   * @param p          this is the project associated with the operations
+   * @param operations this is the list of {@link NewOperationDto} to be saved
    */
-  public void saveNewOperations(WrapperNewOperationDto wrapper) {
-    Project p = projectService.getProjectById(wrapper.projectId());
-
-    List<NewOperationDto> operations = wrapper.operations()
+  public void saveNewOperations(Project p, List<NewOperationDto> operations) {
+    List<NewOperationDto> sortedOperations = operations
             .stream()
             .sorted(Comparator.comparing(NewOperationDto::priority))
             .toList();
 
-    if (operations.size() > 0) {
-      NewOperationDto dto = operations.get(0);
+    if (sortedOperations.size() > 0) {
+      NewOperationDto dto = sortedOperations.get(0);
 
       Operation o = new Operation();
       o.setProject(p);
       o.setName(dto.name());
-      o.setPeriod(Util.getPeriodForFirstOperation(p.getPeriod(), wrapper.operations().size()));
+      o.setPeriod(Util.getPeriodForFirstOperation(p.getPeriod(), sortedOperations.size()));
       o.setPriority(dto.priority());
       o.setStartDate(LocalDateTime.now());
       o.setPlannedEndDate(LocalDateTime.now().plusDays(o.getPeriod()));
@@ -92,8 +92,8 @@ public class OperationService {
       operationRepository.save(o);
     }
 
-    if (operations.size() > 1) {
-      operations.stream()
+    if (sortedOperations.size() > 1) {
+      sortedOperations.stream()
               .skip(1)
               .forEach(
                       no -> {
@@ -123,8 +123,7 @@ public class OperationService {
    * @return the list of {@link OperationDto} objects
    */
   public List<OperationDto> getOpsDtoListByProject(long projectId) {
-    Project p = projectService.getProjectById(projectId);
-    return p.getOperations().stream()
+    return operationRepository.findByProjectIdOrderByPriorityAsc(projectId).stream()
             .map(operationDtoMapper)
             .toList();
   }
@@ -150,22 +149,19 @@ public class OperationService {
   }
 
   /**
-   * Finish operation with given id and employee id.
+   * Finishes the operation.
    *
-   * @param dto request operation employee id dto
+   * @param o The operation to be finished.
+   * @param employeeId The id of the employee confirming the operation.
    */
-  public void finishOperation(ReqOpEmpIdDto dto) {
-    Operation o = getOperationById(dto.operationId());
-
-    checkConfirmingEmployee(o, dto.employeeId());
+  public void finishOperation(Operation o, long employeeId) {
+    checkConfirmingEmployee(o, employeeId);
 
     o.setInWork(false);
     o.setEnded(true);
     o.setRealEndDate(LocalDateTime.now());
 
     Operation op = operationRepository.save(o);
-
-    checkAndUpdateProjectEndDate(op);
 
     startNextOperation(op);
   }
@@ -275,17 +271,5 @@ public class OperationService {
     }
     // здесь вычитается из оставшися операций - "отгрузка" и время на нее - 24 часа.
     return Util.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
-  }
-
-  private void checkAndUpdateProjectEndDate(Operation o) {
-    if (o.getRealEndDate().isBefore(o.getPlannedEndDate())) {
-      return;
-    }
-
-    long hours = HOURS.between(o.getPlannedEndDate(), o.getRealEndDate());
-    Project p = o.getProject();
-    LocalDateTime newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
-
-    projectService.updatePlannedEndDate(newPlannedEndDate, p.getId());
   }
 }

@@ -23,8 +23,9 @@ import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
 import ru.trae.backend.dto.operation.ReqOpEmpIdDto;
-import ru.trae.backend.dto.operation.WrapperNewOperationDto;
+import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.service.OperationService;
+import ru.trae.backend.service.ProjectService;
 
 /**
  * Controller class that handles requests related to operations.
@@ -37,39 +38,67 @@ import ru.trae.backend.service.OperationService;
 public class OperationController {
 
   private final OperationService operationService;
+  private final ProjectService projectService;
 
-  @PostMapping("/new")
-  public ResponseEntity operationPersist(@RequestBody WrapperNewOperationDto wrapper) {
-    operationService.saveNewOperations(wrapper);
-    return ResponseEntity.ok().build();
-  }
-
+  /**
+   * This method provides a list of short operations by project.
+   *
+   * @param projectId the project id
+   * @return the list of operation dto
+   */
   @GetMapping("/project-operations/{projectId}")
   public ResponseEntity<List<OperationDto>> shortOperationsByProject(@PathVariable long projectId) {
     return ResponseEntity.ok(operationService.getOpsDtoListByProject(projectId));
   }
 
+  /**
+   * Retrieves the list of operations associated with a given project id.
+   *
+   * @param projectId the id of the project to retrieve operations for
+   * @return the list of operations associated with the given project
+   */
   @GetMapping("/employee/project-operations/{projectId}")
   public ResponseEntity<List<OperationForEmpDto>> operationsByProjectId(
           @PathVariable long projectId) {
     return ResponseEntity.ok(operationService.getOperationsByProjectIdForEmp(projectId));
   }
 
+  /**
+   * Get all operations in work for specified employee
+   *
+   * @param employeeId id of employee
+   * @return list of operations in work for specified employee
+   */
   @GetMapping("/employee/operations-in-work/{employeeId}")
   public ResponseEntity<List<OperationInWorkForEmpDto>> operationsInWorkByEmpId(
           @PathVariable long employeeId) {
     return ResponseEntity.ok(operationService.getOperationsInWorkByEmpIdForEmp(employeeId));
   }
 
+  /**
+   * Endpoint for receiving an operation.
+   *
+   * @param dto - {@link ReqOpEmpIdDto}
+   * @return - response entity
+   */
   @PostMapping("/employee/receive-operation")
   public ResponseEntity receiveOperation(@RequestBody ReqOpEmpIdDto dto) {
     operationService.receiveOperation(dto);
     return ResponseEntity.ok().build();
   }
 
+  /**
+   * The method is used to finish an operation and update the project end date if needed.
+   *
+   * @param dto The request body of type {@link ReqOpEmpIdDto}
+   * @return A response entity with the status.
+   */
   @PostMapping("/employee/finish-operation")
   public ResponseEntity finishOperation(@RequestBody ReqOpEmpIdDto dto) {
-    operationService.finishOperation(dto);
+    Operation o = operationService.getOperationById(dto.operationId());
+
+    projectService.checkAndUpdateProjectEndDate(o);
+    operationService.finishOperation(o, dto.employeeId());
     return ResponseEntity.ok().build();
   }
 }

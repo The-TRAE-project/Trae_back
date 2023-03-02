@@ -42,5 +42,12 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
           + "order by o.acceptanceDate")
   List<Operation> findByEmpIdAndInWork(long employeeId);
 
-
+  /**
+   * Returns a list of operations based on the project id, ordered by priority in ascending order.
+   *
+   * @param projectId the id of the project
+   * @return a list of operations
+   */
+  @Query("select o from Operation o where o.project.id = ?1 order by o.priority")
+  List<Operation> findByProjectIdOrderByPriorityAsc(Long projectId);
 }

@@ -21,11 +21,14 @@ import ru.trae.backend.dto.mapper.ProjectDtoMapper;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
+import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.repository.ProjectRepository;
 import ru.trae.backend.util.Util;
+
+import static java.time.temporal.ChronoUnit.HOURS;
 
 /**
  * A service class that provides methods for managing {@link Project} entities.
@@ -37,6 +40,7 @@ import ru.trae.backend.util.Util;
 public class ProjectService {
   private final ProjectRepository projectRepository;
   private final ManagerService managerService;
+  private final OperationService operationService;
   private final EmployeeService employeeService;
   private final ProjectDtoMapper projectDtoMapper;
   private final ProjectAvailableDtoMapper projectAvailableDtoMapper;
@@ -59,7 +63,11 @@ public class ProjectService {
     p.setManager(managerService.getManagerById(dto.managerId()));
     p.setCustomer(dto.customer());
 
-    return projectRepository.save(p);
+    projectRepository.save(p);
+
+    operationService.saveNewOperations(p, dto.operations());
+
+    return p;
   }
 
   /**
@@ -104,6 +112,23 @@ public class ProjectService {
             .sorted(Util::dateSorting)
             .map(projectAvailableDtoMapper)
             .toList();
+  }
+
+  /**
+   * Checks and updates the end date of the project, if necessary.
+   *
+   * @param o the operation
+   */
+  public void checkAndUpdateProjectEndDate(Operation o) {
+    if (o.getRealEndDate().isBefore(o.getPlannedEndDate())) {
+      return;
+    }
+
+    long hours = HOURS.between(o.getPlannedEndDate(), o.getRealEndDate());
+    Project p = o.getProject();
+    LocalDateTime newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
+
+    updatePlannedEndDate(newPlannedEndDate, p.getId());
   }
 
   /**
