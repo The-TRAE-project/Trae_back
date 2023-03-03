@@ -97,8 +97,9 @@ public class OperationController {
   public ResponseEntity finishOperation(@RequestBody ReqOpEmpIdDto dto) {
     Operation o = operationService.getOperationById(dto.operationId());
 
+    operationService.checkConfirmingEmployee(o, dto.employeeId());
     projectService.checkAndUpdateProjectEndDate(o);
-    operationService.finishOperation(o, dto.employeeId());
+    operationService.finishOperation(o);
     return ResponseEntity.ok().build();
   }
 }

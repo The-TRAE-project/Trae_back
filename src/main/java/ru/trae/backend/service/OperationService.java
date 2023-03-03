@@ -152,12 +152,9 @@ public class OperationService {
   /**
    * Finishes the operation.
    *
-   * @param o          The operation to be finished.
-   * @param employeeId The id of the employee confirming the operation.
+   * @param o The operation to be finished.
    */
-  public void finishOperation(Operation o, long employeeId) {
-    checkConfirmingEmployee(o, employeeId);
-
+  public void finishOperation(Operation o) {
     o.setInWork(false);
     o.setEnded(true);
     o.setRealEndDate(LocalDateTime.now());
@@ -253,8 +250,8 @@ public class OperationService {
     }
   }
 
-  private void checkConfirmingEmployee(Operation o, long confirmingEmpId) {
-    if (o.getEmployee().getId() != confirmingEmpId) {
+  public void checkConfirmingEmployee(Operation o, long confirmingEmpId) {
+    if (o.getEmployee() == null || o.getEmployee().getId() != confirmingEmpId) {
       throw new OperationException(HttpStatus.BAD_REQUEST,
               "The ID of the confirming employee is not equal"
                       + " to the ID of the person who accepted the operation");

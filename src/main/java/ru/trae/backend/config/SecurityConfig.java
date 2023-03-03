@@ -10,15 +10,18 @@
 
 package ru.trae.backend.config;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 import ru.trae.backend.exceptionhandler.RestAccessDeniedHandler;
 import ru.trae.backend.exceptionhandler.RestAuthenticationEntryPoint;
 import ru.trae.backend.util.jwt.JwtFilter;
@@ -47,7 +50,17 @@ public class SecurityConfig {
    */
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-    httpSecurity.csrf().disable()
+    httpSecurity
+            .csrf().disable()
+            //TODO delete CORS after deploying front on server
+            .cors().configurationSource(request -> {
+              CorsConfiguration configuration = new CorsConfiguration();
+              configuration.setAllowedOrigins(List.of("*"));
+              configuration.setAllowedMethods(List.of("*"));
+              configuration.setAllowedHeaders(List.of("*"));
+              return configuration;
+            })
+            .and()
             .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
             .and()
             .exceptionHandling().accessDeniedHandler(restAccessDeniedHandler)

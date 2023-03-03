@@ -8,6 +8,8 @@ services:
       - "8088:8088"
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
+    networks:
+      - trae-net
     depends_on:
       - postgres-backend
 
@@ -15,8 +17,10 @@ services:
     image: postgres:15.2
     container_name: postgres_db
     ports:
-      - "5432:5432"
+      - "5435:5435"
+    command: -p 5435
     environment:
+      PGUSER: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: traeDB
@@ -29,6 +33,8 @@ services:
       retries: 5
       start_period: 10s
     restart: on-failure
+    networks:
+        - trae-net
 
 volumes:
   database:

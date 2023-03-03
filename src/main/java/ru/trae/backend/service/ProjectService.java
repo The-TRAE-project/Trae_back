@@ -124,7 +124,7 @@ public class ProjectService {
    * @param o the operation
    */
   public void checkAndUpdateProjectEndDate(Operation o) {
-    if (o.getRealEndDate().isBefore(o.getPlannedEndDate())) {
+    if (LocalDateTime.now().isBefore(o.getPlannedEndDate())) {
       return;
     }
 
