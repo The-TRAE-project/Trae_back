@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
@@ -139,6 +140,25 @@ public class ManagerService {
     return new ManagerCredentials(username, temporaryRandomPass);
   }
 
+  /**
+   * Allows to change the password of a manager.
+   *
+   * @param request the request for change the password.
+   * @return the new credentials of the manager.
+   */
+  public ManagerCredentials changePassword(ChangePassReq request) {
+    String username = request.username();
+
+    checkExistsUsername(username);
+    checkValidPassword(request.newPassword());
+    checkDifferencePasswords(request.newPassword(), request.oldPassword());
+
+    String encodedPass = encoder.encode(request.newPassword());
+    managerRepository.updatePasswordByUsername(encodedPass, username);
+
+    return new ManagerCredentials(username, request.newPassword());
+  }
+
   public ManagerDto convertFromManager(Manager manager) {
     return managerDtoMapper.apply(manager);
   }
@@ -164,4 +184,18 @@ public class ManagerService {
       throw new ManagerException(HttpStatus.NOT_FOUND, "Username: " + username + " not found");
     }
   }
+
+  private void checkValidPassword(String password) { //TODO rework this check!
+    if (password == null || password.length() < 6) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST,
+              "The password does not meet the minimum requirements");
+    }
+  }
+
+  private void checkDifferencePasswords(String newPassword, String oldPassword) {
+    if (encoder.matches(newPassword, oldPassword)) {
+      throw new ManagerException(HttpStatus.CONFLICT, "The password must not match the old one");
+    }
+  }
+
 }

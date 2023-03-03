@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
@@ -69,5 +70,11 @@ public class ManagerController {
   public ResponseEntity<ManagerCredentials> resetPassword(
           @RequestBody ManagerCredentials credentials) {
     return ResponseEntity.ok(managerService.resetPassword(credentials));
+  }
+
+  @PostMapping("/change-password")
+  public ResponseEntity<ManagerCredentials> changePassword(
+          @RequestBody ChangePassReq request) {
+    return ResponseEntity.ok(managerService.changePassword(request));
   }
 }

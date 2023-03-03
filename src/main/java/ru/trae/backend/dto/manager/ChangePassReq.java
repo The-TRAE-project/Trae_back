@@ -10,15 +10,9 @@
 
 package ru.trae.backend.dto.manager;
 
-/**
- * The ManagerCredentials class is used for containing data related to the credentials
- * of a manager.
- * It consists of two fields, username and password.
- *
- * @author Vladimir Olennikov
- */
-public record ManagerCredentials(
+public record ChangePassReq(
         String username,
-        String password
+        String oldPassword,
+        String newPassword
 ) {
 }
