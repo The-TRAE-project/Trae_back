@@ -10,6 +10,11 @@
 
 package ru.trae.backend.dto.manager;
 
+/**
+ * The {@code ChangePassReq} class is used to represent a request to change a user's password.
+ *
+ * @author Vladimir Olennikov
+ */
 public record ChangePassReq(
         String username,
         String oldPassword,

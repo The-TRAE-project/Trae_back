@@ -250,6 +250,13 @@ public class OperationService {
     }
   }
 
+  /**
+   * Checks if the confirming employee is the same as the one who accepted the operation.
+   *
+   * @param o               The operation being processed.
+   * @param confirmingEmpId The id of the confirming employee.
+   * @throws OperationException If the IDs do not match.
+   */
   public void checkConfirmingEmployee(Operation o, long confirmingEmpId) {
     if (o.getEmployee() == null || o.getEmployee().getId() != confirmingEmpId) {
       throw new OperationException(HttpStatus.BAD_REQUEST,
