@@ -29,14 +29,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class User {
-  @Size(min = 2, max = 200)
-  @Column(name = "first_name", columnDefinition = "varchar(200)")
+  @Size(min = 1, max = 100)
+  @Column(name = "first_name", columnDefinition = "varchar(100)")
   private String firstName;
-  @Size(max = 200)
-  @Column(name = "middle_name", columnDefinition = "varchar(200)")
+  @Size(max = 100)
+  @Column(name = "middle_name", columnDefinition = "varchar(100)")
   private String middleName;
-  @Size(min = 2, max = 200)
-  @Column(name = "last_name", columnDefinition = "varchar(200)")
+  @Size(min = 2, max = 100)
+  @Column(name = "last_name", columnDefinition = "varchar(100)")
   private String lastName;
   @Size(min = 7, max = 30)
   @Column(name = "phone", columnDefinition = "varchar(30)")

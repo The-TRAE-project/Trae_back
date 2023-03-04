@@ -29,8 +29,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class Task {
-  @Size(min = 2, max = 500)
-  @Column(name = "name", columnDefinition = "varchar(500)")
+  @Size(min = 1, max = 100)
+  @Column(name = "name", columnDefinition = "varchar(100)")
   private String name;
   @Column(name = "start_date")
   private LocalDateTime startDate;

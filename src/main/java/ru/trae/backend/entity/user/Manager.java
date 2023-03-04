@@ -50,8 +50,8 @@ public class Manager extends User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
-  @Size(min = 3, max = 20)
-  @Column(name = "username", unique = true, nullable = false, columnDefinition = "varchar(20)")
+  @Size(min = 8, max = 50)
+  @Column(name = "username", unique = true, nullable = false, columnDefinition = "varchar(50)")
   private String username;
   @Column(name = "password", nullable = false)
   private String password;

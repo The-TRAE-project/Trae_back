@@ -46,11 +46,11 @@ public class Project extends Task {
   @Column(name = "id", nullable = false)
   private Long id;
   @Min(1)
-  @Max(99999)
-  @Column(name = "number", unique = true, nullable = false)
+  @Max(9999)
+  @Column(name = "number", nullable = false)
   private long number;
-  @Size(min = 2, max = 500)
-  @Column(name = "customer", nullable = false, columnDefinition = "varchar(1000)")
+  @Size(min = 3, max = 200)
+  @Column(name = "customer", nullable = false, columnDefinition = "varchar(200)")
   private String customer;
   @ToString.Exclude
   @ManyToOne

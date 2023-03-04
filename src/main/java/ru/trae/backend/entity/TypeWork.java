@@ -41,8 +41,8 @@ public class TypeWork {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
-  @Size(min = 2, max = 200)
-  @Column(name = "name", unique = true, nullable = false, columnDefinition = "varchar(200)")
+  @Size(min = 2, max = 100)
+  @Column(name = "name", unique = true, nullable = false, columnDefinition = "varchar(100)")
   private String name;
   @ToString.Exclude
   @OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)
