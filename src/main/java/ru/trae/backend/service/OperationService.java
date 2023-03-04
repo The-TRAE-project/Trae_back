@@ -31,7 +31,6 @@ import ru.trae.backend.exceptionhandler.exception.OperationException;
 import ru.trae.backend.repository.OperationRepository;
 import ru.trae.backend.util.Util;
 
-
 /**
  * Service class for working with operation data.
  *
@@ -60,7 +59,6 @@ public class OperationService {
 
   /**
    * This method saves new operations to the project.
-   * Sorted operations are sorted by priority.
    * If operations size is greater than 0, the first operation is created.
    * If operations size is greater than 1, the rest operations are created.
    * The first operation gets a start time and the status "Ready to acceptance".
@@ -69,32 +67,30 @@ public class OperationService {
    * @param operations this is the list of {@link NewOperationDto} to be saved
    */
   public void saveNewOperations(Project p, List<NewOperationDto> operations) {
-    List<NewOperationDto> sortedOperations = operations
-            .stream()
-            .sorted(Comparator.comparing(NewOperationDto::priority))
-            .toList();
-
-    if (sortedOperations.size() > 0) {
-      NewOperationDto dto = sortedOperations.get(0);
-
-      Operation o = new Operation();
-      o.setProject(p);
-      o.setName(dto.name());
-      o.setPeriod(Util.getPeriodForFirstOperation(p.getPeriod(), sortedOperations.size()));
-      o.setPriority(dto.priority());
-      o.setStartDate(LocalDateTime.now());
-      o.setPlannedEndDate(LocalDateTime.now().plusDays(o.getPeriod()));
-      o.setAcceptanceDate(null);
-      o.setEnded(false);
-      o.setInWork(false);
-      o.setReadyToAcceptance(true);
-      o.setTypeWork(typeWorkService.getTypeWorkById(dto.typeWorkId()));
-
-      operationRepository.save(o);
+    if (operations == null || operations.isEmpty()) {
+      return;
     }
 
-    if (sortedOperations.size() > 1) {
-      sortedOperations.stream()
+    NewOperationDto dto = operations.get(0);
+
+    Operation fo = new Operation();
+    fo.setProject(p);
+    fo.setName(dto.name());
+    fo.setPeriod(Util.getPeriodForFirstOperation(p.getPeriod() * 24, operations.size()) - 24);
+    fo.setPriority(0);
+    fo.setStartDate(LocalDateTime.now());
+    fo.setPlannedEndDate(LocalDateTime.now().plusHours(fo.getPeriod()));
+    fo.setAcceptanceDate(null);
+    fo.setEnded(false);
+    fo.setInWork(false);
+    fo.setReadyToAcceptance(true);
+    fo.setTypeWork(typeWorkService.getTypeWorkById(dto.typeWorkId()));
+
+    operationRepository.save(fo);
+
+
+    if (operations.size() > 1) {
+      operations.stream()
               .skip(1)
               .forEach(
                       no -> {
@@ -102,7 +98,7 @@ public class OperationService {
                         o.setProject(p);
                         o.setName(no.name());
                         o.setPeriod(0);
-                        o.setPriority(no.priority());
+                        o.setPriority(operations.indexOf(no) * 10);
                         o.setStartDate(null);
                         o.setPlannedEndDate(null);
                         o.setAcceptanceDate(null);
@@ -115,6 +111,20 @@ public class OperationService {
                       });
     }
 
+    Operation lo = new Operation();
+    lo.setProject(p);
+    lo.setName("Отгрузка");
+    lo.setPeriod(0);
+    lo.setPriority(operations.size() * 10);
+    lo.setStartDate(null);
+    lo.setPlannedEndDate(null);
+    lo.setAcceptanceDate(null);
+    lo.setEnded(false);
+    lo.setInWork(false);
+    lo.setReadyToAcceptance(false);
+    lo.setTypeWork(typeWorkService.getTypeWorkByName("Отгрузка"));
+
+    operationRepository.save(lo);
   }
 
   /**

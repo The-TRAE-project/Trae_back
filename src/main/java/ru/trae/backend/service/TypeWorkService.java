@@ -57,6 +57,19 @@ public class TypeWorkService {
   }
 
   /**
+   * Gets a TypeWork entity by its name.
+   *
+   * @param name the name of the TypeWork entity
+   * @return the TypeWork entity
+   */
+  public TypeWork getTypeWorkByName(String name) {
+    return typeWorkRepository.findByName(name).orElseThrow(
+            () -> new TypeWorkException(HttpStatus.NOT_FOUND,
+                    "Type work with name: " + name + " not found")
+    );
+  }
+
+  /**
    * Gets a list of all TypeWork entities.
    *
    * @return the list of TypeWorkDto

@@ -9,6 +9,5 @@ public record NewOperationDto(
         String name,
         long typeWorkId,
         int priority
-
 ) {
 }

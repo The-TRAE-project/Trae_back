@@ -130,13 +130,12 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               1L,
               "Шишкина М.М.",
               List.of(
-                      new NewOperationDto("Раскрой", 1, 10),
-                      new NewOperationDto("Кромка", 2, 20),
-                      new NewOperationDto("Фрезеровка", 4, 30),
-                      new NewOperationDto("Присадка", 3, 40),
-                      new NewOperationDto("Сборка", 6, 50),
-                      new NewOperationDto("Покраска", 7, 60),
-                      new NewOperationDto("Отгрузка", 9, 70)));
+                      new NewOperationDto("Раскрой", 1, 0),
+                      new NewOperationDto("Кромка", 2, 0),
+                      new NewOperationDto("Фрезеровка", 4, 0),
+                      new NewOperationDto("Присадка", 3, 0),
+                      new NewOperationDto("Сборка", 6, 0),
+                      new NewOperationDto("Покраска", 7, 0)));
 
       NewProjectDto dto2 = new NewProjectDto(
               346,
@@ -145,13 +144,12 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               1L,
               "ГосСтройБыт",
               List.of(
-                      new NewOperationDto("Раскрой", 1, 10),
-                      new NewOperationDto("Кромка", 2, 20),
-                      new NewOperationDto("Фрезеровка", 4, 30),
-                      new NewOperationDto("Сборка", 6, 40),
+                      new NewOperationDto("Раскрой", 1, 0),
+                      new NewOperationDto("Кромка", 2, 0),
+                      new NewOperationDto("Фрезеровка", 4, 0),
+                      new NewOperationDto("Сборка", 6, 0),
                       new NewOperationDto("Особый вид покраски - лакировка",
-                              7, 50),
-                      new NewOperationDto("Отгрузка", 9, 60)));
+                              7, 50)));
 
       NewProjectDto dto3 = new NewProjectDto(
               284,
@@ -160,13 +158,12 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               1L,
               "Петров В.Г.",
               List.of(
-                      new NewOperationDto("Раскрой", 1, 10),
-                      new NewOperationDto("Кромка", 2, 20),
-                      new NewOperationDto("Фрезеровка", 4, 30),
-                      new NewOperationDto("Сборка", 6, 40),
-                      new NewOperationDto("Покраска", 7, 50),
-                      new NewOperationDto("Покраска", 7, 60),
-                      new NewOperationDto("Отгрузка", 9, 70)));
+                      new NewOperationDto("Раскрой", 1, 0),
+                      new NewOperationDto("Кромка", 2, 0),
+                      new NewOperationDto("Фрезеровка", 4, 0),
+                      new NewOperationDto("Сборка", 6, 0),
+                      new NewOperationDto("Покраска", 7, 0),
+                      new NewOperationDto("Покраска", 7, 0)));
 
       projectService.saveNewProject(dto1);
       projectService.saveNewProject(dto2);

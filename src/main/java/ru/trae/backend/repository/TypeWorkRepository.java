@@ -10,6 +10,7 @@
 
 package ru.trae.backend.repository;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.trae.backend.entity.TypeWork;
@@ -22,5 +23,7 @@ import ru.trae.backend.entity.TypeWork;
 @Repository
 public interface TypeWorkRepository extends JpaRepository<TypeWork, Long> {
   boolean existsByNameIgnoreCase(String name);
+
+  Optional<TypeWork> findByName(String name);
 
 }
