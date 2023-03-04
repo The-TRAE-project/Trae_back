@@ -10,6 +10,7 @@
 
 package ru.trae.backend.service;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 import liquibase.repackaged.org.apache.commons.lang3.RandomStringUtils;
@@ -23,6 +24,7 @@ import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
 import ru.trae.backend.entity.user.Manager;
+import ru.trae.backend.entity.user.User;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 import ru.trae.backend.util.Role;
@@ -146,10 +148,8 @@ public class ManagerService {
    * @param request the request for change the password.
    * @return the new credentials of the manager.
    */
-  public ManagerCredentials changePassword(ChangePassReq request) {
-    String username = request.username();
+  public ManagerCredentials changePassword(ChangePassReq request, String username) {
 
-    checkExistsUsername(username);
     checkValidPassword(request.newPassword());
     checkDifferencePasswords(request.newPassword(), request.oldPassword());
 

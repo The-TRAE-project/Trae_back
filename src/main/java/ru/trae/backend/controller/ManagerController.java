@@ -10,9 +10,12 @@
 
 package ru.trae.backend.controller;
 
+import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +27,7 @@ import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
+import ru.trae.backend.entity.user.User;
 import ru.trae.backend.service.ManagerService;
 
 /**
@@ -74,7 +78,7 @@ public class ManagerController {
 
   @PostMapping("/change-password")
   public ResponseEntity<ManagerCredentials> changePassword(
-          @RequestBody ChangePassReq request) {
-    return ResponseEntity.ok(managerService.changePassword(request));
+          @RequestBody ChangePassReq request, Principal principal) {
+    return ResponseEntity.ok(managerService.changePassword(request, principal.getName()));
   }
 }

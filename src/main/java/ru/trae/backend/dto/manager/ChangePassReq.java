@@ -16,7 +16,6 @@ package ru.trae.backend.dto.manager;
  * @author Vladimir Olennikov
  */
 public record ChangePassReq(
-        String username,
         String oldPassword,
         String newPassword
 ) {

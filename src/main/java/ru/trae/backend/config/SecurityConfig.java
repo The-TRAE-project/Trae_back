@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import ru.trae.backend.exceptionhandler.RestAccessDeniedHandler;
 import ru.trae.backend.exceptionhandler.RestAuthenticationEntryPoint;
+import ru.trae.backend.util.Role;
 import ru.trae.backend.util.jwt.JwtFilter;
 
 /**
@@ -66,10 +67,10 @@ public class SecurityConfig {
             .exceptionHandling().accessDeniedHandler(restAccessDeniedHandler)
             .and()
             .authorizeRequests()
-//    .antMatchers("/api/auth/login", "/api/auth/token","/api/manager/register").permitAll()
-//    .antMatchers("/api/employee/**").hasAuthority(ROLE_MANAGER.name())
-//   .antMatchers("/api/operation/**").hasAuthority(ROLE_EMPLOYEE.name())
-//    .antMatchers("/api/manager/**").hasAuthority(ROLE_ADMINISTRATOR.name())
+            .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
+            .antMatchers("/api/auth/logout").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
+            .antMatchers("/api/manager/change-password").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
+            .antMatchers("/api/manager/reset-password").hasAuthority(Role.ROLE_ADMINISTRATOR.name())
 //    .anyRequest().authenticated()
             .anyRequest().permitAll()
             .and()
