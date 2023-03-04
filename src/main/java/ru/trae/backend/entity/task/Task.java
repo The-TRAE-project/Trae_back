@@ -13,6 +13,8 @@ package ru.trae.backend.entity.task;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -27,7 +29,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class Task {
-  @Column(name = "name")
+  @Size(min = 2, max = 500)
+  @Column(name = "name", columnDefinition = "varchar(500)")
   private String name;
   @Column(name = "start_date")
   private LocalDateTime startDate;
@@ -35,7 +38,8 @@ public abstract class Task {
   private LocalDateTime plannedEndDate;
   @Column(name = "real_end_date")
   private LocalDateTime realEndDate;
-  @Column(name = "period")
+  @Max(8760)
+  @Column(name = "period", nullable = false)
   private int period;
   @Column(name = "is_ended")
   private boolean isEnded;

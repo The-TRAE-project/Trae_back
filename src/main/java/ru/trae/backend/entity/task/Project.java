@@ -23,6 +23,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -42,9 +45,12 @@ public class Project extends Task {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
+  @Min(1)
+  @Max(99999)
   @Column(name = "number", unique = true, nullable = false)
   private long number;
-  @Column(name = "customer", nullable = false)
+  @Size(min = 2, max = 500)
+  @Column(name = "customer", nullable = false, columnDefinition = "varchar(1000)")
   private String customer;
   @ToString.Exclude
   @ManyToOne

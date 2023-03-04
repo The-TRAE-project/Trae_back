@@ -10,7 +10,7 @@ public record ManagerDto(
         String firstName,
         String middleName,
         String lastName,
-        Long phone,
+        String phone,
         String role,
         String dateOfRegister
 ) {

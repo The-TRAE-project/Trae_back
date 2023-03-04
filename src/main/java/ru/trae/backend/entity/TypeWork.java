@@ -20,6 +20,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -40,7 +41,8 @@ public class TypeWork {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
-  @Column(name = "name")
+  @Size(min = 2, max = 200)
+  @Column(name = "name", unique = true, nullable = false, columnDefinition = "varchar(200)")
   private String name;
   @ToString.Exclude
   @OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,14 +29,18 @@ import lombok.Setter;
 @NoArgsConstructor
 @MappedSuperclass
 public abstract class User {
-  @Column(name = "first_name")
+  @Size(min = 2, max = 200)
+  @Column(name = "first_name", columnDefinition = "varchar(200)")
   private String firstName;
-  @Column(name = "middle_name")
+  @Size(max = 200)
+  @Column(name = "middle_name", columnDefinition = "varchar(200)")
   private String middleName;
-  @Column(name = "last_name")
+  @Size(min = 2, max = 200)
+  @Column(name = "last_name", columnDefinition = "varchar(200)")
   private String lastName;
-  @Column(name = "phone")
-  private Long phone;
+  @Size(min = 7, max = 30)
+  @Column(name = "phone", columnDefinition = "varchar(30)")
+  private String phone;
   @Column(name = "date_of_register", nullable = false)
   private LocalDateTime dateOfRegister;
 

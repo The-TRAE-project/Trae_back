@@ -16,6 +16,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,8 +40,10 @@ public class PayloadRandomPiece {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
-  @Column(name = "username")
+  @Size(min = 2, max = 20)
+  @Column(name = "username", unique = true, nullable = false, columnDefinition = "varchar(20)")
   private String username;
-  @Column(name = "uuid")
+  @Size(max = 50)
+  @Column(name = "uuid", unique = true, nullable = false, columnDefinition = "varchar(50)")
   private String uuid;
 }

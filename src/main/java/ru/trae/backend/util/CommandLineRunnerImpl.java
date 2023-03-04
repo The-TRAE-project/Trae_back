@@ -71,29 +71,29 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   public void insertEmployees() {
     List<NewEmployeeDto> list = List.of(
             new NewEmployeeDto("Иван", "Петрович", "Шилов",
-                    89183331212L, List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
+                    "89183331212", List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
             new NewEmployeeDto("Николай", "Игоревич", "Иванов",
-                    89283332121L, List.of(3L, 4L, 5L, 6L, 7L)),
+                    "89283332121", List.of(3L, 4L, 5L, 6L, 7L)),
             new NewEmployeeDto("Владимир", "Васильевич", "Петров",
-                    89174445632L, List.of(8L, 9L)),
+                    "89174445632", List.of(8L, 9L)),
             new NewEmployeeDto("Александр", "Григорьевич",
-                    "Красильников", 89271238899L, List.of(8L, 9L)),
+                    "Красильников", "89271238899", List.of(8L, 9L)),
             new NewEmployeeDto("Никита", "Владимирович", "Бондаренко",
-                    89153334567L, List.of(1L)),
+                    "89153334567", List.of(1L)),
             new NewEmployeeDto("Валентин", "Александрович", "Плотников",
-                    89347778294L, List.of(1L, 5L, 6L, 7L)),
+                    "89347778294", List.of(1L, 5L, 6L, 7L)),
             new NewEmployeeDto("Петр", "Иванович", "Абраменко",
-                    89183454829L, List.of(1L, 2L, 3L, 4L)),
+                    "89183454829", List.of(1L, 2L, 3L, 4L)),
             new NewEmployeeDto("Григорий", "Олегович", "Костромин",
-                    89123345993L, List.of(4L, 5L, 6L, 7L)),
+                    "89123345993", List.of(4L, 5L, 6L, 7L)),
             new NewEmployeeDto("Егор", "Антонович", "Карпов",
-                    89155675993L, List.of(1L, 2L, 5L, 6L, 7L)),
+                    "89155675993", List.of(1L, 2L, 5L, 6L, 7L)),
             new NewEmployeeDto("Антон", "Петрович", "Рыбин",
-                    89132245911L, List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
+                    "89132245911", List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
             new NewEmployeeDto("Аркадий", "Олегович", "Павлов",
-                    89113335798L, List.of(1L, 2L, 3L, 4L, 5L)),
+                    "89113335798", List.of(1L, 2L, 3L, 4L, 5L)),
             new NewEmployeeDto("Степан", "Степанович", "Никитин",
-                    89223245913L, List.of(1L, 2L, 5L, 6L, 7L, 8L, 9L))
+                    "89223245913", List.of(1L, 2L, 5L, 6L, 7L, 8L, 9L))
     );
 
     list.stream()
@@ -108,7 +108,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    */
   public void insertManager() {
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
-            "Мишин", 89991112233L,
+            "Мишин", "89991112233",
             "man");
 
     if (!managerService.existsManagerByUsername(dto.username())) {

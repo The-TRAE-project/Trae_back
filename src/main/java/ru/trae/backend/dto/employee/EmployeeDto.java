@@ -13,7 +13,7 @@ public record EmployeeDto(
         String firstName,
         String middleName,
         String lastName,
-        Long phone,
+        String phone,
         Integer pinCode,
         boolean isActive,
         LocalDateTime dateOfRegister,

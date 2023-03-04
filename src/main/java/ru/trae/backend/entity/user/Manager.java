@@ -23,6 +23,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -49,7 +50,8 @@ public class Manager extends User implements UserDetails {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
-  @Column(name = "username", unique = true, nullable = false)
+  @Size(min = 3, max = 20)
+  @Column(name = "username", unique = true, nullable = false, columnDefinition = "varchar(20)")
   private String username;
   @Column(name = "password", nullable = false)
   private String password;
@@ -65,7 +67,7 @@ public class Manager extends User implements UserDetails {
   @JsonIgnore
   @Column(name = "enabled")
   private boolean enabled;
-  @Column(name = "role")
+  @Column(name = "role", nullable = false)
   private Role role;
   @ToString.Exclude
   @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
