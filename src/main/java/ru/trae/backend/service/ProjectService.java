@@ -120,8 +120,24 @@ public class ProjectService {
             .toList();
   }
 
+  /**
+   * This method is used to finish a project by setting isEnded to true and setting the realEndDate
+   * to the current date.
+   *
+   * @param projectId the id of the project to be finished
+   */
   public void finishProject(long projectId) {
     projectRepository.updateIsEndedAndRealEndDateById(true, LocalDateTime.now(), projectId);
+  }
+
+  /**
+   * This method deletes a project from the database.
+   *
+   * @param projectId The project id to delete
+   */
+  public void deleteProject(long projectId) {
+    Project p = getProjectById(projectId);
+    projectRepository.delete(p);
   }
 
   /**

@@ -67,6 +67,7 @@ public class OperationService {
    *
    * @param p          this is the project associated with the operations
    * @param operations this is the list of {@link NewOperationDto} to be saved
+   * @return List of saved Operation objects
    */
   public List<Operation> saveNewOperations(Project p, List<NewOperationDto> operations) {
     if (operations == null || operations.isEmpty()) {

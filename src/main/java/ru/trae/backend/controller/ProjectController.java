@@ -14,6 +14,7 @@ import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,31 +39,73 @@ public class ProjectController {
 
   private final ProjectService projectService;
 
+  /**
+   * Saves a new {@link ProjectDto}.
+   *
+   * @param dto       The {@link NewProjectDto} to save.
+   * @param principal The {@link Principal} of the request.
+   * @return The saved {@link ProjectDto}.
+   */
   @PostMapping("/new")
   public ResponseEntity<ProjectDto> projectPersist(
           @RequestBody NewProjectDto dto, Principal principal) {
     return ResponseEntity.ok(projectService.saveNewProject(dto, principal.getName()));
   }
 
+  /**
+   * Get project by id.
+   *
+   * @param projectId Unique project identifier
+   * @return ProjectDto
+   */
   @GetMapping("/{projectId}")
   public ResponseEntity<ProjectDto> project(@PathVariable long projectId) {
     return ResponseEntity.ok(projectService.getProjectDtoById(projectId));
   }
 
+  /**
+   * Get all projects.
+   *
+   * @return a list of all projects
+   */
   @GetMapping("/projects")
   public ResponseEntity<List<ProjectDto>> projects() {
     return ResponseEntity.ok(projectService.getAllProjects());
   }
 
+  /**
+   * Get list of available projects for employee.
+   *
+   * @param employeeId employee id
+   * @return list of projects
+   */
   @GetMapping("/employee/available-projects/{employeeId}")
   public ResponseEntity<List<ProjectAvailableForEmpDto>> availableProjectsByEmpId(
           @PathVariable long employeeId) {
     return ResponseEntity.ok(projectService.getAvailableProjects(employeeId));
   }
 
+  /**
+   * Finish project by id.
+   *
+   * @param projectId id of project
+   * @return status code
+   */
   @GetMapping("/finish-project/{projectId}")
   public ResponseEntity finishProject(@PathVariable long projectId) {
     projectService.finishProject(projectId);
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Delete project by id.
+   *
+   * @param projectId the project id
+   * @return the response entity
+   */
+  @DeleteMapping("/delete-project/{projectId}")
+  public ResponseEntity deleteProject(@PathVariable long projectId) {
+    projectService.deleteProject(projectId);
     return ResponseEntity.ok().build();
   }
 }

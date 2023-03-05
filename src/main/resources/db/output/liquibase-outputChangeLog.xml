@@ -242,4 +242,242 @@
                                  referencedColumnNames="id" referencedTableName="projects"
                                  validate="true"/>
     </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-1">
+        <createTable tableName="employees">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="employees_pkey"/>
+            </column>
+            <column name="date_of_register" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(100)"/>
+            <column name="last_name" type="VARCHAR(100)"/>
+            <column name="middle_name" type="VARCHAR(100)"/>
+            <column name="phone" type="VARCHAR(30)"/>
+            <column name="is_active" type="BOOLEAN"/>
+            <column name="pin_code" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-2">
+        <createTable tableName="employees_type_works">
+            <column name="employee_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="employees_type_works_pkey"/>
+            </column>
+            <column name="type_works_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="employees_type_works_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-3">
+        <createTable tableName="managers">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="managers_pkey"/>
+            </column>
+            <column name="date_of_register" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(100)"/>
+            <column name="last_name" type="VARCHAR(100)"/>
+            <column name="middle_name" type="VARCHAR(100)"/>
+            <column name="phone" type="VARCHAR(30)"/>
+            <column name="account_non_expired" type="BOOLEAN"/>
+            <column name="account_non_locked" type="BOOLEAN"/>
+            <column name="credentials_non_expired" type="BOOLEAN"/>
+            <column name="enabled" type="BOOLEAN"/>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-4">
+        <createTable tableName="operations">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="operations_pkey"/>
+            </column>
+            <column name="is_ended" type="BOOLEAN"/>
+            <column name="name" type="VARCHAR(100)"/>
+            <column name="period" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="planned_end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="real_end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="start_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="acceptance_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="in_work" type="BOOLEAN"/>
+            <column name="priority" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="ready_to_acceptance" type="BOOLEAN"/>
+            <column name="employee_id" type="BIGINT"/>
+            <column name="project_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="type_work_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-5">
+        <createTable tableName="pieces">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pieces_pkey"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-6">
+        <createTable tableName="projects">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="projects_pkey"/>
+            </column>
+            <column name="is_ended" type="BOOLEAN"/>
+            <column name="name" type="VARCHAR(100)"/>
+            <column name="period" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="planned_end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="real_end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="start_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="customer" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="number" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="manager_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-7">
+        <createTable tableName="time_controls">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="time_controls_pkey"/>
+            </column>
+            <column name="arrival" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="auto_closing_shift" type="BOOLEAN"/>
+            <column name="departure" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="is_on_shift" type="BOOLEAN"/>
+            <column name="employee_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="working_shift_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-8">
+        <createTable tableName="types">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="types_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-9">
+        <createTable tableName="working_shifts">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="working_shifts_pkey"/>
+            </column>
+            <column name="end_shift" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="is_ended" type="BOOLEAN"/>
+            <column name="start_shift" type="TIMESTAMP WITHOUT TIME ZONE"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-10">
+        <addUniqueConstraint columnNames="name" constraintName="uk_17go525ou3scbmd4pcftq130f"
+                             tableName="types"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-11">
+        <addUniqueConstraint columnNames="username" constraintName="uk_47i207jqaocudxi77kquurcr4"
+                             tableName="managers"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-12">
+        <addUniqueConstraint columnNames="uuid" constraintName="uk_hewnex9fj6s5163602ulxkvyi"
+                             tableName="pieces"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-13">
+        <addUniqueConstraint columnNames="pin_code" constraintName="uk_pq01x9w4msfl782fhaer0i755"
+                             tableName="employees"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-14">
+        <addUniqueConstraint columnNames="username" constraintName="uk_rnqmw54jco5otb76s3kmerkjm"
+                             tableName="pieces"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-15">
+        <addForeignKeyConstraint baseColumnNames="type_work_id" baseTableName="operations"
+                                 constraintName="fk48wys1n3xwb6qvngoo40k068a" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="types"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-16">
+        <addForeignKeyConstraint baseColumnNames="manager_id" baseTableName="projects"
+                                 constraintName="fk62rogc37g51ecobx8o8lmobn" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="managers"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-17">
+        <addForeignKeyConstraint baseColumnNames="employee_id" baseTableName="employees_type_works"
+                                 constraintName="fkhdn4ti23ro23wsuad2aklxll1" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="employees"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-18">
+        <addForeignKeyConstraint baseColumnNames="employee_id" baseTableName="time_controls"
+                                 constraintName="fkiu0fuk4c32qgnxx23a2x9bkd3" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="employees"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-19">
+        <addForeignKeyConstraint baseColumnNames="working_shift_id" baseTableName="time_controls"
+                                 constraintName="fkko2kcs9pjiucn7hl86s3gypy4" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="working_shifts"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-20">
+        <addForeignKeyConstraint baseColumnNames="employee_id" baseTableName="operations"
+                                 constraintName="fkkvikr8owprj3jce640j14rrmu" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="employees"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-21">
+        <addForeignKeyConstraint baseColumnNames="type_works_id"
+                                 baseTableName="employees_type_works"
+                                 constraintName="fkpdji3nur7aj82gvmxwxrx5von" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="types"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="ath31 (generated)" id="1678002574455-22">
+        <addForeignKeyConstraint baseColumnNames="project_id" baseTableName="operations"
+                                 constraintName="fksdp7rlplba1mdr5jinjglwx53" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="projects"
+                                 validate="true"/>
+    </changeSet>
 </databaseChangeLog>

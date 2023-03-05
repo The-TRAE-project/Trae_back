@@ -13,6 +13,7 @@ package ru.trae.backend.entity.task;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -57,7 +58,7 @@ public class Project extends Task {
   @JoinColumn(name = "manager_id", nullable = false)
   private Manager manager;
   @ToString.Exclude
-  @OneToMany(mappedBy = "project", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "project", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
   private List<Operation> operations = new ArrayList<>();
 
   @Override
