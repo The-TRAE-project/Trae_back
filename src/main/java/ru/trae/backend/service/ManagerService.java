@@ -195,4 +195,39 @@ public class ManagerService {
     }
   }
 
+  /**
+   * This method activate account.
+   *
+   * @param managerId the manager id
+   * @throws ManagerException in case if manager not found or already activated
+   */
+  public void activateAccount(long managerId) {
+    if (!managerRepository.existsById(managerId)) {
+      throw new ManagerException(HttpStatus.NOT_FOUND,
+              "The manager with id: " + managerId + " not found");
+    }
+    if (managerRepository.existsByIdAndEnabled(managerId, true)) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST, "This manager already activated");
+    }
+
+    managerRepository.updateEnabledById(true, managerId);
+  }
+
+  /**
+   * This method deactivate account.
+   *
+   * @param managerId the manager id
+   * @throws ManagerException in case if manager not found or already deactivated
+   */
+  public void deactivateAccount(long managerId) {
+    if (!managerRepository.existsById(managerId)) {
+      throw new ManagerException(HttpStatus.NOT_FOUND,
+              "The manager with id: " + managerId + " not found");
+    }
+    if (managerRepository.existsByIdAndEnabled(managerId, false)) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST, "This manager already deactivated");
+    }
+
+    managerRepository.updateEnabledById(false, managerId);
+  }
 }

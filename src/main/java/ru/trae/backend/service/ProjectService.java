@@ -193,6 +193,12 @@ public class ProjectService {
     }
   }
 
+  /**
+   * This method checks if the project by ID exists in the repository.
+   *
+   * @param projectId the ID of the project
+   * @throws ProjectException if the project does not exist
+   */
   public void checkExistsProjectById(long projectId) {
     if (!projectRepository.existsById(projectId)) {
       throw new ProjectException(HttpStatus.NOT_FOUND,

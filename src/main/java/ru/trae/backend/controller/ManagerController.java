@@ -83,4 +83,16 @@ public class ManagerController {
     managerService.changePassword(request, principal.getName());
     return ResponseEntity.ok().build();
   }
+
+  @PatchMapping("/activate-account/{managerId}")
+  public ResponseEntity<HttpStatus> activateAccount(@PathVariable long managerId) {
+    managerService.activateAccount(managerId);
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("/deactivate-account/{managerId}")
+  public ResponseEntity<HttpStatus> deactivateAccount(@PathVariable long managerId) {
+    managerService.deactivateAccount(managerId);
+    return ResponseEntity.ok().build();
+  }
 }
