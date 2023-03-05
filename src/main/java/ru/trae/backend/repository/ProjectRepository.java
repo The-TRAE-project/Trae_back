@@ -37,4 +37,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
           where p.isEnded = false and operations.readyToAcceptance = true\s
           and operations.typeWork.id = ?1""")
   List<Project> findAvailableProjectsByTypeWork(long typeWorkId);
+
+  @Transactional
+  @Modifying
+  @Query("update Project p set p.isEnded = ?1, p.realEndDate = ?2 where p.id = ?3")
+  void updateIsEndedAndRealEndDateById(boolean isEnded, LocalDateTime realEndDate, Long id);
+
 }

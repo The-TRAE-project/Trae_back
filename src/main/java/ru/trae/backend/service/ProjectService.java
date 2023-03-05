@@ -50,9 +50,9 @@ public class ProjectService {
    * Saves a new {@link Project} to the database.
    *
    * @param dto the {@link NewProjectDto} object containing the data of the new {@link Project}
-   * @return the newly created {@link Project}
+   *            the {@link ProjectDto} object for the given {@link Project}
    */
-  public Project saveNewProject(NewProjectDto dto) {
+  public ProjectDto saveNewProject(NewProjectDto dto, String authUsername) {
     checkOperationsNotEmpty(dto.operations());
 
     Project p = new Project();
@@ -64,14 +64,16 @@ public class ProjectService {
     p.setPlannedEndDate(LocalDateTime.now().plusDays(dto.period()));
     p.setRealEndDate(null);
     p.setEnded(false);
-    p.setManager(managerService.getManagerById(dto.managerId()));
+    p.setManager(managerService.getManagerByUsername(authUsername));
     p.setCustomer(dto.customer());
 
     projectRepository.save(p);
 
-    operationService.saveNewOperations(p, dto.operations());
+    List<Operation> operations = operationService.saveNewOperations(p, dto.operations());
+    p.setOperations(operations);
+    projectRepository.save(p);
 
-    return p;
+    return projectDtoMapper.apply(p);
   }
 
   /**
@@ -116,6 +118,10 @@ public class ProjectService {
             .sorted(Util::dateSorting)
             .map(projectAvailableDtoMapper)
             .toList();
+  }
+
+  public void finishProject(long projectId) {
+    projectRepository.updateIsEndedAndRealEndDateById(true, LocalDateTime.now(), projectId);
   }
 
   /**

@@ -147,9 +147,6 @@ public class JwtUtil {
     Optional<PayloadRandomPiece> prp =
             payloadRandomPieceRepository.findByUsernameIgnoreCase(username);
     prp.ifPresent(payloadRandomPieceRepository::delete);
-//    else {
-//      throw new PayloadPieceException(HttpStatus.NOT_FOUND, "Payload piece not found!");
-//    }
   }
 
 }

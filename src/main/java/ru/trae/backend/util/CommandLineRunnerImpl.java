@@ -127,47 +127,43 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               345,
               "Шкаф",
               40,
-              1L,
               "Шишкина М.М.",
               List.of(
-                      new NewOperationDto("Раскрой", 1, 0),
-                      new NewOperationDto("Кромка", 2, 0),
-                      new NewOperationDto("Фрезеровка", 4, 0),
-                      new NewOperationDto("Присадка", 3, 0),
-                      new NewOperationDto("Сборка", 6, 0),
-                      new NewOperationDto("Покраска", 7, 0)));
+                      new NewOperationDto("Раскрой", 1),
+                      new NewOperationDto("Кромка", 2),
+                      new NewOperationDto("Фрезеровка", 4),
+                      new NewOperationDto("Присадка", 3),
+                      new NewOperationDto("Сборка", 6),
+                      new NewOperationDto("Покраска", 7)));
 
       NewProjectDto dto2 = new NewProjectDto(
               346,
               "Дверь",
               25,
-              1L,
               "ГосСтройБыт",
               List.of(
-                      new NewOperationDto("Раскрой", 1, 0),
-                      new NewOperationDto("Кромка", 2, 0),
-                      new NewOperationDto("Фрезеровка", 4, 0),
-                      new NewOperationDto("Сборка", 6, 0),
-                      new NewOperationDto("Лакировка",
-                              7, 50)));
+                      new NewOperationDto("Раскрой", 1),
+                      new NewOperationDto("Кромка", 2),
+                      new NewOperationDto("Фрезеровка", 4),
+                      new NewOperationDto("Сборка", 6),
+                      new NewOperationDto("Лакировка", 7)));
 
       NewProjectDto dto3 = new NewProjectDto(
               284,
               "Стол",
               35,
-              1L,
               "Петров В.Г.",
               List.of(
-                      new NewOperationDto("Раскрой", 1, 0),
-                      new NewOperationDto("Кромка", 2, 0),
-                      new NewOperationDto("Фрезеровка", 4, 0),
-                      new NewOperationDto("Сборка", 6, 0),
-                      new NewOperationDto("Покраска", 7, 0),
-                      new NewOperationDto("Покраска", 7, 0)));
+                      new NewOperationDto("Раскрой", 1),
+                      new NewOperationDto("Кромка", 2),
+                      new NewOperationDto("Фрезеровка", 4),
+                      new NewOperationDto("Сборка", 6),
+                      new NewOperationDto("Покраска", 7),
+                      new NewOperationDto("Покраска", 7)));
 
-      projectService.saveNewProject(dto1);
-      projectService.saveNewProject(dto2);
-      projectService.saveNewProject(dto3);
+      projectService.saveNewProject(dto1, "manager8");
+      projectService.saveNewProject(dto2, "manager8");
+      projectService.saveNewProject(dto3, "manager8");
     }
   }
 }

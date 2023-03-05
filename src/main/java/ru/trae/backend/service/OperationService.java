@@ -13,6 +13,8 @@ package ru.trae.backend.service;
 import static java.time.temporal.ChronoUnit.HOURS;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -66,11 +68,11 @@ public class OperationService {
    * @param p          this is the project associated with the operations
    * @param operations this is the list of {@link NewOperationDto} to be saved
    */
-  public void saveNewOperations(Project p, List<NewOperationDto> operations) {
+  public List<Operation> saveNewOperations(Project p, List<NewOperationDto> operations) {
     if (operations == null || operations.isEmpty()) {
-      return;
+      return Collections.emptyList();
     }
-
+    final List<Operation> savedOperations = new ArrayList<>();
     NewOperationDto dto = operations.get(0);
 
     Operation fo = new Operation();
@@ -86,8 +88,7 @@ public class OperationService {
     fo.setReadyToAcceptance(true);
     fo.setTypeWork(typeWorkService.getTypeWorkById(dto.typeWorkId()));
 
-    operationRepository.save(fo);
-
+    savedOperations.add(operationRepository.save(fo));
 
     if (operations.size() > 1) {
       operations.stream()
@@ -107,7 +108,7 @@ public class OperationService {
                         o.setReadyToAcceptance(false);
                         o.setTypeWork(typeWorkService.getTypeWorkById(no.typeWorkId()));
 
-                        operationRepository.save(o);
+                        savedOperations.add(operationRepository.save(o));
                       });
     }
 
@@ -124,7 +125,9 @@ public class OperationService {
     lo.setReadyToAcceptance(false);
     lo.setTypeWork(typeWorkService.getTypeWorkByName("Отгрузка"));
 
-    operationRepository.save(lo);
+    savedOperations.add(operationRepository.save(lo));
+
+    return savedOperations;
   }
 
   /**

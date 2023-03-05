@@ -10,6 +10,7 @@
 
 package ru.trae.backend.controller;
 
+import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,9 +39,9 @@ public class ProjectController {
   private final ProjectService projectService;
 
   @PostMapping("/new")
-  public ResponseEntity<ProjectDto> projectPersist(@RequestBody NewProjectDto dto) {
-    ProjectDto projectDto = projectService.convertFromProject(projectService.saveNewProject(dto));
-    return ResponseEntity.ok(projectDto);
+  public ResponseEntity<ProjectDto> projectPersist(
+          @RequestBody NewProjectDto dto, Principal principal) {
+    return ResponseEntity.ok(projectService.saveNewProject(dto, principal.getName()));
   }
 
   @GetMapping("/{projectId}")
@@ -57,5 +58,11 @@ public class ProjectController {
   public ResponseEntity<List<ProjectAvailableForEmpDto>> availableProjectsByEmpId(
           @PathVariable long employeeId) {
     return ResponseEntity.ok(projectService.getAvailableProjects(employeeId));
+  }
+
+  @GetMapping("/finish-project/{projectId}")
+  public ResponseEntity finishProject(@PathVariable long projectId) {
+    projectService.finishProject(projectId);
+    return ResponseEntity.ok().build();
   }
 }

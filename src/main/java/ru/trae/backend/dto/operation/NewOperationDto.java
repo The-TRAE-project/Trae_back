@@ -7,7 +7,6 @@ package ru.trae.backend.dto.operation;
  */
 public record NewOperationDto(
         String name,
-        long typeWorkId,
-        int priority
+        long typeWorkId
 ) {
 }
