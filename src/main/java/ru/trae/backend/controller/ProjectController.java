@@ -13,6 +13,7 @@ package ru.trae.backend.controller;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,16 +41,17 @@ public class ProjectController {
   private final ProjectService projectService;
 
   /**
-   * Saves a new {@link ProjectDto}.
+   * Endpoint for saving a new project.
    *
-   * @param dto       The {@link NewProjectDto} to save.
-   * @param principal The {@link Principal} of the request.
-   * @return The saved {@link ProjectDto}.
+   * @param dto the {@link NewProjectDto} provided from the client
+   * @param principal the {@link Principal} provided from the client
+   * @return {@link ResponseEntity<HttpStatus>} with status code <b>201</b> (Created)
    */
   @PostMapping("/new")
-  public ResponseEntity<ProjectDto> projectPersist(
+  public ResponseEntity<HttpStatus> projectPersist(
           @RequestBody NewProjectDto dto, Principal principal) {
-    return ResponseEntity.ok(projectService.saveNewProject(dto, principal.getName()));
+    projectService.saveNewProject(dto, principal.getName());
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 
   /**
@@ -92,7 +94,7 @@ public class ProjectController {
    * @return status code
    */
   @GetMapping("/finish-project/{projectId}")
-  public ResponseEntity finishProject(@PathVariable long projectId) {
+  public ResponseEntity<HttpStatus> finishProject(@PathVariable long projectId) {
     projectService.finishProject(projectId);
     return ResponseEntity.ok().build();
   }
@@ -104,7 +106,7 @@ public class ProjectController {
    * @return the response entity
    */
   @DeleteMapping("/delete-project/{projectId}")
-  public ResponseEntity deleteProject(@PathVariable long projectId) {
+  public ResponseEntity<HttpStatus> deleteProject(@PathVariable long projectId) {
     projectService.deleteProject(projectId);
     return ResponseEntity.ok().build();
   }

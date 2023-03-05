@@ -11,9 +11,11 @@
 package ru.trae.backend.controller;
 
 import java.util.List;
+import javax.validation.ConstraintViolationException;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.employee.NewEmployeeDto;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
-import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.service.EmployeeService;
 
 /**
@@ -86,13 +87,15 @@ public class EmployeeController {
   /**
    * Endpoint for registering a new employee.
    *
-   * @param dto the information for the new employee
-   * @return the new employee's information
+   * @param dto The employee data transfer object
+   * @return An HTTP response with a status of 'CREATED'
+   * @throws ConstraintViolationException If the credentials provided are already in use
    */
   @PostMapping("/register")
-  public ResponseEntity<EmployeeDto> register(@RequestBody NewEmployeeDto dto) {
+  public ResponseEntity<HttpStatus> register(@RequestBody NewEmployeeDto dto) {
     employeeService.checkAvailableCredentials(dto.firstName(), dto.middleName(), dto.lastName());
-    Employee e = employeeService.saveNewEmployee(dto);
-    return ResponseEntity.ok(employeeService.getEmpDtoById(e.getId()));
+    employeeService.saveNewEmployee(dto);
+
+    return new ResponseEntity<>(HttpStatus.CREATED);
   }
 }

@@ -146,17 +146,14 @@ public class ManagerService {
    * Allows to change the password of a manager.
    *
    * @param request the request for change the password.
-   * @return the new credentials of the manager.
    */
-  public ManagerCredentials changePassword(ChangePassReq request, String username) {
+  public void changePassword(ChangePassReq request, String username) {
 
     checkValidPassword(request.newPassword());
     checkDifferencePasswords(request.newPassword(), request.oldPassword());
 
     String encodedPass = encoder.encode(request.newPassword());
     managerRepository.updatePasswordByUsername(encodedPass, username);
-
-    return new ManagerCredentials(username, request.newPassword());
   }
 
   public ManagerDto convertFromManager(Manager manager) {

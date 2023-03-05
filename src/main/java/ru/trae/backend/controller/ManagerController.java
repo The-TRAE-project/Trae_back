@@ -13,6 +13,7 @@ package ru.trae.backend.controller;
 import java.security.Principal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -42,15 +43,15 @@ public class ManagerController {
   private final ManagerService managerService;
 
   /**
-   * Registers a new manager.
+   * Register a new manager.
    *
-   * @param dto the data transfer object containing the manager data
-   * @return the response entity with the jwt token
+   * @param dto the data of the new manager
+   * @return the credentials of the registered manager
    */
   @PostMapping("/register")
   public ResponseEntity<ManagerCredentials> register(@RequestBody ManagerRegisterDto dto) {
     managerService.checkAvailableUsername(dto.username());
-    return ResponseEntity.ok(managerService.saveNewManager(dto));
+    return new ResponseEntity<>(managerService.saveNewManager(dto), HttpStatus.CREATED);
   }
 
   /**
@@ -77,8 +78,9 @@ public class ManagerController {
   }
 
   @PostMapping("/change-password")
-  public ResponseEntity<ManagerCredentials> changePassword(
+  public ResponseEntity<HttpStatus> changePassword(
           @RequestBody ChangePassReq request, Principal principal) {
-    return ResponseEntity.ok(managerService.changePassword(request, principal.getName()));
+    managerService.changePassword(request, principal.getName());
+    return ResponseEntity.ok().build();
   }
 }

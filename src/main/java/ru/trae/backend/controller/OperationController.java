@@ -12,6 +12,7 @@ package ru.trae.backend.controller;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,13 +77,13 @@ public class OperationController {
   }
 
   /**
-   * Endpoint for receiving an operation.
+   * Endpoint to receive operation.
    *
-   * @param dto - {@link ReqOpEmpIdDto}
-   * @return - response entity
+   * @param dto The request body of type {@link ReqOpEmpIdDto}
+   * @return {@link ResponseEntity} HttpStatus.OK
    */
   @PostMapping("/employee/receive-operation")
-  public ResponseEntity receiveOperation(@RequestBody ReqOpEmpIdDto dto) {
+  public ResponseEntity<HttpStatus> receiveOperation(@RequestBody ReqOpEmpIdDto dto) {
     operationService.receiveOperation(dto);
     return ResponseEntity.ok().build();
   }
@@ -91,10 +92,10 @@ public class OperationController {
    * The method is used to finish an operation and update the project end date if needed.
    *
    * @param dto The request body of type {@link ReqOpEmpIdDto}
-   * @return A response entity with the status.
+   * @return {@link ResponseEntity} HttpStatus.OK
    */
   @PostMapping("/employee/finish-operation")
-  public ResponseEntity finishOperation(@RequestBody ReqOpEmpIdDto dto) {
+  public ResponseEntity<HttpStatus> finishOperation(@RequestBody ReqOpEmpIdDto dto) {
     Operation o = operationService.getOperationById(dto.operationId());
 
     operationService.checkConfirmingEmployee(o, dto.employeeId());
