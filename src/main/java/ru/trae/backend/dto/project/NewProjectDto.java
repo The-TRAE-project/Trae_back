@@ -15,6 +15,7 @@ public record NewProjectDto(
         String name,
         int period,
         String customer,
+        String comment,
         List<NewOperationDto> operations
 ) {
 }

@@ -23,6 +23,7 @@ public record ProjectDto(
         int period,
         boolean isEnded,
         List<OperationDto> operations,
-        ManagerDto managerDto
+        ManagerDto managerDto,
+        String comment
 ) {
 }

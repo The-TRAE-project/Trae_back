@@ -50,6 +50,8 @@ public class Project extends Task {
   @Max(9999)
   @Column(name = "number", nullable = false)
   private long number;
+  @Column(name = "comment", columnDefinition = "varchar(1000)")
+  private String comment;
   @Size(min = 3, max = 200)
   @Column(name = "customer", nullable = false, columnDefinition = "varchar(200)")
   private String customer;

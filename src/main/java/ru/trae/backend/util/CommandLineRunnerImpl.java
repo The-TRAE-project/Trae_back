@@ -128,6 +128,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               "Шкаф",
               40,
               "Шишкина М.М.",
+              "Комментарий",
               List.of(
                       new NewOperationDto("Раскрой", 1),
                       new NewOperationDto("Кромка", 2),
@@ -141,6 +142,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               "Дверь",
               25,
               "ГосСтройБыт",
+              "Комментарий",
               List.of(
                       new NewOperationDto("Раскрой", 1),
                       new NewOperationDto("Кромка", 2),
@@ -153,6 +155,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               "Стол",
               35,
               "Петров В.Г.",
+              null,
               List.of(
                       new NewOperationDto("Раскрой", 1),
                       new NewOperationDto("Кромка", 2),

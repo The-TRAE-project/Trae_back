@@ -52,7 +52,7 @@ public class ProjectService {
    * @param dto the {@link NewProjectDto} object containing the data of the new {@link Project}
    *            the {@link ProjectDto} object for the given {@link Project}
    */
-  public ProjectDto saveNewProject(NewProjectDto dto, String authUsername) {
+  public void saveNewProject(NewProjectDto dto, String authUsername) {
     checkOperationsNotEmpty(dto.operations());
 
     Project p = new Project();
@@ -66,14 +66,13 @@ public class ProjectService {
     p.setEnded(false);
     p.setManager(managerService.getManagerByUsername(authUsername));
     p.setCustomer(dto.customer());
+    p.setComment(dto.comment());
 
     projectRepository.save(p);
 
     List<Operation> operations = operationService.saveNewOperations(p, dto.operations());
     p.setOperations(operations);
     projectRepository.save(p);
-
-    return projectDtoMapper.apply(p);
   }
 
   /**

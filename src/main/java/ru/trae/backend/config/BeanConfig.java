@@ -62,8 +62,6 @@ public class BeanConfig {
     return new BCryptPasswordEncoder();
   }
 
-  // без этого бина не будут корректно перехватываться исключения, связанные с JWT-фильтром
-
   /**
    * Creates an AuthenticationManager bean.
    *

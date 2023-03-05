@@ -41,7 +41,8 @@ public class ProjectDtoMapper implements Function<Project, ProjectDto> {
             p.getOperations().stream()
                     .map(operationDtoMapper)
                     .toList(),
-            managerDtoMapper.apply(p.getManager())
+            managerDtoMapper.apply(p.getManager()),
+            p.getComment()
     );
   }
 }

@@ -30,7 +30,7 @@ import lombok.Setter;
 @MappedSuperclass
 public abstract class Task {
   @Size(min = 1, max = 100)
-  @Column(name = "name", columnDefinition = "varchar(100)")
+  @Column(name = "name", columnDefinition = "varchar(100)", nullable = false)
   private String name;
   @Column(name = "start_date")
   private LocalDateTime startDate;
