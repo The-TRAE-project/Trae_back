@@ -14,6 +14,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ import ru.trae.backend.service.TypeWorkService;
  */
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/type-work")
 public class TypeWorkController {
   private final TypeWorkService typeWorkService;
@@ -50,7 +52,7 @@ public class TypeWorkController {
    * This endpoint is used to create a new type of work.
    *
    * @param dto a dto containing the name of the new type of work
-   * @return {@link ResponseEntity<HttpStatus>} with status code <b>201</b> (Created)
+   * @return {@link ResponseEntity} with status code <b>201</b> (Created)
    */
   @PostMapping("/new")
   public ResponseEntity<HttpStatus> typeWorkPersist(@RequestBody NewTypeWorkDto dto) {

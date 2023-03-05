@@ -192,4 +192,11 @@ public class ProjectService {
       throw new ProjectException(HttpStatus.BAD_REQUEST, "List of operations cannot be empty");
     }
   }
+
+  public void checkExistsProjectById(long projectId) {
+    if (!projectRepository.existsById(projectId)) {
+      throw new ProjectException(HttpStatus.NOT_FOUND,
+              "Project with ID: " + projectId + " not found");
+    }
+  }
 }

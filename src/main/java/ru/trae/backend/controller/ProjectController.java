@@ -15,12 +15,15 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
@@ -35,6 +38,7 @@ import ru.trae.backend.service.ProjectService;
  */
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/project")
 public class ProjectController {
 
@@ -43,9 +47,9 @@ public class ProjectController {
   /**
    * Endpoint for saving a new project.
    *
-   * @param dto the {@link NewProjectDto} provided from the client
+   * @param dto       the {@link NewProjectDto} provided from the client
    * @param principal the {@link Principal} provided from the client
-   * @return {@link ResponseEntity<HttpStatus>} with status code <b>201</b> (Created)
+   * @return {@link ResponseEntity} with status code <b>201</b> (Created)
    */
   @PostMapping("/new")
   public ResponseEntity<HttpStatus> projectPersist(
@@ -88,13 +92,15 @@ public class ProjectController {
   }
 
   /**
-   * Finish project by id.
+   * This method is used for finish a project.
    *
-   * @param projectId id of project
-   * @return status code
+   * @param projectId the project's id
+   * @return ResponseEntity with status ok
    */
-  @GetMapping("/finish-project/{projectId}")
-  public ResponseEntity<HttpStatus> finishProject(@PathVariable long projectId) {
+  @PatchMapping("/finish-project")
+  public ResponseEntity<HttpStatus> finishProject(
+          @RequestParam(value = "projectId") long projectId) {
+    projectService.checkExistsProjectById(projectId);
     projectService.finishProject(projectId);
     return ResponseEntity.ok().build();
   }
@@ -108,6 +114,6 @@ public class ProjectController {
   @DeleteMapping("/delete-project/{projectId}")
   public ResponseEntity<HttpStatus> deleteProject(@PathVariable long projectId) {
     projectService.deleteProject(projectId);
-    return ResponseEntity.ok().build();
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 }

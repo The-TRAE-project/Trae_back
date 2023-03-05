@@ -13,7 +13,10 @@ package ru.trae.backend.controller;
 import java.security.Principal;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,6 +36,7 @@ import ru.trae.backend.service.AuthService;
  */
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/auth")
 public class AuthController {
   private final AuthService authService;
@@ -43,9 +47,10 @@ public class AuthController {
     return ResponseEntity.ok(token);
   }
 
-  @GetMapping("/logout")
-  public ResponseEntity<Map<String, String>> logout(Principal principal) {
-    return authService.logout(principal);
+  @DeleteMapping("/logout")
+  public ResponseEntity<HttpStatus> logout(Principal principal) {
+    authService.logout(principal);
+    return ResponseEntity.ok().build();
   }
 
   @PostMapping("/token")

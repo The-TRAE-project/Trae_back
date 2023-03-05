@@ -59,11 +59,9 @@ public class AuthService {
    * Logout a user.
    *
    * @param principal the user information
-   * @return a response entity with a status message
    */
-  public ResponseEntity<Map<String, String>> logout(Principal principal) {
+  public void logout(Principal principal) {
     jwtUtil.deletePayloadRandomPieces(principal.getName());
-    return ResponseEntity.ok().body(Collections.singletonMap("status", "You successfully logout!"));
   }
 
   /**

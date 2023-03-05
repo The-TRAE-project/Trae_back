@@ -14,7 +14,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +37,7 @@ import ru.trae.backend.service.ProjectService;
  */
 @RestController
 @RequiredArgsConstructor
+@Validated
 @RequestMapping("/api/operation")
 public class OperationController {
 
@@ -82,7 +85,7 @@ public class OperationController {
    * @param dto The request body of type {@link ReqOpEmpIdDto}
    * @return {@link ResponseEntity} HttpStatus.OK
    */
-  @PostMapping("/employee/receive-operation")
+  @PatchMapping("/employee/receive-operation")
   public ResponseEntity<HttpStatus> receiveOperation(@RequestBody ReqOpEmpIdDto dto) {
     operationService.receiveOperation(dto);
     return ResponseEntity.ok().build();
@@ -94,7 +97,7 @@ public class OperationController {
    * @param dto The request body of type {@link ReqOpEmpIdDto}
    * @return {@link ResponseEntity} HttpStatus.OK
    */
-  @PostMapping("/employee/finish-operation")
+  @PatchMapping("/employee/finish-operation")
   public ResponseEntity<HttpStatus> finishOperation(@RequestBody ReqOpEmpIdDto dto) {
     Operation o = operationService.getOperationById(dto.operationId());
 

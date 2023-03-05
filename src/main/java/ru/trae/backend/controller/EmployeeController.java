@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,8 +37,8 @@ import ru.trae.backend.service.EmployeeService;
  */
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/employee")
 @Validated
+@RequestMapping("/api/employee")
 public class EmployeeController {
   private final EmployeeService employeeService;
 
@@ -58,7 +59,7 @@ public class EmployeeController {
    * @param employeeId the employee's ID
    * @return the employee's information
    */
-  @GetMapping("/checkin/{employeeId}")
+  @PostMapping("/checkin/{employeeId}")
   public ResponseEntity<ShortEmployeeDto> employeeCheckIn(@PathVariable long employeeId) {
     return ResponseEntity.ok(employeeService.checkInEmployee(employeeId));
   }
@@ -69,7 +70,7 @@ public class EmployeeController {
    * @param employeeId the employee's id
    * @return the employee's information
    */
-  @GetMapping("/checkout/{employeeId}")
+  @PatchMapping("/checkout/{employeeId}")
   public ResponseEntity<ShortEmployeeDto> employeeCheckOut(@PathVariable long employeeId) {
     return ResponseEntity.ok(employeeService.departureEmployee(employeeId));
   }
