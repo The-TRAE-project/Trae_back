@@ -109,7 +109,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   public void insertManager() {
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
             "Мишин", "89991112233",
-            "man");
+            "manager8");
 
     if (!managerService.existsManagerByUsername(dto.username())) {
       System.out.println("=================================");
@@ -148,7 +148,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
                       new NewOperationDto("Кромка", 2, 0),
                       new NewOperationDto("Фрезеровка", 4, 0),
                       new NewOperationDto("Сборка", 6, 0),
-                      new NewOperationDto("Особый вид покраски - лакировка",
+                      new NewOperationDto("Лакировка",
                               7, 50)));
 
       NewProjectDto dto3 = new NewProjectDto(

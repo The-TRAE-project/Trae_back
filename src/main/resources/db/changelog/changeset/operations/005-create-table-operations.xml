@@ -1,18 +1,16 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-                   xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.6.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
     <changeSet author="Val_Demar" id="init-5">
         <createTable tableName="operations">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="operations_pkey"/>
             </column>
-            <column name="description" type="VARCHAR(255)"/>
-            <column name="is_ended" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-            <column name="name" type="VARCHAR(255)"/>
+            <column name="is_ended" type="BOOLEAN"/>
+            <column name="name" type="VARCHAR(100)"/>
             <column name="period" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
@@ -20,15 +18,11 @@
             <column name="real_end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="start_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="acceptance_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="in_work" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
+            <column name="in_work" type="BOOLEAN"/>
             <column name="priority" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="ready_to_acceptance" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
+            <column name="ready_to_acceptance" type="BOOLEAN"/>
             <column name="employee_id" type="BIGINT"/>
             <column name="project_id" type="BIGINT">
                 <constraints nullable="false"/>

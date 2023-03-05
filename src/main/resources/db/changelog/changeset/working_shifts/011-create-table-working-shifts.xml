@@ -1,17 +1,17 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-                   xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.6.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
     <changeSet author="Val_Demar" id="init-11">
         <createTable tableName="working_shifts">
             <column autoIncrement="true" name="id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="working_shifts_pkey"/>
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="working_shifts_pkey"/>
             </column>
             <column name="end_shift" type="TIMESTAMP WITHOUT TIME ZONE"/>
-            <column name="is_ended" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
+            <column name="is_ended" type="BOOLEAN"/>
             <column name="start_shift" type="TIMESTAMP WITHOUT TIME ZONE"/>
         </createTable>
     </changeSet>
