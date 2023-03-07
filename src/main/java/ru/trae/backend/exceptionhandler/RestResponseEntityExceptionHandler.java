@@ -10,24 +10,20 @@
 
 package ru.trae.backend.exceptionhandler;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 import javax.validation.ConstraintViolationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ru.trae.backend.exceptionhandler.exception.AbstractException;
-import ru.trae.backend.exceptionhandler.exception.CustomJwtVerificationException;
-import ru.trae.backend.exceptionhandler.exception.EmployeeException;
-import ru.trae.backend.exceptionhandler.exception.LoginCredentialException;
-import ru.trae.backend.exceptionhandler.exception.ManagerException;
-import ru.trae.backend.exceptionhandler.exception.OperationException;
-import ru.trae.backend.exceptionhandler.exception.PayloadPieceException;
-import ru.trae.backend.exceptionhandler.exception.ProjectException;
-import ru.trae.backend.exceptionhandler.exception.TypeWorkException;
-import ru.trae.backend.exceptionhandler.exception.WorkingShiftException;
+import ru.trae.backend.exceptionhandler.exception.*;
 
 /**
  * This class is a ControllerAdvice used to provide centralized exception handling across
@@ -103,6 +99,26 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             .status(HttpStatus.BAD_REQUEST)
             .build();
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+  }
+
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+          MethodArgumentNotValidException ex,
+          HttpHeaders headers,
+          HttpStatus status,
+          WebRequest request) {
+
+    String errorString = ex.getBindingResult().getFieldErrors().stream()
+            .map(DefaultMessageSourceResolvable::getDefaultMessage)
+            .collect(Collectors.joining(", "));
+
+    Response response = Response.builder()
+            .timestamp(LocalDateTime.now().toString())
+            .error(errorString)
+            .status(status)
+            .build();
+
+    return new ResponseEntity<>(response, status);
   }
 
   private Response buildResponse(AbstractException e) {

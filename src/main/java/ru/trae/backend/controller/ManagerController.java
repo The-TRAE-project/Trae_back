@@ -12,6 +12,7 @@ package ru.trae.backend.controller;
 
 import java.security.Principal;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +50,7 @@ public class ManagerController {
    * @return the credentials of the registered manager
    */
   @PostMapping("/register")
-  public ResponseEntity<ManagerCredentials> register(@RequestBody ManagerRegisterDto dto) {
+  public ResponseEntity<ManagerCredentials> register(@Valid @RequestBody ManagerRegisterDto dto) {
     managerService.checkAvailableUsername(dto.username());
     return new ResponseEntity<>(managerService.saveNewManager(dto), HttpStatus.CREATED);
   }
