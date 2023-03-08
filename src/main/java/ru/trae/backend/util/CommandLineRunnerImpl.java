@@ -10,6 +10,7 @@
 
 package ru.trae.backend.util;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -126,7 +127,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
       NewProjectDto dto1 = new NewProjectDto(
               345,
               "Шкаф",
-              40,
+              LocalDateTime.parse("2023-05-10T11:22:33"),
               "Шишкина М.М.",
               "Комментарий",
               List.of(
@@ -140,7 +141,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
       NewProjectDto dto2 = new NewProjectDto(
               346,
               "Дверь",
-              25,
+              LocalDateTime.parse("2023-04-15T18:21:33"),
               "ГосСтройБыт",
               "Комментарий",
               List.of(
@@ -153,7 +154,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
       NewProjectDto dto3 = new NewProjectDto(
               284,
               "Стол",
-              35,
+              LocalDateTime.parse("2023-04-18T08:23:33"),
               "Петров В.Г.",
               null,
               List.of(

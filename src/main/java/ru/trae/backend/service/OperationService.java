@@ -79,7 +79,7 @@ public class OperationService {
     Operation fo = new Operation();
     fo.setProject(p);
     fo.setName(dto.name());
-    fo.setPeriod(Util.getPeriodForFirstOperation(p.getPeriod() * 24, operations.size()) - 24);
+    fo.setPeriod(Util.getPeriodForFirstOperation(p.getPeriod(), operations.size()) - 24);
     fo.setPriority(0);
     fo.setStartDate(LocalDateTime.now());
     fo.setPlannedEndDate(LocalDateTime.now().plusHours(fo.getPeriod()));

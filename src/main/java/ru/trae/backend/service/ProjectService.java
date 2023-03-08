@@ -59,10 +59,10 @@ public class ProjectService {
 
     p.setNumber(dto.number());
     p.setName(dto.name());
-    p.setPeriod(dto.period());
     p.setStartDate(LocalDateTime.now());
-    p.setPlannedEndDate(LocalDateTime.now().plusDays(dto.period()));
+    p.setPlannedEndDate(dto.plannedEndDate());
     p.setRealEndDate(null);
+    p.setPeriod((int) HOURS.between(LocalDateTime.now(), p.getPlannedEndDate()));
     p.setEnded(false);
     p.setManager(managerService.getManagerByUsername(authUsername));
     p.setCustomer(dto.customer());

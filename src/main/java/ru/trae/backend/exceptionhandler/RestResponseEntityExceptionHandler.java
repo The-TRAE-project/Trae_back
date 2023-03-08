@@ -10,10 +10,10 @@
 
 package ru.trae.backend.exceptionhandler;
 
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 import javax.validation.ConstraintViolationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,16 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ru.trae.backend.exceptionhandler.exception.*;
+import ru.trae.backend.exceptionhandler.exception.AbstractException;
+import ru.trae.backend.exceptionhandler.exception.CustomJwtVerificationException;
+import ru.trae.backend.exceptionhandler.exception.EmployeeException;
+import ru.trae.backend.exceptionhandler.exception.LoginCredentialException;
+import ru.trae.backend.exceptionhandler.exception.ManagerException;
+import ru.trae.backend.exceptionhandler.exception.OperationException;
+import ru.trae.backend.exceptionhandler.exception.PayloadPieceException;
+import ru.trae.backend.exceptionhandler.exception.ProjectException;
+import ru.trae.backend.exceptionhandler.exception.TypeWorkException;
+import ru.trae.backend.exceptionhandler.exception.WorkingShiftException;
 
 /**
  * This class is a ControllerAdvice used to provide centralized exception handling across
