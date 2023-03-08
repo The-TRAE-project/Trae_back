@@ -89,6 +89,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
   @ExceptionHandler(CustomJwtVerificationException.class)
   protected ResponseEntity<Response> handleException(CustomJwtVerificationException e) {
+
     return new ResponseEntity<>(buildResponse(e), e.getStatus());
   }
 
@@ -114,6 +115,7 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             .error(e.getMessage())
             .status(HttpStatus.BAD_REQUEST)
             .build();
+
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 

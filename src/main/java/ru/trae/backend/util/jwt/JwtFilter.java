@@ -17,11 +17,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import ru.trae.backend.service.CustomUserDetailsService;
 
 /**
@@ -39,6 +42,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
   private final CustomUserDetailsService customUserDetailsService;
   private final JwtUtil jwtUtil;
+  @Qualifier("handlerExceptionResolver")
+  private final HandlerExceptionResolver resolver;
 
   @Override
   protected void doFilterInternal(HttpServletRequest request,
@@ -63,13 +68,15 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authToken);
           }
 
+          filterChain.doFilter(request, response);
+
         } catch (JWTVerificationException exc) {
-          throw new JWTVerificationException("Invalid JWT Token");
+          resolver.resolveException(request, response, null, exc);
         }
       }
+
+    } else {
+      filterChain.doFilter(request, response);
     }
-
-    filterChain.doFilter(request, response);
   }
-
 }
