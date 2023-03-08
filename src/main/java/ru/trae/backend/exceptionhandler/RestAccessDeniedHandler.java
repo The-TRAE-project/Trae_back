@@ -11,8 +11,10 @@
 package ru.trae.backend.exceptionhandler;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -33,7 +35,8 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
 
     response.setContentType("application/json");
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-    response.getOutputStream().println("{ \"error\": \""
-            + accessDeniedException.getMessage() + "\" }");
+    response.getOutputStream().println("{ \"timestamp\": \"" + LocalDateTime.now() + "\"\n\t"
+            + "\"status\": \"" + HttpStatus.FORBIDDEN + "\"\n\t"
+            + "\"error\": \"" + accessDeniedException.getMessage() + "\" }");
   }
 }

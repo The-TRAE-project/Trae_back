@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
+import ru.trae.backend.repository.ManagerRepository;
 
 /**
  * Custom implementation of UserDetailService.
@@ -27,17 +28,13 @@ import ru.trae.backend.exceptionhandler.exception.ManagerException;
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
-  private final ManagerService managerService;
+  private final ManagerRepository managerRepository;
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    Manager m = managerService.getManagerByUsername(username);
-
-    if (m.isEnabled()) {
-      return m;
-    } else {
-      throw new ManagerException(HttpStatus.LOCKED,
-              "The manager with username: " + username + " is disabled");
+    if (managerRepository.findByUsername(username).isEmpty()) {
+      throw new UsernameNotFoundException("Manager with username " + username + " not found!");
     }
+    return managerRepository.findByUsername(username).get();
   }
 }
