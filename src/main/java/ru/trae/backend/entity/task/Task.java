@@ -38,7 +38,7 @@ public abstract class Task {
   private LocalDateTime plannedEndDate;
   @Column(name = "real_end_date")
   private LocalDateTime realEndDate;
-  @Max(8760)
+  @Max(value = 8760, message = "The period cannot be more than the number (8760) of hours per year")
   @Column(name = "period", nullable = false)
   private int period;
   @Column(name = "is_ended")

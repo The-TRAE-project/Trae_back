@@ -13,6 +13,7 @@ package ru.trae.backend.exceptionhandler;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -92,9 +93,14 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
   @ExceptionHandler(ConstraintViolationException.class)
   protected ResponseEntity<Response> handleValidException(ConstraintViolationException e) {
+
+    String errorString = e.getConstraintViolations().stream()
+            .map(ConstraintViolation::getMessage)
+            .collect(Collectors.joining(", "));
+
     Response response = Response.builder()
             .timestamp(LocalDateTime.now().toString())
-            .error(e.getMessage())
+            .error(errorString)
             .status(HttpStatus.BAD_REQUEST)
             .build();
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);

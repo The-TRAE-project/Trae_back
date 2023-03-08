@@ -12,6 +12,7 @@ package ru.trae.backend.controller;
 
 import java.security.Principal;
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class ProjectController {
    */
   @PostMapping("/new")
   public ResponseEntity<HttpStatus> projectPersist(
-          @RequestBody NewProjectDto dto, Principal principal) {
+          @Valid @RequestBody NewProjectDto dto, Principal principal) {
     projectService.saveNewProject(dto, principal.getName());
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
