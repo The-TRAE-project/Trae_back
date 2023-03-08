@@ -19,12 +19,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.manager.ChangePassReq;
+import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
 import ru.trae.backend.entity.user.Manager;
-import ru.trae.backend.entity.user.User;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 import ru.trae.backend.util.Role;
@@ -88,7 +88,6 @@ public class ManagerService {
             () -> new ManagerException(HttpStatus.NOT_FOUND,
                     "Manager with ID: " + managerId + " not found"));
   }
-
 
   /**
    * Retrieves a Manager from the repository based on the given username.
@@ -160,40 +159,6 @@ public class ManagerService {
     return managerDtoMapper.apply(manager);
   }
 
-  public boolean existsManagerByUsername(String username) {
-    return managerRepository.existsByUsernameIgnoreCase(username);
-  }
-
-  /**
-   * Checks if a username is available or not.
-   *
-   * @param username the username to be checked
-   * @throws ManagerException if username is already in use
-   */
-  public void checkAvailableUsername(String username) {
-    if (existsManagerByUsername(username)) {
-      throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " already in use");
-    }
-  }
-
-  private void checkExistsUsername(String username) {
-    if (!existsManagerByUsername(username)) {
-      throw new ManagerException(HttpStatus.NOT_FOUND, "Username: " + username + " not found");
-    }
-  }
-
-  private void checkValidPassword(String password) { //TODO rework this check!
-    if (password == null || password.length() < 6) {
-      throw new ManagerException(HttpStatus.BAD_REQUEST,
-              "The password does not meet the minimum requirements");
-    }
-  }
-
-  private void checkDifferencePasswords(String newPassword, String oldPassword) {
-    if (encoder.matches(newPassword, oldPassword)) {
-      throw new ManagerException(HttpStatus.CONFLICT, "The password must not match the old one");
-    }
-  }
 
   /**
    * This method activate account.
@@ -229,5 +194,69 @@ public class ManagerService {
     }
 
     managerRepository.updateAccountNonLockedById(false, managerId);
+  }
+
+  /**
+   * This is the method to update the data of a manager in the system. It takes in
+   * ChangingManagerDataReq request and the username of the manager to update their
+   * data in the system. It will check the request and update the data accordingly.
+   * The data that can be updated are the firstName, middleName, lastName, and phone
+   * number of the manager. Then it will save the changes to the repository.
+   *
+   * @param request  the changing manager data request which contains all the
+   *                 data to be updated
+   * @param username the username of the manager whose data needs to be updated
+   */
+  public void updateData(ChangingManagerDataReq request, String username) {
+    Manager m = getManagerByUsername(username);
+    if (request.firstName() != null && !request.firstName().equals(m.getFirstName())) {
+      m.setFirstName(request.firstName());
+    }
+    if (request.middleName() != null && !request.middleName().equals(m.getMiddleName())) {
+      m.setFirstName(request.middleName());
+    }
+    if (request.lastName() != null && !request.lastName().equals(m.getLastName())) {
+      m.setFirstName(request.lastName());
+    }
+    if (request.phone() != null && !request.phone().equals(m.getPhone())) {
+      m.setFirstName(request.phone());
+    }
+
+    managerRepository.save(m);
+  }
+
+  public boolean existsManagerByUsername(String username) {
+    return managerRepository.existsByUsernameIgnoreCase(username);
+  }
+
+  /**
+   * Checks if a username is available or not.
+   *
+   * @param username the username to be checked
+   * @throws ManagerException if username is already in use
+   */
+  public void checkAvailableUsername(String username) {
+    if (existsManagerByUsername(username)) {
+      throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " already in use");
+    }
+  }
+
+  private void checkExistsUsername(String username) {
+    if (!existsManagerByUsername(username)) {
+      throw new ManagerException(HttpStatus.NOT_FOUND, "Username: " + username + " not found");
+    }
+  }
+
+  private void checkValidPassword(String password) { //TODO rework this check!
+    if (password == null || password.length() < 6) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST,
+              "The password does not meet the minimum requirements");
+    }
+  }
+
+  private void checkDifferencePasswords(String newPassword, String oldPassword) {
+    if (encoder.matches(newPassword, oldPassword)) {
+      throw new ManagerException(HttpStatus.CONFLICT, "The password must not match the old one");
+    }
   }
 }

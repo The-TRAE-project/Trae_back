@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
@@ -82,6 +83,13 @@ public class ManagerController {
   public ResponseEntity<HttpStatus> changePassword(
           @RequestBody ChangePassReq request, Principal principal) {
     managerService.changePassword(request, principal.getName());
+    return ResponseEntity.ok().build();
+  }
+
+  @PatchMapping("update-data")
+  public ResponseEntity<HttpStatus> updateData(
+          @RequestBody ChangingManagerDataReq changeManagerData, Principal principal) {
+    managerService.updateData(changeManagerData, principal.getName());
     return ResponseEntity.ok().build();
   }
 
