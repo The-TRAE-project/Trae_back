@@ -10,6 +10,14 @@
 
 package ru.trae.backend.dto.manager;
 
+/**
+ * A request to change the manager's data.
+ *
+ * @param firstName  The manager's first name.
+ * @param middleName The manager's middle name.
+ * @param lastName   The manager's last name.
+ * @param phone      The manager's phone number.
+ */
 public record ChangingManagerDataReq(
         String firstName,
         String middleName,

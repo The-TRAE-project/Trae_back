@@ -227,18 +227,31 @@ public class ManagerService {
     managerRepository.save(m);
   }
 
+  /**
+   * Get a list of roles.
+   *
+   * @return A list of roles
+   */
   public List<String> getRoleList() {
     return List.of(Role.ROLE_MANAGER.value,
             Role.ROLE_ADMINISTRATOR.value,
             Role.ROLE_EMPLOYEE.value);
   }
 
+  /**
+   * Method changes a role of a certain manager.
+   *
+   * @param request contains new Role and managerId.
+   * @throws ManagerException in case the role is not found in the system or the account
+   *                          already has such a role.
+   */
   public void changeRole(ChangeRoleReq request) {
     Manager m = getManagerById(request.managerId());
 
     if (m.getRole().value.equals(request.newRole())) {
       throw new ManagerException(HttpStatus.CONFLICT, "The account already has such a role");
     }
+
     if (Arrays.stream(Role.values()).anyMatch(r -> r.value.equals(request.newRole()))) {
       Role role = Arrays.stream(Role.values())
               .filter(r -> r.value.equals(request.newRole()))

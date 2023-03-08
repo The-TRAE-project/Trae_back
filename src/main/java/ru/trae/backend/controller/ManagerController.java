@@ -24,15 +24,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
-import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.service.ManagerService;
-import ru.trae.backend.util.Role;
 
 /**
  * Controller class for operations related to managers.
@@ -65,7 +64,7 @@ public class ManagerController {
    * @return the response entity with the manager data
    */
   @GetMapping("/{managerId}")
-  private ResponseEntity<ManagerDto> manager(@PathVariable long managerId) {
+  public ResponseEntity<ManagerDto> manager(@PathVariable long managerId) {
     Manager m = managerService.getManagerById(managerId);
     return ResponseEntity.ok(managerService.convertFromManager(m));
   }
