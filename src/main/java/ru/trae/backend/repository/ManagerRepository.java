@@ -17,6 +17,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.entity.user.Manager;
+import ru.trae.backend.util.Role;
 
 /**
  * Repository for managing {@link Manager}s.
@@ -59,4 +60,9 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
   @Modifying
   @Query("update Manager m set m.accountNonLocked = ?1 where m.id = ?2")
   void updateAccountNonLockedById(boolean accountNonLocked, Long id);
+
+  @Transactional
+  @Modifying
+  @Query("update Manager m set m.role = ?1 where m.id = ?2")
+  void updateRoleById(Role role, Long id);
 }

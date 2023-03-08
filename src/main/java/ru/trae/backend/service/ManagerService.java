@@ -12,6 +12,7 @@ package ru.trae.backend.service;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import liquibase.repackaged.org.apache.commons.lang3.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.manager.ChangePassReq;
+import ru.trae.backend.dto.manager.ChangeRoleReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
@@ -223,6 +225,31 @@ public class ManagerService {
     }
 
     managerRepository.save(m);
+  }
+
+  public List<String> getRoleList() {
+    return List.of(Role.ROLE_MANAGER.value,
+            Role.ROLE_ADMINISTRATOR.value,
+            Role.ROLE_EMPLOYEE.value);
+  }
+
+  public void changeRole(ChangeRoleReq request) {
+    Manager m = getManagerById(request.managerId());
+
+    if (m.getRole().value.equals(request.newRole())) {
+      throw new ManagerException(HttpStatus.CONFLICT, "The account already has such a role");
+    }
+    if (Arrays.stream(Role.values()).anyMatch(r -> r.value.equals(request.newRole()))) {
+      Role role = Arrays.stream(Role.values())
+              .filter(r -> r.value.equals(request.newRole()))
+              .findFirst()
+              .get();
+
+      managerRepository.updateRoleById(role, request.managerId());
+    } else {
+      throw new ManagerException(HttpStatus.BAD_REQUEST,
+              "The role: " + request.newRole() + " not found");
+    }
   }
 
   public boolean existsManagerByUsername(String username) {

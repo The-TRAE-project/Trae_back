@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.manager.ChangeRoleReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ManagerCredentials;
@@ -31,6 +32,7 @@ import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.service.ManagerService;
+import ru.trae.backend.util.Role;
 
 /**
  * Controller class for operations related to managers.
@@ -102,6 +104,17 @@ public class ManagerController {
   @PatchMapping("/deactivate-account/{managerId}")
   public ResponseEntity<HttpStatus> deactivateAccount(@PathVariable long managerId) {
     managerService.deactivateAccount(managerId);
+    return ResponseEntity.ok().build();
+  }
+
+  @GetMapping("/roles")
+  public ResponseEntity<List<String>> roles() {
+    return ResponseEntity.ok(managerService.getRoleList());
+  }
+
+  @PatchMapping("/change-role")
+  public ResponseEntity<HttpStatus> changeRole(@RequestBody ChangeRoleReq request) {
+    managerService.changeRole(request);
     return ResponseEntity.ok().build();
   }
 }
