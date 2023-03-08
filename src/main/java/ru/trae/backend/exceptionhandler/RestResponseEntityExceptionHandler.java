@@ -87,6 +87,18 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     return new ResponseEntity<>(buildResponse(e), e.getStatus());
   }
 
+  @ExceptionHandler(AuthenticationException.class)
+  protected ResponseEntity<Response> handleException(AuthenticationException e) {
+
+    Response response = Response.builder()
+            .timestamp(LocalDateTime.now().toString())
+            .error(e.getMessage())
+            .status(HttpStatus.UNAUTHORIZED)
+            .build();
+
+    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+  }
+
   @ExceptionHandler(CustomJwtVerificationException.class)
   protected ResponseEntity<Response> handleException(CustomJwtVerificationException e) {
 
@@ -137,18 +149,6 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
             .build();
 
     return new ResponseEntity<>(response, status);
-  }
-
-  @ExceptionHandler(AuthenticationException.class)
-  protected ResponseEntity<Response> handleException(AuthenticationException e) {
-
-    Response response = Response.builder()
-            .timestamp(LocalDateTime.now().toString())
-            .error(e.getMessage())
-            .status(HttpStatus.UNAUTHORIZED)
-            .build();
-
-    return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
   }
 
   private Response buildResponse(AbstractException e) {

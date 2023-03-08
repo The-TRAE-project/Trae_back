@@ -52,11 +52,11 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
   @Query("update Manager m set m.password = ?1 where m.username = ?2")
   void updatePasswordByUsername(String password, String username);
 
-  @Query("select (count(m) > 0) from Manager m where m.id = ?1 and m.enabled = ?2")
-  boolean existsByIdAndEnabled(Long id, boolean enabled);
+  @Query("select (count(m) > 0) from Manager m where m.id = ?1 and m.accountNonLocked = ?2")
+  boolean existsByIdAndAccountNonLocked(Long id, boolean accountNonLocked);
 
   @Transactional
   @Modifying
-  @Query("update Manager m set m.enabled = ?1 where m.id = ?2")
-  void updateEnabledById(boolean enabled, Long id);
+  @Query("update Manager m set m.accountNonLocked = ?1 where m.id = ?2")
+  void updateAccountNonLockedById(boolean accountNonLocked, Long id);
 }

@@ -11,11 +11,8 @@
 package ru.trae.backend.service;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.LoginCredentials;
@@ -45,6 +42,9 @@ public class AuthService {
    */
   public JwtResponse login(LoginCredentials credentials) {
     final Manager manager = managerService.getManagerByUsername(credentials.username());
+
+    checkNonLockedAccount(manager);
+
     if (encoder.matches(credentials.password(), manager.getPassword())) {
       final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
       final String refreshToken = jwtUtil.generateRefreshToken(manager.getUsername());
@@ -75,6 +75,9 @@ public class AuthService {
     final String login = jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken);
 
     final Manager manager = managerService.getManagerByUsername(login);
+
+    checkNonLockedAccount(manager);
+
     final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
     return new JwtResponse(accessToken, null);
   }
@@ -87,12 +90,19 @@ public class AuthService {
    */
   public JwtResponse getRefreshToken(String refreshToken) {
     final String login = jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken);
-
     final Manager manager = managerService.getManagerByUsername(login);
+
+    checkNonLockedAccount(manager);
+
     final String accessToken = jwtUtil.generateAccessToken(manager.getUsername());
     final String newRefreshToken = jwtUtil.generateRefreshToken(manager.getUsername());
 
     return new JwtResponse(accessToken, newRefreshToken);
   }
 
+  private void checkNonLockedAccount(Manager m) {
+    if (!m.isAccountNonLocked()) {
+      throw new LoginCredentialException(HttpStatus.LOCKED, "This account is locked");
+    }
+  }
 }

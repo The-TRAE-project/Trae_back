@@ -206,11 +206,11 @@ public class ManagerService {
       throw new ManagerException(HttpStatus.NOT_FOUND,
               "The manager with id: " + managerId + " not found");
     }
-    if (managerRepository.existsByIdAndEnabled(managerId, true)) {
+    if (managerRepository.existsByIdAndAccountNonLocked(managerId, true)) {
       throw new ManagerException(HttpStatus.BAD_REQUEST, "This manager already activated");
     }
 
-    managerRepository.updateEnabledById(true, managerId);
+    managerRepository.updateAccountNonLockedById(true, managerId);
   }
 
   /**
@@ -224,10 +224,10 @@ public class ManagerService {
       throw new ManagerException(HttpStatus.NOT_FOUND,
               "The manager with id: " + managerId + " not found");
     }
-    if (managerRepository.existsByIdAndEnabled(managerId, false)) {
+    if (managerRepository.existsByIdAndAccountNonLocked(managerId, false)) {
       throw new ManagerException(HttpStatus.BAD_REQUEST, "This manager already deactivated");
     }
 
-    managerRepository.updateEnabledById(false, managerId);
+    managerRepository.updateAccountNonLockedById(false, managerId);
   }
 }
