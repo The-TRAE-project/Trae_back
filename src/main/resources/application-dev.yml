@@ -4,9 +4,9 @@ spring:
     change-log: classpath:./db/changelog/db.changelog-master.xml
 
   datasource:
-    url: ${POSTGRES_URL:jdbc:postgresql://localhost:5435/traeDB}
-    username: ${POSTGRES_USER:postgres}
-    password: ${POSTGRES_PASS:postgres}
+    url: jdbc:postgresql://localhost:5444/devTraeDB
+    username: trae_dev
+    password: dev
     driverClassName: org.postgresql.Driver
 
   jpa:

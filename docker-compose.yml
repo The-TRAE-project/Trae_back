@@ -8,6 +8,9 @@ services:
       - "8088:8088"
     environment:
       - "SPRING_PROFILES_ACTIVE=prod"
+      - "POSTGRES_URL=${PG_URL}"
+      - "POSTGRES_USER=${PG_USER}"
+      - "POSTGRES_PASS=${PG_PASSWORD}"
     networks:
       - trae-net
     depends_on:
@@ -17,17 +20,17 @@ services:
     image: postgres:15.2
     container_name: postgres_db
     ports:
-      - "5435:5435"
-    command: -p 5435
+      - "${PG_PORT}:${PG_PORT}"
+    command: -p ${PG_PORT}
     environment:
-      PGUSER: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: traeDB
+      PGUSER: "${PG_USER}"
+      POSTGRES_USER: "${PG_USER}"
+      POSTGRES_PASSWORD: "${PG_PASSWORD}"
+      POSTGRES_DB: "${PG_DB}"
     volumes:
       - "database:/var/lib/postgresql/data"
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d traeDB" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${PG_USER} -d ${PG_DB}" ]
       interval: 10s
       timeout: 5s
       retries: 5
