@@ -104,12 +104,8 @@ public class OperationService {
                       });
     }
 
-    Operation lo = prepareOperation(
-            p, "Отгрузка", 0, operations.size() * 10,
-            null, null,
-            false, typeWorkService.getTypeWorkByName("Отгрузка"));
-
-    savedOperations.add(operationRepository.save(lo));
+    Operation shipment = prepareShipmentOp(p, operations.size() * 10);
+    savedOperations.add(operationRepository.save(shipment));
 
     return savedOperations;
   }
@@ -237,21 +233,8 @@ public class OperationService {
   public void insertNewOperationWithoutCloseActive(InsertingOperationDto dto, Project p) {
     List<Operation> operations = p.getOperations();
 
-    if (operations.stream().anyMatch(o -> o.getPriority() == dto.priority())) {
-      throw new OperationException(HttpStatus.CONFLICT,
-              "The operation with priority: " + dto.priority() + " already exists");
-    }
-    int actualPriority = operations.stream()
-            .filter(o -> o.isInWork() | o.isReadyToAcceptance())
-            .findFirst()
-            .map(Operation::getPriority)
-            .orElse(operations.size() * 10);
-    if (actualPriority > dto.priority()) {
-      throw new OperationException(HttpStatus.BAD_REQUEST,
-              "The priority of the operation: " + dto.priority()
-                      + " cannot be lower than the priority of the active operation: "
-                      + actualPriority);
-    }
+    checkExistsPriority(operations, dto.priority());
+    checkAvailablePriority(operations, dto.priority());
 
     Operation newOp = prepareOperation(
             p, dto.name(), 0, dto.priority(),
@@ -259,7 +242,53 @@ public class OperationService {
             false, typeWorkService.getTypeWorkById(dto.typeWorkId()));
 
     operationRepository.save(newOp);
-    operations.add(newOp);
+
+    checkAndUpdateShipmentOp(operations, dto.priority());
+  }
+
+  private void checkAndUpdateShipmentOp(List<Operation> operations, int priority) {
+    int maxPriority = operations.stream()
+            .mapToInt(Operation::getPriority)
+            .max().getAsInt();
+    if (maxPriority < priority) {
+      createOrUpdateShipmentOp(operations, maxPriority, priority);
+    }
+  }
+
+  private void createOrUpdateShipmentOp(List<Operation> operations,
+                                        int maxPriority, int priorityNewOp) {
+    Operation lastOp = operations.stream().filter(o -> o.getPriority() == maxPriority)
+            .findFirst()
+            .get();
+
+    if (!lastOp.isEnded() && !lastOp.isInWork() && !lastOp.isReadyToAcceptance()
+            && priorityNewOp > lastOp.getPriority()) {
+      operationRepository.updatePriorityById(priorityNewOp + 10, lastOp.getId());
+    } else {
+      Operation shipment = prepareShipmentOp(lastOp.getProject(), priorityNewOp + 10);
+      operationRepository.save(shipment);
+    }
+  }
+
+  private void checkExistsPriority(List<Operation> operations, int priority) {
+    if (operations.stream().anyMatch(o -> o.getPriority() == priority)) {
+      throw new OperationException(HttpStatus.CONFLICT,
+              "The operation with priority: " + priority + " already exists");
+    }
+  }
+
+  private void checkAvailablePriority(List<Operation> operations, int priority) {
+    int actualPriority = operations.stream()
+            .filter(o -> o.isInWork() | o.isReadyToAcceptance())
+            .findFirst()
+            .map(Operation::getPriority)
+            .orElse(operations.size() * 10);
+    if (actualPriority > priority) {
+      throw new OperationException(HttpStatus.BAD_REQUEST,
+              "The priority of the operation: " + priority
+                      + " cannot be lower than the priority of the active operation: "
+                      + actualPriority);
+    }
   }
 
   private void checkForAcceptance(Operation o) {
@@ -322,5 +351,11 @@ public class OperationService {
     o.setTypeWork(typeWork);
 
     return o;
+  }
+
+  private Operation prepareShipmentOp(Project p, int priority) {
+    return prepareOperation(p, "Отгрузка", 24, priority,
+            null, null,
+            false, typeWorkService.getTypeWorkByName("Отгрузка"));
   }
 }

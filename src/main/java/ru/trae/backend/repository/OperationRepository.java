@@ -12,8 +12,10 @@ package ru.trae.backend.repository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.entity.task.Operation;
 
 /**
@@ -50,4 +52,9 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
    */
   @Query("select o from Operation o where o.project.id = ?1 order by o.priority")
   List<Operation> findByProjectIdOrderByPriorityAsc(Long projectId);
+
+  @Transactional
+  @Modifying
+  @Query("update Operation o set o.priority = ?1 where o.id = ?2")
+  void updatePriorityById(int priority, Long id);
 }
