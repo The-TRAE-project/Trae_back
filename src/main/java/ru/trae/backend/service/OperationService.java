@@ -230,6 +230,14 @@ public class OperationService {
             .toList();
   }
 
+  /**
+   * A method to insert new operation without close the active operations.
+   *
+   * @param dto the inserting operation dto
+   * @param p   the project
+   * @throws IllegalStateException    if the priority already exists
+   * @throws IllegalArgumentException if the priority is not available
+   */
   public void insertNewOperationWithoutCloseActive(InsertingOperationDto dto, Project p) {
     List<Operation> operations = p.getOperations();
 

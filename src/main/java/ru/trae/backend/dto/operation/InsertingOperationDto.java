@@ -10,6 +10,12 @@
 
 package ru.trae.backend.dto.operation;
 
+/**
+ * The {@code InsertingOperationDto} class is a data transfer object
+ * used to represent a new operation to be inserted into the database.
+ *
+ * @author Vladimir Olennikov
+ */
 public record InsertingOperationDto(
         long projectId,
         String name,

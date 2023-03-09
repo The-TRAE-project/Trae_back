@@ -57,6 +57,12 @@ public class OperationController {
     return ResponseEntity.ok(operationService.getOpsDtoListByProject(projectId));
   }
 
+  /**
+   * Inserts new {@link Operation} to the database.
+   *
+   * @param dto contains the data of the new {@link Operation}
+   * @return {@link HttpStatus#OK} if the operation was added successfully
+   */
   @PostMapping("/insert-without-closing-active")
   public ResponseEntity<HttpStatus> insertOperationWithoutCloseActive(
           @RequestBody InsertingOperationDto dto) {
