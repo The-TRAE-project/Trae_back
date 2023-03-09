@@ -19,7 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,7 +69,7 @@ public class EmployeeController {
    * @param employeeId the employee's id
    * @return the employee's information
    */
-  @PatchMapping("/checkout/{employeeId}")
+  @PostMapping("/checkout/{employeeId}")
   public ResponseEntity<ShortEmployeeDto> employeeCheckOut(@PathVariable long employeeId) {
     return ResponseEntity.ok(employeeService.departureEmployee(employeeId));
   }

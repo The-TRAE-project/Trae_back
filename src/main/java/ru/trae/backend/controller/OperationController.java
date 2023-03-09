@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -79,7 +78,7 @@ public class OperationController {
    * @param operationId id of the operation to close.
    * @return OK if the operation has been closed.
    */
-  @PatchMapping("/close")
+  @PostMapping("/close")
   public ResponseEntity<HttpStatus> closeOperation(
           @RequestParam(value = "operationId") long operationId) {
     operationService.closeOperation(operationId);
@@ -116,7 +115,7 @@ public class OperationController {
    * @param dto The request body of type {@link ReqOpEmpIdDto}
    * @return {@link ResponseEntity} HttpStatus.OK
    */
-  @PatchMapping("/employee/receive-operation")
+  @PostMapping("/employee/receive-operation")
   public ResponseEntity<HttpStatus> receiveOperation(@RequestBody ReqOpEmpIdDto dto) {
     operationService.receiveOperation(dto);
     return ResponseEntity.ok().build();
@@ -128,7 +127,7 @@ public class OperationController {
    * @param dto The request body of type {@link ReqOpEmpIdDto}
    * @return {@link ResponseEntity} HttpStatus.OK
    */
-  @PatchMapping("/employee/finish-operation")
+  @PostMapping("/employee/finish-operation")
   public ResponseEntity<HttpStatus> finishOperation(@RequestBody ReqOpEmpIdDto dto) {
     Operation o = operationService.getOperationById(dto.operationId());
 

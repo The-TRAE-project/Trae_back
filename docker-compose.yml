@@ -1,6 +1,16 @@
 version: "3.9"
 services:
 
+  react-app:
+    image: eld11ar/trae-front
+    container_name: trae_front
+    ports:
+      - '3000:80'
+    environment:
+      - "VITE_BACK_API_URL=${BACK_API_URL}"
+    networks:
+      - trae-net
+
   backend:
     image: ath31st/trae_back
     container_name: trae_back
@@ -37,7 +47,7 @@ services:
       start_period: 10s
     restart: on-failure
     networks:
-        - trae-net
+      - trae-net
 
 volumes:
   database:

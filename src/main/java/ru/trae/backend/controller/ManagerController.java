@@ -18,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,33 +73,33 @@ public class ManagerController {
     return ResponseEntity.ok(managerService.getAllManagers());
   }
 
-  @PatchMapping("/reset-password")
+  @PostMapping("/reset-password")
   public ResponseEntity<ManagerCredentials> resetPassword(
           @RequestBody ManagerCredentials credentials) {
     return ResponseEntity.ok(managerService.resetPassword(credentials));
   }
 
-  @PatchMapping("/change-password")
+  @PostMapping("/change-password")
   public ResponseEntity<HttpStatus> changePassword(
           @RequestBody ChangePassReq request, Principal principal) {
     managerService.changePassword(request, principal.getName());
     return ResponseEntity.ok().build();
   }
 
-  @PatchMapping("update-data")
+  @PostMapping("update-data")
   public ResponseEntity<HttpStatus> updateData(
           @RequestBody ChangingManagerDataReq changeManagerData, Principal principal) {
     managerService.updateData(changeManagerData, principal.getName());
     return ResponseEntity.ok().build();
   }
 
-  @PatchMapping("/activate-account/{managerId}")
+  @PostMapping("/activate-account/{managerId}")
   public ResponseEntity<HttpStatus> activateAccount(@PathVariable long managerId) {
     managerService.activateAccount(managerId);
     return ResponseEntity.ok().build();
   }
 
-  @PatchMapping("/deactivate-account/{managerId}")
+  @PostMapping("/deactivate-account/{managerId}")
   public ResponseEntity<HttpStatus> deactivateAccount(@PathVariable long managerId) {
     managerService.deactivateAccount(managerId);
     return ResponseEntity.ok().build();
@@ -111,7 +110,7 @@ public class ManagerController {
     return ResponseEntity.ok(managerService.getRoleList());
   }
 
-  @PatchMapping("/change-role")
+  @PostMapping("/change-role")
   public ResponseEntity<HttpStatus> changeRole(@RequestBody ChangeRoleReq request) {
     managerService.changeRole(request);
     return ResponseEntity.ok().build();
