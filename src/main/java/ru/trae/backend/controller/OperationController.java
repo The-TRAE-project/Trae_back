@@ -22,11 +22,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.operation.InsertingOperationDto;
 import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
 import ru.trae.backend.dto.operation.ReqOpEmpIdDto;
 import ru.trae.backend.entity.task.Operation;
+import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.service.OperationService;
 import ru.trae.backend.service.ProjectService;
 
@@ -53,6 +55,15 @@ public class OperationController {
   @GetMapping("/project-operations/{projectId}")
   public ResponseEntity<List<OperationDto>> shortOperationsByProject(@PathVariable long projectId) {
     return ResponseEntity.ok(operationService.getOpsDtoListByProject(projectId));
+  }
+
+  @PostMapping("/insert-without-closing-active")
+  public ResponseEntity<HttpStatus> insertOperationWithoutCloseActive(
+          @RequestBody InsertingOperationDto dto) {
+    Project p = projectService.getProjectById(dto.projectId());
+    operationService.insertNewOperationWithoutCloseActive(dto, p);
+
+    return ResponseEntity.ok().build();
   }
 
   /**

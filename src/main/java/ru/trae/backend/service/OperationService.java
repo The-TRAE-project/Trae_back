@@ -21,11 +21,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.mapper.OperationDtoMapper;
+import ru.trae.backend.dto.operation.InsertingOperationDto;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
 import ru.trae.backend.dto.operation.ReqOpEmpIdDto;
+import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
@@ -73,21 +75,18 @@ public class OperationService {
     if (operations == null || operations.isEmpty()) {
       return Collections.emptyList();
     }
+
     final List<Operation> savedOperations = new ArrayList<>();
     NewOperationDto dto = operations.get(0);
 
-    Operation fo = new Operation();
-    fo.setProject(p);
-    fo.setName(dto.name());
-    fo.setPeriod(Util.getPeriodForFirstOperation(p.getPeriod(), operations.size()) - 24);
-    fo.setPriority(0);
-    fo.setStartDate(LocalDateTime.now());
-    fo.setPlannedEndDate(LocalDateTime.now().plusHours(fo.getPeriod()));
-    fo.setAcceptanceDate(null);
-    fo.setEnded(false);
-    fo.setInWork(false);
-    fo.setReadyToAcceptance(true);
-    fo.setTypeWork(typeWorkService.getTypeWorkById(dto.typeWorkId()));
+    int period = Util.getPeriodForFirstOperation(p.getPeriod(), operations.size()) - 24;
+
+    Operation fo = prepareOperation(
+            p, dto.name(), period, 0,
+            LocalDateTime.now(),
+            LocalDateTime.now().plusHours(period),
+            true,
+            typeWorkService.getTypeWorkById(dto.typeWorkId()));
 
     savedOperations.add(operationRepository.save(fo));
 
@@ -96,35 +95,19 @@ public class OperationService {
               .skip(1)
               .forEach(
                       no -> {
-                        Operation o = new Operation();
-                        o.setProject(p);
-                        o.setName(no.name());
-                        o.setPeriod(0);
-                        o.setPriority(operations.indexOf(no) * 10);
-                        o.setStartDate(null);
-                        o.setPlannedEndDate(null);
-                        o.setAcceptanceDate(null);
-                        o.setEnded(false);
-                        o.setInWork(false);
-                        o.setReadyToAcceptance(false);
-                        o.setTypeWork(typeWorkService.getTypeWorkById(no.typeWorkId()));
+                        Operation o = prepareOperation(
+                                p, no.name(), 0, operations.indexOf(no) * 10,
+                                null, null,
+                                false, typeWorkService.getTypeWorkById(no.typeWorkId()));
 
                         savedOperations.add(operationRepository.save(o));
                       });
     }
 
-    Operation lo = new Operation();
-    lo.setProject(p);
-    lo.setName("Отгрузка");
-    lo.setPeriod(0);
-    lo.setPriority(operations.size() * 10);
-    lo.setStartDate(null);
-    lo.setPlannedEndDate(null);
-    lo.setAcceptanceDate(null);
-    lo.setEnded(false);
-    lo.setInWork(false);
-    lo.setReadyToAcceptance(false);
-    lo.setTypeWork(typeWorkService.getTypeWorkByName("Отгрузка"));
+    Operation lo = prepareOperation(
+            p, "Отгрузка", 0, operations.size() * 10,
+            null, null,
+            false, typeWorkService.getTypeWorkByName("Отгрузка"));
 
     savedOperations.add(operationRepository.save(lo));
 
@@ -251,6 +234,34 @@ public class OperationService {
             .toList();
   }
 
+  public void insertNewOperationWithoutCloseActive(InsertingOperationDto dto, Project p) {
+    List<Operation> operations = p.getOperations();
+
+    if (operations.stream().anyMatch(o -> o.getPriority() == dto.priority())) {
+      throw new OperationException(HttpStatus.CONFLICT,
+              "The operation with priority: " + dto.priority() + " already exists");
+    }
+    int actualPriority = operations.stream()
+            .filter(o -> o.isInWork() | o.isReadyToAcceptance())
+            .findFirst()
+            .map(Operation::getPriority)
+            .orElse(operations.size() * 10);
+    if (actualPriority > dto.priority()) {
+      throw new OperationException(HttpStatus.BAD_REQUEST,
+              "The priority of the operation: " + dto.priority()
+                      + " cannot be lower than the priority of the active operation: "
+                      + actualPriority);
+    }
+
+    Operation newOp = prepareOperation(
+            p, dto.name(), 0, dto.priority(),
+            null, null,
+            false, typeWorkService.getTypeWorkById(dto.typeWorkId()));
+
+    operationRepository.save(newOp);
+    operations.add(newOp);
+  }
+
   private void checkForAcceptance(Operation o) {
     if (!o.isReadyToAcceptance()) {
       throw new OperationException(HttpStatus.BAD_REQUEST,
@@ -290,5 +301,26 @@ public class OperationService {
     }
     // здесь вычитается из оставшися операций - "отгрузка" и время на нее - 24 часа.
     return Util.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
+  }
+
+  private Operation prepareOperation(Project p, String name, int period, int priority,
+                                     LocalDateTime start,
+                                     LocalDateTime end,
+                                     boolean ready, TypeWork typeWork
+  ) {
+    Operation o = new Operation();
+    o.setProject(p);
+    o.setName(name);
+    o.setPeriod(period);
+    o.setPriority(priority);
+    o.setStartDate(start);
+    o.setPlannedEndDate(end);
+    o.setAcceptanceDate(null);
+    o.setEnded(false);
+    o.setInWork(false);
+    o.setReadyToAcceptance(ready);
+    o.setTypeWork(typeWork);
+
+    return o;
   }
 }
