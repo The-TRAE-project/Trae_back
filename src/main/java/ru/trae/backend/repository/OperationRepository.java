@@ -57,4 +57,9 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
   @Modifying
   @Query("update Operation o set o.priority = ?1 where o.id = ?2")
   void updatePriorityById(int priority, Long id);
+
+  @Transactional
+  @Modifying
+  @Query("update Operation o set o.isEnded = ?1 where o.id = ?2")
+  void updateIsEndedById(boolean isEnded, Long id);
 }

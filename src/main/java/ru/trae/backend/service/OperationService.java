@@ -93,15 +93,14 @@ public class OperationService {
     if (operations.size() > 1) {
       operations.stream()
               .skip(1)
-              .forEach(
-                      no -> {
-                        Operation o = prepareOperation(
-                                p, no.name(), 0, operations.indexOf(no) * 10,
-                                null, null,
-                                false, typeWorkService.getTypeWorkById(no.typeWorkId()));
+              .forEach(no -> {
+                Operation o = prepareOperation(
+                        p, no.name(), 0, operations.indexOf(no) * 10,
+                        null, null,
+                        false, typeWorkService.getTypeWorkById(no.typeWorkId()));
 
-                        savedOperations.add(operationRepository.save(o));
-                      });
+                savedOperations.add(operationRepository.save(o));
+              });
     }
 
     Operation shipment = prepareShipmentOp(p, operations.size() * 10);
@@ -238,7 +237,7 @@ public class OperationService {
    * @throws IllegalStateException    if the priority already exists
    * @throws IllegalArgumentException if the priority is not available
    */
-  public void insertNewOperationWithoutCloseActive(InsertingOperationDto dto, Project p) {
+  public void insertNewOperation(InsertingOperationDto dto, Project p) {
     List<Operation> operations = p.getOperations();
 
     checkExistsPriority(operations, dto.priority());
@@ -252,6 +251,29 @@ public class OperationService {
     operationRepository.save(newOp);
 
     checkAndUpdateShipmentOp(operations, dto.priority());
+  }
+
+  /**
+   * Closes the operation.
+   *
+   * @param operationId id of the operation
+   * @throws OperationException if the operation is already finished or is not yet in operation
+   *                            or is not available for acceptance
+   */
+  public void closeOperation(long operationId) {
+    Operation o = getOperationById(operationId);
+    if (o.isEnded()) {
+      throw new OperationException(HttpStatus.BAD_REQUEST, "This operation is already finished");
+    }
+
+    if (o.isInWork() || o.isReadyToAcceptance()) {
+      operationRepository.updateIsEndedById(true, o.getId());
+    } else {
+      throw new OperationException(HttpStatus.BAD_REQUEST,
+              "The operation is not yet in operation or is not available for acceptance");
+    }
+
+    startNextOperation(o);
   }
 
   private void checkAndUpdateShipmentOp(List<Operation> operations, int priority) {

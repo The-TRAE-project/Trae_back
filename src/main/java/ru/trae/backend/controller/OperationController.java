@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.operation.InsertingOperationDto;
 import ru.trae.backend.dto.operation.OperationDto;
@@ -63,12 +64,25 @@ public class OperationController {
    * @param dto contains the data of the new {@link Operation}
    * @return {@link HttpStatus#OK} if the operation was added successfully
    */
-  @PostMapping("/insert-without-closing-active")
-  public ResponseEntity<HttpStatus> insertOperationWithoutCloseActive(
+  @PostMapping("/insert")
+  public ResponseEntity<HttpStatus> insertOperation(
           @RequestBody InsertingOperationDto dto) {
     Project p = projectService.getProjectById(dto.projectId());
-    operationService.insertNewOperationWithoutCloseActive(dto, p);
+    operationService.insertNewOperation(dto, p);
 
+    return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Close an existing operation.
+   *
+   * @param operationId id of the operation to close.
+   * @return OK if the operation has been closed.
+   */
+  @PatchMapping("/close")
+  public ResponseEntity<HttpStatus> closeOperation(
+          @RequestParam(value = "operationId") long operationId) {
+    operationService.closeOperation(operationId);
     return ResponseEntity.ok().build();
   }
 
