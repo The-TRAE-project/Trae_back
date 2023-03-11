@@ -10,6 +10,8 @@
 
 package ru.trae.backend.scheduler;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,6 +39,10 @@ public class WorkShiftingScheduler {
    */
   @Scheduled(cron = "${scheduler.start-day}")
   private void workShiftingDayHandler() {
+    if (!workingShiftService.existsActiveWorkingShift()) {
+      workingShiftService.closeWorkingShift();
+    }
+
     workingShiftService.createWorkingShift();
   }
 
@@ -54,7 +60,11 @@ public class WorkShiftingScheduler {
    */
   @PostConstruct
   private void createWorkingShiftAfterInit() {
-    if (!workingShiftService.existsActiveWorkingShift()) {
+    LocalTime start = LocalTime.of(7, 0, 0);
+    LocalTime end = LocalTime.of(23, 0, 0);
+
+    if (!workingShiftService.existsActiveWorkingShift() &&
+            LocalTime.now().isBefore(end) & LocalTime.now().isAfter(start)) {
       workingShiftService.createWorkingShift();
     }
   }

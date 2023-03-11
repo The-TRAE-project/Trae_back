@@ -11,7 +11,7 @@
 Versions:
  - Java: 17</br>
  - Spring Boot: 2.7.8</br>
- - PostgresQl version: 15.0</br>
+ - PostgresQl version: 15.2</br>
  - Swagger (OpenAPI Specification): 3.0.0</br>
  - Maven: 3.8.6</br>
  - Liquibase: 4.19.0</br>
