@@ -34,9 +34,9 @@ public record ManagerRegisterDto(
         String phone,
         @NotNull(message = "Invalid username: username is NULL")
         @NotBlank(message = "Invalid username: empty username")
-        @Size(min = 8, max = 50, message =
+        @Size(min = 3, max = 15, message =
                 "Invalid username: "
-                        + "the username name must be a minimum of 8 and a maximum of 50 characters")
+                        + "the username name must be a minimum of 3 and a maximum of 15 characters")
         String username
 ) {
 }
