@@ -12,6 +12,7 @@ package ru.trae.backend.controller;
 
 import java.util.List;
 import javax.validation.ConstraintViolationException;
+import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,10 @@ public class EmployeeController {
    * @return the employee's information
    */
   @GetMapping("/login/{pin}")
-  public ResponseEntity<ShortEmployeeDto> employeeLogin(@PathVariable @Min(100) @Max(999) int pin) {
+  public ResponseEntity<ShortEmployeeDto> employeeLogin(
+          @PathVariable
+          @Min(value = 100, message = "The pin code cannot be less than 100")
+          @Max(value = 999, message = "The pin code cannot be more than 999") int pin) {
     return ResponseEntity.ok(employeeService.employeeLogin(pin));
   }
 
@@ -92,7 +96,7 @@ public class EmployeeController {
    * @throws ConstraintViolationException If the credentials provided are already in use
    */
   @PostMapping("/register")
-  public ResponseEntity<HttpStatus> register(@RequestBody NewEmployeeDto dto) {
+  public ResponseEntity<HttpStatus> register(@Valid @RequestBody NewEmployeeDto dto) {
     employeeService.checkAvailableCredentials(dto.firstName(), dto.middleName(), dto.lastName());
     employeeService.saveNewEmployee(dto);
 

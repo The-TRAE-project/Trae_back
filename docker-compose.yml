@@ -11,7 +11,7 @@ services:
     networks:
       - trae-net
     depends_on:
-      - postgres-backend
+      - backend
 
   backend:
     image: ath31st/trae_back
