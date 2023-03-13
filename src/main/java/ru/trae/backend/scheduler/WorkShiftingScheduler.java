@@ -63,8 +63,8 @@ public class WorkShiftingScheduler {
     LocalTime start = LocalTime.of(7, 0, 0);
     LocalTime end = LocalTime.of(23, 0, 0);
 
-    if (!workingShiftService.existsActiveWorkingShift() &&
-            LocalTime.now().isBefore(end) & LocalTime.now().isAfter(start)) {
+    if (!workingShiftService.existsActiveWorkingShift()
+            && LocalTime.now().isBefore(end) & LocalTime.now().isAfter(start)) {
       workingShiftService.createWorkingShift();
     }
   }

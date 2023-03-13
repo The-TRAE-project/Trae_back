@@ -10,6 +10,10 @@
 
 package ru.trae.backend.util;
 
+/**
+ * This is a class that contains different regular expressions.
+ * for username, password, name, phone number, token, etc.
+ */
 public class RegExpression {
   public static final String USERNAME = "^(?=.{3,15}$)(?![_.-])(?!.*[_.-]{2})[a-z0-9._-]+([^._-])$";
   //password must contain 1 uppercase letters
