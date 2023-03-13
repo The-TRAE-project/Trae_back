@@ -15,6 +15,8 @@ public record LoginCredentials(
         @Pattern(regexp = RegExpression.USERNAME, message = "Invalid username format")
         @JsonProperty(value = "username", required = true)
         String username,
+        @NotNull(message = "Invalid password: password is NULL")
+        @Pattern(regexp = RegExpression.PASSWORD, message = "Invalid password format")
         @JsonProperty(value = "password", required = true)
         String password
 ) {
