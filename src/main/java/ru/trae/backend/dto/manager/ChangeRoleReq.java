@@ -24,8 +24,8 @@ import ru.trae.backend.util.RegExpression;
 public record ChangeRoleReq(
         @NotNull(message = "Invalid manager id: id is NULL")
         @Min(value = 0, message = "The manager id cannot be less than 0")
-        @Max(value = Long.MAX_VALUE, message =
-                "The manager id cannot be more than " + Long.MAX_VALUE)
+        @Max(value = Integer.MAX_VALUE, message =
+                "The manager id cannot be more than " + Integer.MAX_VALUE)
         long managerId,
         @NotNull(message = "Invalid new role: new role is NULL")
         @Pattern(regexp = RegExpression.ROLE, message = "Invalid role format")

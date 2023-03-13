@@ -11,6 +11,7 @@
 package ru.trae.backend.controller;
 
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +66,7 @@ public class OperationController {
    */
   @PostMapping("/insert")
   public ResponseEntity<HttpStatus> insertOperation(
-          @RequestBody InsertingOperationDto dto) {
+          @Valid @RequestBody InsertingOperationDto dto) {
     Project p = projectService.getProjectById(dto.projectId());
     operationService.insertNewOperation(dto, p);
 
@@ -116,7 +117,7 @@ public class OperationController {
    * @return {@link ResponseEntity} HttpStatus.OK
    */
   @PostMapping("/employee/receive-operation")
-  public ResponseEntity<HttpStatus> receiveOperation(@RequestBody ReqOpEmpIdDto dto) {
+  public ResponseEntity<HttpStatus> receiveOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
     operationService.receiveOperation(dto);
     return ResponseEntity.ok().build();
   }
@@ -128,7 +129,7 @@ public class OperationController {
    * @return {@link ResponseEntity} HttpStatus.OK
    */
   @PostMapping("/employee/finish-operation")
-  public ResponseEntity<HttpStatus> finishOperation(@RequestBody ReqOpEmpIdDto dto) {
+  public ResponseEntity<HttpStatus> finishOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
     Operation o = operationService.getOperationById(dto.operationId());
 
     operationService.checkConfirmingEmployee(o, dto.employeeId());
