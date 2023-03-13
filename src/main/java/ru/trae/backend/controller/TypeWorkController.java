@@ -11,6 +11,7 @@
 package ru.trae.backend.controller;
 
 import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,7 +56,7 @@ public class TypeWorkController {
    * @return {@link ResponseEntity} with status code <b>201</b> (Created)
    */
   @PostMapping("/new")
-  public ResponseEntity<HttpStatus> typeWorkPersist(@RequestBody NewTypeWorkDto dto) {
+  public ResponseEntity<HttpStatus> typeWorkPersist(@Valid @RequestBody NewTypeWorkDto dto) {
     typeWorkService.checkAvailableByName(dto.name());
     typeWorkService.saveNewTypeWork(dto);
     return new ResponseEntity<>(HttpStatus.CREATED);
