@@ -1,8 +1,8 @@
 package ru.trae.backend.dto.manager;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.Pattern;
+import ru.trae.backend.util.RegExpression;
 
 /**
  * The ManagerRegisterDto class is a data transfer object used to register a new manager.
@@ -10,33 +10,20 @@ import javax.validation.constraints.Size;
  * @author Vladimir Olennikov
  */
 public record ManagerRegisterDto(
-        @NotNull(message = "Invalid first name: firstName is NULL")
-        @NotBlank(message = "Invalid first name: empty first name")
-        @Size(min = 2, max = 15, message =
-                "Invalid first name: "
-                        + "the first name must be a minimum of 2 and a maximum of 15 characters")
+        @NotNull(message = "Invalid first name: first name is NULL")
+        @Pattern(regexp = RegExpression.FIRST_MIDDLE_LAST_NAME, message = "Invalid first name")
         String firstName,
-        @Size(min = 2, max = 15, message =
-                "Invalid middle name: "
-                        + "the middle name must be a minimum of 2 and a maximum of 15 characters")
+        @NotNull(message = "Invalid middle name: middle name is NULL")
+        @Pattern(regexp = RegExpression.FIRST_MIDDLE_LAST_NAME, message = "Invalid middle name")
         String middleName,
-        @NotNull(message = "Invalid last name: lastName is NULL")
-        @NotBlank(message = "Invalid last name: empty last name")
-        @Size(min = 2, max = 15, message =
-                "Invalid last name: "
-                        + "the last name must be a minimum of 2 and a maximum of 15 characters")
+        @NotNull(message = "Invalid last name: last name is NULL")
+        @Pattern(regexp = RegExpression.FIRST_MIDDLE_LAST_NAME, message = "Invalid last name")
         String lastName,
-        @NotNull(message = "Invalid phone number: phone is NULL")
-        @NotBlank(message = "Invalid phone number: empty number")
-        @Size(min = 7, max = 30, message =
-                "Invalid phone: "
-                        + "the phone name must be a minimum of 7 and a maximum of 30 characters")
+        @NotNull(message = "Invalid phone number: phone number is NULL")
+        @Pattern(regexp = RegExpression.PHONE_NUMBER, message = "Invalid phone number format")
         String phone,
         @NotNull(message = "Invalid username: username is NULL")
-        @NotBlank(message = "Invalid username: empty username")
-        @Size(min = 3, max = 15, message =
-                "Invalid username: "
-                        + "the username name must be a minimum of 3 and a maximum of 15 characters")
+        @Pattern(regexp = RegExpression.USERNAME, message = "Invalid username format")
         String username
 ) {
 }
