@@ -10,7 +10,6 @@
 
 package ru.trae.backend.service;
 
-import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -19,10 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
-import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
@@ -53,7 +52,7 @@ public class ManagerService {
    * @param dto contains data for creating a new manager
    * @return manager dto
    */
-  public ManagerCredentials saveNewManager(ManagerRegisterDto dto) {
+  public Credentials saveNewManager(ManagerRegisterDto dto) {
     Manager m = new Manager();
 
     String temporaryRandomPass = RandomStringUtils.randomAlphanumeric(6);
@@ -75,7 +74,7 @@ public class ManagerService {
 
     managerRepository.save(m);
 
-    return new ManagerCredentials(m.getUsername(), temporaryRandomPass);
+    return new Credentials(m.getUsername(), temporaryRandomPass);
   }
 
   /**
@@ -129,7 +128,7 @@ public class ManagerService {
    * @return A ManagerCredentials object containing the manager's username and the new, temporary
    *         password.
    */
-  public ManagerCredentials resetPassword(ManagerCredentials credentials) {
+  public Credentials resetPassword(Credentials credentials) {
     String username = credentials.username();
     checkExistsUsername(username);
 
@@ -140,7 +139,7 @@ public class ManagerService {
 
     jwtUtil.deletePayloadRandomPieces(username);
 
-    return new ManagerCredentials(username, temporaryRandomPass);
+    return new Credentials(username, temporaryRandomPass);
   }
 
   /**

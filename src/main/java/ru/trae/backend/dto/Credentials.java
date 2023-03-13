@@ -10,7 +10,7 @@ import ru.trae.backend.util.RegExpression;
  *
  * @author Vladimir Olennikov
  */
-public record LoginCredentials(
+public record Credentials(
         @NotNull(message = "Invalid username: username is NULL")
         @Pattern(regexp = RegExpression.USERNAME, message = "Invalid username format")
         @JsonProperty(value = "username", required = true)

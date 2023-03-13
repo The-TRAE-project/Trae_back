@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
-import ru.trae.backend.dto.manager.ManagerCredentials;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
@@ -51,7 +51,7 @@ public class ManagerController {
    * @return the credentials of the registered manager
    */
   @PostMapping("/register")
-  public ResponseEntity<ManagerCredentials> register(@Valid @RequestBody ManagerRegisterDto dto) {
+  public ResponseEntity<Credentials> register(@Valid @RequestBody ManagerRegisterDto dto) {
     managerService.checkAvailableUsername(dto.username());
     return new ResponseEntity<>(managerService.saveNewManager(dto), HttpStatus.CREATED);
   }
@@ -74,21 +74,21 @@ public class ManagerController {
   }
 
   @PostMapping("/reset-password")
-  public ResponseEntity<ManagerCredentials> resetPassword(
-          @RequestBody ManagerCredentials credentials) {
+  public ResponseEntity<Credentials> resetPassword(
+          @Valid @RequestBody Credentials credentials) {
     return ResponseEntity.ok(managerService.resetPassword(credentials));
   }
 
   @PostMapping("/change-password")
   public ResponseEntity<HttpStatus> changePassword(
-          @RequestBody ChangePassReq request, Principal principal) {
+          @Valid @RequestBody ChangePassReq request, Principal principal) {
     managerService.changePassword(request, principal.getName());
     return ResponseEntity.ok().build();
   }
 
   @PostMapping("update-data")
   public ResponseEntity<HttpStatus> updateData(
-          @RequestBody ChangingManagerDataReq changeManagerData, Principal principal) {
+          @Valid @RequestBody ChangingManagerDataReq changeManagerData, Principal principal) {
     managerService.updateData(changeManagerData, principal.getName());
     return ResponseEntity.ok().build();
   }
@@ -111,7 +111,7 @@ public class ManagerController {
   }
 
   @PostMapping("/change-role")
-  public ResponseEntity<HttpStatus> changeRole(@RequestBody ChangeRoleReq request) {
+  public ResponseEntity<HttpStatus> changeRole(@Valid @RequestBody ChangeRoleReq request) {
     managerService.changeRole(request);
     return ResponseEntity.ok().build();
   }

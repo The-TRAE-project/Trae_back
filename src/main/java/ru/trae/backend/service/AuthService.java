@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.LoginCredentials;
+import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.jwt.JwtResponse;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.LoginCredentialException;
@@ -40,7 +40,7 @@ public class AuthService {
    * @return a {@link JwtResponse} containing the access token and refresh token
    * @throws LoginCredentialException if the credentials are invalid
    */
-  public JwtResponse login(LoginCredentials credentials) {
+  public JwtResponse login(Credentials credentials) {
     final Manager manager = managerService.getManagerByUsername(credentials.username());
 
     checkNonLockedAccount(manager);

@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.trae.backend.dto.LoginCredentials;
+import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.jwt.JwtResponse;
 import ru.trae.backend.dto.jwt.RefreshJwtRequest;
 import ru.trae.backend.service.AuthService;
@@ -41,7 +41,7 @@ public class AuthController {
   private final AuthService authService;
 
   @PostMapping("/login")
-  public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginCredentials credentials) {
+  public ResponseEntity<JwtResponse> login(@Valid @RequestBody Credentials credentials) {
     final JwtResponse token = authService.login(credentials);
     return ResponseEntity.ok(token);
   }
