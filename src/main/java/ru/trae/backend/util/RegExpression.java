@@ -24,4 +24,5 @@ public class RegExpression {
           "^(\\+\\d{1,3}\s)\\(?\\d{2,4}\\)[\s]\\d{3}[\s]\\d{4}$";
   public static final String TOKEN =
           "^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)";
+  public static final String ROLE = "^[A-Z][a-z]{3,49}$";
 }

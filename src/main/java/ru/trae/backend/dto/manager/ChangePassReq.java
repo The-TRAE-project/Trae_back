@@ -10,13 +10,21 @@
 
 package ru.trae.backend.dto.manager;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import ru.trae.backend.util.RegExpression;
+
 /**
  * The {@code ChangePassReq} class is used to represent a request to change a user's password.
  *
  * @author Vladimir Olennikov
  */
 public record ChangePassReq(
+        @NotNull(message = "Invalid old password: old password is NULL")
+        @Pattern(regexp = RegExpression.PASSWORD, message = "Invalid old password format")
         String oldPassword,
+        @NotNull(message = "Invalid new password: new password is NULL")
+        @Pattern(regexp = RegExpression.PASSWORD, message = "Invalid new password format")
         String newPassword
 ) {
 }
