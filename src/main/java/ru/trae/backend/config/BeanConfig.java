@@ -36,10 +36,10 @@ public class BeanConfig {
   @Bean
   public Docket api() {
     return new Docket(DocumentationType.OAS_30)
-            .select()
-            .apis(RequestHandlerSelectors.any())
-            .paths(PathSelectors.any())
-            .build();
+        .select()
+        .apis(RequestHandlerSelectors.any())
+        .paths(PathSelectors.any())
+        .build().useDefaultResponseMessages(false);
   }
 
   /**
@@ -71,7 +71,7 @@ public class BeanConfig {
    */
   @Bean
   public AuthenticationManager authenticationManager(
-          AuthenticationConfiguration authenticationConfiguration) throws Exception {
+      AuthenticationConfiguration authenticationConfiguration) throws Exception {
     return authenticationConfiguration.getAuthenticationManager();
   }
 }

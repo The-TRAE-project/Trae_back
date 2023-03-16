@@ -1,8 +1,8 @@
 package ru.trae.backend.dto.jwt;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
-import io.swagger.v3.oas.annotations.media.Schema;
 import ru.trae.backend.util.RegExpression;
 
 /**

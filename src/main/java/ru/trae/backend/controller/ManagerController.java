@@ -10,14 +10,14 @@
 
 package ru.trae.backend.controller;
 
-import java.security.Principal;
-import java.util.List;
-import javax.validation.Valid;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.security.Principal;
+import java.util.List;
+import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.Credentials;
-import ru.trae.backend.dto.jwt.JwtResponse;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
@@ -63,6 +62,8 @@ public class ManagerController {
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = Credentials.class))}),
       @ApiResponse(responseCode = "400", description = "Неправильные данные пользователя",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "403", description = "Доступ запрещен",
           content = @Content),
