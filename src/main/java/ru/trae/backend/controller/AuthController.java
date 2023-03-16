@@ -11,7 +11,6 @@
 package ru.trae.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -46,69 +45,71 @@ import ru.trae.backend.service.AuthService;
 public class AuthController {
   private final AuthService authService;
 
-  @Operation(summary = "Логин в систему. Доступен всем. Возвращает аксесс и рефреш токены")
+  @Operation(summary = "Логин в систему",
+      description = "Доступен всем. Возвращает аксесс и рефреш токены,"
+          + " создает и сохраняет пейлоад в бд")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Аксесс и рефреш токены",
-                  content = {@Content(mediaType = "application/json",
-                          schema = @Schema(implementation = JwtResponse.class))}),
-          @ApiResponse(responseCode = "400", description = "Неправильные учетные данные",
-                  content = @Content),
-          @ApiResponse(responseCode = "423", description = "Пользователь заблокирован",
-                  content = @Content)})
+      @ApiResponse(responseCode = "200", description = "Аксесс и рефреш токены",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = JwtResponse.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильные учетные данные",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @PostMapping("/login")
-  public ResponseEntity<JwtResponse> login(@Parameter(description = "Логин и пароль пользователя")
-                                           @Valid @RequestBody Credentials credentials) {
+  public ResponseEntity<JwtResponse> login(@Valid @RequestBody Credentials credentials) {
     final JwtResponse token = authService.login(credentials);
     return ResponseEntity.ok(token);
   }
 
-  @Operation(summary = "Логаут. Доступен только аутентифицированным пользователям."
-          + " Обнуляет текущий рефреш токен пользователя, путем удаления пейлоада из базы данных")
+  @Operation(summary = "Логаут",
+      description = "Доступен аутентифицированным пользователям. "
+          + "Обнуляет текущий рефреш токен пользователя, путем удаления пейлоада из базы данных")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description =
-                  "Логаут успешно совершен, пейлоад удален, рефреш токен более недействителен",
-                  content = {@Content}),
-          @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
-                  content = @Content)})
+      @ApiResponse(responseCode = "200", description =
+          "Логаут успешно совершен, пейлоад удален, рефреш токен более недействителен",
+          content = {@Content}),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content)})
   @DeleteMapping("/logout")
-  public ResponseEntity<HttpStatus> logout(@Parameter(
-          description = "Требуется оставить это поле незаполненным") Principal principal) {
+  public ResponseEntity<HttpStatus> logout(Principal principal) {
     authService.logout(principal);
     return ResponseEntity.ok().build();
   }
 
-  @Operation(summary = "Получение свежего аксесс токена. Доступен всем. Возвращает аксесс токен")
+  @Operation(summary = "Получение свежего аксесс токена",
+      description = "Доступен всем. Возвращает аксесс токен")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Аксесс токен, рефреш токен = null",
-                  content = {@Content(mediaType = "application/json",
-                          schema = @Schema(implementation = JwtResponse.class))}),
-          @ApiResponse(responseCode = "400", description = "Неправильный формат рефреш токена",
-                  content = @Content),
-          @ApiResponse(responseCode = "423", description = "Пользователь заблокирован",
-                  content = @Content)})
+      @ApiResponse(responseCode = "200", description = "Аксесс токен, рефреш токен = null",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = JwtResponse.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат рефреш токена",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @PostMapping("/token")
   public ResponseEntity<JwtResponse> newAccessToken(
-          @Parameter(description = "Рефреш токен")
-          @Valid @RequestBody RefreshJwtRequest request) {
+      @Valid @RequestBody RefreshJwtRequest request) {
     final JwtResponse token = authService.getAccessToken(request.refreshToken());
     return ResponseEntity.ok(token);
   }
 
-  @Operation(summary = "Получение акесесс и рефреш токена в обмен на рефреш токен. Доступно только"
-          + " аутентифицированным пользователям. Возвращает аксесс и рефреш токены")
+  @Operation(summary = "Получение акесесс и рефреш токена",
+      description = "Доступен аутентифицированным пользователям. "
+          + "Возвращает аксесс и рефреш токены в обмен на рефреш токен")
   @ApiResponses(value = {
-          @ApiResponse(responseCode = "200", description = "Аксесс и рефреш токены",
-                  content = {@Content(mediaType = "application/json",
-                          schema = @Schema(implementation = JwtResponse.class))}),
-          @ApiResponse(responseCode = "400", description = "Неправильный формат рефреш токена",
-                  content = @Content),
-          @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
-                  content = @Content),
-          @ApiResponse(responseCode = "423", description = "Пользователь заблокирован",
-                  content = @Content)})
+      @ApiResponse(responseCode = "200", description = "Аксесс и рефреш токены",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = JwtResponse.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат рефреш токена",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @PostMapping("/refresh")
   public ResponseEntity<JwtResponse> newRefreshToken(
-          @Valid @RequestBody RefreshJwtRequest request) {
+      @Valid @RequestBody RefreshJwtRequest request) {
     final JwtResponse token = authService.getRefreshToken(request.refreshToken());
     return ResponseEntity.ok(token);
   }

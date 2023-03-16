@@ -13,6 +13,11 @@ package ru.trae.backend.controller;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.Credentials;
+import ru.trae.backend.dto.jwt.JwtResponse;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
@@ -50,6 +56,20 @@ public class ManagerController {
    * @param dto the data of the new manager
    * @return the credentials of the registered manager
    */
+  @Operation(summary = "Регистрация учетной записи менеджера",
+      description = "Доступен администратору. Возвращает логин и пароль созданного пользователя")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "201", description = "Логин и пароль созданного пользователя",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = Credentials.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильные данные пользователя",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "409", description = "Такой юзернейм уже используется",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @PostMapping("/register")
   public ResponseEntity<Credentials> register(@Valid @RequestBody ManagerRegisterDto dto) {
     managerService.checkAvailableUsername(dto.username());
@@ -75,20 +95,20 @@ public class ManagerController {
 
   @PostMapping("/reset-password")
   public ResponseEntity<Credentials> resetPassword(
-          @Valid @RequestBody Credentials credentials) {
+      @Valid @RequestBody Credentials credentials) {
     return ResponseEntity.ok(managerService.resetPassword(credentials));
   }
 
   @PostMapping("/change-password")
   public ResponseEntity<HttpStatus> changePassword(
-          @Valid @RequestBody ChangePassReq request, Principal principal) {
+      @Valid @RequestBody ChangePassReq request, Principal principal) {
     managerService.changePassword(request, principal.getName());
     return ResponseEntity.ok().build();
   }
 
   @PostMapping("update-data")
   public ResponseEntity<HttpStatus> updateData(
-          @Valid @RequestBody ChangingManagerDataReq changeManagerData, Principal principal) {
+      @Valid @RequestBody ChangingManagerDataReq changeManagerData, Principal principal) {
     managerService.updateData(changeManagerData, principal.getName());
     return ResponseEntity.ok().build();
   }

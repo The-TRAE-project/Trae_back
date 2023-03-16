@@ -51,32 +51,32 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
     httpSecurity
-            .csrf().disable()
-            //TODO delete CORS after deploying front on server
-            .cors().configurationSource(request -> {
-              CorsConfiguration configuration = new CorsConfiguration();
-              configuration.setAllowedOrigins(List.of("*"));
-              configuration.setAllowedMethods(List.of("*"));
-              configuration.setAllowedHeaders(List.of("*"));
-              return configuration;
-            })
-            .and()
-            .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
-            .and()
-            .exceptionHandling().accessDeniedHandler(restAccessDeniedHandler)
-            .and()
-            .authorizeRequests()
-            .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
-            .antMatchers("/api/auth/logout","/api/auth/refresh").authenticated()
-            .antMatchers("/api/manager/change-password").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
-            .antMatchers("/api/manager/update-data").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
-            .antMatchers("/api/manager/reset-password").hasAuthority(Role.ROLE_ADMINISTRATOR.name())
-            .antMatchers("/api/project/new").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
+        .csrf().disable()
+        //TODO delete CORS after deploying front on server
+        .cors().configurationSource(request -> {
+          CorsConfiguration configuration = new CorsConfiguration();
+          configuration.setAllowedOrigins(List.of("*"));
+          configuration.setAllowedMethods(List.of("*"));
+          configuration.setAllowedHeaders(List.of("*"));
+          return configuration;
+        })
+        .and()
+        .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
+        .and()
+        .exceptionHandling().accessDeniedHandler(restAccessDeniedHandler)
+        .and()
+        .authorizeRequests()
+        .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
+        .antMatchers("/api/auth/logout", "/api/auth/refresh").authenticated()
+        .antMatchers("/api/manager/change-password").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
+        .antMatchers("/api/manager/update-data").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
+        .antMatchers("/api/manager/reset-password").hasAuthority(Role.ROLE_ADMINISTRATOR.name())
+        .antMatchers("/api/project/new").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
 //    .anyRequest().authenticated()
-            .anyRequest().permitAll()
-            .and()
-            .httpBasic().disable()
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        .anyRequest().permitAll()
+        .and()
+        .httpBasic().disable()
+        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

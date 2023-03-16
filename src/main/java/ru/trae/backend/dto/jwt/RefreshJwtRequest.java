@@ -2,6 +2,7 @@ package ru.trae.backend.dto.jwt;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import io.swagger.v3.oas.annotations.media.Schema;
 import ru.trae.backend.util.RegExpression;
 
 /**
@@ -10,8 +11,9 @@ import ru.trae.backend.util.RegExpression;
  * @author Vladimir Olennikov
  */
 public record RefreshJwtRequest(
-        @NotNull(message = "Invalid token: token is NULL")
-        @Pattern(regexp = RegExpression.TOKEN, message = "Invalid token format")
-        String refreshToken
+    @Schema(description = "Рефреш токен")
+    @NotNull(message = "Invalid token: token is NULL")
+    @Pattern(regexp = RegExpression.TOKEN, message = "Invalid token format")
+    String refreshToken
 ) {
 }
