@@ -1,8 +1,10 @@
 package ru.trae.backend.dto.manager;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
+import org.springframework.format.annotation.DateTimeFormat;
 import ru.trae.backend.util.RegExpression;
 
 /**
@@ -30,6 +32,10 @@ public record ManagerRegisterDto(
     @Schema(description = "Юзернейм(логин) пользователя")
     @NotNull(message = "Invalid username: username is NULL")
     @Pattern(regexp = RegExpression.USERNAME, message = "Invalid username format")
-    String username
+    String username,
+    @Schema(description = "Дата регистрации пользователя")
+    @NotNull(message = "Invalid date of register: date is NULL")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    LocalDateTime dateOfRegister
 ) {
 }

@@ -22,6 +22,7 @@ public record NewProjectDto(
         @NotNull(message = "Invalid name: name is NULL")
         @Pattern(regexp = RegExpression.PROJECT_NAME, message = "Invalid name format")
         String name,
+        @NotNull(message = "Invalid planned end date: date is NULL")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
         LocalDateTime plannedEndDate,
         @NotNull(message = "Invalid customer: customer is NULL")

@@ -10,6 +10,7 @@
 
 package ru.trae.backend.dto.manager;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -22,13 +23,15 @@ import ru.trae.backend.util.RegExpression;
  * @author Vladimir Olennikov
  */
 public record ChangeRoleReq(
-        @NotNull(message = "Invalid manager id: id is NULL")
-        @Min(value = 0, message = "The manager id cannot be less than 0")
-        @Max(value = Integer.MAX_VALUE, message =
-                "The manager id cannot be more than " + Integer.MAX_VALUE)
-        long managerId,
-        @NotNull(message = "Invalid new role: new role is NULL")
-        @Pattern(regexp = RegExpression.ROLE, message = "Invalid role format")
-        String newRole
+    @Schema(description = "Идентификатор пользователя")
+    @NotNull(message = "Invalid manager id: id is NULL")
+    @Min(value = 0, message = "The manager id cannot be less than 0")
+    @Max(value = Integer.MAX_VALUE, message =
+        "The manager id cannot be more than " + Integer.MAX_VALUE)
+    long managerId,
+    @Schema(description = "Новая роль пользователя")
+    @NotNull(message = "Invalid new role: new role is NULL")
+    @Pattern(regexp = RegExpression.ROLE, message = "Invalid role format")
+    String newRole
 ) {
 }

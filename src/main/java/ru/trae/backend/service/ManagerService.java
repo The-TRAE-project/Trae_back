@@ -65,7 +65,7 @@ public class ManagerService {
     m.setUsername(dto.username());
     m.setPassword(encodedPass);
     m.setRole(Role.ROLE_MANAGER);
-    m.setDateOfRegister(LocalDateTime.now());
+    m.setDateOfRegister(dto.dateOfRegister());
 
     m.setEnabled(true);
     m.setAccountNonExpired(true);

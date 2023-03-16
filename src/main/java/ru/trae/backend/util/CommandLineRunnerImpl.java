@@ -51,19 +51,19 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    */
   public void insertTypeWork() {
     List<NewTypeWorkDto> list = List.of(
-            new NewTypeWorkDto("Раскрой"),
-            new NewTypeWorkDto("Кромка"),
-            new NewTypeWorkDto("Присадка"),
-            new NewTypeWorkDto("Фрезеровка"),
-            new NewTypeWorkDto("Склейка"),
-            new NewTypeWorkDto("Сборка"),
-            new NewTypeWorkDto("Шлифовка/покраска"),
-            new NewTypeWorkDto("Упаковка"),
-            new NewTypeWorkDto("Отгрузка"));
+        new NewTypeWorkDto("Раскрой"),
+        new NewTypeWorkDto("Кромка"),
+        new NewTypeWorkDto("Присадка"),
+        new NewTypeWorkDto("Фрезеровка"),
+        new NewTypeWorkDto("Склейка"),
+        new NewTypeWorkDto("Сборка"),
+        new NewTypeWorkDto("Шлифовка/покраска"),
+        new NewTypeWorkDto("Упаковка"),
+        new NewTypeWorkDto("Отгрузка"));
 
     list.stream()
-            .filter(t -> !typeWorkService.existsTypeByName(t.name()))
-            .forEach(typeWorkService::saveNewTypeWork);
+        .filter(t -> !typeWorkService.existsTypeByName(t.name()))
+        .forEach(typeWorkService::saveNewTypeWork);
   }
 
   /**
@@ -71,37 +71,37 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    */
   public void insertEmployees() {
     List<NewEmployeeDto> list = List.of(
-            new NewEmployeeDto("Иван", "Петрович", "Шилов",
-                    "+7(918)3331212", List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
-            new NewEmployeeDto("Николай", "Игоревич", "Иванов",
-                    "+7(928)3332121", List.of(3L, 4L, 5L, 6L, 7L)),
-            new NewEmployeeDto("Владимир", "Васильевич", "Петров",
-                    "+7(917)4445632", List.of(8L, 9L)),
-            new NewEmployeeDto("Александр", "Григорьевич",
-                    "Красильников", "+7(927)1238899", List.of(8L, 9L)),
-            new NewEmployeeDto("Никита", "Владимирович", "Бондаренко",
-                    "+7(915)3334567", List.of(1L)),
-            new NewEmployeeDto("Валентин", "Александрович", "Плотников",
-                    "+7(934)7778294", List.of(1L, 5L, 6L, 7L)),
-            new NewEmployeeDto("Петр", "Иванович", "Абраменко",
-                    "+7(918)3454829", List.of(1L, 2L, 3L, 4L)),
-            new NewEmployeeDto("Григорий", "Олегович", "Костромин",
-                    "+7(912)3345993", List.of(4L, 5L, 6L, 7L)),
-            new NewEmployeeDto("Егор", "Антонович", "Карпов",
-                    "+7(915)5675993", List.of(1L, 2L, 5L, 6L, 7L)),
-            new NewEmployeeDto("Антон", "Петрович", "Рыбин",
-                    "+7(913)2245911", List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
-            new NewEmployeeDto("Аркадий", "Олегович", "Павлов",
-                    "+7(911)3335798", List.of(1L, 2L, 3L, 4L, 5L)),
-            new NewEmployeeDto("Степан", "Степанович", "Никитин",
-                    "+7(922)3245913", List.of(1L, 2L, 5L, 6L, 7L, 8L, 9L))
+        new NewEmployeeDto("Иван", "Петрович", "Шилов",
+            "+7(918)3331212", List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
+        new NewEmployeeDto("Николай", "Игоревич", "Иванов",
+            "+7(928)3332121", List.of(3L, 4L, 5L, 6L, 7L)),
+        new NewEmployeeDto("Владимир", "Васильевич", "Петров",
+            "+7(917)4445632", List.of(8L, 9L)),
+        new NewEmployeeDto("Александр", "Григорьевич",
+            "Красильников", "+7(927)1238899", List.of(8L, 9L)),
+        new NewEmployeeDto("Никита", "Владимирович", "Бондаренко",
+            "+7(915)3334567", List.of(1L)),
+        new NewEmployeeDto("Валентин", "Александрович", "Плотников",
+            "+7(934)7778294", List.of(1L, 5L, 6L, 7L)),
+        new NewEmployeeDto("Петр", "Иванович", "Абраменко",
+            "+7(918)3454829", List.of(1L, 2L, 3L, 4L)),
+        new NewEmployeeDto("Григорий", "Олегович", "Костромин",
+            "+7(912)3345993", List.of(4L, 5L, 6L, 7L)),
+        new NewEmployeeDto("Егор", "Антонович", "Карпов",
+            "+7(915)5675993", List.of(1L, 2L, 5L, 6L, 7L)),
+        new NewEmployeeDto("Антон", "Петрович", "Рыбин",
+            "+7(913)2245911", List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
+        new NewEmployeeDto("Аркадий", "Олегович", "Павлов",
+            "+7(911)3335798", List.of(1L, 2L, 3L, 4L, 5L)),
+        new NewEmployeeDto("Степан", "Степанович", "Никитин",
+            "+7(922)3245913", List.of(1L, 2L, 5L, 6L, 7L, 8L, 9L))
     );
 
     list.stream()
-            .filter(e -> !employeeService.existsByCredentials(e.firstName(),
-                    e.middleName(),
-                    e.lastName()))
-            .forEach(employeeService::saveNewEmployee);
+        .filter(e -> !employeeService.existsByCredentials(e.firstName(),
+            e.middleName(),
+            e.lastName()))
+        .forEach(employeeService::saveNewEmployee);
   }
 
   /**
@@ -109,8 +109,8 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    */
   public void insertManager() {
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
-            "Мишин", "+7(999)1112233",
-            "manager8");
+        "Мишин", "+7(999)1112233",
+        "manager8", LocalDateTime.parse("2022-01-10T11:00:33"));
 
     if (!managerService.existsManagerByUsername(dto.username())) {
       System.out.println("=================================");
@@ -125,45 +125,45 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   public void insertProject() {
     if (projectService.getAllProjects().size() == 0) {
       NewProjectDto dto1 = new NewProjectDto(
-              345,
-              "Шкаф",
-              LocalDateTime.parse("2023-05-10T11:22:33"),
-              "Шишкина М.М.",
-              "Комментарий",
-              List.of(
-                      new NewOperationDto("Раскрой", 1),
-                      new NewOperationDto("Кромка", 2),
-                      new NewOperationDto("Фрезеровка", 4),
-                      new NewOperationDto("Присадка", 3),
-                      new NewOperationDto("Сборка", 6),
-                      new NewOperationDto("Покраска", 7)));
+          345,
+          "Шкаф",
+          LocalDateTime.parse("2023-05-10T11:22:33"),
+          "Шишкина М.М.",
+          "Комментарий",
+          List.of(
+              new NewOperationDto("Раскрой", 1),
+              new NewOperationDto("Кромка", 2),
+              new NewOperationDto("Фрезеровка", 4),
+              new NewOperationDto("Присадка", 3),
+              new NewOperationDto("Сборка", 6),
+              new NewOperationDto("Покраска", 7)));
 
       NewProjectDto dto2 = new NewProjectDto(
-              346,
-              "Дверь",
-              LocalDateTime.parse("2023-04-15T18:21:33"),
-              "ГосСтройБыт",
-              "Комментарий",
-              List.of(
-                      new NewOperationDto("Раскрой", 1),
-                      new NewOperationDto("Кромка", 2),
-                      new NewOperationDto("Фрезеровка", 4),
-                      new NewOperationDto("Сборка", 6),
-                      new NewOperationDto("Лакировка", 7)));
+          346,
+          "Дверь",
+          LocalDateTime.parse("2023-04-15T18:21:33"),
+          "ГосСтройБыт",
+          "Комментарий",
+          List.of(
+              new NewOperationDto("Раскрой", 1),
+              new NewOperationDto("Кромка", 2),
+              new NewOperationDto("Фрезеровка", 4),
+              new NewOperationDto("Сборка", 6),
+              new NewOperationDto("Лакировка", 7)));
 
       NewProjectDto dto3 = new NewProjectDto(
-              284,
-              "Стол",
-              LocalDateTime.parse("2023-04-18T08:23:33"),
-              "Петров В.Г.",
-              null,
-              List.of(
-                      new NewOperationDto("Раскрой", 1),
-                      new NewOperationDto("Кромка", 2),
-                      new NewOperationDto("Фрезеровка", 4),
-                      new NewOperationDto("Сборка", 6),
-                      new NewOperationDto("Покраска", 7),
-                      new NewOperationDto("Покраска", 7)));
+          284,
+          "Стол",
+          LocalDateTime.parse("2023-04-18T08:23:33"),
+          "Петров В.Г.",
+          null,
+          List.of(
+              new NewOperationDto("Раскрой", 1),
+              new NewOperationDto("Кромка", 2),
+              new NewOperationDto("Фрезеровка", 4),
+              new NewOperationDto("Сборка", 6),
+              new NewOperationDto("Покраска", 7),
+              new NewOperationDto("Покраска", 7)));
 
       projectService.saveNewProject(dto1, "manager8");
       projectService.saveNewProject(dto2, "manager8");
