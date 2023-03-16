@@ -67,7 +67,7 @@ public class SecurityConfig {
             .and()
             .authorizeRequests()
             .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
-            .antMatchers("/api/auth/logout").authenticated()
+            .antMatchers("/api/auth/logout","/api/auth/refresh").authenticated()
             .antMatchers("/api/manager/change-password").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
             .antMatchers("/api/manager/update-data").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
             .antMatchers("/api/manager/reset-password").hasAuthority(Role.ROLE_ADMINISTRATOR.name())
