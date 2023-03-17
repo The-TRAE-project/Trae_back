@@ -28,6 +28,7 @@ import ru.trae.backend.dto.mapper.ManagerDtoMapper;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
+import ru.trae.backend.util.PasswordGenerator;
 import ru.trae.backend.util.Role;
 import ru.trae.backend.util.jwt.JwtUtil;
 
@@ -55,7 +56,13 @@ public class ManagerService {
   public Credentials saveNewManager(ManagerRegisterDto dto) {
     Manager m = new Manager();
 
-    String temporaryRandomPass = RandomStringUtils.randomAlphanumeric(6);
+    String temporaryRandomPass = new PasswordGenerator.Builder()
+        .digits(1)
+        .lower(1)
+        .upper(1)
+        .punctuation()
+        .generate(8);
+
     String encodedPass = encoder.encode(temporaryRandomPass);
 
     m.setFirstName(dto.firstName());

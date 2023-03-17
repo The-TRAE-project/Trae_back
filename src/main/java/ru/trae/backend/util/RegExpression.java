@@ -15,19 +15,21 @@ package ru.trae.backend.util;
  * for username, password, name, phone number, token, etc.
  */
 public class RegExpression {
-  public static final String USERNAME = "^(?=.{3,15}$)(?![_.-])(?!.*[_.-]{2})[a-z0-9._-]+([^._-])$";
+  public static final String USERNAME =
+      "^((?=\\S*?[A-Z])(?=\\S*?[a-z])(?=\\S*?[0-9._-]?).{2,14})([^._-])$";
+  //"^(?=.{3,15}$)(?![_.-])(?!.*[_.-]{2})[a-z0-9._-]+([^._-])$";
   //password must contain 1 uppercase letters
   //password must contain 1 lowercase letters
   //password is 5-15 characters with no space
   public static final String PASSWORD =
-          "^((?=\\S*?[A-Z])(?=\\S*?[a-z])(?=\\S*?[0-9]?).{4,14})\\S$";
+      "^((?=\\S*?[A-Z])(?=\\S*?[a-z])(?=\\S*?[0-9]?).{4,14})\\S$";
   public static final String FIRST_MIDDLE_LAST_NAME =
-          "^[А-Я](?=.{2,14}$)(?!.*[-]{2})[а-я-]+([^-])$";
+      "^[А-Я](?=.{2,14}$)(?!.*[-]{2})[а-я-]+([^-])$";
   public static final String PHONE_NUMBER =
-          //"^(\\+\\d{1,3}\\s?)?1?\\-?\\.?\\s?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$";
-          "^(\\+\\d{1,3}\s)\\(?\\d{2,4}\\)[\s]\\d{3}[\s]\\d{4}$";
+      //"^(\\+\\d{1,3}\\s?)?1?\\-?\\.?\\s?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$";
+      "^(\\+\\d{1,3}\s)\\(?\\d{2,4}\\)[\s]\\d{3}[\s]\\d{4}$";
   public static final String TOKEN =
-          "^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)";
+      "^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)";
   public static final String ROLE = "^[A-Z][a-z]{3,49}$";
   public static final String CUSTOMER = "^([А-Яа-я\\w\\d\\s]|[^w\\d\\s]){3,30}$";
   public static final String PROJECT_NAME = "^([А-Яа-я\\w\\d\\s]|[^w\\d\\s]){3,30}$";

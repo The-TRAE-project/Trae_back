@@ -69,11 +69,6 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
   void updateAccountNonLockedAndDateOfDismissalById(
       boolean accountNonLocked, LocalDateTime dateOfDismissal, Long id);
 
-//  @Transactional
-//  @Modifying
-//  @Query("update Manager m set m.accountNonLocked = ?1 where m.id = ?2")
-//  void updateAccountNonLockedById(boolean accountNonLocked, Long id);
-
   @Transactional
   @Modifying
   @Query("update Manager m set m.role = ?1 where m.id = ?2")

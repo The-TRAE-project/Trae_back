@@ -35,8 +35,8 @@ public class ManagerDtoMapper implements Function<Manager, ManagerDto> {
         m.getRole().value,
         m.getDateOfRegister().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
         m.getDateOfEmployment().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
-        m.getDateOfDismissal() != null ?
-            m.getDateOfEmployment().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : null
+        m.getDateOfDismissal() != null
+            ? m.getDateOfEmployment().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : null
     );
   }
 }

@@ -122,7 +122,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   public void insertManager() {
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
         "Мишин", "+7 (999) 111 2233",
-        "manager8", LocalDateTime.parse("2022-01-10T11:00:33"));
+        "Manager8", LocalDateTime.parse("2022-01-10T11:00:33"));
 
     if (!managerService.existsManagerByUsername(dto.username())) {
       System.out.println("=================================");
@@ -177,9 +177,9 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               new NewOperationDto("Покраска", 7),
               new NewOperationDto("Покраска", 7)));
 
-      projectService.saveNewProject(dto1, "manager8");
-      projectService.saveNewProject(dto2, "manager8");
-      projectService.saveNewProject(dto3, "manager8");
+      projectService.saveNewProject(dto1, "Manager8");
+      projectService.saveNewProject(dto2, "Manager8");
+      projectService.saveNewProject(dto3, "Manager8");
     }
   }
 }
