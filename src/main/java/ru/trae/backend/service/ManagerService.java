@@ -18,8 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.manager.ChangePassReq;
+import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
@@ -168,6 +170,23 @@ public class ManagerService {
     return managerDtoMapper.apply(manager);
   }
 
+  @Transactional
+  public void changeRoleAndStatus(ChangeRoleAndStatusReq request) {
+    if (request.dateOfDismissal() == null && request.newRole() == null) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST,
+          "Не указаны статус учетной записи или новоя роль");
+    }
+
+    if (request.newRole() != null) {
+      changeRole(request.managerId(), request.newRole());
+    }
+
+    if (request.accountStatus()) {
+      activateAccount(request.managerId());
+    } else if (request.dateOfDismissal() != null) {
+      deactivateAccount(request.managerId(), request.dateOfDismissal());
+    }
+  }
 
   /**
    * This method activate account.

@@ -283,22 +283,9 @@ public class ManagerController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @PostMapping("/change-role-status")
-  public ResponseEntity<HttpStatus> changeRole(@Valid @RequestBody ChangeRoleAndStatusReq request) {
-    if (request.dateOfDismissal() == null && request.newRole() == null) {
-      throw new ManagerException(HttpStatus.BAD_REQUEST,
-          "Не указаны статус учетной записи или новоя роль");
-    }
-
-    if (request.newRole() != null) {
-      managerService.changeRole(request.managerId(), request.newRole());
-    }
-
-    if (request.accountStatus()) {
-      managerService.activateAccount(request.managerId());
-    } else if (request.dateOfDismissal() != null) {
-      managerService.deactivateAccount(request.managerId(), request.dateOfDismissal());
-    }
-
+  public ResponseEntity<HttpStatus> changeRoleAndStatus(
+      @Valid @RequestBody ChangeRoleAndStatusReq request) {
+    managerService.changeRoleAndStatus(request);
     return ResponseEntity.ok().build();
   }
 }
