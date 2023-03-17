@@ -12,6 +12,10 @@
             <column name="date_of_register" type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
             </column>
+            <column name="date_of_employment" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_of_dismissal" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="first_name" type="VARCHAR(100)"/>
             <column name="last_name" type="VARCHAR(100)"/>
             <column name="middle_name" type="VARCHAR(100)"/>

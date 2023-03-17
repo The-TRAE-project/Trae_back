@@ -12,7 +12,6 @@
     <include file="/db/changelog/changeset/time_controls/009-create-table-time-controls.xml"/>
     <include file="/db/changelog/changeset/types/010-create-table-types.xml"/>
     <include file="/db/changelog/changeset/working_shifts/011-create-table-working-shifts.xml"/>
-    <include file="/db/changelog/changeset/managers/013-add-unique-constraint-email.xml"/>
     <include file="/db/changelog/changeset/managers/012-add-unique-constraint-username.xml"/>
     <include file="/db/changelog/changeset/employees/014-add-unique-constraint-pin-code.xml"/>
     <include file="/db/changelog/changeset/operations/016-add-foreign-key-constraint-operations-types.xml"/>
