@@ -61,7 +61,7 @@ public class ManagerService {
         .digits(1)
         .lower(1)
         .upper(1)
-        .punctuation()
+        .punctuation().custom("-._")
         .generate(8);
 
     String encodedPass = encoder.encode(temporaryRandomPass);
@@ -134,12 +134,11 @@ public class ManagerService {
    * Finally, it returns a ManagerCredentials object containing the manager's username and the new,
    * temporary password.
    *
-   * @param credentials This is a ManagerCredentials object that contains the manager's username.
-   * @return A ManagerCredentials object containing the manager's username and the new, temporary
+   * @param username contains the manager's username.
+   * @return A Credentials object containing the manager's username and the new, temporary
    *     password.
    */
-  public Credentials resetPassword(Credentials credentials) {
-    String username = credentials.username();
+  public Credentials resetPassword(String username) {
     checkExistsUsername(username);
 
     String temporaryRandomPass = RandomStringUtils.randomAlphanumeric(6);
@@ -158,8 +157,6 @@ public class ManagerService {
    * @param request the request for change the password.
    */
   public void changePassword(ChangePassReq request, String username) {
-
-    checkValidPassword(request.newPassword());
     checkDifferencePasswords(request.newPassword(), request.oldPassword());
 
     String encodedPass = encoder.encode(request.newPassword());
@@ -313,13 +310,6 @@ public class ManagerService {
   private void checkExistsUsername(String username) {
     if (!existsManagerByUsername(username)) {
       throw new ManagerException(HttpStatus.NOT_FOUND, "Username: " + username + " not found");
-    }
-  }
-
-  private void checkValidPassword(String password) { //TODO rework this check!
-    if (password == null || password.length() < 6) {
-      throw new ManagerException(HttpStatus.BAD_REQUEST,
-          "The password does not meet the minimum requirements");
     }
   }
 

@@ -19,6 +19,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +31,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.manager.ChangePassReq;
@@ -38,6 +42,7 @@ import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.service.ManagerService;
+import ru.trae.backend.util.RegExpression;
 
 /**
  * Controller class for operations related to managers.
@@ -126,8 +131,7 @@ public class ManagerController {
   }
 
   @Operation(summary = "Сброс пароля указанного пользователя",
-      description = "Доступен администратору. В теле запроса поле пароля не требует заполнения."
-          + " Возвращает логин и новый пароль пользователя")
+      description = "Доступен администратору. Возвращает логин и новый пароль пользователя")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Логин и пароль пользователя",
           content = {@Content(mediaType = "application/json",
@@ -144,8 +148,10 @@ public class ManagerController {
           content = @Content)})
   @PostMapping("/reset-password")
   public ResponseEntity<Credentials> resetPassword(
-      @Valid @RequestBody Credentials credentials) {
-    return ResponseEntity.ok(managerService.resetPassword(credentials));
+      @Valid @RequestParam(name = "username")
+      @Pattern(regexp = RegExpression.USERNAME, message = "Неправильный формат логина(юзернейма)")
+      String username) {
+    return ResponseEntity.ok(managerService.resetPassword(username));
   }
 
   @Operation(summary = "Изменение пароля",

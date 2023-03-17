@@ -15,12 +15,15 @@ import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.trae.backend.dto.employee.NewEmployeeDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.type.NewTypeWorkDto;
+import ru.trae.backend.entity.user.Manager;
+import ru.trae.backend.repository.ManagerRepository;
 import ru.trae.backend.service.EmployeeService;
 import ru.trae.backend.service.ManagerService;
 import ru.trae.backend.service.ProjectService;
@@ -38,11 +41,14 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   private final ManagerService managerService;
   private final ProjectService projectService;
   private final TypeWorkService typeWorkService;
+  private final ManagerRepository managerRepository;
+  private final BCryptPasswordEncoder encoder;
 
   @Override
   public void run(String... args) {
     insertTypeWork();
     insertEmployees();
+    insertAdmin();
     insertManager();
     insertProject();
   }
@@ -117,10 +123,41 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         .forEach(employeeService::saveNewEmployee);
   }
 
+  public void insertAdmin() {
+    if (managerRepository.existsByUsernameIgnoreCase("Admin")) {
+      return;
+    }
+
+    String encodedPass = encoder.encode("TopSec");
+
+    Manager m = new Manager();
+    m.setFirstName("Admin");
+    m.setMiddleName("Admin");
+    m.setLastName("Admin");
+    m.setPhone("+0 (000) 000 0000");
+    m.setUsername("Admin");
+    m.setPassword(encodedPass);
+    m.setRole(Role.ROLE_ADMINISTRATOR);
+    m.setDateOfRegister(LocalDate.now());
+    m.setDateOfEmployment(LocalDate.now());
+    m.setDateOfDismissal(null);
+
+    m.setEnabled(true);
+    m.setAccountNonExpired(true);
+    m.setAccountNonLocked(true);
+    m.setCredentialsNonExpired(true);
+
+    managerRepository.save(m);
+  }
+
   /**
    * Inserting manager data.
    */
   public void insertManager() {
+    if (managerRepository.existsByUsernameIgnoreCase("Manager8")) {
+      return;
+    }
+
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
         "Мишин", "+7 (999) 111 2233",
         "Manager8", LocalDate.parse("2022-01-10"));
