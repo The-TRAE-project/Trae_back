@@ -13,6 +13,7 @@ public record ManagerDto(
     String phone,
     String role,
     String dateOfRegister,
-    String dateOfEmployment
+    String dateOfEmployment,
+    String dateOfDismissal
 ) {
 }

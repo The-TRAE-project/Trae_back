@@ -72,40 +72,40 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   public void insertEmployees() {
     List<NewEmployeeDto> list = List.of(
         new NewEmployeeDto("Иван", "Петрович", "Шилов",
-            "+7(918)3331212", LocalDateTime.parse("2021-03-22T11:00:33"),
+            "+7 (918) 333 1212", LocalDateTime.parse("2021-03-22T11:00:33"),
             List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
         new NewEmployeeDto("Николай", "Игоревич", "Иванов",
-            "+7(928)3332121", LocalDateTime.parse("2004-07-17T12:00:33"),
+            "+7 (928) 333 2121", LocalDateTime.parse("2004-07-17T12:00:33"),
             List.of(3L, 4L, 5L, 6L, 7L)),
         new NewEmployeeDto("Владимир", "Васильевич", "Петров",
-            "+7(917)4445632", LocalDateTime.parse("2009-12-10T13:00:33"),
+            "+7 (917) 444 5632", LocalDateTime.parse("2009-12-10T13:00:33"),
             List.of(8L, 9L)),
         new NewEmployeeDto("Александр", "Григорьевич",
-            "Красильников", "+7(927)1238899",
+            "Красильников", "+7 (927) 123 8899",
             LocalDateTime.parse("2021-04-10T13:00:33"), List.of(8L, 9L)),
         new NewEmployeeDto("Никита", "Владимирович", "Бондаренко",
-            "+7(915)3334567", LocalDateTime.parse("2002-02-13T14:00:33"),
+            "+7 (915) 333 4567", LocalDateTime.parse("2002-02-13T14:00:33"),
             List.of(1L)),
         new NewEmployeeDto("Валентин", "Александрович", "Плотников",
-            "+7(934)7778294", LocalDateTime.parse("2007-07-10T15:00:33"),
+            "+7 (934) 777 8294", LocalDateTime.parse("2007-07-10T15:00:33"),
             List.of(1L, 5L, 6L, 7L)),
         new NewEmployeeDto("Петр", "Иванович", "Абраменко",
-            "+7(918)3454829", LocalDateTime.parse("2020-01-10T16:00:33"),
+            "+7 (918) 345 4829", LocalDateTime.parse("2020-01-10T16:00:33"),
             List.of(1L, 2L, 3L, 4L)),
         new NewEmployeeDto("Григорий", "Олегович", "Костромин",
-            "+7(912)3345993", LocalDateTime.parse("2010-11-11T19:00:33"),
+            "+7 (912) 334 5993", LocalDateTime.parse("2010-11-11T19:00:33"),
             List.of(4L, 5L, 6L, 7L)),
         new NewEmployeeDto("Егор", "Антонович", "Карпов",
-            "+7(915)5675993", LocalDateTime.parse("2021-06-18T10:00:33"),
+            "+7 (915) 567 5993", LocalDateTime.parse("2021-06-18T10:00:33"),
             List.of(1L, 2L, 5L, 6L, 7L)),
         new NewEmployeeDto("Антон", "Петрович", "Рыбин",
-            "+7(913)2245911", LocalDateTime.parse("2005-08-15T14:00:33"),
+            "+7 (913) 224 5911", LocalDateTime.parse("2005-08-15T14:00:33"),
             List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
         new NewEmployeeDto("Аркадий", "Олегович", "Павлов",
-            "+7(911)3335798", LocalDateTime.parse("2008-02-11T12:00:33"),
+            "+7 (911) 333 5798", LocalDateTime.parse("2008-02-11T12:00:33"),
             List.of(1L, 2L, 3L, 4L, 5L)),
         new NewEmployeeDto("Степан", "Степанович", "Никитин",
-            "+7(922)3245913", LocalDateTime.parse("2022-08-10T16:00:33"),
+            "+7 (922) 324 5913", LocalDateTime.parse("2022-08-10T16:00:33"),
             List.of(1L, 2L, 5L, 6L, 7L, 8L, 9L))
     );
 
@@ -121,7 +121,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    */
   public void insertManager() {
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
-        "Мишин", "+7(999)1112233",
+        "Мишин", "+7 (999) 111 2233",
         "manager8", LocalDateTime.parse("2022-01-10T11:00:33"));
 
     if (!managerService.existsManagerByUsername(dto.username())) {

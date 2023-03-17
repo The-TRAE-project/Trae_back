@@ -8,6 +8,7 @@ services:
       - '3000:80'
     environment:
       - VITE_BACK_API_URL=http://195.80.51.155:8088/api
+      - TZ="Europe/Moscow"
     networks:
       - trae-net
     depends_on:
@@ -19,6 +20,7 @@ services:
     ports:
       - "8088:8088"
     environment:
+      - "TZ=Europe/Moscow"
       - "SPRING_PROFILES_ACTIVE=prod"
       - "POSTGRES_URL=${PG_URL}"
       - "POSTGRES_USER=${PG_USER}"
@@ -35,6 +37,7 @@ services:
       - "${PG_PORT}:${PG_PORT}"
     command: -p ${PG_PORT}
     environment:
+      TZ: "Europe/Moscow"
       PGUSER: "${PG_USER}"
       POSTGRES_USER: "${PG_USER}"
       POSTGRES_PASSWORD: "${PG_PASSWORD}"
