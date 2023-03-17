@@ -10,7 +10,7 @@
 
 package ru.trae.backend.entity.user;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
@@ -42,11 +42,11 @@ public abstract class User {
   @Column(name = "phone", columnDefinition = "varchar(30)")
   private String phone;
   @Column(name = "date_of_register", nullable = false)
-  private LocalDateTime dateOfRegister;
+  private LocalDate dateOfRegister;
   @Column(name = "date_of_employment", nullable = false)
-  private LocalDateTime dateOfEmployment;
+  private LocalDate dateOfEmployment;
   @Column(name = "date_of_dismissal")
-  private LocalDateTime dateOfDismissal;
+  private LocalDate dateOfDismissal;
 
   @Override
   public boolean equals(Object o) {

@@ -11,6 +11,7 @@
 package ru.trae.backend.dto.manager;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -18,11 +19,13 @@ import javax.validation.constraints.Pattern;
 import ru.trae.backend.util.RegExpression;
 
 /**
- * The {@code ChangeRoleReq} class is used to represent a request to change a user's role.
+ * This class defines the request parameters for changing the role and status of a user.
+ * It contains the user ID, the new user role, the status of the user's account,
+ * and the date of dismissal.
  *
  * @author Vladimir Olennikov
  */
-public record ChangeRoleReq(
+public record ChangeRoleAndStatusReq(
     @Schema(description = "Идентификатор пользователя")
     @NotNull(message = "Invalid manager id: id is NULL")
     @Min(value = 0, message = "The manager id cannot be less than 0")
@@ -30,8 +33,11 @@ public record ChangeRoleReq(
         "The manager id cannot be more than " + Integer.MAX_VALUE)
     long managerId,
     @Schema(description = "Новая роль пользователя")
-    @NotNull(message = "Invalid new role: new role is NULL")
     @Pattern(regexp = RegExpression.ROLE, message = "Invalid role format")
-    String newRole
+    String newRole,
+    @Schema(description = "Состояние учетной записи пользователя")
+    Boolean accountStatus,
+    @Schema(description = "Состояние учетной записи пользователя")
+    LocalDate dateOfDismissal
 ) {
 }

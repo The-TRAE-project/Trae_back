@@ -10,6 +10,7 @@
 
 package ru.trae.backend.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -66,7 +67,7 @@ public class EmployeeService {
     e.setPinCode(randomPinCode);
     e.getTypeWorks().addAll(typeWorks);
     e.setActive(true);
-    e.setDateOfRegister(LocalDateTime.now());
+    e.setDateOfRegister(LocalDate.now());
     e.setDateOfEmployment(dto.dateOfEmployment());
     e.setDateOfDismissal(null);
 

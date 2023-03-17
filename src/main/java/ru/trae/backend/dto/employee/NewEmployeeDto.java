@@ -1,7 +1,7 @@
 package ru.trae.backend.dto.employee;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -30,7 +30,7 @@ public record NewEmployeeDto(
         @Schema(description = "Дата принятия на работу пользователя")
         @NotNull(message = "Invalid date of employment: date is NULL")
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        LocalDateTime dateOfEmployment,
+        LocalDate dateOfEmployment,
         @NotNull(message = "Invalid types work: types work list is NULL")
         List<Long> typesId
 ) {

@@ -31,11 +31,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.manager.ChangePassReq;
-import ru.trae.backend.dto.manager.ChangeRoleReq;
+import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
+import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.service.ManagerService;
 
 /**
@@ -189,55 +190,55 @@ public class ManagerController {
     return ResponseEntity.ok().build();
   }
 
-  @Operation(summary = "Включение учетной записи пользователя",
-      description = "Доступен администратору. "
-          + "Включает, ранее отключенные, учетные записи пользователей по идентификатору")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ничего не возвращает, только статус",
-          content = @Content),
-      @ApiResponse(responseCode = "400", description = "Неправильные формат идентификатора",
-          content = @Content),
-      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
-          content = @Content),
-      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
-          content = @Content),
-      @ApiResponse(responseCode = "404",
-          description = "Пользователь с таким идентификатором не найден", content = @Content),
-      @ApiResponse(responseCode = "409", description = "Учетная запись уже включена",
-          content = @Content),
-      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
-          content = @Content)})
-  @PostMapping("/activate-account/{managerId}")
-  public ResponseEntity<HttpStatus> activateAccount(
-      @Valid @PathVariable @Parameter(description = "Идентификатор пользователя") long managerId) {
-    managerService.activateAccount(managerId);
-    return ResponseEntity.ok().build();
-  }
-
-  @Operation(summary = "Отключение учетной записи пользователя",
-      description = "Доступен администратору. "
-          + "Отключает учетные записи пользователей по идентификатору")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ничего не возвращает, только статус",
-          content = @Content),
-      @ApiResponse(responseCode = "400", description = "Неправильные формат идентификатора",
-          content = @Content),
-      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
-          content = @Content),
-      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
-          content = @Content),
-      @ApiResponse(responseCode = "404",
-          description = "Пользователь с таким идентификатором не найден", content = @Content),
-      @ApiResponse(responseCode = "409", description = "Учетная запись уже отключена",
-          content = @Content),
-      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
-          content = @Content)})
-  @PostMapping("/deactivate-account/{managerId}")
-  public ResponseEntity<HttpStatus> deactivateAccount(
-      @Valid @PathVariable @Parameter(description = "Идентификатор пользователя") long managerId) {
-    managerService.deactivateAccount(managerId);
-    return ResponseEntity.ok().build();
-  }
+//  @Operation(summary = "Включение учетной записи пользователя",
+//      description = "Доступен администратору. "
+//          + "Включает, ранее отключенные, учетные записи пользователей по идентификатору")
+//  @ApiResponses(value = {
+//      @ApiResponse(responseCode = "200", description = "Ничего не возвращает, только статус",
+//          content = @Content),
+//      @ApiResponse(responseCode = "400", description = "Неправильные формат идентификатора",
+//          content = @Content),
+//      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+//          content = @Content),
+//      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+//          content = @Content),
+//      @ApiResponse(responseCode = "404",
+//          description = "Пользователь с таким идентификатором не найден", content = @Content),
+//      @ApiResponse(responseCode = "409", description = "Учетная запись уже включена",
+//          content = @Content),
+//      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+//          content = @Content)})
+//  @PostMapping("/activate-account/{managerId}")
+//  public ResponseEntity<HttpStatus> activateAccount(
+//      @Valid @PathVariable @Parameter(description = "Идентификатор пользователя") long managerId) {
+//    managerService.activateAccount(managerId);
+//    return ResponseEntity.ok().build();
+//  }
+//
+//  @Operation(summary = "Отключение учетной записи пользователя",
+//      description = "Доступен администратору. "
+//          + "Отключает учетные записи пользователей по идентификатору")
+//  @ApiResponses(value = {
+//      @ApiResponse(responseCode = "200", description = "Ничего не возвращает, только статус",
+//          content = @Content),
+//      @ApiResponse(responseCode = "400", description = "Неправильные формат идентификатора",
+//          content = @Content),
+//      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+//          content = @Content),
+//      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+//          content = @Content),
+//      @ApiResponse(responseCode = "404",
+//          description = "Пользователь с таким идентификатором не найден", content = @Content),
+//      @ApiResponse(responseCode = "409", description = "Учетная запись уже отключена",
+//          content = @Content),
+//      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+//          content = @Content)})
+//  @PostMapping("/deactivate-account/{managerId}")
+//  public ResponseEntity<HttpStatus> deactivateAccount(
+//      @Valid @PathVariable @Parameter(description = "Идентификатор пользователя") long managerId) {
+//    managerService.deactivateAccount(managerId);
+//    return ResponseEntity.ok().build();
+//  }
 
   @Operation(summary = "Список всех ролей",
       description = "Доступен администратору. Возвращает список ролей")
@@ -256,12 +257,19 @@ public class ManagerController {
     return ResponseEntity.ok(managerService.getRoleList());
   }
 
-  @Operation(summary = "Изменение роли пользователя",
-      description = "Доступен администратору. Изменяет роль выбранного пользователя")
+  /**
+   * This controller is used to change manager role and account status.
+   *
+   * @author Vladimir Olennikov
+   */
+  @Operation(summary = "Изменение роли пользователя, отключение/включение учетной записи",
+      description =
+          "Доступен администратору. Изменяет роль и статус учетной записи выбранного пользователя")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Ничего не возвращает, только статус",
           content = @Content),
-      @ApiResponse(responseCode = "400", description = "Неправильный формат новой роли",
+      @ApiResponse(responseCode = "400", description = "Неправильный формат новой роли,"
+          + " неправильный формат даты увольнения",
           content = @Content),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
@@ -269,13 +277,28 @@ public class ManagerController {
           content = @Content),
       @ApiResponse(responseCode = "404",
           description = "Пользователь с таким идентификатором не найден", content = @Content),
-      @ApiResponse(responseCode = "409", description = "Пользователь уже имеет такую роль",
+      @ApiResponse(responseCode = "409", description = "Пользователь уже имеет такую роль,"
+          + " учетная запись уже отключена/включена",
           content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
-  @PostMapping("/change-role")
-  public ResponseEntity<HttpStatus> changeRole(@Valid @RequestBody ChangeRoleReq request) {
-    managerService.changeRole(request);
+  @PostMapping("/change-role-status")
+  public ResponseEntity<HttpStatus> changeRole(@Valid @RequestBody ChangeRoleAndStatusReq request) {
+    if (request.dateOfDismissal() == null && request.newRole() == null) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST,
+          "Не указаны статус учетной записи или новоя роль");
+    }
+
+    if (request.newRole() != null) {
+      managerService.changeRole(request.managerId(), request.newRole());
+    }
+
+    if (request.accountStatus()) {
+      managerService.activateAccount(request.managerId());
+    } else if (request.dateOfDismissal() != null) {
+      managerService.deactivateAccount(request.managerId(), request.dateOfDismissal());
+    }
+
     return ResponseEntity.ok().build();
   }
 }

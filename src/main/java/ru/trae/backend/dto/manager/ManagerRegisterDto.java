@@ -1,7 +1,7 @@
 package ru.trae.backend.dto.manager;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -36,6 +36,6 @@ public record ManagerRegisterDto(
     @Schema(description = "Дата принятия на работу пользователя")
     @NotNull(message = "Invalid date of employment: date is NULL")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    LocalDateTime dateOfEmployment
+    LocalDate dateOfEmployment
 ) {
 }

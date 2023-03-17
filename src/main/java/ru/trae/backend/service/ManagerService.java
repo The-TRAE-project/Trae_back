@@ -10,7 +10,7 @@
 
 package ru.trae.backend.service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import liquibase.repackaged.org.apache.commons.lang3.RandomStringUtils;
@@ -20,7 +20,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.manager.ChangePassReq;
-import ru.trae.backend.dto.manager.ChangeRoleReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
@@ -72,7 +71,7 @@ public class ManagerService {
     m.setUsername(dto.username());
     m.setPassword(encodedPass);
     m.setRole(Role.ROLE_MANAGER);
-    m.setDateOfRegister(LocalDateTime.now());
+    m.setDateOfRegister(LocalDate.now());
     m.setDateOfEmployment(dto.dateOfEmployment());
     m.setDateOfDismissal(null);
 
@@ -186,7 +185,7 @@ public class ManagerService {
     }
 
     managerRepository.updateAccountNonLockedAndDateOfEmploymentById(
-        true, LocalDateTime.now(), managerId);
+        true, LocalDate.now(), managerId);
   }
 
   /**
@@ -195,7 +194,7 @@ public class ManagerService {
    * @param managerId the manager id
    * @throws ManagerException in case if manager not found or already deactivated
    */
-  public void deactivateAccount(long managerId) {
+  public void deactivateAccount(long managerId, LocalDate dateOfDismissal) {
     if (!managerRepository.existsById(managerId)) {
       throw new ManagerException(HttpStatus.NOT_FOUND,
           "The manager with id: " + managerId + " not found");
@@ -205,7 +204,7 @@ public class ManagerService {
     }
 
     managerRepository.updateAccountNonLockedAndDateOfDismissalById(
-        false, LocalDateTime.now(), managerId);
+        false, dateOfDismissal, managerId);
   }
 
   /**
@@ -251,27 +250,28 @@ public class ManagerService {
   /**
    * Method changes a role of a certain manager.
    *
-   * @param request contains new Role and managerId.
+   * @param managerId the id of the manager
+   * @param newRole   new role for the manager
    * @throws ManagerException in case the role is not found in the system or the account
    *                          already has such a role.
    */
-  public void changeRole(ChangeRoleReq request) {
-    Manager m = getManagerById(request.managerId());
+  public void changeRole(long managerId, final String newRole) {
+    Manager m = getManagerById(managerId);
 
-    if (m.getRole().value.equals(request.newRole())) {
+    if (m.getRole().value.equals(newRole)) {
       throw new ManagerException(HttpStatus.CONFLICT, "The account already has such a role");
     }
 
-    if (Arrays.stream(Role.values()).anyMatch(r -> r.value.equals(request.newRole()))) {
+    if (Arrays.stream(Role.values()).anyMatch(r -> r.value.equals(newRole))) {
       Role role = Arrays.stream(Role.values())
-          .filter(r -> r.value.equals(request.newRole()))
+          .filter(r -> r.value.equals(newRole))
           .findFirst()
           .get();
 
-      managerRepository.updateRoleById(role, request.managerId());
+      managerRepository.updateRoleById(role, managerId);
     } else {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
-          "The role: " + request.newRole() + " not found");
+          "The role: " + newRole + " not found");
     }
   }
 
