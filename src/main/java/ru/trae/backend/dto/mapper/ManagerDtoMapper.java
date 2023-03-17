@@ -27,13 +27,14 @@ public class ManagerDtoMapper implements Function<Manager, ManagerDto> {
   @Override
   public ManagerDto apply(Manager m) {
     return new ManagerDto(
-            m.getId(),
-            m.getFirstName(),
-            m.getMiddleName(),
-            m.getLastName(),
-            m.getPhone(),
-            m.getRole().value,
-            m.getDateOfRegister().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        m.getId(),
+        m.getFirstName(),
+        m.getMiddleName(),
+        m.getLastName(),
+        m.getPhone(),
+        m.getRole().value,
+        m.getDateOfRegister().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+        m.getDateOfEmployment().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
     );
   }
 }

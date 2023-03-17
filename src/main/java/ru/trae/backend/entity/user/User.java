@@ -43,6 +43,10 @@ public abstract class User {
   private String phone;
   @Column(name = "date_of_register", nullable = false)
   private LocalDateTime dateOfRegister;
+  @Column(name = "date_of_employment", nullable = false)
+  private LocalDateTime dateOfEmployment;
+  @Column(name = "date_of_dismissal")
+  private LocalDateTime dateOfDismissal;
 
   @Override
   public boolean equals(Object o) {
@@ -54,7 +58,7 @@ public abstract class User {
     }
     User user = (User) o;
     return Objects.equals(firstName, user.firstName) && Objects.equals(middleName, user.middleName)
-            && Objects.equals(lastName, user.lastName);
+        && Objects.equals(lastName, user.lastName);
   }
 
   @Override

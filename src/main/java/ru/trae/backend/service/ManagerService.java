@@ -65,7 +65,9 @@ public class ManagerService {
     m.setUsername(dto.username());
     m.setPassword(encodedPass);
     m.setRole(Role.ROLE_MANAGER);
-    m.setDateOfRegister(dto.dateOfRegister());
+    m.setDateOfRegister(LocalDateTime.now());
+    m.setDateOfEmployment(dto.dateOfEmployment());
+    m.setDateOfDismissal(null);
 
     m.setEnabled(true);
     m.setAccountNonExpired(true);
@@ -86,8 +88,8 @@ public class ManagerService {
    */
   public Manager getManagerById(long managerId) {
     return managerRepository.findById(managerId).orElseThrow(
-            () -> new ManagerException(HttpStatus.NOT_FOUND,
-                    "Manager with ID: " + managerId + " not found"));
+        () -> new ManagerException(HttpStatus.NOT_FOUND,
+            "Manager with ID: " + managerId + " not found"));
   }
 
   /**
@@ -99,8 +101,8 @@ public class ManagerService {
    */
   public Manager getManagerByUsername(String username) {
     return managerRepository.findByUsername(username).orElseThrow(
-            () -> new ManagerException(HttpStatus.NOT_FOUND,
-                    "Manager with username: " + username + " not found"));
+        () -> new ManagerException(HttpStatus.NOT_FOUND,
+            "Manager with username: " + username + " not found"));
   }
 
   /**
@@ -110,9 +112,9 @@ public class ManagerService {
    */
   public List<ManagerDto> getAllManagers() {
     return managerRepository.findAll()
-            .stream()
-            .map(managerDtoMapper)
-            .toList();
+        .stream()
+        .map(managerDtoMapper)
+        .toList();
   }
 
   /**
@@ -126,7 +128,7 @@ public class ManagerService {
    *
    * @param credentials This is a ManagerCredentials object that contains the manager's username.
    * @return A ManagerCredentials object containing the manager's username and the new, temporary
-   *         password.
+   *     password.
    */
   public Credentials resetPassword(Credentials credentials) {
     String username = credentials.username();
@@ -170,13 +172,14 @@ public class ManagerService {
   public void activateAccount(long managerId) {
     if (!managerRepository.existsById(managerId)) {
       throw new ManagerException(HttpStatus.NOT_FOUND,
-              "The manager with id: " + managerId + " not found");
+          "The manager with id: " + managerId + " not found");
     }
     if (managerRepository.existsByIdAndAccountNonLocked(managerId, true)) {
-      throw new ManagerException(HttpStatus.BAD_REQUEST, "This manager already activated");
+      throw new ManagerException(HttpStatus.CONFLICT, "This manager already activated");
     }
 
-    managerRepository.updateAccountNonLockedById(true, managerId);
+    managerRepository.updateAccountNonLockedAndDateOfEmploymentById(
+        true, LocalDateTime.now(), managerId);
   }
 
   /**
@@ -188,13 +191,14 @@ public class ManagerService {
   public void deactivateAccount(long managerId) {
     if (!managerRepository.existsById(managerId)) {
       throw new ManagerException(HttpStatus.NOT_FOUND,
-              "The manager with id: " + managerId + " not found");
+          "The manager with id: " + managerId + " not found");
     }
     if (managerRepository.existsByIdAndAccountNonLocked(managerId, false)) {
-      throw new ManagerException(HttpStatus.BAD_REQUEST, "This manager already deactivated");
+      throw new ManagerException(HttpStatus.CONFLICT, "This manager already deactivated");
     }
 
-    managerRepository.updateAccountNonLockedById(false, managerId);
+    managerRepository.updateAccountNonLockedAndDateOfDismissalById(
+        false, LocalDateTime.now(), managerId);
   }
 
   /**
@@ -233,8 +237,8 @@ public class ManagerService {
    */
   public List<String> getRoleList() {
     return List.of(Role.ROLE_MANAGER.value,
-            Role.ROLE_ADMINISTRATOR.value,
-            Role.ROLE_EMPLOYEE.value);
+        Role.ROLE_ADMINISTRATOR.value,
+        Role.ROLE_EMPLOYEE.value);
   }
 
   /**
@@ -253,14 +257,14 @@ public class ManagerService {
 
     if (Arrays.stream(Role.values()).anyMatch(r -> r.value.equals(request.newRole()))) {
       Role role = Arrays.stream(Role.values())
-              .filter(r -> r.value.equals(request.newRole()))
-              .findFirst()
-              .get();
+          .filter(r -> r.value.equals(request.newRole()))
+          .findFirst()
+          .get();
 
       managerRepository.updateRoleById(role, request.managerId());
     } else {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
-              "The role: " + request.newRole() + " not found");
+          "The role: " + request.newRole() + " not found");
     }
   }
 
@@ -289,7 +293,7 @@ public class ManagerService {
   private void checkValidPassword(String password) { //TODO rework this check!
     if (password == null || password.length() < 6) {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
-              "The password does not meet the minimum requirements");
+          "The password does not meet the minimum requirements");
     }
   }
 

@@ -33,9 +33,9 @@ public record ManagerRegisterDto(
     @NotNull(message = "Invalid username: username is NULL")
     @Pattern(regexp = RegExpression.USERNAME, message = "Invalid username format")
     String username,
-    @Schema(description = "Дата регистрации пользователя")
-    @NotNull(message = "Invalid date of register: date is NULL")
+    @Schema(description = "Дата принятия на работу пользователя")
+    @NotNull(message = "Invalid date of employment: date is NULL")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-    LocalDateTime dateOfRegister
+    LocalDateTime dateOfEmployment
 ) {
 }

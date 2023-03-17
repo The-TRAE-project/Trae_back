@@ -6,12 +6,13 @@ package ru.trae.backend.dto.manager;
  * @author Vladimir Olennikov
  */
 public record ManagerDto(
-        long id,
-        String firstName,
-        String middleName,
-        String lastName,
-        String phone,
-        String role,
-        String dateOfRegister
+    long id,
+    String firstName,
+    String middleName,
+    String lastName,
+    String phone,
+    String role,
+    String dateOfRegister,
+    String dateOfEmployment
 ) {
 }

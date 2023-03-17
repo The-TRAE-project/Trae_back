@@ -10,6 +10,7 @@
 
 package ru.trae.backend.repository;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -58,8 +59,20 @@ public interface ManagerRepository extends JpaRepository<Manager, Long> {
 
   @Transactional
   @Modifying
-  @Query("update Manager m set m.accountNonLocked = ?1 where m.id = ?2")
-  void updateAccountNonLockedById(boolean accountNonLocked, Long id);
+  @Query("update Manager m set m.accountNonLocked = ?1, m.dateOfEmployment = ?2 where m.id = ?3")
+  void updateAccountNonLockedAndDateOfEmploymentById(
+      boolean accountNonLocked, LocalDateTime dateOfEmployment, Long id);
+
+  @Transactional
+  @Modifying
+  @Query("update Manager m set m.accountNonLocked = ?1, m.dateOfDismissal = ?2 where m.id = ?3")
+  void updateAccountNonLockedAndDateOfDismissalById(
+      boolean accountNonLocked, LocalDateTime dateOfDismissal, Long id);
+
+//  @Transactional
+//  @Modifying
+//  @Query("update Manager m set m.accountNonLocked = ?1 where m.id = ?2")
+//  void updateAccountNonLockedById(boolean accountNonLocked, Long id);
 
   @Transactional
   @Modifying
