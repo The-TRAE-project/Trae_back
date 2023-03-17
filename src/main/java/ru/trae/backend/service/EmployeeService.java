@@ -55,8 +55,8 @@ public class EmployeeService {
     } while (existsEmpByPinCode(randomPinCode));
 
     final Set<TypeWork> typeWorks = dto.typesId().stream()
-            .map(typeWorkService::getTypeWorkById)
-            .collect(Collectors.toSet());
+        .map(typeWorkService::getTypeWorkById)
+        .collect(Collectors.toSet());
 
     Employee e = new Employee();
     e.setFirstName(dto.firstName());
@@ -67,6 +67,8 @@ public class EmployeeService {
     e.getTypeWorks().addAll(typeWorks);
     e.setActive(true);
     e.setDateOfRegister(LocalDateTime.now());
+    e.setDateOfEmployment(dto.dateOfEmployment());
+    e.setDateOfDismissal(null);
 
     return employeeRepository.save(e);
   }
@@ -80,8 +82,8 @@ public class EmployeeService {
    */
   public Employee getEmployeeById(long id) {
     return employeeRepository.findById(id).orElseThrow(
-            () -> new EmployeeException(HttpStatus.NOT_FOUND,
-                    "Employee with ID: " + id + " not found"));
+        () -> new EmployeeException(HttpStatus.NOT_FOUND,
+            "Employee with ID: " + id + " not found"));
   }
 
   public EmployeeDto getEmpDtoById(long id) {
@@ -99,7 +101,7 @@ public class EmployeeService {
 
     if (e.isEmpty()) {
       throw new EmployeeException(HttpStatus.NOT_FOUND,
-              "Employee with pin code: " + pinCode + " not found");
+          "Employee with pin code: " + pinCode + " not found");
     }
 
     if (!e.get().isActive()) {
@@ -107,10 +109,10 @@ public class EmployeeService {
     }
 
     return new ShortEmployeeDto(
-            e.get().getId(),
-            e.get().getFirstName(),
-            e.get().getLastName(),
-            workingShiftService.employeeOnShift(true, e.get().getId()));
+        e.get().getId(),
+        e.get().getFirstName(),
+        e.get().getLastName(),
+        workingShiftService.employeeOnShift(true, e.get().getId()));
   }
 
   /**
@@ -127,10 +129,10 @@ public class EmployeeService {
     }
 
     return new ShortEmployeeDto(
-            e.getId(),
-            e.getFirstName(),
-            e.getLastName(),
-            workingShiftService.employeeOnShift(true, e.getId()));
+        e.getId(),
+        e.getFirstName(),
+        e.getLastName(),
+        workingShiftService.employeeOnShift(true, e.getId()));
   }
 
   /**
@@ -148,10 +150,10 @@ public class EmployeeService {
     }
 
     return new ShortEmployeeDto(
-            e.getId(),
-            e.getFirstName(),
-            e.getLastName(),
-            workingShiftService.employeeOnShift(true, e.getId()));
+        e.getId(),
+        e.getFirstName(),
+        e.getLastName(),
+        workingShiftService.employeeOnShift(true, e.getId()));
   }
 
   /**
@@ -161,9 +163,9 @@ public class EmployeeService {
    */
   public List<EmployeeDto> getAllEmployees() {
     return employeeRepository.findAll()
-            .stream()
-            .map(employeeDtoMapper)
-            .toList();
+        .stream()
+        .map(employeeDtoMapper)
+        .toList();
   }
 
   /**
@@ -187,9 +189,9 @@ public class EmployeeService {
    */
   public boolean existsByCredentials(String firstName, String middleName, String lastName) {
     return employeeRepository.existsByFirstMiddleLastNameIgnoreCase(
-            firstName,
-            middleName,
-            lastName);
+        firstName,
+        middleName,
+        lastName);
   }
 
   /**

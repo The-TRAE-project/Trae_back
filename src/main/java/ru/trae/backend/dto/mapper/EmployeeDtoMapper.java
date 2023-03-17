@@ -29,17 +29,18 @@ public class EmployeeDtoMapper implements Function<Employee, EmployeeDto> {
   @Override
   public EmployeeDto apply(Employee e) {
     return new EmployeeDto(
-            e.getId(),
-            e.getFirstName(),
-            e.getMiddleName(),
-            e.getLastName(),
-            e.getPhone(),
-            e.getPinCode(),
-            e.isActive(),
-            e.getDateOfRegister(),
-            e.getTypeWorks().stream()
-                    .map(TypeWork::getName)
-                    .toList()
+        e.getId(),
+        e.getFirstName(),
+        e.getMiddleName(),
+        e.getLastName(),
+        e.getPhone(),
+        e.getPinCode(),
+        e.isActive(),
+        e.getDateOfEmployment(),
+        e.getDateOfRegister(),
+        e.getTypeWorks().stream()
+            .map(TypeWork::getName)
+            .toList()
     );
   }
 }

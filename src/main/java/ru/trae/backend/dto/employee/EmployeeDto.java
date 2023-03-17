@@ -9,14 +9,15 @@ import java.util.List;
  * @author Vladimir Olennikov
  */
 public record EmployeeDto(
-        long id,
-        String firstName,
-        String middleName,
-        String lastName,
-        String phone,
-        Integer pinCode,
-        boolean isActive,
-        LocalDateTime dateOfRegister,
-        List<String> types
+    long id,
+    String firstName,
+    String middleName,
+    String lastName,
+    String phone,
+    Integer pinCode,
+    boolean isActive,
+    LocalDateTime dateOfRegister,
+    LocalDateTime dateOfEmployment,
+    List<String> types
 ) {
 }
