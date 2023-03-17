@@ -40,7 +40,7 @@ public class PayloadRandomPiece {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "id", nullable = false)
   private Long id;
-  @Size(min = 8, max = 50)
+  @Size(min = 3, max = 15)
   @Column(name = "username", unique = true, nullable = false, columnDefinition = "varchar(50)")
   private String username;
   @Size(max = 50)
