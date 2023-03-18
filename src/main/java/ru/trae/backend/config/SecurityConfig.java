@@ -43,6 +43,19 @@ public class SecurityConfig {
   private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
   private final RestAccessDeniedHandler restAccessDeniedHandler;
   private final JwtFilter jwtFilter;
+  private static final String[] AUTH_WHITELIST = {
+      // -- Swagger UI v2
+      "/v2/api-docs",
+      "/swagger-resources",
+      "/swagger-resources/**",
+      "/configuration/ui",
+      "/configuration/security",
+      "/swagger-ui.html",
+      "/webjars/**",
+      // -- Swagger UI v3 (OpenAPI)
+      "/v3/api-docs/**",
+      "/swagger-ui/**"
+  };
 
   /**
    * This method is used to create a bean for SecurityFilterChain.
@@ -70,6 +83,7 @@ public class SecurityConfig {
         .and()
         .authorizeRequests()
         .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
+        .antMatchers(AUTH_WHITELIST).permitAll()
         .antMatchers("/api/auth/logout", "/api/auth/refresh").authenticated()
 
         .antMatchers(
