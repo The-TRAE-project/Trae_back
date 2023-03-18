@@ -50,6 +50,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     insertEmployees();
     insertAdmin();
     insertManager();
+    insertEmployeeServiceAccount();
     insertProject();
   }
 
@@ -170,6 +171,36 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
       System.out.println(managerService.saveNewManager(dto));
       System.out.println("=================================");
     }
+  }
+
+  /**
+   * Inserting Service account data.
+   */
+  public void insertEmployeeServiceAccount() {
+    if (managerRepository.existsByUsernameIgnoreCase("ServiceAccount")) {
+      return;
+    }
+
+    String encodedPass = encoder.encode("Work24x7");
+
+    Manager m = new Manager();
+    m.setFirstName("ServiceAccount");
+    m.setMiddleName("For");
+    m.setLastName("Employee");
+    m.setPhone("+0 (000) 000 0000");
+    m.setUsername("ServiceAccount");
+    m.setPassword(encodedPass);
+    m.setRole(Role.ROLE_EMPLOYEE);
+    m.setDateOfRegister(LocalDate.now());
+    m.setDateOfEmployment(LocalDate.now());
+    m.setDateOfDismissal(null);
+
+    m.setEnabled(true);
+    m.setAccountNonExpired(true);
+    m.setAccountNonLocked(true);
+    m.setCredentialsNonExpired(true);
+
+    managerRepository.save(m);
   }
 
   /**

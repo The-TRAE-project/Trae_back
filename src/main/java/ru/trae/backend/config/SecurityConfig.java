@@ -10,6 +10,10 @@
 
 package ru.trae.backend.config;
 
+import static ru.trae.backend.util.Role.ROLE_ADMINISTRATOR;
+import static ru.trae.backend.util.Role.ROLE_EMPLOYEE;
+import static ru.trae.backend.util.Role.ROLE_MANAGER;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +27,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import ru.trae.backend.exceptionhandler.RestAccessDeniedHandler;
 import ru.trae.backend.exceptionhandler.RestAuthenticationEntryPoint;
-import ru.trae.backend.util.Role;
 import ru.trae.backend.util.jwt.JwtFilter;
 
 /**
@@ -68,12 +71,35 @@ public class SecurityConfig {
         .authorizeRequests()
         .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
         .antMatchers("/api/auth/logout", "/api/auth/refresh").authenticated()
-        .antMatchers("/api/manager/change-password").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
-        .antMatchers("/api/manager/update-data").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
-        .antMatchers("/api/manager/reset-password").hasAuthority(Role.ROLE_ADMINISTRATOR.name())
-        .antMatchers("/api/project/new").hasAnyAuthority(Role.ROLE_MANAGER.name(), Role.ROLE_ADMINISTRATOR.name())
-//    .anyRequest().authenticated()
-        .anyRequest().permitAll()
+
+        .antMatchers(
+            "/api/manager/change-password",
+            "/api/manager/update-data")
+        .hasAnyAuthority(ROLE_MANAGER.name(), ROLE_ADMINISTRATOR.name())
+        .antMatchers(
+            "/api/manager/reset-password",
+            "/api/manager/**",
+            "/api/manager/change-role-status",
+            "/api/manager/managers",
+            "/api/manager/register",
+            "/api/manager/reset-password",
+            "/api/manager/roles")
+        .hasAuthority(ROLE_ADMINISTRATOR.name())
+
+        .antMatchers(
+            "/api/employee/checkin/**",
+            "/api/employee/checkout/**",
+            "/api/employee/login/**")
+        .hasAuthority(ROLE_EMPLOYEE.name())
+        .antMatchers(
+            "/api/employee/employees",
+            "/api/employee/register")
+        .hasAuthority(ROLE_ADMINISTRATOR.name())
+
+        .antMatchers("/api/project/new")
+        .hasAnyAuthority(ROLE_MANAGER.name(), ROLE_ADMINISTRATOR.name())
+
+        .anyRequest().authenticated()
         .and()
         .httpBasic().disable()
         .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
