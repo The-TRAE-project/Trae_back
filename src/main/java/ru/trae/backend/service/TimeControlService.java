@@ -59,7 +59,7 @@ public class TimeControlService {
    */
   public TimeControl updateTimeControlForDeparture(Long empId, LocalDateTime time) {
     TimeControl tc = timeControlRepository
-            .findByEmployee_IdAndIsOnShiftTrueAndWorkingShift_IsEndedFalse(empId);
+        .findByEmployee_IdAndIsOnShiftTrueAndWorkingShift_IsEndedFalse(empId);
     tc.setDeparture(time);
     tc.setOnShift(false);
 

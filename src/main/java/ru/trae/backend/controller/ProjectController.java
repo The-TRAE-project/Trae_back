@@ -53,7 +53,7 @@ public class ProjectController {
    */
   @PostMapping("/new")
   public ResponseEntity<HttpStatus> projectPersist(
-          @Valid @RequestBody NewProjectDto dto, Principal principal) {
+      @Valid @RequestBody NewProjectDto dto, Principal principal) {
     projectService.saveNewProject(dto, principal.getName());
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
@@ -87,7 +87,7 @@ public class ProjectController {
    */
   @GetMapping("/employee/available-projects/{employeeId}")
   public ResponseEntity<List<ProjectAvailableForEmpDto>> availableProjectsByEmpId(
-          @PathVariable long employeeId) {
+      @PathVariable long employeeId) {
     return ResponseEntity.ok(projectService.getAvailableProjects(employeeId));
   }
 
@@ -99,7 +99,7 @@ public class ProjectController {
    */
   @PostMapping("/finish-project")
   public ResponseEntity<HttpStatus> finishProject(
-          @RequestParam(value = "projectId") long projectId) {
+      @RequestParam(value = "projectId") long projectId) {
     projectService.checkExistsProjectById(projectId);
     projectService.finishProject(projectId);
     return ResponseEntity.ok().build();

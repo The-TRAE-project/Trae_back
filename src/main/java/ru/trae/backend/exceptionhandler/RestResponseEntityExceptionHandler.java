@@ -91,10 +91,10 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
   protected ResponseEntity<Response> handleException(AuthenticationException e) {
 
     Response response = Response.builder()
-            .timestamp(LocalDateTime.now().toString())
-            .error(e.getMessage())
-            .status(HttpStatus.UNAUTHORIZED)
-            .build();
+        .timestamp(LocalDateTime.now().toString())
+        .error(e.getMessage())
+        .status(HttpStatus.UNAUTHORIZED)
+        .build();
 
     return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
   }
@@ -109,53 +109,53 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
   protected ResponseEntity<Response> handleValidException(ConstraintViolationException e) {
 
     String errorString = e.getConstraintViolations().stream()
-            .map(ConstraintViolation::getMessage)
-            .collect(Collectors.joining(", "));
+        .map(ConstraintViolation::getMessage)
+        .collect(Collectors.joining(", "));
 
     Response response = Response.builder()
-            .timestamp(LocalDateTime.now().toString())
-            .error(errorString)
-            .status(HttpStatus.BAD_REQUEST)
-            .build();
+        .timestamp(LocalDateTime.now().toString())
+        .error(errorString)
+        .status(HttpStatus.BAD_REQUEST)
+        .build();
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(JWTVerificationException.class)
   protected ResponseEntity<Response> handleJwtException(JWTVerificationException e) {
     Response response = Response.builder()
-            .timestamp(LocalDateTime.now().toString())
-            .error(e.getMessage())
-            .status(HttpStatus.BAD_REQUEST)
-            .build();
+        .timestamp(LocalDateTime.now().toString())
+        .error(e.getMessage())
+        .status(HttpStatus.BAD_REQUEST)
+        .build();
 
     return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
-          MethodArgumentNotValidException ex,
-          HttpHeaders headers,
-          HttpStatus status,
-          WebRequest request) {
+      MethodArgumentNotValidException ex,
+      HttpHeaders headers,
+      HttpStatus status,
+      WebRequest request) {
 
     String errorString = ex.getBindingResult().getFieldErrors().stream()
-            .map(DefaultMessageSourceResolvable::getDefaultMessage)
-            .collect(Collectors.joining(", "));
+        .map(DefaultMessageSourceResolvable::getDefaultMessage)
+        .collect(Collectors.joining(", "));
 
     Response response = Response.builder()
-            .timestamp(LocalDateTime.now().toString())
-            .error(errorString)
-            .status(status)
-            .build();
+        .timestamp(LocalDateTime.now().toString())
+        .error(errorString)
+        .status(status)
+        .build();
 
     return new ResponseEntity<>(response, status);
   }
 
   private Response buildResponse(AbstractException e) {
     return Response.builder()
-            .timestamp(LocalDateTime.now().toString())
-            .error(e.getMessage())
-            .status(e.getStatus())
-            .build();
+        .timestamp(LocalDateTime.now().toString())
+        .error(e.getMessage())
+        .status(e.getStatus())
+        .build();
   }
 }

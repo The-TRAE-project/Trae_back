@@ -31,12 +31,12 @@ public class WorkingShiftDtoMapper implements Function<WorkingShift, WorkingShif
   @Override
   public WorkingShiftDto apply(WorkingShift ws) {
     return new WorkingShiftDto(
-            ws.getStartShift(),
-            ws.getEndShift(),
-            ws.isEnded(),
-            ws.getTimeControls().stream()
-                    .map(timeControlMapper)
-                    .toList()
+        ws.getStartShift(),
+        ws.getEndShift(),
+        ws.isEnded(),
+        ws.getTimeControls().stream()
+            .map(timeControlMapper)
+            .toList()
     );
   }
 }

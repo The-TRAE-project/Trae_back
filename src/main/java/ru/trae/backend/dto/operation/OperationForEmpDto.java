@@ -6,12 +6,12 @@ package ru.trae.backend.dto.operation;
  * @author Vladimir Olennikov
  */
 public record OperationForEmpDto(
-        long id,
-        String name,
-        boolean readyToAcceptance,
-        boolean isEnded,
-        boolean inWork,
-        String employeeFirstName,
-        String employeeLastName
+    long id,
+    String name,
+    boolean readyToAcceptance,
+    boolean isEnded,
+    boolean inWork,
+    String employeeFirstName,
+    String employeeLastName
 ) {
 }

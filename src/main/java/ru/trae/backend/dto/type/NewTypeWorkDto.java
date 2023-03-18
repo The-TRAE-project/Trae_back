@@ -7,7 +7,7 @@ package ru.trae.backend.dto.type;
  * @author Vladimir Olennikov
  */
 public record NewTypeWorkDto(
-        //todo to complete this field
-        String name
+    //todo to complete this field
+    String name
 ) {
 }

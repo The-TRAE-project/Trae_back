@@ -33,9 +33,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   void updatePlannedEndDateById(LocalDateTime plannedEndDate, Long id);
 
   @Query("""
-          select p from Project p inner join p.operations operations
-          where p.isEnded = false and operations.readyToAcceptance = true\s
-          and operations.typeWork.id = ?1""")
+      select p from Project p inner join p.operations operations
+      where p.isEnded = false and operations.readyToAcceptance = true\s
+      and operations.typeWork.id = ?1""")
   List<Project> findAvailableProjectsByTypeWork(long typeWorkId);
 
   @Transactional

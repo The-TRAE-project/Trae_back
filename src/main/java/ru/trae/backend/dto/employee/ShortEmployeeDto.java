@@ -6,9 +6,9 @@ package ru.trae.backend.dto.employee;
  * @author Vladimir Olennikov
  */
 public record ShortEmployeeDto(
-        long id,
-        String firstName,
-        String lastName,
-        boolean onShift
+    long id,
+    String firstName,
+    String lastName,
+    boolean onShift
 ) {
 }

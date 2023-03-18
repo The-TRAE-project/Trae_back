@@ -17,20 +17,20 @@ import ru.trae.backend.util.RegExpression;
  * @author Vladimir Olennikov
  */
 public record NewProjectDto(
-        //todo to complete this field
-        long number,
-        @NotNull(message = "Invalid name: name is NULL")
-        @Pattern(regexp = RegExpression.PROJECT_NAME, message = "Invalid name format")
-        String name,
-        @NotNull(message = "Invalid planned end date: date is NULL")
-        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-        LocalDateTime plannedEndDate,
-        @NotNull(message = "Invalid customer: customer is NULL")
-        @Pattern(regexp = RegExpression.CUSTOMER, message = "Invalid customer format")
-        String customer,
-        @Size(max = 1000, message = "The comment cannot be more than 1000 symbols")
-        String comment,
-        @NotNull(message = "Invalid operations: operations list is NULL")
-        List<NewOperationDto> operations
+    //todo to complete this field
+    long number,
+    @NotNull(message = "Invalid name: name is NULL")
+    @Pattern(regexp = RegExpression.PROJECT_NAME, message = "Invalid name format")
+    String name,
+    @NotNull(message = "Invalid planned end date: date is NULL")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    LocalDateTime plannedEndDate,
+    @NotNull(message = "Invalid customer: customer is NULL")
+    @Pattern(regexp = RegExpression.CUSTOMER, message = "Invalid customer format")
+    String customer,
+    @Size(max = 1000, message = "The comment cannot be more than 1000 symbols")
+    String comment,
+    @NotNull(message = "Invalid operations: operations list is NULL")
+    List<NewOperationDto> operations
 ) {
 }

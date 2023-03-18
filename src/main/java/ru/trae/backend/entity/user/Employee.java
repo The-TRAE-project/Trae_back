@@ -60,8 +60,8 @@ public class Employee extends User {
   private List<TimeControl> timeControls = new ArrayList<>();
   @ManyToMany
   @JoinTable(name = "employees_type_works",
-          joinColumns = @JoinColumn(name = "employee_id"),
-          inverseJoinColumns = @JoinColumn(name = "type_works_id"))
+      joinColumns = @JoinColumn(name = "employee_id"),
+      inverseJoinColumns = @JoinColumn(name = "type_works_id"))
   private Set<TypeWork> typeWorks = new HashSet<>();
 
   @Override

@@ -54,15 +54,15 @@ public class JwtFilter extends OncePerRequestFilter {
       String jwt = authHeader.substring(7);
       if (jwt == null || jwt.isBlank()) {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST,
-                "Invalid JWT Token in Bearer Header");
+            "Invalid JWT Token in Bearer Header");
       } else {
         try {
           String username = jwtUtil.validateAccessTokenAndRetrieveSubject(jwt);
           UserDetails userDetails = customUserDetailsService.loadUserByUsername(username);
           UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                  username,
-                  userDetails.getPassword(),
-                  userDetails.getAuthorities());
+              username,
+              userDetails.getPassword(),
+              userDetails.getAuthorities());
 
           if (SecurityContextHolder.getContext().getAuthentication() == null) {
             SecurityContextHolder.getContext().setAuthentication(authToken);

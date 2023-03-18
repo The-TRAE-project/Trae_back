@@ -51,8 +51,8 @@ public class TypeWorkService {
    */
   public TypeWork getTypeWorkById(long id) {
     return typeWorkRepository.findById(id).orElseThrow(
-            () -> new TypeWorkException(HttpStatus.NOT_FOUND,
-                    "Type work with ID: " + id + " not found")
+        () -> new TypeWorkException(HttpStatus.NOT_FOUND,
+            "Type work with ID: " + id + " not found")
     );
   }
 
@@ -64,8 +64,8 @@ public class TypeWorkService {
    */
   public TypeWork getTypeWorkByName(String name) {
     return typeWorkRepository.findByName(name).orElseThrow(
-            () -> new TypeWorkException(HttpStatus.NOT_FOUND,
-                    "Type work with name: " + name + " not found")
+        () -> new TypeWorkException(HttpStatus.NOT_FOUND,
+            "Type work with name: " + name + " not found")
     );
   }
 
@@ -76,9 +76,9 @@ public class TypeWorkService {
    */
   public List<TypeWorkDto> getTypes() {
     return typeWorkRepository.findAll()
-            .stream()
-            .map(t -> new TypeWorkDto(t.getId(), t.getName()))
-            .toList();
+        .stream()
+        .map(t -> new TypeWorkDto(t.getId(), t.getName()))
+        .toList();
   }
 
   /**
@@ -99,7 +99,7 @@ public class TypeWorkService {
   public void checkAvailableByName(String name) {
     if (existsTypeByName(name)) {
       throw new TypeWorkException(HttpStatus.CONFLICT,
-              "Type work name: " + name + " already in use");
+          "Type work name: " + name + " already in use");
     }
   }
 }

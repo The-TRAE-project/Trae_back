@@ -7,8 +7,8 @@ package ru.trae.backend.dto.project;
  * @author Vladimir Olennikov
  */
 public record ShortProjectDto(
-        long id,
-        long number,
-        String name
+    long id,
+    long number,
+    String name
 ) {
 }

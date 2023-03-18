@@ -57,8 +57,8 @@ public class OperationService {
    */
   public Operation getOperationById(long id) {
     return operationRepository.findById(id).orElseThrow(
-            () -> new OperationException(HttpStatus.NOT_FOUND,
-                    "Operation with ID " + id + " not found"));
+        () -> new OperationException(HttpStatus.NOT_FOUND,
+            "Operation with ID " + id + " not found"));
   }
 
   /**
@@ -82,25 +82,25 @@ public class OperationService {
     int period = Util.getPeriodForFirstOperation(p.getPeriod(), operations.size()) - 24;
 
     Operation fo = prepareOperation(
-            p, dto.name(), period, 0,
-            LocalDateTime.now(),
-            LocalDateTime.now().plusHours(period),
-            true,
-            typeWorkService.getTypeWorkById(dto.typeWorkId()));
+        p, dto.name(), period, 0,
+        LocalDateTime.now(),
+        LocalDateTime.now().plusHours(period),
+        true,
+        typeWorkService.getTypeWorkById(dto.typeWorkId()));
 
     savedOperations.add(operationRepository.save(fo));
 
     if (operations.size() > 1) {
       operations.stream()
-              .skip(1)
-              .forEach(no -> {
-                Operation o = prepareOperation(
-                        p, no.name(), 0, operations.indexOf(no) * 10,
-                        null, null,
-                        false, typeWorkService.getTypeWorkById(no.typeWorkId()));
+          .skip(1)
+          .forEach(no -> {
+            Operation o = prepareOperation(
+                p, no.name(), 0, operations.indexOf(no) * 10,
+                null, null,
+                false, typeWorkService.getTypeWorkById(no.typeWorkId()));
 
-                savedOperations.add(operationRepository.save(o));
-              });
+            savedOperations.add(operationRepository.save(o));
+          });
     }
 
     Operation shipment = prepareShipmentOp(p, operations.size() * 10);
@@ -117,8 +117,8 @@ public class OperationService {
    */
   public List<OperationDto> getOpsDtoListByProject(long projectId) {
     return operationRepository.findByProjectIdOrderByPriorityAsc(projectId).stream()
-            .map(operationDtoMapper)
-            .toList();
+        .map(operationDtoMapper)
+        .toList();
   }
 
   /**
@@ -165,9 +165,9 @@ public class OperationService {
    */
   public void startNextOperation(Operation o) {
     List<Operation> operations = o.getProject().getOperations()
-            .stream()
-            .sorted(Comparator.comparing(Operation::getPriority))
-            .toList();
+        .stream()
+        .sorted(Comparator.comparing(Operation::getPriority))
+        .toList();
 
     if (operations.indexOf(o) + 1 < operations.size()) {
       Operation nextOp = operations.get(operations.indexOf(o) + 1);
@@ -189,23 +189,23 @@ public class OperationService {
    *
    * @param projectId the project id
    * @return the list of operations for the specified project in the {@link OperationForEmpDto}
-   *         format, sorted by priority
+   *     format, sorted by priority
    */
   public List<OperationForEmpDto> getOperationsByProjectIdForEmp(long projectId) {
     List<Operation> operations = operationRepository.findByProjectId(projectId);
 
     return operations.stream()
-            .sorted(Util::prioritySorting)
-            .map(o -> new OperationForEmpDto(
-                    o.getId(),
-                    o.getName(),
-                    o.isReadyToAcceptance(),
-                    o.isEnded(),
-                    o.isInWork(),
-                    o.getEmployee() == null ? null : o.getEmployee().getFirstName(),
-                    o.getEmployee() == null ? null : o.getEmployee().getLastName()
-            ))
-            .toList();
+        .sorted(Util::prioritySorting)
+        .map(o -> new OperationForEmpDto(
+            o.getId(),
+            o.getName(),
+            o.isReadyToAcceptance(),
+            o.isEnded(),
+            o.isInWork(),
+            o.getEmployee() == null ? null : o.getEmployee().getFirstName(),
+            o.getEmployee() == null ? null : o.getEmployee().getLastName()
+        ))
+        .toList();
   }
 
   /**
@@ -213,20 +213,20 @@ public class OperationService {
    *
    * @param employeeId The ID of the employee for whom the operations should be retrieved
    * @return A list of objects containing the operation's ID, the project's ID and name,
-   *         the operation's name and the customer name
+   *     the operation's name and the customer name
    */
   public List<OperationInWorkForEmpDto> getOperationsInWorkByEmpIdForEmp(long employeeId) {
     List<Operation> operations = operationRepository.findByEmpIdAndInWork(employeeId);
     return operations.stream()
-            .map(o -> new OperationInWorkForEmpDto(
-                    o.getId(),
-                    o.getProject().getId(),
-                    o.getProject().getNumber(),
-                    o.getProject().getName(),
-                    o.getName(),
-                    o.getProject().getCustomer()
-            ))
-            .toList();
+        .map(o -> new OperationInWorkForEmpDto(
+            o.getId(),
+            o.getProject().getId(),
+            o.getProject().getNumber(),
+            o.getProject().getName(),
+            o.getName(),
+            o.getProject().getCustomer()
+        ))
+        .toList();
   }
 
   /**
@@ -244,9 +244,9 @@ public class OperationService {
     checkAvailablePriority(operations, dto.priority());
 
     Operation newOp = prepareOperation(
-            p, dto.name(), 0, dto.priority(),
-            null, null,
-            false, typeWorkService.getTypeWorkById(dto.typeWorkId()));
+        p, dto.name(), 0, dto.priority(),
+        null, null,
+        false, typeWorkService.getTypeWorkById(dto.typeWorkId()));
 
     operationRepository.save(newOp);
 
@@ -270,7 +270,7 @@ public class OperationService {
       operationRepository.updateIsEndedById(true, o.getId());
     } else {
       throw new OperationException(HttpStatus.BAD_REQUEST,
-              "The operation is not yet in operation or is not available for acceptance");
+          "The operation is not yet in operation or is not available for acceptance");
     }
 
     startNextOperation(o);
@@ -278,8 +278,8 @@ public class OperationService {
 
   private void checkAndUpdateShipmentOp(List<Operation> operations, int priority) {
     int maxPriority = operations.stream()
-            .mapToInt(Operation::getPriority)
-            .max().getAsInt();
+        .mapToInt(Operation::getPriority)
+        .max().getAsInt();
     if (maxPriority < priority) {
       createOrUpdateShipmentOp(operations, maxPriority, priority);
     }
@@ -288,11 +288,11 @@ public class OperationService {
   private void createOrUpdateShipmentOp(List<Operation> operations,
                                         int maxPriority, int priorityNewOp) {
     Operation lastOp = operations.stream().filter(o -> o.getPriority() == maxPriority)
-            .findFirst()
-            .get();
+        .findFirst()
+        .get();
 
     if (!lastOp.isEnded() && !lastOp.isInWork() && !lastOp.isReadyToAcceptance()
-            && priorityNewOp > lastOp.getPriority()) {
+        && priorityNewOp > lastOp.getPriority()) {
       operationRepository.updatePriorityById(priorityNewOp + 10, lastOp.getId());
     } else {
       Operation shipment = prepareShipmentOp(lastOp.getProject(), priorityNewOp + 10);
@@ -303,28 +303,28 @@ public class OperationService {
   private void checkExistsPriority(List<Operation> operations, int priority) {
     if (operations.stream().anyMatch(o -> o.getPriority() == priority)) {
       throw new OperationException(HttpStatus.CONFLICT,
-              "The operation with priority: " + priority + " already exists");
+          "The operation with priority: " + priority + " already exists");
     }
   }
 
   private void checkAvailablePriority(List<Operation> operations, int priority) {
     int actualPriority = operations.stream()
-            .filter(o -> o.isInWork() | o.isReadyToAcceptance())
-            .findFirst()
-            .map(Operation::getPriority)
-            .orElse(operations.size() * 10);
+        .filter(o -> o.isInWork() | o.isReadyToAcceptance())
+        .findFirst()
+        .map(Operation::getPriority)
+        .orElse(operations.size() * 10);
     if (actualPriority > priority) {
       throw new OperationException(HttpStatus.BAD_REQUEST,
-              "The priority of the operation: " + priority
-                      + " cannot be lower than the priority of the active operation: "
-                      + actualPriority);
+          "The priority of the operation: " + priority
+              + " cannot be lower than the priority of the active operation: "
+              + actualPriority);
     }
   }
 
   private void checkForAcceptance(Operation o) {
     if (!o.isReadyToAcceptance()) {
       throw new OperationException(HttpStatus.BAD_REQUEST,
-              "The operation is currently unavailable for acceptance.");
+          "The operation is currently unavailable for acceptance.");
     }
   }
 
@@ -344,14 +344,14 @@ public class OperationService {
   public void checkConfirmingEmployee(Operation o, long confirmingEmpId) {
     if (o.getEmployee() == null || o.getEmployee().getId() != confirmingEmpId) {
       throw new OperationException(HttpStatus.BAD_REQUEST,
-              "The ID of the confirming employee is not equal"
-                      + " to the ID of the person who accepted the operation");
+          "The ID of the confirming employee is not equal"
+              + " to the ID of the person who accepted the operation");
     }
   }
 
   private int recalculationRemainingPeriod(Operation nextOp, List<Operation> operations) {
     long remainingPeriod = HOURS.between(LocalDateTime.now(),
-            nextOp.getProject().getPlannedEndDate());
+        nextOp.getProject().getPlannedEndDate());
     long opRemaining = operations.stream().filter(op -> !op.isEnded()).count();
 
     // здесь отслеживается последний этап "отгрузка" = на него всегда 24 часа.
@@ -385,7 +385,7 @@ public class OperationService {
 
   private Operation prepareShipmentOp(Project p, int priority) {
     return prepareOperation(p, "Отгрузка", 24, priority,
-            null, null,
-            false, typeWorkService.getTypeWorkByName("Отгрузка"));
+        null, null,
+        false, typeWorkService.getTypeWorkByName("Отгрузка"));
   }
 }

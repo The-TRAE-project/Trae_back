@@ -30,14 +30,14 @@ public class ProjectAvailableDtoMapper implements Function<Project, ProjectAvail
   @Override
   public ProjectAvailableForEmpDto apply(Project p) {
     return new ProjectAvailableForEmpDto(
-            p.getId(),
-            p.getNumber(),
-            p.getCustomer(),
-            p.getName(),
-            p.getOperations().stream()
-                    .filter(Operation::isReadyToAcceptance)
-                    .findFirst()
-                    .get().getName()
+        p.getId(),
+        p.getNumber(),
+        p.getCustomer(),
+        p.getName(),
+        p.getOperations().stream()
+            .filter(Operation::isReadyToAcceptance)
+            .findFirst()
+            .get().getName()
     );
   }
 }

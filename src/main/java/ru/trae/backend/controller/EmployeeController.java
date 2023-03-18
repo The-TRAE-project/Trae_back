@@ -126,7 +126,8 @@ public class EmployeeController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @PostMapping("/checkout/{employeeId}")
-  public ResponseEntity<ShortEmployeeDto> employeeCheckOut(@PathVariable long employeeId) {
+  public ResponseEntity<ShortEmployeeDto> employeeCheckOut(
+      @PathVariable @Parameter(description = "Идентификатор сотрудника") long employeeId) {
     return ResponseEntity.ok(employeeService.departureEmployee(employeeId));
   }
 

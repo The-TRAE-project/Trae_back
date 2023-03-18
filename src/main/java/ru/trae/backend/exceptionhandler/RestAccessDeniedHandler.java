@@ -36,7 +36,7 @@ public class RestAccessDeniedHandler implements AccessDeniedHandler {
     response.setContentType("application/json");
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
     response.getOutputStream().println("{ \"timestamp\": \"" + LocalDateTime.now() + "\"\n\t"
-            + "\"status\": \"" + HttpStatus.FORBIDDEN + "\"\n\t"
-            + "\"error\": \"" + accessDeniedException.getMessage() + "\" }");
+        + "\"status\": \"" + HttpStatus.FORBIDDEN + "\"\n\t"
+        + "\"error\": \"" + accessDeniedException.getMessage() + "\" }");
   }
 }

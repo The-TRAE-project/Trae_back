@@ -70,8 +70,8 @@ public class WorkingShiftService {
     WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
 
     ws.getTimeControls().stream()
-            .filter(TimeControl::isOnShift)
-            .forEach(timeControlService::autoClosingShift);
+        .filter(TimeControl::isOnShift)
+        .forEach(timeControlService::autoClosingShift);
 
     ws.setEnded(true);
     ws.setEndShift(LocalDateTime.now());
@@ -93,7 +93,7 @@ public class WorkingShiftService {
     WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
 
     ws.getTimeControls().add(timeControlService.createArrivalTimeControl(employee, ws,
-            true, LocalDateTime.now()));
+        true, LocalDateTime.now()));
     workingShiftRepository.save(ws);
   }
 
@@ -115,7 +115,7 @@ public class WorkingShiftService {
    */
   public boolean employeeOnShift(boolean isOnShift, long empId) {
     return workingShiftRepository
-            .existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(isOnShift,
-                    empId);
+        .existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(isOnShift,
+            empId);
   }
 }

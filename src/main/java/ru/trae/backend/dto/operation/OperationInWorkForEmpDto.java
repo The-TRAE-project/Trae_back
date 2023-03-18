@@ -6,11 +6,11 @@ package ru.trae.backend.dto.operation;
  * @author Vladimir Olennikov
  */
 public record OperationInWorkForEmpDto(
-        long operationId,
-        long projectId,
-        long projectNumber,
-        String projectName,
-        String operationName,
-        String customerLastName
+    long operationId,
+    long projectId,
+    long projectNumber,
+    String projectName,
+    String operationName,
+    String customerLastName
 ) {
 }

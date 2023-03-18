@@ -10,9 +10,9 @@ import java.util.List;
  * @author Vladimir Olennikov
  */
 public record WorkingShiftDto(
-        LocalDateTime startShift,
-        LocalDateTime endShift,
-        boolean isEnded,
-        List<TimeControlDto> timeControls
+    LocalDateTime startShift,
+    LocalDateTime endShift,
+    boolean isEnded,
+    List<TimeControlDto> timeControls
 ) {
 }

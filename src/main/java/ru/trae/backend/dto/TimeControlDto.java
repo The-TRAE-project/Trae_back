@@ -9,10 +9,10 @@ import ru.trae.backend.dto.employee.ShortEmployeeDto;
  * @author Vladimir Olennikov
  */
 public record TimeControlDto(
-        boolean isOnShift,
-        boolean autoClosingShift,
-        LocalDateTime arrival,
-        LocalDateTime departure,
-        ShortEmployeeDto employee
+    boolean isOnShift,
+    boolean autoClosingShift,
+    LocalDateTime arrival,
+    LocalDateTime departure,
+    ShortEmployeeDto employee
 ) {
 }

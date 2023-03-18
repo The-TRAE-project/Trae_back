@@ -11,19 +11,19 @@ import ru.trae.backend.dto.type.TypeWorkDto;
  * @author Vladimir Olennikov
  */
 public record OperationDto(
-        long id,
-        int priority,
-        String name,
-        LocalDateTime startDate,
-        LocalDateTime acceptanceDate,
-        LocalDateTime plannedEndDate,
-        LocalDateTime realEndDate,
-        int period,
-        boolean isEnded,
-        boolean inWork,
-        boolean readyToAcceptance,
-        TypeWorkDto typeWorkDto,
-        ShortProjectDto shortProjectDto,
-        ShortEmployeeDto shortEmployeeDto
+    long id,
+    int priority,
+    String name,
+    LocalDateTime startDate,
+    LocalDateTime acceptanceDate,
+    LocalDateTime plannedEndDate,
+    LocalDateTime realEndDate,
+    int period,
+    boolean isEnded,
+    boolean inWork,
+    boolean readyToAcceptance,
+    TypeWorkDto typeWorkDto,
+    ShortProjectDto shortProjectDto,
+    ShortEmployeeDto shortEmployeeDto
 ) {
 }

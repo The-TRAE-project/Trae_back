@@ -29,24 +29,24 @@ public class OperationDtoMapper implements Function<Operation, OperationDto> {
     Employee e = o.getEmployee();
 
     return new OperationDto(
-            o.getId(),
-            o.getPriority(),
-            o.getName(),
-            o.getStartDate(),
-            o.getAcceptanceDate(),
-            o.getPlannedEndDate(),
-            o.getRealEndDate(),
-            o.getPeriod(),
-            o.isEnded(),
-            o.isInWork(),
-            o.isReadyToAcceptance(),
-            new TypeWorkDto(o.getTypeWork().getId(), o.getTypeWork().getName()),
-            new ShortProjectDto(p.getId(), p.getNumber(), p.getName()),
-            e == null ? null : new ShortEmployeeDto(
-                    e.getId(),
-                    e.getFirstName(),
-                    e.getLastName(),
-                    workingShiftService.employeeOnShift(true, e.getId()))
+        o.getId(),
+        o.getPriority(),
+        o.getName(),
+        o.getStartDate(),
+        o.getAcceptanceDate(),
+        o.getPlannedEndDate(),
+        o.getRealEndDate(),
+        o.getPeriod(),
+        o.isEnded(),
+        o.isInWork(),
+        o.isReadyToAcceptance(),
+        new TypeWorkDto(o.getTypeWork().getId(), o.getTypeWork().getName()),
+        new ShortProjectDto(p.getId(), p.getNumber(), p.getName()),
+        e == null ? null : new ShortEmployeeDto(
+            e.getId(),
+            e.getFirstName(),
+            e.getLastName(),
+            workingShiftService.employeeOnShift(true, e.getId()))
     );
   }
 }

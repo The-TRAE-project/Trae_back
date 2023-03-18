@@ -43,6 +43,6 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
    * @return true if the employee is on shift, false otherwise.
    */
   boolean existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(
-          boolean isOnShift, Long id);
+      boolean isOnShift, Long id);
 
 }

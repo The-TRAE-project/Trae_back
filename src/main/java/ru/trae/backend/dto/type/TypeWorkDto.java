@@ -6,7 +6,7 @@ package ru.trae.backend.dto.type;
  * @author Vladimir Olennikov
  */
 public record TypeWorkDto(
-        long id,
-        String name
+    long id,
+    String name
 ) {
 }

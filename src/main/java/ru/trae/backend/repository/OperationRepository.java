@@ -41,7 +41,7 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
    * @return a list of all operations that are currently in-work for the given employee
    */
   @Query("select o from Operation o where o.inWork = true and o.employee.id = ?1 "
-          + "order by o.acceptanceDate")
+      + "order by o.acceptanceDate")
   List<Operation> findByEmpIdAndInWork(long employeeId);
 
   /**

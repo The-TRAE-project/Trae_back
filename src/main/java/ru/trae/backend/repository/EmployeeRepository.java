@@ -37,12 +37,12 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
    * @param middleName the middle name to search for
    * @param lastName   the last name to search for
    * @return true if an {@link Employee} exists with given first, middle and last name,
-   *         false otherwise
+   *     false otherwise
    */
   @Query("""
-          select (count(e) > 0) from Employee e
-          where upper(e.firstName) = upper(?1) and upper(e.middleName) = upper(?2) and\s
-          upper(e.lastName) = upper(?3)""")
+      select (count(e) > 0) from Employee e
+      where upper(e.firstName) = upper(?1) and upper(e.middleName) = upper(?2) and\s
+      upper(e.lastName) = upper(?3)""")
   boolean existsByFirstMiddleLastNameIgnoreCase(String firstName,
                                                 String middleName,
                                                 String lastName);

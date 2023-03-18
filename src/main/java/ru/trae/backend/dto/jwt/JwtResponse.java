@@ -6,7 +6,7 @@ package ru.trae.backend.dto.jwt;
  * @author Vladimir Olennikov
  */
 public record JwtResponse(
-        String accessToken,
-        String refreshToken
+    String accessToken,
+    String refreshToken
 ) {
 }

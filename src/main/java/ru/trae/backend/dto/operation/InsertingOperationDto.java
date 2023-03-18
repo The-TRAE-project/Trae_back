@@ -21,21 +21,21 @@ import javax.validation.constraints.NotNull;
  * @author Vladimir Olennikov
  */
 public record InsertingOperationDto(
-        @NotNull(message = "Invalid project id: id is NULL")
-        @Min(value = 0, message = "The project id cannot be less than 0")
-        @Max(value = Integer.MAX_VALUE, message =
-                "The project id cannot be more than " + Integer.MAX_VALUE)
-        long projectId,
-        //todo to complete this field
-        String name,
-        @NotNull(message = "Invalid type work id: id is NULL")
-        @Min(value = 0, message = "The type work id cannot be less than 0")
-        @Max(value = Integer.MAX_VALUE, message =
-                "The type work id cannot be more than " + Integer.MAX_VALUE)
-        long typeWorkId,
-        @NotNull(message = "Invalid priority: priority is NULL")
-        @Min(value = 1, message = "The priority cannot be less than 1")
-        @Max(value = 989, message = "The priority cannot be more than 989")
-        int priority
+    @NotNull(message = "Invalid project id: id is NULL")
+    @Min(value = 0, message = "The project id cannot be less than 0")
+    @Max(value = Integer.MAX_VALUE, message =
+        "The project id cannot be more than " + Integer.MAX_VALUE)
+    long projectId,
+    //todo to complete this field
+    String name,
+    @NotNull(message = "Invalid type work id: id is NULL")
+    @Min(value = 0, message = "The type work id cannot be less than 0")
+    @Max(value = Integer.MAX_VALUE, message =
+        "The type work id cannot be more than " + Integer.MAX_VALUE)
+    long typeWorkId,
+    @NotNull(message = "Invalid priority: priority is NULL")
+    @Min(value = 1, message = "The priority cannot be less than 1")
+    @Max(value = 989, message = "The priority cannot be more than 989")
+    int priority
 ) {
 }

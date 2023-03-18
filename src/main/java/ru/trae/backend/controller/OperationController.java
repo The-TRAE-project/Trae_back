@@ -66,7 +66,7 @@ public class OperationController {
    */
   @PostMapping("/insert")
   public ResponseEntity<HttpStatus> insertOperation(
-          @Valid @RequestBody InsertingOperationDto dto) {
+      @Valid @RequestBody InsertingOperationDto dto) {
     Project p = projectService.getProjectById(dto.projectId());
     operationService.insertNewOperation(dto, p);
 
@@ -81,7 +81,7 @@ public class OperationController {
    */
   @PostMapping("/close")
   public ResponseEntity<HttpStatus> closeOperation(
-          @RequestParam(value = "operationId") long operationId) {
+      @RequestParam(value = "operationId") long operationId) {
     operationService.closeOperation(operationId);
     return ResponseEntity.ok().build();
   }
@@ -94,7 +94,7 @@ public class OperationController {
    */
   @GetMapping("/employee/project-operations/{projectId}")
   public ResponseEntity<List<OperationForEmpDto>> operationsByProjectId(
-          @PathVariable long projectId) {
+      @PathVariable long projectId) {
     return ResponseEntity.ok(operationService.getOperationsByProjectIdForEmp(projectId));
   }
 
@@ -106,7 +106,7 @@ public class OperationController {
    */
   @GetMapping("/employee/operations-in-work/{employeeId}")
   public ResponseEntity<List<OperationInWorkForEmpDto>> operationsInWorkByEmpId(
-          @PathVariable long employeeId) {
+      @PathVariable long employeeId) {
     return ResponseEntity.ok(operationService.getOperationsInWorkByEmpIdForEmp(employeeId));
   }
 

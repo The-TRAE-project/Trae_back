@@ -20,11 +20,11 @@ import ru.trae.backend.util.RegExpression;
  * @author Vladimir Olennikov
  */
 public record ChangePassReq(
-        @NotNull(message = "Invalid old password: old password is NULL")
-        @Pattern(regexp = RegExpression.PASSWORD, message = "Invalid old password format")
-        String oldPassword,
-        @NotNull(message = "Invalid new password: new password is NULL")
-        @Pattern(regexp = RegExpression.PASSWORD, message = "Invalid new password format")
-        String newPassword
+    @NotNull(message = "Invalid old password: old password is NULL")
+    @Pattern(regexp = RegExpression.PASSWORD, message = "Invalid old password format")
+    String oldPassword,
+    @NotNull(message = "Invalid new password: new password is NULL")
+    @Pattern(regexp = RegExpression.PASSWORD, message = "Invalid new password format")
+    String newPassword
 ) {
 }

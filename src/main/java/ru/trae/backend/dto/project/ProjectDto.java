@@ -14,16 +14,16 @@ import ru.trae.backend.dto.operation.OperationDto;
  * @author Vladimir Olennikov
  */
 public record ProjectDto(
-        long id,
-        long number,
-        String name,
-        LocalDateTime startDate,
-        LocalDateTime plannedEndDate,
-        LocalDateTime realEndDate,
-        int period,
-        boolean isEnded,
-        List<OperationDto> operations,
-        ManagerDto managerDto,
-        String comment
+    long id,
+    long number,
+    String name,
+    LocalDateTime startDate,
+    LocalDateTime plannedEndDate,
+    LocalDateTime realEndDate,
+    int period,
+    boolean isEnded,
+    List<OperationDto> operations,
+    ManagerDto managerDto,
+    String comment
 ) {
 }

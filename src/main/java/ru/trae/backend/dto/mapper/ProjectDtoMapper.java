@@ -30,19 +30,19 @@ public class ProjectDtoMapper implements Function<Project, ProjectDto> {
   @Override
   public ProjectDto apply(Project p) {
     return new ProjectDto(
-            p.getId(),
-            p.getNumber(),
-            p.getName(),
-            p.getStartDate(),
-            p.getPlannedEndDate(),
-            p.getRealEndDate(),
-            p.getPeriod(),
-            p.isEnded(),
-            p.getOperations().stream()
-                    .map(operationDtoMapper)
-                    .toList(),
-            managerDtoMapper.apply(p.getManager()),
-            p.getComment() != null ? p.getComment() : null
+        p.getId(),
+        p.getNumber(),
+        p.getName(),
+        p.getStartDate(),
+        p.getPlannedEndDate(),
+        p.getRealEndDate(),
+        p.getPeriod(),
+        p.isEnded(),
+        p.getOperations().stream()
+            .map(operationDtoMapper)
+            .toList(),
+        managerDtoMapper.apply(p.getManager()),
+        p.getComment() != null ? p.getComment() : null
     );
   }
 }

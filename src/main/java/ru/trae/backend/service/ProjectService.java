@@ -84,8 +84,8 @@ public class ProjectService {
    */
   public Project getProjectById(long id) {
     return projectRepository.findById(id).orElseThrow(
-            () -> new ProjectException(HttpStatus.NOT_FOUND,
-                    "Project with ID: " + id + " not found"));
+        () -> new ProjectException(HttpStatus.NOT_FOUND,
+            "Project with ID: " + id + " not found"));
   }
 
   /**
@@ -95,9 +95,9 @@ public class ProjectService {
    */
   public List<ProjectDto> getAllProjects() {
     return projectRepository.findAll()
-            .stream()
-            .map(projectDtoMapper)
-            .toList();
+        .stream()
+        .map(projectDtoMapper)
+        .toList();
   }
 
   /**
@@ -111,12 +111,12 @@ public class ProjectService {
     List<Project> projects = new ArrayList<>();
 
     e.getTypeWorks().forEach(tw -> projects.addAll(
-            projectRepository.findAvailableProjectsByTypeWork(tw.getId())));
+        projectRepository.findAvailableProjectsByTypeWork(tw.getId())));
 
     return projects.stream()
-            .sorted(Util::dateSorting)
-            .map(projectAvailableDtoMapper)
-            .toList();
+        .sorted(Util::dateSorting)
+        .map(projectAvailableDtoMapper)
+        .toList();
   }
 
   /**
@@ -201,7 +201,7 @@ public class ProjectService {
   public void checkExistsProjectById(long projectId) {
     if (!projectRepository.existsById(projectId)) {
       throw new ProjectException(HttpStatus.NOT_FOUND,
-              "Project with ID: " + projectId + " not found");
+          "Project with ID: " + projectId + " not found");
     }
   }
 }
