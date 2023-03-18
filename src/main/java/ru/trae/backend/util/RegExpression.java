@@ -27,7 +27,7 @@ public class RegExpression {
       "^[А-Я](?=.{2,14}$)(?!.*[-]{2})[а-я-]+([^-])$";
   public static final String PHONE_NUMBER =
       //"^(\\+\\d{1,3}\\s?)?1?\\-?\\.?\\s?\\(?\\d{3}\\)?[\\s.-]?\\d{3}[\\s.-]?\\d{4}$";
-      "^(\\+\\d{1,3}\s)\\(?\\d{2,4}\\)[\s]\\d{3}[\s]\\d{4}$";
+      "^(\\+\\d{1,3} )\\(?\\d{2,4}\\)[ ]\\d{3}[ ]\\d{4}$";
   public static final String TOKEN =
       "^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)";
   public static final String ROLE = "^[A-Z][a-z]{3,49}$";
