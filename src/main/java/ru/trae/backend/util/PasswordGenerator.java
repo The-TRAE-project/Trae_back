@@ -18,6 +18,9 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * The PasswordGenerator class is used to generate a random password.
+ */
 public class PasswordGenerator {
   private final List<Rule> rules;
 
@@ -29,6 +32,12 @@ public class PasswordGenerator {
     this.rules = builder.rules;
   }
 
+  /**
+   * Generates a random string of specified length.
+   *
+   * @param length the length of the string to generate
+   * @return a random string of length
+   */
   public String generate(int length) {
     if (length <= 0) {
       return "";
@@ -93,6 +102,12 @@ public class PasswordGenerator {
         .mapToObj(i -> availableList.get(random.nextInt(availableList.size())))
         .collect(Collectors.toList());
   }
+
+  /**
+   * The {@code PasswordGenerator} class is used to generate strong passwords.
+   * It allows users to specify the rules for generating the password.
+   * It uses the {@link Builder} class for generating the password.
+   */
 
   public static class Builder {
     private static final String LOWER = "abcdefghijklmnopqrstuvwxyz";

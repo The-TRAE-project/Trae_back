@@ -123,6 +123,9 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         .forEach(employeeService::saveNewEmployee);
   }
 
+  /**
+   * Inserting admin data.
+   */
   public void insertAdmin() {
     if (managerRepository.existsByUsernameIgnoreCase("Admin")) {
       return;

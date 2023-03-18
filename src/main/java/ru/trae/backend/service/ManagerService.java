@@ -167,6 +167,12 @@ public class ManagerService {
     return managerDtoMapper.apply(manager);
   }
 
+  /**
+   * Change role and status of the manager.
+   *
+   * @param request The change role and status request.
+   * @throws ManagerException when either new role or status is not specified.
+   */
   @Transactional
   public void changeRoleAndStatus(ChangeRoleAndStatusReq request) {
     if (request.dateOfDismissal() == null && request.newRole() == null) {
