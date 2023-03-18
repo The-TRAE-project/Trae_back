@@ -200,8 +200,8 @@ public class ManagerService {
       throw new ManagerException(HttpStatus.CONFLICT, "This manager already activated");
     }
 
-    managerRepository.updateAccountNonLockedAndDateOfEmploymentById(
-        true, LocalDate.now(), managerId);
+    managerRepository.updateAccountNonLockedAndDateOfDismissalById(
+        true, null, managerId);
   }
 
   /**
