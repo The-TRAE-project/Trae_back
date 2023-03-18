@@ -18,7 +18,6 @@ public record ManagerRegisterDto(
     @Pattern(regexp = RegExpression.FIRST_MIDDLE_LAST_NAME, message = "Invalid first name")
     String firstName,
     @Schema(description = "Отчество пользователя")
-    @NotNull(message = "Invalid middle name: middle name is NULL")
     @Pattern(regexp = RegExpression.FIRST_MIDDLE_LAST_NAME, message = "Invalid middle name")
     String middleName,
     @Schema(description = "Фамилия пользователя")

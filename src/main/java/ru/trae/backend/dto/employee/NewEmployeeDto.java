@@ -18,7 +18,6 @@ public record NewEmployeeDto(
         @NotNull(message = "Invalid first name: first name is NULL")
         @Pattern(regexp = RegExpression.FIRST_MIDDLE_LAST_NAME, message = "Invalid first name")
         String firstName,
-        @NotNull(message = "Invalid middle name: middle name is NULL")
         @Pattern(regexp = RegExpression.FIRST_MIDDLE_LAST_NAME, message = "Invalid middle name")
         String middleName,
         @NotNull(message = "Invalid last name: last name is NULL")

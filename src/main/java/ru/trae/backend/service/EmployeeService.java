@@ -106,7 +106,7 @@ public class EmployeeService {
     }
 
     if (!e.get().isActive()) {
-      throw new EmployeeException(HttpStatus.FORBIDDEN, "The account is disabled");
+      throw new EmployeeException(HttpStatus.LOCKED, "The account is disabled");
     }
 
     return new ShortEmployeeDto(
