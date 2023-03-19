@@ -80,5 +80,6 @@ public interface ManagerRepository extends PagingAndSortingRepository<Manager, L
   Page<Manager> findByAccountNonLockedAndRole(
       Pageable pageable, boolean accountNonLocked, Role role);
 
-
+  @Query("select (count(m) > 0) from Manager m where m.username = ?1 and m.role = ?2")
+  boolean existsByUsernameAndRole(String username, Role role);
 }

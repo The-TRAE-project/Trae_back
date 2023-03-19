@@ -26,10 +26,10 @@ public class PageSettings {
   @ApiParam(value = "Номер страницы")
   @Min(value = 0, message = "Номер страницы не может быть меньше 0")
   private int page = 0;
-  @ApiParam(value = "Элементов на страницы")
+  @ApiParam(value = "Элементов на странице")
   @Min(value = 1, message = "Количество элементов на странице не может быть меньше 1")
   private int elementPerPage = 10;
-  @ApiParam(value = "Направление сортировки", example = "asc или dsc")
+  @ApiParam(value = "Направление сортировки (asc или dsc)", example = "asc или dsc")
   @Pattern(regexp = "[adsc]{3}", message = "Направление сортировки указывается asc либо dsc")
   private String direction = "dsc";
   @ApiParam(value = "Сортировка по названию столбца", example = "id, username, firstName")

@@ -13,7 +13,6 @@ package ru.trae.backend.service;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import liquibase.repackaged.org.apache.commons.lang3.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -122,8 +121,8 @@ public class ManagerService {
    * Gets a page of managers.
    *
    * @param managerPage the pageable object with page settings
-   * @param role the role of the manager
-   * @param status the status of the manager
+   * @param role        the role of the manager
+   * @param status      the status of the manager
    * @return a page of managers
    */
   public Page<Manager> getManagerPage(Pageable managerPage, String role, Boolean status) {
@@ -159,10 +158,18 @@ public class ManagerService {
    * @return A Credentials object containing the manager's username and the new, temporary
    *     password.
    */
+  @Transactional
   public Credentials resetPassword(String username) {
     checkExistsUsername(username);
+    checkManagerRole(username, Role.ROLE_ADMINISTRATOR);
 
-    String temporaryRandomPass = RandomStringUtils.randomAlphanumeric(6);
+    String temporaryRandomPass = new PasswordGenerator.Builder()
+        .digits(1)
+        .lower(1)
+        .upper(1)
+        .punctuation().custom("-._")
+        .generate(8);
+
     String encodedPass = encoder.encode(temporaryRandomPass);
 
     managerRepository.updatePasswordByUsername(encodedPass, username);
@@ -341,6 +348,12 @@ public class ManagerService {
   private void checkExistsUsername(String username) {
     if (!existsManagerByUsername(username)) {
       throw new ManagerException(HttpStatus.NOT_FOUND, "Username: " + username + " not found");
+    }
+  }
+
+  private void checkManagerRole(String username, Role role) {
+    if (managerRepository.existsByUsernameAndRole(username, role)) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST, "This is " + role.value + " account");
     }
   }
 
