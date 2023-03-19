@@ -176,7 +176,7 @@ public class ManagerService {
    */
   @Transactional
   public void changeRoleAndStatus(ChangeRoleAndStatusReq request) {
-    if (request.dateOfDismissal() == null && request.newRole() == null) {
+    if (request.accountStatus() == null && request.dateOfDismissal() == null && request.newRole() == null) {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
           "Не указаны статус учетной записи или новоя роль");
     }
@@ -185,10 +185,13 @@ public class ManagerService {
       changeRole(request.managerId(), request.newRole());
     }
 
-    if (request.accountStatus()) {
+    if (Boolean.TRUE.equals(request.accountStatus())) {
       activateAccount(request.managerId());
     } else if (request.dateOfDismissal() != null) {
       deactivateAccount(request.managerId(), request.dateOfDismissal());
+    } else {
+      throw new ManagerException(HttpStatus.BAD_REQUEST,
+          "Не указана дата увольнения пользователя");
     }
   }
 
