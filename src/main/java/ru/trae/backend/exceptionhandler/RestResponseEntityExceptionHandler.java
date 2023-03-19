@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +26,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import ru.trae.backend.exceptionhandler.exception.AbstractException;
-import ru.trae.backend.exceptionhandler.exception.CustomJwtVerificationException;
-import ru.trae.backend.exceptionhandler.exception.EmployeeException;
-import ru.trae.backend.exceptionhandler.exception.LoginCredentialException;
-import ru.trae.backend.exceptionhandler.exception.ManagerException;
-import ru.trae.backend.exceptionhandler.exception.OperationException;
-import ru.trae.backend.exceptionhandler.exception.PayloadPieceException;
-import ru.trae.backend.exceptionhandler.exception.ProjectException;
-import ru.trae.backend.exceptionhandler.exception.TypeWorkException;
-import ru.trae.backend.exceptionhandler.exception.WorkingShiftException;
+import ru.trae.backend.exceptionhandler.exception.*;
 
 /**
  * This class is a ControllerAdvice used to provide centralized exception handling across
@@ -103,6 +95,18 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
   protected ResponseEntity<Response> handleException(CustomJwtVerificationException e) {
 
     return new ResponseEntity<>(buildResponse(e), e.getStatus());
+  }
+
+  @ExceptionHandler(PropertyReferenceException.class)
+  protected ResponseEntity<Response> handleException(PropertyReferenceException e) {
+
+    Response response = Response.builder()
+        .timestamp(LocalDateTime.now().toString())
+        .error(e.getMessage())
+        .status(HttpStatus.BAD_REQUEST)
+        .build();
+
+    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
