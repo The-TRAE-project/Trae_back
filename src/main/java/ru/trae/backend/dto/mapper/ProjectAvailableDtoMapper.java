@@ -12,10 +12,12 @@ package ru.trae.backend.dto.mapper;
 
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.exceptionhandler.exception.ProjectException;
 
 /**
  * This class is responsible for mapping a {@link Project} object to a
@@ -37,7 +39,9 @@ public class ProjectAvailableDtoMapper implements Function<Project, ProjectAvail
         p.getOperations().stream()
             .filter(Operation::isReadyToAcceptance)
             .findFirst()
-            .get().getName()
+            .orElseThrow(
+                () -> new ProjectException(HttpStatus.BAD_REQUEST, "Available projects not found")
+            ).getName()
     );
   }
 }

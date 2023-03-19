@@ -80,7 +80,7 @@ public class PasswordGenerator {
         .flatMap(rule ->
             IntStream.range(0, rule.minimumCount)
                 .mapToObj(i -> rule.text.charAt(random.nextInt(rule.text.length()))))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**
@@ -100,7 +100,7 @@ public class PasswordGenerator {
 
     return IntStream.range(0, missingLength)
         .mapToObj(i -> availableList.get(random.nextInt(availableList.size())))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   /**

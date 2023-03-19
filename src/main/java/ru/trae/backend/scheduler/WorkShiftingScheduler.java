@@ -10,7 +10,6 @@
 
 package ru.trae.backend.scheduler;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import javax.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +63,7 @@ public class WorkShiftingScheduler {
     LocalTime end = LocalTime.of(23, 0, 0);
 
     if (!workingShiftService.existsActiveWorkingShift()
-        && LocalTime.now().isBefore(end) & LocalTime.now().isAfter(start)) {
+        && LocalTime.now().isBefore(end) && LocalTime.now().isAfter(start)) {
       workingShiftService.createWorkingShift();
     }
   }

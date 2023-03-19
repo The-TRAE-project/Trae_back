@@ -317,10 +317,7 @@ public class ManagerService {
     }
 
     if (Arrays.stream(Role.values()).anyMatch(r -> r.value.equals(newRole))) {
-      Role role = Arrays.stream(Role.values())
-          .filter(r -> r.value.equals(newRole))
-          .findFirst()
-          .get();
+      Role role = Role.getRoleByValue(newRole);
 
       managerRepository.updateRoleById(role, managerId);
     } else {

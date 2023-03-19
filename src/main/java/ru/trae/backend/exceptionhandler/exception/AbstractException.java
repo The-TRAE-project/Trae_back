@@ -22,7 +22,7 @@ import org.springframework.http.HttpStatus;
 public abstract class AbstractException extends RuntimeException {
   private final HttpStatus status;
 
-  public AbstractException(HttpStatus status, String errorMessage) {
+  protected AbstractException(HttpStatus status, String errorMessage) {
     super(errorMessage);
     this.status = status;
   }

@@ -289,7 +289,8 @@ public class OperationService {
                                         int maxPriority, int priorityNewOp) {
     Operation lastOp = operations.stream().filter(o -> o.getPriority() == maxPriority)
         .findFirst()
-        .get();
+        .orElseThrow(() -> new OperationException(HttpStatus.BAD_REQUEST,
+            "Problem with operation priority"));
 
     if (!lastOp.isEnded() && !lastOp.isInWork() && !lastOp.isReadyToAcceptance()
         && priorityNewOp > lastOp.getPriority()) {
@@ -309,7 +310,7 @@ public class OperationService {
 
   private void checkAvailablePriority(List<Operation> operations, int priority) {
     int actualPriority = operations.stream()
-        .filter(o -> o.isInWork() | o.isReadyToAcceptance())
+        .filter(o -> o.isInWork() || o.isReadyToAcceptance())
         .findFirst()
         .map(Operation::getPriority)
         .orElse(operations.size() * 10);

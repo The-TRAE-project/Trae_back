@@ -24,6 +24,8 @@ import ru.trae.backend.entity.user.Manager;
  */
 @Service
 public class ManagerDtoMapper implements Function<Manager, ManagerDto> {
+  private static final String DATE_FORMAT = "yyyy-MM-dd";
+
   @Override
   public ManagerDto apply(Manager m) {
     return new ManagerDto(
@@ -33,10 +35,10 @@ public class ManagerDtoMapper implements Function<Manager, ManagerDto> {
         m.getLastName(),
         m.getPhone(),
         m.getRole().value,
-        m.getDateOfRegister().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
-        m.getDateOfEmployment().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+        m.getDateOfRegister().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
+        m.getDateOfEmployment().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
         m.getDateOfDismissal() != null
-            ? m.getDateOfEmployment().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : null
+            ? m.getDateOfEmployment().format(DateTimeFormatter.ofPattern(DATE_FORMAT)) : null
     );
   }
 }

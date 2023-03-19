@@ -46,6 +46,9 @@ public class JwtUtil {
   private String secret;
   @Value("${jwt.refresh.secret}")
   private String refreshSecret;
+  private static final String SUBJECT = "User Details";
+  private static final String CLAIM_FOR_TOKEN = "username";
+  private static final String ISSUER_FOR_TOKEN = "Trae project";
 
   private final PayloadRandomPieceRepository payloadRandomPieceRepository;
 
@@ -61,10 +64,10 @@ public class JwtUtil {
         now.plusMinutes(accessDuration).atZone(ZoneId.systemDefault()).toInstant();
 
     return JWT.create()
-        .withSubject("User Details")
-        .withClaim("username", username)
+        .withSubject(SUBJECT)
+        .withClaim(CLAIM_FOR_TOKEN, username)
         .withExpiresAt(accessExpirationInstant)
-        .withIssuer("Trae project")
+        .withIssuer(ISSUER_FOR_TOKEN)
         .sign(Algorithm.HMAC256(secret));
   }
 
@@ -87,10 +90,10 @@ public class JwtUtil {
     }
 
     return JWT.create()
-        .withSubject("User Details")
-        .withClaim("username", username)
+        .withSubject(SUBJECT)
+        .withClaim(CLAIM_FOR_TOKEN, username)
         .withExpiresAt(refreshExpirationInstant)
-        .withIssuer("Trae project")
+        .withIssuer(ISSUER_FOR_TOKEN)
         .withPayload(Collections.singletonMap("UUID", uuid))
         .sign(Algorithm.HMAC256(refreshSecret));
   }
@@ -103,11 +106,11 @@ public class JwtUtil {
    */
   public String validateAccessTokenAndRetrieveSubject(String token) {
     JWTVerifier verifier = JWT.require(Algorithm.HMAC256(secret))
-        .withSubject("User Details")
-        .withIssuer("Trae project")
+        .withSubject(SUBJECT)
+        .withIssuer(ISSUER_FOR_TOKEN)
         .build();
     DecodedJWT jwt = verifier.verify(token);
-    return jwt.getClaim("username").asString();
+    return jwt.getClaim(CLAIM_FOR_TOKEN).asString();
   }
 
   /**
@@ -118,11 +121,11 @@ public class JwtUtil {
    */
   public String validateRefreshTokenAndRetrieveSubject(String token) {
     JWTVerifier verifier = JWT.require(Algorithm.HMAC256(refreshSecret))
-        .withSubject("User Details")
-        .withIssuer("Trae project")
+        .withSubject(SUBJECT)
+        .withIssuer(ISSUER_FOR_TOKEN)
         .build();
     DecodedJWT jwt = verifier.verify(token);
-    String username = jwt.getClaim("username").asString();
+    String username = jwt.getClaim(CLAIM_FOR_TOKEN).asString();
 
     Optional<PayloadRandomPiece> prp =
         payloadRandomPieceRepository.findByUsernameIgnoreCase(username);

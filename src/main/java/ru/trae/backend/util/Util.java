@@ -22,6 +22,10 @@ import ru.trae.backend.entity.task.Project;
  * @author Vladimir Olennikov
  */
 public class Util {
+  private Util() {
+    throw new IllegalStateException("Utility class");
+  }
+
   /**
    * Generates a random integer between min and max.
    *
