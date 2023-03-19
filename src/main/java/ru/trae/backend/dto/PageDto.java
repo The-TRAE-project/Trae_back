@@ -12,6 +12,11 @@ package ru.trae.backend.dto;
 
 import java.util.List;
 
+/**
+ * PageDto.
+ *
+ * @param <T> the type parameter
+ */
 public record PageDto<T>(
     List<T> content,
     long totalElements

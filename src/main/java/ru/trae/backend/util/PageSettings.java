@@ -16,6 +16,11 @@ import javax.validation.constraints.Pattern;
 import lombok.Data;
 import org.springframework.data.domain.Sort;
 
+/**
+ * Class for pagination settings.
+ *
+ * @author Vladimir Olennikov
+ */
 @Data
 public class PageSettings {
   @ApiParam(value = "Номер страницы")
@@ -32,6 +37,16 @@ public class PageSettings {
       "Неправильный формат ключа, либо такой ключ отсутствует у запрашиваемого списка")
   private String key = "id";
 
+  /**
+   * Builds a {@link Sort} instance based on the {@link #direction} and {@link #key} fields.
+   * If the {@link #direction} is "dsc", the sort instance will be a descending sort.
+   * If the {@link #direction}
+   * is "asc", the sort instance will be an ascending sort.
+   * If the {@link #direction} is neither of these values,
+   * then the sort instance will be a descending sort.
+   *
+   * @return a {@link Sort} instance based on the {@link #direction} and {@link #key} fields
+   */
   public Sort buildSort() {
     return switch (direction) {
       case "dsc" -> Sort.by(key).descending();
