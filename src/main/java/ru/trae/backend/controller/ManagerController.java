@@ -21,6 +21,9 @@ import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -32,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.Credentials;
+import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
@@ -39,6 +43,7 @@ import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.service.ManagerService;
+import ru.trae.backend.util.PageSettings;
 import ru.trae.backend.util.RegExpression;
 
 /**
@@ -123,8 +128,11 @@ public class ManagerController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/managers")
-  public ResponseEntity<List<ManagerDto>> managers() {
-    return ResponseEntity.ok(managerService.getAllManagers());
+  public ResponseEntity<PageDto<ManagerDto>> managers(@Valid PageSettings pageSetting) {
+    Sort managerSort = pageSetting.buildSort();
+    Pageable managerPage = PageRequest.of(
+        pageSetting.getPage(), pageSetting.getElementPerPage(), managerSort);
+    return ResponseEntity.ok(managerService.getManagerDtoPage(managerPage));
   }
 
   @Operation(summary = "Сброс пароля указанного пользователя",

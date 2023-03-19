@@ -12,9 +12,9 @@ package ru.trae.backend.repository;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.entity.user.Manager;
@@ -26,7 +26,7 @@ import ru.trae.backend.util.Role;
  * @author Vladimir Olennikov
  */
 @Repository
-public interface ManagerRepository extends JpaRepository<Manager, Long> {
+public interface ManagerRepository extends PagingAndSortingRepository<Manager, Long> {
   /**
    * Find a {@link Manager} by their username.
    *

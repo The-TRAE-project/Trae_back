@@ -15,17 +15,21 @@ import java.util.Arrays;
 import java.util.List;
 import liquibase.repackaged.org.apache.commons.lang3.RandomStringUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.Credentials;
+import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
+import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
@@ -43,6 +47,7 @@ import ru.trae.backend.util.jwt.JwtUtil;
 public class ManagerService {
   private final ManagerRepository managerRepository;
   private final ManagerDtoMapper managerDtoMapper;
+  private final PageToPageDtoMapper pageToPageDtoMapper;
   private final BCryptPasswordEncoder encoder;
   private final JwtUtil jwtUtil;
 
@@ -113,16 +118,12 @@ public class ManagerService {
             "Manager with username: " + username + " not found"));
   }
 
-  /**
-   * Retrieves all managers from the repository and returns them as a list of ManagerDto objects.
-   *
-   * @return List of ManagerDto objects
-   */
-  public List<ManagerDto> getAllManagers() {
-    return managerRepository.findAll()
-        .stream()
-        .map(managerDtoMapper)
-        .toList();
+  public Page<Manager> getManagerPage(Pageable managerPage) {
+    return managerRepository.findAll(managerPage);
+  }
+
+  public PageDto<ManagerDto> getManagerDtoPage(Pageable managerPage) {
+    return pageToPageDtoMapper.managerPageToPageDto(getManagerPage(managerPage));
   }
 
   /**
