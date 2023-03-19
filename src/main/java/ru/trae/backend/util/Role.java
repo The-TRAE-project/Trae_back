@@ -10,6 +10,10 @@
 
 package ru.trae.backend.util;
 
+import java.util.Arrays;
+import org.springframework.http.HttpStatus;
+import ru.trae.backend.exceptionhandler.exception.ManagerException;
+
 /**
  * Enum representing the different roles a user can have.
  *
@@ -26,5 +30,21 @@ public enum Role {
 
   Role(String value) {
     this.value = value;
+  }
+
+  /**
+   * Gets the role by its string representation.
+   *
+   * @param value the string representation
+   * @return the role
+   * @throws ManagerException when the role is not found
+   */
+  public static Role getRoleByValue(String value) {
+    return Arrays.stream(Role.values())
+        .filter(r -> r.value.equals(value))
+        .findFirst()
+        .orElseThrow(
+            () -> new ManagerException(HttpStatus.BAD_REQUEST,
+                "Role with value: " + value + " not found"));
   }
 }

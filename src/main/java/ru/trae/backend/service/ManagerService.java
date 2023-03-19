@@ -118,12 +118,32 @@ public class ManagerService {
             "Manager with username: " + username + " not found"));
   }
 
-  public Page<Manager> getManagerPage(Pageable managerPage) {
-    return managerRepository.findAll(managerPage);
+  /**
+   * Gets a page of managers.
+   *
+   * @param managerPage the pageable object with page settings
+   * @param role the role of the manager
+   * @param status the status of the manager
+   * @return a page of managers
+   */
+  public Page<Manager> getManagerPage(Pageable managerPage, String role, Boolean status) {
+    Page<Manager> page;
+
+    if (status != null && role != null) {
+      page = managerRepository.findByAccountNonLockedAndRole(
+          managerPage, status, Role.getRoleByValue(role));
+    } else if (status != null) {
+      page = managerRepository.findByAccountNonLocked(managerPage, status);
+    } else if (role != null) {
+      page = managerRepository.findByRole(managerPage, Role.getRoleByValue(role));
+    } else {
+      page = managerRepository.findAll(managerPage);
+    }
+    return page;
   }
 
-  public PageDto<ManagerDto> getManagerDtoPage(Pageable managerPage) {
-    return pageToPageDtoMapper.managerPageToPageDto(getManagerPage(managerPage));
+  public PageDto<ManagerDto> getManagerDtoPage(Pageable managerPage, String role, Boolean status) {
+    return pageToPageDtoMapper.managerPageToPageDto(getManagerPage(managerPage, role, status));
   }
 
   /**
@@ -176,7 +196,8 @@ public class ManagerService {
    */
   @Transactional
   public void changeRoleAndStatus(ChangeRoleAndStatusReq request) {
-    if (request.accountStatus() == null && request.dateOfDismissal() == null && request.newRole() == null) {
+    if (request.accountStatus() == null
+        && request.dateOfDismissal() == null && request.newRole() == null) {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
           "Не указаны статус учетной записи или новоя роль");
     }

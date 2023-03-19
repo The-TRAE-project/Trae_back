@@ -134,11 +134,16 @@ public class ManagerController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/managers")
-  public ResponseEntity<PageDto<ManagerDto>> managers(@Valid PageSettings pageSetting) {
+  public ResponseEntity<PageDto<ManagerDto>> managers(
+      @Valid PageSettings pageSetting,
+      @RequestParam(required = false) @Parameter(description = "Фильтрация по роли") String role,
+      @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")
+      Boolean status) {
+
     Sort managerSort = pageSetting.buildSort();
     Pageable managerPage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), managerSort);
-    return ResponseEntity.ok(managerService.getManagerDtoPage(managerPage));
+    return ResponseEntity.ok(managerService.getManagerDtoPage(managerPage, role, status));
   }
 
   @Operation(summary = "Сброс пароля указанного пользователя",

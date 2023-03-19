@@ -12,6 +12,8 @@ package ru.trae.backend.repository;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -67,4 +69,16 @@ public interface ManagerRepository extends PagingAndSortingRepository<Manager, L
   @Modifying
   @Query("update Manager m set m.role = ?1 where m.id = ?2")
   void updateRoleById(Role role, Long id);
+
+  @Query("select m from Manager m where m.accountNonLocked = ?1")
+  Page<Manager> findByAccountNonLocked(Pageable pageable, boolean accountNonLocked);
+
+  @Query("select m from Manager m where m.role = ?1")
+  Page<Manager> findByRole(Pageable pageable, Role role);
+
+  @Query("select m from Manager m where m.accountNonLocked = ?1 and m.role = ?2")
+  Page<Manager> findByAccountNonLockedAndRole(
+      Pageable pageable, boolean accountNonLocked, Role role);
+
+
 }
