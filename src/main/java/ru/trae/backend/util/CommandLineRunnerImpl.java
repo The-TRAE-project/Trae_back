@@ -128,18 +128,18 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    * Inserting admin data.
    */
   public void insertAdmin() {
-    if (managerRepository.existsByUsernameIgnoreCase("Admin")) {
+    if (managerRepository.existsByUsernameIgnoreCase("admin")) {
       return;
     }
 
     String encodedPass = encoder.encode("TopSec");
 
     Manager m = new Manager();
-    m.setFirstName("Admin");
-    m.setMiddleName("Admin");
-    m.setLastName("Admin");
+    m.setFirstName("admin");
+    m.setMiddleName("admin");
+    m.setLastName("admin");
     m.setPhone("+0 (000) 000 0000");
-    m.setUsername("Admin");
+    m.setUsername("admin");
     m.setPassword(encodedPass);
     m.setRole(Role.ROLE_ADMINISTRATOR);
     m.setDateOfRegister(LocalDate.now());
@@ -158,13 +158,13 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    * Inserting manager data.
    */
   public void insertManager() {
-    if (managerRepository.existsByUsernameIgnoreCase("Manager8")) {
+    if (managerRepository.existsByUsernameIgnoreCase("manager8")) {
       return;
     }
 
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
         "Мишин", "+7 (999) 111 2233",
-        "Manager8", LocalDate.parse("2022-01-10"));
+        "manager8", LocalDate.parse("2022-01-10"));
 
     if (!managerService.existsManagerByUsername(dto.username())) {
       System.out.println("=================================");
@@ -177,18 +177,18 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    * Inserting Service account data.
    */
   public void insertEmployeeServiceAccount() {
-    if (managerRepository.existsByUsernameIgnoreCase("ServiceAccount")) {
+    if (managerRepository.existsByUsernameIgnoreCase("service_account")) {
       return;
     }
 
     String encodedPass = encoder.encode("Work24x7");
 
     Manager m = new Manager();
-    m.setFirstName("ServiceAccount");
-    m.setMiddleName("For");
-    m.setLastName("Employee");
+    m.setFirstName("service account");
+    m.setMiddleName("for");
+    m.setLastName("employee");
     m.setPhone("+0 (000) 000 0000");
-    m.setUsername("ServiceAccount");
+    m.setUsername("service_account");
     m.setPassword(encodedPass);
     m.setRole(Role.ROLE_EMPLOYEE);
     m.setDateOfRegister(LocalDate.now());
@@ -249,9 +249,9 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               new NewOperationDto("Покраска", 7),
               new NewOperationDto("Покраска", 7)));
 
-      projectService.saveNewProject(dto1, "Manager8");
-      projectService.saveNewProject(dto2, "Manager8");
-      projectService.saveNewProject(dto3, "Manager8");
+      projectService.saveNewProject(dto1, "manager8");
+      projectService.saveNewProject(dto2, "manager8");
+      projectService.saveNewProject(dto3, "manager8");
     }
   }
 }

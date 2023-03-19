@@ -16,11 +16,11 @@ package ru.trae.backend.util;
  */
 public class RegExpression {
   public static final String USERNAME =
-      "^((?=\\S*?[A-Z])(?=\\S*?[a-z])(?=\\S*?[0-9._-]?).{2,14})([^._-])$";
-  //"^(?=.{3,15}$)(?![_.-])(?!.*[_.-]{2})[a-z0-9._-]+([^._-])$";
-  //password must contain 1 uppercase letters
-  //password must contain 1 lowercase letters
-  //password is 5-15 characters with no space
+      "^(?=.{3,15}$)(?![_.-])(?!.*[_.-]{2})[a-zA-Z0-9._-]+(?<![_.-])$";
+  //no _,- or . at the beginning
+  //no __ or . or . or .. or .- or _- inside
+  //no _,- or . at the end
+  //password is 3-15 characters with no space
   public static final String PASSWORD =
       "^((?=\\S*?[A-Z])(?=\\S*?[a-z])(?=\\S*?[0-9]?).{4,14})\\S$";
   public static final String FIRST_MIDDLE_LAST_NAME =
