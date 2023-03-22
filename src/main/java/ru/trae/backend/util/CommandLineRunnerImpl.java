@@ -207,7 +207,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    * Inserting project data.
    */
   public void insertProject() {
-    if (projectService.getAllProjects().size() == 0) {
+    if (projectService.getAllProjects().isEmpty()) {
       NewProjectDto dto1 = new NewProjectDto(
           345,
           "Шкаф",

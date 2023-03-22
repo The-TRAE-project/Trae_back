@@ -297,8 +297,9 @@ public class ManagerService {
    * @return A list of roles
    */
   public List<String> getRoleList() {
-    return List.of(Role.ROLE_MANAGER.value,
+    return List.of(
         Role.ROLE_ADMINISTRATOR.value,
+        Role.ROLE_MANAGER.value,
         Role.ROLE_EMPLOYEE.value);
   }
 

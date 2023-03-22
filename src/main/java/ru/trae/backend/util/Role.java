@@ -20,11 +20,10 @@ import ru.trae.backend.exceptionhandler.exception.ManagerException;
  * @author Vladimir Olennikov
  */
 public enum Role {
-  ROLE_ADMINISTRATOR("Administrator"),
-  ROLE_EMPLOYEE("Employee"),
-  ROLE_DEVELOPER("Developer"),
-  ROLE_MANAGER("Manager"),
-  ROLE_USER("User");
+  ROLE_ADMINISTRATOR("Администратор"),
+  ROLE_EMPLOYEE("Сотрудник"),
+  ROLE_DEVELOPER("Разработчик"),
+  ROLE_MANAGER("Конструктор");
 
   public final String value;
 

@@ -30,7 +30,7 @@ public class RegExpression {
       "^(\\+\\d{1,3} )\\(?\\d{2,4}\\)[ ]\\d{3}[ ]\\d{4}$";
   public static final String TOKEN =
       "^([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_=]+)\\.([a-zA-Z0-9_\\-\\+\\/=]*)";
-  public static final String ROLE = "^[A-Z][a-z]{3,49}$";
+  public static final String ROLE = "^[А-ЯA-Z][а-яa-z]{3,49}$";
   public static final String CUSTOMER = "^([А-Яа-я\\w\\d\\s]|[^w\\d\\s]){3,30}$";
   public static final String PROJECT_NAME = "^([А-Яа-я\\w\\d\\s]|[^w\\d\\s]){3,30}$";
 }
