@@ -126,12 +126,13 @@ public class ManagerController {
    * @param pageSetting page settings with parameters
    * @return {@link ResponseEntity} with {@link PageDto} of {@link ManagerDto}
    */
-  @Operation(summary = "Список всех пользователей",
+  @Operation(summary = "Список пользователей",
       description = "Доступен администратору. Возвращает список ДТО пользователей")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Список ДТО пользователей",
+      @ApiResponse(responseCode = "200", description = "Список ДТО пользователей. "
+          + "В примере указан единичный объект из списка",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = List.class))}),
+              schema = @Schema(implementation = ManagerDtoShort.class))}),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "403", description = "Доступ запрещен",
