@@ -24,6 +24,7 @@ import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
+import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerDtoShort;
@@ -142,7 +143,8 @@ public class ManagerService {
     return page;
   }
 
-  public PageDto<ManagerDtoShort> getManagerDtoPage(Pageable managerPage, String role, Boolean status) {
+  public PageDto<ManagerDtoShort> getManagerDtoPage(Pageable managerPage,
+                                                    String role, Boolean status) {
     return pageToPageDtoMapper.managerPageToPageDto(getManagerPage(managerPage, role, status));
   }
 
@@ -222,6 +224,25 @@ public class ManagerService {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
           "Не указана дата увольнения пользователя");
     }
+  }
+
+  /**
+   * Gets the ChangeRoleAndStatusResp object which contains the manager's last name, first name,
+   * role, account status, and date of dismissal (if applicable).
+   *
+   * @param managerId The id of the manager whose information is requested
+   * @return The ChangeRoleAndStatusResp object which contains the manager's last name, first name,
+   *     role, account status, and date of dismissal (if applicable)
+   */
+  public ChangeRoleAndStatusResp getChangeRoleAndStatusResp(long managerId) {
+    Manager m = getManagerById(managerId);
+
+    return new ChangeRoleAndStatusResp(
+        m.getLastName(),
+        m.getFirstName(),
+        m.getRole().value,
+        m.isAccountNonLocked(),
+        m.getDateOfDismissal() != null ? m.getDateOfDismissal() : null);
   }
 
   /**
@@ -312,9 +333,9 @@ public class ManagerService {
    *                          already has such a role.
    */
   public void changeRole(long managerId, final String newRole) {
-    Manager m = getManagerById(managerId);
+    Role currentRole = managerRepository.getRoleById(managerId);
 
-    if (m.getRole().value.equals(newRole)) {
+    if (currentRole.value.equals(newRole)) {
       throw new ManagerException(HttpStatus.CONFLICT, "The account already has such a role");
     }
 

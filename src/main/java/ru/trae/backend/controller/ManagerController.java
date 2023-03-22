@@ -38,6 +38,7 @@ import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
+import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerDtoShort;
@@ -256,9 +257,9 @@ public class ManagerController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @PostMapping("/change-role-status")
-  public ResponseEntity<HttpStatus> changeRoleAndStatus(
+  public ResponseEntity<ChangeRoleAndStatusResp> changeRoleAndStatus(
       @Valid @RequestBody ChangeRoleAndStatusReq request) {
     managerService.changeRoleAndStatus(request);
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(managerService.getChangeRoleAndStatusResp(request.managerId()));
   }
 }
