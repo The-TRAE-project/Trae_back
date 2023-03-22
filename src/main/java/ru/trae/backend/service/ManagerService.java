@@ -10,6 +10,7 @@
 
 package ru.trae.backend.service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -351,6 +352,19 @@ public class ManagerService {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
           "The role: " + newRole + " not found");
     }
+  }
+
+  /**
+   * Gets the role authority of the user.
+   *
+   * @param principal The principal of the user.
+   * @return The role authority of the user. If the user is anonymous, returns "Anonymous".
+   */
+  public String getRoleAuthUser(Principal principal) {
+    if (principal != null) {
+      return managerRepository.getRoleByUsername(principal.getName()).value;
+    }
+    return "Anonymous";
   }
 
   public boolean existsManagerByUsername(String username) {

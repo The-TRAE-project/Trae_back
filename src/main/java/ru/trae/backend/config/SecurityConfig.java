@@ -84,7 +84,11 @@ public class SecurityConfig {
         .authorizeRequests()
         .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
         .antMatchers(AUTH_WHITELIST).permitAll()
-        .antMatchers("/api/auth/logout", "/api/auth/refresh").authenticated()
+
+        .antMatchers(
+            "/api/auth/logout",
+            "/api/auth/refresh",
+            "/api/manager/role").authenticated()
 
         .antMatchers(
             "/api/manager/change-password",

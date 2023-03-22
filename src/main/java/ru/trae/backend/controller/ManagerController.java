@@ -62,6 +62,28 @@ public class ManagerController {
   private final ManagerService managerService;
 
   /**
+   * Returns role of the authorized user.
+   *
+   * @param principal Principal
+   * @return Role of the authorized user
+   */
+  @Operation(summary = "Получение роли аутентифицированного пользователя",
+      description = "Доступен аутентифицированным пользователям. "
+          + "Возвращает роль аутентифицированного пользователя")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Роль пользователя",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = String.class))}),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @GetMapping(path = "/role", produces = {"application/json; charset=UTF-8"})
+  public ResponseEntity<String> roleAuthUser(Principal principal) {
+    return ResponseEntity.ok(managerService.getRoleAuthUser(principal));
+  }
+
+  /**
    * Register a new manager.
    *
    * @param dto the data of the new manager
@@ -121,8 +143,8 @@ public class ManagerController {
   /**
    * Get manager list.
    *
-   * @param role filter by role
-   * @param status filter by status
+   * @param role        filter by role
+   * @param status      filter by status
    * @param pageSetting page settings with parameters
    * @return {@link ResponseEntity} with {@link PageDto} of {@link ManagerDto}
    */

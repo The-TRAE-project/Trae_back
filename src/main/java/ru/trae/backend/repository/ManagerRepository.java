@@ -11,7 +11,6 @@
 package ru.trae.backend.repository;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -86,6 +85,9 @@ public interface ManagerRepository extends PagingAndSortingRepository<Manager, L
 
   @Query("select m.role from Manager m where m.id = ?1")
   Role getRoleById(Long id);
+
+  @Query("select m.role from Manager m where m.username = ?1")
+  Role getRoleByUsername(String username);
 
   @Query("select m.lastName, m.firstName from Manager m where m.username =?1")
   String getLastAndFirstNameByUsername(String username);
