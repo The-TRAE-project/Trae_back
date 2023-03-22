@@ -152,9 +152,9 @@ public class ManagerController {
   }
 
   @Operation(summary = "Сброс пароля указанного пользователя",
-      description = "Доступен администратору. Возвращает логин и новый пароль пользователя")
+      description = "Доступен администратору. Возвращает фамилию, имя и новый пароль пользователя")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Логин и пароль пользователя",
+      @ApiResponse(responseCode = "200", description = "Фамилия, имя и новый пароль пользователя",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ResetPassResp.class))}),
       @ApiResponse(responseCode = "400", description = "Неправильный формат логина(юзернейма)",
