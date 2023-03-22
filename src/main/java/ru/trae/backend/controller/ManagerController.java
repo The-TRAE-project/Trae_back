@@ -43,6 +43,7 @@ import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerDtoShort;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
+import ru.trae.backend.dto.manager.ResetPassResp;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.service.ManagerService;
 import ru.trae.backend.util.PageSettings;
@@ -118,8 +119,10 @@ public class ManagerController {
   }
 
   /**
-   * Get all managers.
+   * Get manager list.
    *
+   * @param role filter by role
+   * @param status filter by status
    * @param pageSetting page settings with parameters
    * @return {@link ResponseEntity} with {@link PageDto} of {@link ManagerDto}
    */
@@ -153,7 +156,7 @@ public class ManagerController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Логин и пароль пользователя",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = Credentials.class))}),
+              schema = @Schema(implementation = ResetPassResp.class))}),
       @ApiResponse(responseCode = "400", description = "Неправильный формат логина(юзернейма)",
           content = @Content),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
@@ -165,7 +168,7 @@ public class ManagerController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @PostMapping("/reset-password")
-  public ResponseEntity<Credentials> resetPassword(
+  public ResponseEntity<ResetPassResp> resetPassword(
       @Valid @RequestParam(name = "username")
       @Pattern(regexp = RegExpression.USERNAME, message = "Неправильный формат логина(юзернейма)")
       String username) {
@@ -240,8 +243,10 @@ public class ManagerController {
       description =
           "Доступен администратору. Изменяет роль и статус учетной записи выбранного пользователя")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ничего не возвращает, только статус",
-          content = @Content),
+      @ApiResponse(responseCode = "200", description = "Возвращает ДТО с фамилией, именем, "
+          + "ролью, статусом, датой увольнения (если ее нет, то NULL)",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ChangeRoleAndStatusResp.class))}),
       @ApiResponse(responseCode = "400", description = "Неправильный формат новой роли,"
           + " неправильный формат даты увольнения",
           content = @Content),

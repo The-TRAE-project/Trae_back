@@ -29,6 +29,7 @@ import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerDtoShort;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
+import ru.trae.backend.dto.manager.ResetPassResp;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.entity.user.Manager;
@@ -162,7 +163,7 @@ public class ManagerService {
    *     password.
    */
   @Transactional
-  public Credentials resetPassword(String username) {
+  public ResetPassResp resetPassword(String username) {
     checkExistsUsername(username);
     checkManagerRole(username, Role.ROLE_ADMINISTRATOR);
 
@@ -179,7 +180,10 @@ public class ManagerService {
 
     jwtUtil.deletePayloadRandomPieces(username);
 
-    return new Credentials(username, temporaryRandomPass);
+    String lastAndFirstName = managerRepository.getLastAndFirstNameByUsername(username);
+    return new ResetPassResp(
+        lastAndFirstName.substring(0, lastAndFirstName.indexOf(",")),
+        lastAndFirstName.substring(lastAndFirstName.indexOf(",") + 1), temporaryRandomPass);
   }
 
   /**
