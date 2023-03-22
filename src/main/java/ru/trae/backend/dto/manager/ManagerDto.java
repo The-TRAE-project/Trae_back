@@ -12,7 +12,8 @@ public record ManagerDto(
     String lastName,
     String phone,
     String role,
-    String dateOfRegister,
+    String username,
+    boolean status,
     String dateOfEmployment,
     String dateOfDismissal
 ) {

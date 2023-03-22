@@ -40,6 +40,7 @@ import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
+import ru.trae.backend.dto.manager.ManagerDtoShort;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.service.ManagerService;
@@ -134,7 +135,7 @@ public class ManagerController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/managers")
-  public ResponseEntity<PageDto<ManagerDto>> managers(
+  public ResponseEntity<PageDto<ManagerDtoShort>> managers(
       @Valid PageSettings pageSetting,
       @RequestParam(required = false) @Parameter(description = "Фильтрация по роли") String role,
       @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")

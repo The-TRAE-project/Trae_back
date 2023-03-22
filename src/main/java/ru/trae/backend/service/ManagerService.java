@@ -26,6 +26,7 @@ import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
+import ru.trae.backend.dto.manager.ManagerDtoShort;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
@@ -141,7 +142,7 @@ public class ManagerService {
     return page;
   }
 
-  public PageDto<ManagerDto> getManagerDtoPage(Pageable managerPage, String role, Boolean status) {
+  public PageDto<ManagerDtoShort> getManagerDtoPage(Pageable managerPage, String role, Boolean status) {
     return pageToPageDtoMapper.managerPageToPageDto(getManagerPage(managerPage, role, status));
   }
 
