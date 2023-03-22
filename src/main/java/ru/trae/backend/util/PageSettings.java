@@ -30,7 +30,7 @@ public class PageSettings {
   @Min(value = 1, message = "Количество элементов на странице не может быть меньше 1")
   private int elementPerPage = 10;
   @ApiParam(value = "Направление сортировки (asc или dsc)", example = "asc или dsc")
-  @Pattern(regexp = "[adsc]{3}", message = "Направление сортировки указывается asc либо dsc")
+  @Pattern(regexp = "(asc|dsc)", message = "Направление сортировки указывается asc либо dsc")
   private String direction = "dsc";
   @ApiParam(value = "Сортировка по названию столбца", example = "id, username, firstName")
   @Pattern(regexp = "[a-z][a-zA-Z0-9]{1,200}", message =
@@ -53,5 +53,17 @@ public class PageSettings {
       case "asc" -> Sort.by(key).ascending();
       default -> Sort.by(key).descending();
     };
+  }
+
+  public Sort buildManagerSort() {
+    Sort sort;
+    key = "lastName";
+    String nextKey = "firstName";
+    if (direction.equals("asc")) {
+      sort = Sort.by(key).ascending().and(Sort.by(nextKey).ascending());
+    } else {
+      sort = Sort.by(key).descending().and(Sort.by(nextKey).descending());
+    }
+    return sort;
   }
 }
