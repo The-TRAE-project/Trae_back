@@ -61,10 +61,11 @@ class JwtUtilTest {
 
   @Test
   void generateAccessTokenTest() {
+    //given
     String username = "test_user";
-
     String token = jwtUtil.generateAccessToken(username);
 
+    //then
     assertNotNull(token);
     assertTrue(token.startsWith("eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9"));
     assertTrue(token.contains("."));
@@ -72,10 +73,13 @@ class JwtUtilTest {
 
   @Test
   void generateRefreshTokenTest_whenUsernameExists() {
+    //given
     final String username = "username";
 
+    //when
     when(payloadRandomPieceRepository.existsByUsernameIgnoreCase(username)).thenReturn(true);
 
+    //then
     final String refreshToken = jwtUtil.generateRefreshToken(username);
     assertNotNull(refreshToken);
     final DecodedJWT decodedJWT = JWT.decode(refreshToken);
@@ -87,10 +91,13 @@ class JwtUtilTest {
 
   @Test
   void generateRefreshTokenTest_whenUsernameNotExists() {
+    //given
     final String username = "username";
 
+    //when
     when(payloadRandomPieceRepository.existsByUsernameIgnoreCase(username)).thenReturn(false);
 
+    //then
     final String refreshToken = jwtUtil.generateRefreshToken(username);
     assertNotNull(refreshToken);
     final DecodedJWT decodedJWT = JWT.decode(refreshToken);
@@ -102,10 +109,13 @@ class JwtUtilTest {
 
   @Test
   void validateAccessTokenAndRetrieveSubjectTest() {
+    //given
     String token = createToken();
 
+    //when
     String subject = jwtUtil.validateAccessTokenAndRetrieveSubject(token);
 
+    //then
     assertEquals("username", subject);
   }
 
@@ -119,28 +129,35 @@ class JwtUtilTest {
 
   @Test
   void validateRefreshTokenAndRetrieveSubject_whenUsernameInDatabase_shouldReturnSubject() {
+    //given
     String username = "username";
     String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJpc3MiOiJUcmFlIHByb2plY3QiLCJleHAiOjE2Nzk2NTUyODEsIlVVSUQiOiI3NmMwZWE3ZC1iMmRjLTRjMzItYWNkYy0yNjcyNGMxZWJiZGYiLCJ1c2VybmFtZSI6InVzZXJuYW1lIn0.r369T9sFyaJo-dbrzD6DY0U9Y1fcXTCJ7vqf6L490-8";
-
     PayloadRandomPiece payloadRandomPiece = new PayloadRandomPiece();
     payloadRandomPiece.setUsername(username);
     payloadRandomPiece.setUuid("76c0ea7d-b2dc-4c32-acdc-26724c1ebbdf");
+
+    //when
     when(payloadRandomPieceRepository
         .findByUsernameIgnoreCase(anyString()))
         .thenReturn(Optional.of(payloadRandomPiece));
 
     String result = jwtUtil.validateRefreshTokenAndRetrieveSubject(token);
 
+    //then
     assertThat(result).isEqualTo(username);
   }
 
   @Test
   void validateRefreshTokenAndRetrieveSubject_whenUsernameNotInDatabase_shouldThrowException() {
+    //given
     String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJpc3MiOiJUcmFlIHByb2plY3QiLCJleHAiOjE2Nzk2NTUyODEsIlVVSUQiOiI3NmMwZWE3ZC1iMmRjLTRjMzItYWNkYy0yNjcyNGMxZWJiZGYiLCJ1c2VybmFtZSI6InVzZXJuYW1lIn0.r369T9sFyaJo-dbrzD6DY0U9Y1fcXTCJ7vqf6L490-8";
+
+    //when
     when(payloadRandomPieceRepository
         .findByUsernameIgnoreCase(anyString()))
         .thenReturn(Optional.empty());
 
+    //then
     assertThatThrownBy(() -> jwtUtil.validateRefreshTokenAndRetrieveSubject(token))
         .isInstanceOf(PayloadPieceException.class)
         .hasMessage("Payload piece not found!")
@@ -149,16 +166,19 @@ class JwtUtilTest {
 
   @Test
   void validateRefreshTokenAndRetrieveSubject_whenUuidNotMatching_shouldThrowException() {
+    //given
     String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJpc3MiOiJUcmFlIHByb2plY3QiLCJleHAiOjE2Nzk2NTUyODEsIlVVSUQiOiI3NmMwZWE3ZC1iMmRjLTRjMzItYWNkYy0yNjcyNGMxZWJiZGYiLCJ1c2VybmFtZSI6InVzZXJuYW1lIn0.r369T9sFyaJo-dbrzD6DY0U9Y1fcXTCJ7vqf6L490-8";
     String username = "username";
     PayloadRandomPiece payloadRandomPiece = new PayloadRandomPiece();
     payloadRandomPiece.setUsername(username);
     payloadRandomPiece.setUuid("3b2633bf-2293-42dc-aa38-d5eeb63d7157");
 
+    //when
     when(payloadRandomPieceRepository
         .findByUsernameIgnoreCase(anyString()))
         .thenReturn(Optional.of(payloadRandomPiece));
 
+    //then
     assertThatThrownBy(() -> jwtUtil.validateRefreshTokenAndRetrieveSubject(token))
         .isInstanceOf(CustomJwtVerificationException.class)
         .hasMessage("Invalid token UUID")
@@ -167,23 +187,29 @@ class JwtUtilTest {
 
   @Test
   void deletePayloadRandomPieces() {
+    //given
     String username = "test";
 
+    //when
     when(payloadRandomPieceRepository.findByUsernameIgnoreCase(username)).thenReturn(Optional.of(new PayloadRandomPiece()));
 
     jwtUtil.deletePayloadRandomPieces(username);
 
+    //then
     assertFalse(payloadRandomPieceRepository.findByUsernameIgnoreCase(username).isEmpty());
   }
 
   @Test
   void deletePayloadRandomPieces_NotFound() {
+    //given
     String username = "test";
 
+    //when
     when(payloadRandomPieceRepository.findByUsernameIgnoreCase(username)).thenReturn(Optional.empty());
 
     jwtUtil.deletePayloadRandomPieces(username);
 
+    //then
     assertTrue(payloadRandomPieceRepository.findByUsernameIgnoreCase(username).isEmpty());
   }
 }

@@ -56,41 +56,52 @@ class ManagerControllerTest {
 
   @Test
   void roleAuthUserTest() {
+    //when
     when(managerService.getRoleAuthUser(principal)).thenReturn("ADMIN");
 
     ResponseEntity<String> responseEntity = managerController.roleAuthUser(principal);
 
+    //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(responseEntity.getBody()).isEqualTo("ADMIN");
   }
 
   @Test
   void rolesTest() {
+    //given
     List<String> expectedRoles = List.of("USER", "ADMIN");
+
+    //when
     when(managerService.getRoleList()).thenReturn(expectedRoles);
 
     ResponseEntity<List<String>> responseEntity = managerController.roles();
 
+    //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(responseEntity.getBody()).isEqualTo(expectedRoles);
   }
 
   @Test
   void registerTest() {
+    //given
     ManagerRegisterDto dto = new ManagerRegisterDto(
         "name", null, "last name",
         "+7 (000) 000 0000", "username1", LocalDate.now());
     Credentials credentials = new Credentials("username1", "QwertY123");
+
+    //when
     when(managerService.saveNewManager(dto)).thenReturn(credentials);
 
     ResponseEntity<Credentials> responseEntity = managerController.register(dto);
 
+    //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     assertThat(responseEntity.getBody()).isEqualTo(credentials);
   }
 
   @Test
   void managerTest() {
+    //given
     long managerId = 1L;
     Manager manager = mock(Manager.class);
     when(managerService.getManagerById(managerId)).thenReturn(manager);
@@ -99,12 +110,14 @@ class ManagerControllerTest {
 
     ResponseEntity<ManagerDto> managerResponse = managerController.manager(managerId);
 
+    //then
     assertThat(managerResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(managerResponse.getBody()).isEqualTo(managerDto);
   }
 
   @Test
   void managersTest() {
+    //given
     PageSettings pageSettings = new PageSettings();
     pageSettings.setPage(1);
     pageSettings.setElementPerPage(2);
@@ -112,12 +125,15 @@ class ManagerControllerTest {
     ManagerDtoShort managerDtoShort = new ManagerDtoShort(1L, "managerLastName",
         "managerFirstName");
     PageDto<ManagerDtoShort> pageDto = new PageDto<>(Collections.singletonList(managerDtoShort), 1L);
+
+    //when
     when(managerService.getManagerDtoPage(Mockito.any(), Mockito.anyString(), Mockito.anyBoolean()))
         .thenReturn(pageDto);
 
     ResponseEntity<PageDto<ManagerDtoShort>> responseEntity =
         managerController.managers(pageSettings, "Конструктор", true);
 
+    //then
     assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     assertEquals(1L, Objects.requireNonNull(responseEntity.getBody()).totalElements());
     assertEquals(1L, responseEntity.getBody().content().get(0).managerId());
@@ -126,30 +142,38 @@ class ManagerControllerTest {
 
   @Test
   void resetPasswordWhenUsernameIsValidTest() {
+    //given
     String username = "username";
     ResetPassResp expectedResponseBody = new ResetPassResp("lastName", "firstName", "newPassword");
+
+    //when
     when(managerService.resetPassword(username)).thenReturn(expectedResponseBody);
 
     ResponseEntity<ResetPassResp> actual = managerController.resetPassword(username);
 
+    //then
     assertEquals(HttpStatus.OK, actual.getStatusCode());
     assertEquals(expectedResponseBody, actual.getBody());
   }
 
   @Test
   void resetPasswordWhenUsernameIsInvalidTest() {
+    //given
     ResponseEntity<ResetPassResp> actual = ResponseEntity.badRequest().build();
 
+    //then
     assertEquals(HttpStatus.BAD_REQUEST, actual.getStatusCode());
   }
 
   @Test
   void changePasswordTest() {
+    //given
     ChangePassReq request = new ChangePassReq("test-password", "test-password1");
     Principal principal = () -> "test-user";
 
     ResponseEntity<HttpStatus> response = managerController.changePassword(request, principal);
 
+    //then
     verify(managerService, times(1))
         .changePassword(request, principal.getName());
     assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -157,13 +181,17 @@ class ManagerControllerTest {
 
   @Test
   void updateDataTest() {
+    //given
     ChangingManagerDataReq changeManagerData =
         new ChangingManagerDataReq("firstName", "middleName", "lastName", "phone");
     Principal principal = Mockito.mock(Principal.class);
+
+    //when
     when(principal.getName()).thenReturn("userName");
 
     managerController.updateData(changeManagerData, principal);
 
+    //then
     assertDoesNotThrow(
         () ->
             verify(managerService, times(1))
@@ -172,16 +200,19 @@ class ManagerControllerTest {
 
   @Test
   void changeRoleAndStatusTest() {
+    //given
     ChangeRoleAndStatusReq request =
         new ChangeRoleAndStatusReq(1L, "role", true, LocalDate.now());
     ChangeRoleAndStatusResp response =
         new ChangeRoleAndStatusResp("lastName", "firstName", "role", true, LocalDate.now());
 
+    //when
     when(managerService.getChangeRoleAndStatusResp(1L)).thenReturn(response);
 
     ResponseEntity<ChangeRoleAndStatusResp> result =
         managerController.changeRoleAndStatus(request);
 
+    //then
     verify(managerService).changeRoleAndStatus(request);
     assertEquals(HttpStatus.OK, result.getStatusCode());
     assertEquals(response, result.getBody());

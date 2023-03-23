@@ -32,50 +32,69 @@ class AuthControllerTests {
   private static final String PASSWORD = "pass";
   private static final String ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9";
   private static final String REFRESH_TOKEN = "dXNlcjpwYXNz";
-
   @Mock
-  private AuthService authService;
-
+  AuthService authService;
   @InjectMocks
-  private AuthController controller;
+  AuthController controller;
 
   @Test
   void loginTest() {
+    //given
     Credentials credentials = new Credentials(USERNAME, PASSWORD);
     JwtResponse jwtResponse = new JwtResponse(ACCESS_TOKEN, REFRESH_TOKEN);
 
+    //when
     when(authService.login(credentials)).thenReturn(jwtResponse);
+
     ResponseEntity<JwtResponse> response = controller.login(credentials);
+
+    //then
     assertEquals("result: ", response.getStatusCode(), HttpStatus.OK);
     assertEquals("result: ", response.getBody(), jwtResponse);
   }
 
   @Test
   void logoutTest() {
+    //given
     Principal principal = () -> USERNAME;
+
+    //when
     doNothing().when(authService).logout(principal);
+
     ResponseEntity<HttpStatus> response = controller.logout(principal);
+
+    //then
     assertEquals("result: ", response.getStatusCode(), HttpStatus.OK);
   }
 
   @Test
   void newAccessTokenTest() {
+    //given
     RefreshJwtRequest request = new RefreshJwtRequest(REFRESH_TOKEN);
     JwtResponse jwtResponse = new JwtResponse(ACCESS_TOKEN, REFRESH_TOKEN);
 
+    //when
     when(authService.getAccessToken(REFRESH_TOKEN)).thenReturn(jwtResponse);
+
     ResponseEntity<JwtResponse> response = controller.newAccessToken(request);
+
+    //then
     assertEquals("result: ", response.getStatusCode(), HttpStatus.OK);
     assertEquals("result: ", response.getBody(), jwtResponse);
   }
 
   @Test
   void newRefreshTokenTest() {
+    //given
     RefreshJwtRequest request = new RefreshJwtRequest(REFRESH_TOKEN);
     JwtResponse jwtResponse = new JwtResponse(ACCESS_TOKEN, REFRESH_TOKEN);
 
+    //when
     when(authService.getRefreshToken(REFRESH_TOKEN)).thenReturn(jwtResponse);
+
     ResponseEntity<JwtResponse> response = controller.newRefreshToken(request);
+
+    //then
     assertEquals("result: ", response.getStatusCode(), HttpStatus.OK);
     assertEquals("result: ", response.getBody(), jwtResponse);
   }

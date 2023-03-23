@@ -23,6 +23,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -64,11 +66,31 @@ class JwtFilterTest {
         userDetails.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(authToken);
 
+    //when
     when(request.getHeader("Authorization")).thenReturn(authHeader);
     when(jwtUtil.validateAccessTokenAndRetrieveSubject(jwt)).thenReturn(username);
     when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(userDetails);
 
+    jwtFilter.doFilterInternal(request, response, filterChain);
+
+    //then
+    verify(jwtUtil, times(1)).validateAccessTokenAndRetrieveSubject(jwt);
+    verify(customUserDetailsService, times(1)).loadUserByUsername(username);
+    verify(filterChain, times(1)).doFilter(request, response);
+  }
+
+  @Test
+  void shouldDoFilterInternalWithEmptySecurityContextHolder() throws ServletException, IOException {
+    //given
+    String authHeader = "Bearer TestToken";
+    String username = "username";
+    String jwt = "TestToken";
+
     //when
+    when(request.getHeader("Authorization")).thenReturn(authHeader);
+    when(jwtUtil.validateAccessTokenAndRetrieveSubject(jwt)).thenReturn(username);
+    when(customUserDetailsService.loadUserByUsername(anyString())).thenReturn(userDetails);
+
     jwtFilter.doFilterInternal(request, response, filterChain);
 
     //then
@@ -81,10 +103,11 @@ class JwtFilterTest {
   void shouldThrowErrorWhenTokenIsInvalid() throws ServletException, IOException {
     // given
     JWTVerificationException invalidToken = new JWTVerificationException("Invalid token");
+
+    // when
     when(request.getHeader(anyString())).thenReturn("Bearer invalidToken");
     when(jwtUtil.validateAccessTokenAndRetrieveSubject(anyString())).thenThrow(invalidToken);
 
-    // when
     jwtFilter.doFilterInternal(request, response, filterChain);
 
     // then
@@ -96,9 +119,9 @@ class JwtFilterTest {
   void shouldThrowErrorWhenTokenIsNull() throws ServletException, IOException {
     // given
     String authHeader = "Bearer ";
-    when(request.getHeader("Authorization")).thenReturn(authHeader);
 
     // when
+    when(request.getHeader("Authorization")).thenReturn(authHeader);
     jwtFilter.doFilterInternal(request, response, filterChain);
 
     // then
@@ -106,14 +129,21 @@ class JwtFilterTest {
         "Invalid JWT Token in Bearer Header");
   }
 
-  @Test
-  void shouldThrowErrorWhenAuthHeaderIsNullOrBlank() throws ServletException, IOException {
-    // given
-    when(request.getHeader("Authorization")).thenReturn(null);
-    when(request.getHeader("Authorization")).thenReturn("");
-    when(request.getHeader("Authorization")).thenReturn("Not bearer token");
-
+  @ParameterizedTest
+  @ValueSource(strings = {"", "Not bearer token"})
+  void shouldThrowErrorWhenAuthHeaderIsBlank(String header) throws ServletException, IOException {
     // when
+    when(request.getHeader("Authorization")).thenReturn(header);
+    jwtFilter.doFilterInternal(request, response, filterChain);
+
+    // then
+    verify(filterChain, times(1)).doFilter(request, response);
+  }
+
+  @Test
+  void shouldThrowErrorWhenAuthHeaderIsNull() throws ServletException, IOException {
+    // when
+    when(request.getHeader("Authorization")).thenReturn(null);
     jwtFilter.doFilterInternal(request, response, filterChain);
 
     // then
