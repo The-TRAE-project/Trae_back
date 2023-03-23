@@ -55,6 +55,11 @@ public class PageSettings {
     };
   }
 
+  /**
+   * This method builds a sort for a manager object.
+   *
+   * @return The sort for the manager object
+   */
   public Sort buildManagerSort() {
     Sort sort;
     key = "lastName";
