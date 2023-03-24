@@ -94,7 +94,7 @@ public class AuthController {
     return ResponseEntity.ok(token);
   }
 
-  @Operation(summary = "Получение акесесс и рефреш токена",
+  @Operation(summary = "Получение аксесс и рефреш токена",
       description = "Доступен аутентифицированным пользователям. "
           + "Возвращает аксесс и рефреш токены в обмен на рефреш токен")
   @ApiResponses(value = {

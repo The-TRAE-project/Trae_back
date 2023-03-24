@@ -65,6 +65,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         new NewTypeWorkDto("Фрезеровка"),
         new NewTypeWorkDto("Склейка"),
         new NewTypeWorkDto("Сборка"),
+        new NewTypeWorkDto("Подготовка к покраске"),
         new NewTypeWorkDto("Шлифовка/покраска"),
         new NewTypeWorkDto("Упаковка"),
         new NewTypeWorkDto("Отгрузка"));
