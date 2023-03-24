@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.type.ChangeNameAndActiveReq;
 import ru.trae.backend.dto.type.NewTypeWorkDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.service.TypeWorkService;
@@ -56,9 +57,23 @@ public class TypeWorkController {
    * @return {@link ResponseEntity} with status code <b>201</b> (Created)
    */
   @PostMapping("/new")
-  public ResponseEntity<HttpStatus> typeWorkPersist(@Valid @RequestBody NewTypeWorkDto dto) {
+  public ResponseEntity<TypeWorkDto> typeWorkPersist(@Valid @RequestBody NewTypeWorkDto dto) {
     typeWorkService.checkAvailableByName(dto.name());
-    typeWorkService.saveNewTypeWork(dto);
-    return new ResponseEntity<>(HttpStatus.CREATED);
+
+    return new ResponseEntity<>(typeWorkService.saveNewTypeWork(dto), HttpStatus.CREATED);
+  }
+
+  /**
+   * This API is used to change the name and active status of a specified type of work.
+   *
+   * @param request A request with the type of work id, new name and active status
+   * @return The type of work corresponding to the given id
+   */
+  @PostMapping("/change-name-active")
+  public ResponseEntity<TypeWorkDto> typeWorkChange(
+      @Valid @RequestBody ChangeNameAndActiveReq request) {
+    typeWorkService.changeNameAndActive(request);
+
+    return ResponseEntity.ok(typeWorkService.getTypeWorkDtoById(request.typeWorkId()));
   }
 }

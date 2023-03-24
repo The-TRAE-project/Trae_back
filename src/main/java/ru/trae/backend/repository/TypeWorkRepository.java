@@ -12,7 +12,10 @@ package ru.trae.backend.repository;
 
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.entity.TypeWork;
 
 /**
@@ -26,4 +29,19 @@ public interface TypeWorkRepository extends JpaRepository<TypeWork, Long> {
 
   Optional<TypeWork> findByName(String name);
 
+  @Transactional
+  @Modifying
+  @Query("update TypeWork t set t.name = ?1 where t.id = ?2")
+  void updateNameById(String name, Long id);
+
+  @Query("select tw.name from TypeWork tw where tw.id = ?1")
+  String getTypeWorkNameById(long typeWorkId);
+
+  @Transactional
+  @Modifying
+  @Query("update TypeWork t set t.isActive = ?1 where t.id = ?2")
+  void updateIsActiveById(boolean isActive, Long id);
+
+  @Query("select tw.isActive from TypeWork tw where tw.id = ?1")
+  boolean getTypeWorkActiveById(long typeWorkId);
 }

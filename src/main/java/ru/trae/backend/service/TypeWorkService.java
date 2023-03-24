@@ -14,6 +14,9 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.trae.backend.dto.mapper.TypeWorkDtoMapper;
+import ru.trae.backend.dto.type.ChangeNameAndActiveReq;
 import ru.trae.backend.dto.type.NewTypeWorkDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.entity.TypeWork;
@@ -29,6 +32,7 @@ import ru.trae.backend.repository.TypeWorkRepository;
 @RequiredArgsConstructor
 public class TypeWorkService {
   private final TypeWorkRepository typeWorkRepository;
+  private final TypeWorkDtoMapper typeWorkDtoMapper;
 
   /**
    * Saves a new TypeWork entity.
@@ -36,12 +40,12 @@ public class TypeWorkService {
    * @param dto the NewTypeWorkDto to save
    * @return the saved TypeWork entity
    */
-  public TypeWork saveNewTypeWork(NewTypeWorkDto dto) {
+  public TypeWorkDto saveNewTypeWork(NewTypeWorkDto dto) {
     TypeWork tw = new TypeWork();
     tw.setName(dto.name());
     tw.setActive(true);
 
-    return typeWorkRepository.save(tw);
+    return typeWorkDtoMapper.apply(typeWorkRepository.save(tw));
   }
 
   /**
@@ -55,6 +59,71 @@ public class TypeWorkService {
         () -> new TypeWorkException(HttpStatus.NOT_FOUND,
             "Type work with ID: " + id + " not found")
     );
+  }
+
+  public TypeWorkDto getTypeWorkDtoById(long typeWorkId) {
+    return typeWorkDtoMapper.apply(getTypeWorkById(typeWorkId));
+  }
+
+  /**
+   * This method changes type work name or active using request.
+   *
+   * @param request The ChangeNameAndActiveReq request
+   * @throws TypeWorkException if the newName or isActive is null
+   *                           or if type work with ID not found
+   */
+  @Transactional
+  public void changeNameAndActive(ChangeNameAndActiveReq request) {
+    if (request.newName() == null && request.isActive() == null) {
+      throw new TypeWorkException(HttpStatus.BAD_REQUEST,
+          "Не указаны доступность типа работы или новое название");
+    }
+    if (typeWorkRepository.existsById(request.typeWorkId())) {
+      throw new TypeWorkException(HttpStatus.NOT_FOUND,
+          "Type work with ID: " + request.typeWorkId() + " not found");
+    }
+
+    if (request.newName() != null) {
+      changeTypeWorkName(request.newName(), request.typeWorkId());
+    }
+
+    if (request.isActive() != null) {
+      changeTypeWorkActive(request.isActive(), request.typeWorkId());
+    }
+  }
+
+  /**
+   * Change type work active.
+   *
+   * @param newActive  the new active
+   * @param typeWorkId the type work id
+   */
+  private void changeTypeWorkActive(boolean newActive, long typeWorkId) {
+    boolean currentActive = typeWorkRepository.getTypeWorkActiveById(typeWorkId);
+    if (currentActive == newActive) {
+      throw new TypeWorkException(HttpStatus.CONFLICT,
+          "This type work already have active: " + currentActive);
+    }
+
+    typeWorkRepository.updateIsActiveById(newActive, typeWorkId);
+  }
+
+  /**
+   * Change type work name.
+   *
+   * @param newName    the new name
+   * @param typeWorkId the type work id
+   */
+  public void changeTypeWorkName(String newName, long typeWorkId) {
+    checkAvailableByName(newName);
+
+    String currentName = typeWorkRepository.getTypeWorkNameById(typeWorkId);
+    if (currentName.equals(newName.trim())) {
+      throw new TypeWorkException(HttpStatus.CONFLICT,
+          "This type work already have name: " + currentName);
+    }
+
+    typeWorkRepository.updateNameById(newName.trim(), typeWorkId);
   }
 
   /**
@@ -78,7 +147,7 @@ public class TypeWorkService {
   public List<TypeWorkDto> getTypes() {
     return typeWorkRepository.findAll()
         .stream()
-        .map(t -> new TypeWorkDto(t.getId(), t.getName(), t.isActive()))
+        .map(typeWorkDtoMapper)
         .toList();
   }
 
@@ -89,7 +158,7 @@ public class TypeWorkService {
    * @return true if the TypeWork entity exists, false otherwise
    */
   public boolean existsTypeByName(String name) {
-    return typeWorkRepository.existsByNameIgnoreCase(name);
+    return typeWorkRepository.existsByNameIgnoreCase(name.trim());
   }
 
   /**
