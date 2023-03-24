@@ -78,7 +78,7 @@ public class TypeWorkService {
       throw new TypeWorkException(HttpStatus.BAD_REQUEST,
           "Не указаны доступность типа работы или новое название");
     }
-    if (typeWorkRepository.existsById(request.typeWorkId())) {
+    if (!typeWorkRepository.existsById(request.typeWorkId())) {
       throw new TypeWorkException(HttpStatus.NOT_FOUND,
           "Type work with ID: " + request.typeWorkId() + " not found");
     }
