@@ -44,6 +44,8 @@ public class TypeWork {
   @Size(min = 2, max = 100)
   @Column(name = "name", unique = true, nullable = false, columnDefinition = "varchar(100)")
   private String name;
+  @Column(name = "is_active", nullable = false)
+  private boolean isActive;
   @ToString.Exclude
   @OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)
   private List<Operation> operations = new ArrayList<>();

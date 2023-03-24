@@ -39,6 +39,7 @@ public class TypeWorkService {
   public TypeWork saveNewTypeWork(NewTypeWorkDto dto) {
     TypeWork tw = new TypeWork();
     tw.setName(dto.name());
+    tw.setActive(true);
 
     return typeWorkRepository.save(tw);
   }
@@ -77,7 +78,7 @@ public class TypeWorkService {
   public List<TypeWorkDto> getTypes() {
     return typeWorkRepository.findAll()
         .stream()
-        .map(t -> new TypeWorkDto(t.getId(), t.getName()))
+        .map(t -> new TypeWorkDto(t.getId(), t.getName(), t.isActive()))
         .toList();
   }
 
