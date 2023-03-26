@@ -131,17 +131,18 @@ class JwtUtilTest {
   void validateRefreshTokenAndRetrieveSubject_whenUsernameInDatabase_shouldReturnSubject() {
     //given
     String username = "username";
-    String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJpc3MiOiJUcmFlIHByb2plY3QiLCJleHAiOjE2Nzk2NTUyODEsIlVVSUQiOiI3NmMwZWE3ZC1iMmRjLTRjMzItYWNkYy0yNjcyNGMxZWJiZGYiLCJ1c2VybmFtZSI6InVzZXJuYW1lIn0.r369T9sFyaJo-dbrzD6DY0U9Y1fcXTCJ7vqf6L490-8";
+    final String refreshToken = jwtUtil.generateRefreshToken(username);
+    final DecodedJWT decodedJWT = JWT.decode(refreshToken);
     PayloadRandomPiece payloadRandomPiece = new PayloadRandomPiece();
     payloadRandomPiece.setUsername(username);
-    payloadRandomPiece.setUuid("76c0ea7d-b2dc-4c32-acdc-26724c1ebbdf");
+    payloadRandomPiece.setUuid(decodedJWT.getClaim("UUID").asString());
 
     //when
     when(payloadRandomPieceRepository
         .findByUsernameIgnoreCase(anyString()))
         .thenReturn(Optional.of(payloadRandomPiece));
 
-    String result = jwtUtil.validateRefreshTokenAndRetrieveSubject(token);
+    String result = jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken);
 
     //then
     assertThat(result).isEqualTo(username);
@@ -150,7 +151,8 @@ class JwtUtilTest {
   @Test
   void validateRefreshTokenAndRetrieveSubject_whenUsernameNotInDatabase_shouldThrowException() {
     //given
-    String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJpc3MiOiJUcmFlIHByb2plY3QiLCJleHAiOjE2Nzk2NTUyODEsIlVVSUQiOiI3NmMwZWE3ZC1iMmRjLTRjMzItYWNkYy0yNjcyNGMxZWJiZGYiLCJ1c2VybmFtZSI6InVzZXJuYW1lIn0.r369T9sFyaJo-dbrzD6DY0U9Y1fcXTCJ7vqf6L490-8";
+    final String username = "username";
+    final String refreshToken = jwtUtil.generateRefreshToken(username);
 
     //when
     when(payloadRandomPieceRepository
@@ -158,7 +160,7 @@ class JwtUtilTest {
         .thenReturn(Optional.empty());
 
     //then
-    assertThatThrownBy(() -> jwtUtil.validateRefreshTokenAndRetrieveSubject(token))
+    assertThatThrownBy(() -> jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken))
         .isInstanceOf(PayloadPieceException.class)
         .hasMessage("Payload piece not found!")
         .hasFieldOrPropertyWithValue("status", HttpStatus.NOT_FOUND);
@@ -167,8 +169,9 @@ class JwtUtilTest {
   @Test
   void validateRefreshTokenAndRetrieveSubject_whenUuidNotMatching_shouldThrowException() {
     //given
-    String token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJVc2VyIERldGFpbHMiLCJpc3MiOiJUcmFlIHByb2plY3QiLCJleHAiOjE2Nzk2NTUyODEsIlVVSUQiOiI3NmMwZWE3ZC1iMmRjLTRjMzItYWNkYy0yNjcyNGMxZWJiZGYiLCJ1c2VybmFtZSI6InVzZXJuYW1lIn0.r369T9sFyaJo-dbrzD6DY0U9Y1fcXTCJ7vqf6L490-8";
     String username = "username";
+    final String refreshToken = jwtUtil.generateRefreshToken(username);
+
     PayloadRandomPiece payloadRandomPiece = new PayloadRandomPiece();
     payloadRandomPiece.setUsername(username);
     payloadRandomPiece.setUuid("3b2633bf-2293-42dc-aa38-d5eeb63d7157");
@@ -179,7 +182,7 @@ class JwtUtilTest {
         .thenReturn(Optional.of(payloadRandomPiece));
 
     //then
-    assertThatThrownBy(() -> jwtUtil.validateRefreshTokenAndRetrieveSubject(token))
+    assertThatThrownBy(() -> jwtUtil.validateRefreshTokenAndRetrieveSubject(refreshToken))
         .isInstanceOf(CustomJwtVerificationException.class)
         .hasMessage("Invalid token UUID")
         .hasFieldOrPropertyWithValue("status", HttpStatus.BAD_REQUEST);
