@@ -240,7 +240,7 @@ public class ManagerController {
     return ResponseEntity.ok().build();
   }
 
-  @Operation(summary = "Список всех ролей",
+  @Operation(summary = "Список ролей",
       description = "Доступен администратору. Возвращает список ролей")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Список ролей",
