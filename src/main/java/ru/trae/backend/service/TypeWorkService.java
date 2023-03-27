@@ -114,7 +114,7 @@ public class TypeWorkService {
    * @param newName    the new name
    * @param typeWorkId the type work id
    */
-  public void changeTypeWorkName(String newName, long typeWorkId) {
+  private void changeTypeWorkName(String newName, long typeWorkId) {
     checkAvailableByName(newName);
 
     String currentName = typeWorkRepository.getTypeWorkNameById(typeWorkId);
