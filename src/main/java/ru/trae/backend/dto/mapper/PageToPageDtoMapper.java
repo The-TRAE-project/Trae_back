@@ -39,7 +39,7 @@ public class PageToPageDtoMapper {
   public PageDto<ManagerDtoShort> managerPageToPageDto(Page<Manager> page) {
     return new PageDto<>(page.getContent().stream()
         .map(m -> new ManagerDtoShort(m.getId(), m.getLastName(), m.getFirstName()))
-        .toList(), page.getTotalElements());
+        .toList(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
   }
 
   /**
@@ -51,6 +51,6 @@ public class PageToPageDtoMapper {
   public PageDto<EmployeeDto> employeePageToPageDto(Page<Employee> page) {
     return new PageDto<>(page.getContent().stream()
         .map(employeeDtoMapper)
-        .toList(), page.getTotalElements());
+        .toList(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
   }
 }

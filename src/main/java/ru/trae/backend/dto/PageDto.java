@@ -19,6 +19,8 @@ import java.util.List;
  */
 public record PageDto<T>(
     List<T> content,
-    long totalElements
+    long totalElements,
+    long totalPages,
+    int currentNumberPage
 ) {
 }
