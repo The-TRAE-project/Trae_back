@@ -29,7 +29,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.TypeWorkDtoMapper;
 import ru.trae.backend.dto.type.ChangeNameAndActiveReq;
 import ru.trae.backend.dto.type.NewTypeWorkDto;
@@ -44,6 +49,8 @@ class TypeWorkServiceTest {
   private TypeWorkRepository typeWorkRepository;
   @Mock
   TypeWorkDtoMapper typeWorkDtoMapper;
+  @Mock
+  PageToPageDtoMapper pageToPageDtoMapper;
   @InjectMocks
   private TypeWorkService typeWorkService;
 
@@ -282,5 +289,51 @@ class TypeWorkServiceTest {
     // then
     assertThat(throwable.getMessage()).isEqualTo
         ("Type work name: " + name + " already in use");
+  }
+
+  @Test
+  void shouldReturnTypeWorkPageWhenGetTypeWorkPage() {
+    //given
+    Pageable typeWorkPage = PageRequest.of(0, 10);
+    Page<TypeWork> expectedTypeWorkPage = Page.empty();
+    when(typeWorkRepository.findAll(typeWorkPage)).thenReturn(expectedTypeWorkPage);
+
+    //when
+    Page<TypeWork> typeWorkPageResult = typeWorkService.getTypeWorkPage(typeWorkPage, null);
+
+    //then
+    assertEquals("result: ", expectedTypeWorkPage, typeWorkPageResult);
+  }
+
+  @Test
+  void shouldReturnTypeWorkPageWhenGetTypeWorkPageWithIsActive() {
+    //given
+    Pageable typeWorkPage = PageRequest.of(0, 10);
+    boolean isActive = true;
+    Page<TypeWork> expectedTypeWorkPage = Page.empty();
+    when(typeWorkRepository.findByIsActive(isActive, typeWorkPage)).thenReturn(expectedTypeWorkPage);
+
+    //when
+    Page<TypeWork> typeWorkPageResult = typeWorkService.getTypeWorkPage(typeWorkPage, isActive);
+
+    //then
+    assertEquals("result: ", expectedTypeWorkPage, typeWorkPageResult);
+  }
+
+  @Test
+  void shouldReturnTypeWorkDtoPageWhenGetTypeWorkDtoPage() {
+    //given
+    Pageable typeWorkPage = PageRequest.of(0, 10);
+    Page<TypeWork> typeWorkPageResult = Page.empty();
+    PageDto<TypeWorkDto> expectedTypeWorkDtoPage = new PageDto<>(Collections.emptyList(), 0, 0, 0);
+    when(typeWorkRepository.findAll(typeWorkPage)).thenReturn(typeWorkPageResult);
+    when(pageToPageDtoMapper.typeWorkPageToPageDto(typeWorkPageResult))
+        .thenReturn(expectedTypeWorkDtoPage);
+
+    //when
+    PageDto<TypeWorkDto> typeWorkDtoPageResult = typeWorkService.getTypeWorkDtoPage(typeWorkPage, null);
+
+    //then
+    assertEquals("result: ", expectedTypeWorkDtoPage, typeWorkDtoPageResult);
   }
 }
