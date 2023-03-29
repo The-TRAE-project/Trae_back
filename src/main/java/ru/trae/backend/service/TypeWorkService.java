@@ -156,6 +156,13 @@ public class TypeWorkService {
         .toList();
   }
 
+  /**
+   * Gets a page of TypeWork objects.
+   *
+   * @param typeWorkPage the pageable object for the page request
+   * @param isActive     boolean value to filter by active/inactive typeWork
+   * @return a page of TypeWork objects
+   */
   public Page<TypeWork> getTypeWorkPage(Pageable typeWorkPage, Boolean isActive) {
     Page<TypeWork> page;
 

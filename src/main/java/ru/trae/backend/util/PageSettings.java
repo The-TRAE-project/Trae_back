@@ -72,6 +72,11 @@ public class PageSettings {
     return sort;
   }
 
+  /**
+   * This method builds a sort for a type work object.
+   *
+   * @return The sort for the type work object
+   */
   public Sort buildTypeWorkSort() {
     Sort sort;
     key = "name";

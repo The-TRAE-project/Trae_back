@@ -57,6 +57,12 @@ public class PageToPageDtoMapper {
         .toList(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
   }
 
+  /**
+   * This method maps a page of TypeWork objects to a page of TypeWorkDto objects.
+   *
+   * @param page The page of TypeWork objects to be mapped
+   * @return A page of TypeWorkDto objects
+   */
   public PageDto<TypeWorkDto> typeWorkPageToPageDto(Page<TypeWork> page) {
     return new PageDto<>(page.getContent().stream()
         .map(typeWorkDtoMapper)
