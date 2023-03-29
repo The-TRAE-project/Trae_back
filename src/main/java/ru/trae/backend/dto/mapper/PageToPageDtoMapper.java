@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.manager.ManagerDtoShort;
+import ru.trae.backend.dto.type.TypeWorkDto;
+import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.entity.user.Manager;
 
@@ -28,6 +30,7 @@ import ru.trae.backend.entity.user.Manager;
 @RequiredArgsConstructor
 public class PageToPageDtoMapper {
   private final EmployeeDtoMapper employeeDtoMapper;
+  private final TypeWorkDtoMapper typeWorkDtoMapper;
 
 
   /**
@@ -51,6 +54,12 @@ public class PageToPageDtoMapper {
   public PageDto<EmployeeDto> employeePageToPageDto(Page<Employee> page) {
     return new PageDto<>(page.getContent().stream()
         .map(employeeDtoMapper)
+        .toList(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
+  }
+
+  public PageDto<TypeWorkDto> typeWorkPageToPageDto(Page<TypeWork> page) {
+    return new PageDto<>(page.getContent().stream()
+        .map(typeWorkDtoMapper)
         .toList(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
   }
 }

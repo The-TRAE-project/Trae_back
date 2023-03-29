@@ -12,9 +12,13 @@ package ru.trae.backend.service;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.TypeWorkDtoMapper;
 import ru.trae.backend.dto.type.ChangeNameAndActiveReq;
 import ru.trae.backend.dto.type.NewTypeWorkDto;
@@ -33,6 +37,7 @@ import ru.trae.backend.repository.TypeWorkRepository;
 public class TypeWorkService {
   private final TypeWorkRepository typeWorkRepository;
   private final TypeWorkDtoMapper typeWorkDtoMapper;
+  private final PageToPageDtoMapper pageToPageDtoMapper;
 
   /**
    * Saves a new TypeWork entity.
@@ -149,6 +154,21 @@ public class TypeWorkService {
         .stream()
         .map(typeWorkDtoMapper)
         .toList();
+  }
+
+  public Page<TypeWork> getTypeWorkPage(Pageable typeWorkPage, Boolean isActive) {
+    Page<TypeWork> page;
+
+    if (isActive != null) {
+      page = typeWorkRepository.findByIsActive(isActive, typeWorkPage);
+    } else {
+      page = typeWorkRepository.findAll(typeWorkPage);
+    }
+    return page;
+  }
+
+  public PageDto<TypeWorkDto> getTypeWorkDtoPage(Pageable typeWorkPage, Boolean status) {
+    return pageToPageDtoMapper.typeWorkPageToPageDto(getTypeWorkPage(typeWorkPage, status));
   }
 
   /**

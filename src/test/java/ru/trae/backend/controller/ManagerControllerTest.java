@@ -124,7 +124,8 @@ class ManagerControllerTest {
 
     ManagerDtoShort managerDtoShort = new ManagerDtoShort(1L, "managerLastName",
         "managerFirstName");
-    PageDto<ManagerDtoShort> pageDto = new PageDto<>(Collections.singletonList(managerDtoShort), 1L);
+    PageDto<ManagerDtoShort> pageDto =
+        new PageDto<>(Collections.singletonList(managerDtoShort), 1L, 1L, 0);
 
     //when
     when(managerService.getManagerDtoPage(Mockito.any(), Mockito.anyString(), Mockito.anyBoolean()))

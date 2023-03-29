@@ -11,6 +11,7 @@
 package ru.trae.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,6 +19,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,11 +29,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.type.ChangeNameAndActiveReq;
 import ru.trae.backend.dto.type.NewTypeWorkDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.service.TypeWorkService;
+import ru.trae.backend.util.PageSettings;
 
 /**
  * TypeWorkController is a REST controller for managing type-work related operations. It provides
@@ -53,9 +60,10 @@ public class TypeWorkController {
   @Operation(summary = "Список типов работ",
       description = "Доступен администратору. Возвращает список типов работ")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Список типов работ",
+      @ApiResponse(responseCode = "200",
+          description = "Список типов работ. В примере указан единичный объект из списка",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = List.class))}),
+              schema = @Schema(implementation = TypeWorkDto.class))}),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "403", description = "Доступ запрещен",
@@ -63,8 +71,15 @@ public class TypeWorkController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/types")
-  public ResponseEntity<List<TypeWorkDto>> types() {
-    return ResponseEntity.ok(typeWorkService.getTypes());
+  public ResponseEntity<PageDto<TypeWorkDto>> types(
+      @Valid PageSettings pageSetting,
+      @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")
+      Boolean isActive) {
+
+    Sort typeWorkSort = pageSetting.buildTypeWorkSort();
+    Pageable typeWorkPage = PageRequest.of(
+        pageSetting.getPage(), pageSetting.getElementPerPage(), typeWorkSort);
+    return ResponseEntity.ok(typeWorkService.getTypeWorkDtoPage(typeWorkPage, isActive));
   }
 
   /**

@@ -71,4 +71,16 @@ public class PageSettings {
     }
     return sort;
   }
+
+  public Sort buildTypeWorkSort() {
+    Sort sort;
+    key = "name";
+    String nextKey = "id";
+    if (direction.equals("asc")) {
+      sort = Sort.by(key).ascending().and(Sort.by(nextKey).ascending());
+    } else {
+      sort = Sort.by(key).descending().and(Sort.by(nextKey).descending());
+    }
+    return sort;
+  }
 }

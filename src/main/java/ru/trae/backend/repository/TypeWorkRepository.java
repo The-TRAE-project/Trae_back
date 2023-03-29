@@ -11,6 +11,8 @@
 package ru.trae.backend.repository;
 
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -44,4 +46,7 @@ public interface TypeWorkRepository extends JpaRepository<TypeWork, Long> {
 
   @Query("select tw.isActive from TypeWork tw where tw.id = ?1")
   boolean getTypeWorkActiveById(long typeWorkId);
+
+  @Query("select t from TypeWork t where t.isActive = ?1")
+  Page<TypeWork> findByIsActive(boolean isActive, Pageable pageable);
 }
