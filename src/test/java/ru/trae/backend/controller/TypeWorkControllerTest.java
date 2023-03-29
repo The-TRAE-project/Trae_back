@@ -13,10 +13,11 @@ package ru.trae.backend.controller;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,10 +25,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.type.ChangeNameAndActiveReq;
 import ru.trae.backend.dto.type.NewTypeWorkDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.service.TypeWorkService;
+import ru.trae.backend.util.PageSettings;
 
 @ExtendWith(MockitoExtension.class)
 class TypeWorkControllerTest {
@@ -37,20 +40,25 @@ class TypeWorkControllerTest {
   private TypeWorkController controller;
 
   @Test
-  void types() {
-    when(typeWorkService.getTypes()).thenReturn(List.of(
-        new TypeWorkDto(1, "type1", true),
-        new TypeWorkDto(2, "type2", true)
-    ));
+  void testTypes() {
+    //given
+    PageSettings pageSetting = new PageSettings();
+    pageSetting.setPage(10);
+    pageSetting.setElementPerPage(20);
+    pageSetting.buildTypeWorkSort();
+    pageSetting.setDirection("asc");
 
-    ResponseEntity<List<TypeWorkDto>> response = controller.types();
+    TypeWorkDto twDto = new TypeWorkDto(1L, "Type", true);
+    PageDto<TypeWorkDto> typeWorkDtoPage =
+        new PageDto<>(Collections.singletonList(twDto), 100L, 11, 10);
+    when(typeWorkService.getTypeWorkDtoPage(any(), anyBoolean())).thenReturn(typeWorkDtoPage);
 
-    assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    assertThat(response.getBody()).isNotNull();
-    assertThat(response.getBody()).asList().contains(
-        new TypeWorkDto(1, "type1", true),
-        new TypeWorkDto(2, "type2", true)
-    );
+    ResponseEntity<PageDto<TypeWorkDto>> responseEntity = controller.types(pageSetting, true);
+
+    //then
+    assertThat(responseEntity).isNotNull();
+    assertThat(responseEntity.getBody()).isNotNull();
+    assertThat(responseEntity.getBody()).isEqualTo(typeWorkDtoPage);
   }
 
   @Test
