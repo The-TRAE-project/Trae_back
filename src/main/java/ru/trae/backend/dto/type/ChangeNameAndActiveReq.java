@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import ru.trae.backend.util.RegExpression;
 
 /**
  * This class defines the request parameters for changing the name and active of a type work.
@@ -29,8 +31,7 @@ public record ChangeNameAndActiveReq(
         "The type work id cannot be more than " + Integer.MAX_VALUE)
     long typeWorkId,
     @Schema(description = "Новое название типа работы")
-    //todo make here regexp for name of type work
-    //@Pattern(regexp = RegExpression., message = "Invalid name format")
+    @Pattern(regexp = RegExpression.TYPE_WORK_NAME, message = "Invalid name format")
     String newName,
     @Schema(description = "Состояние типа работа (откл/вкл)")
     Boolean isActive
