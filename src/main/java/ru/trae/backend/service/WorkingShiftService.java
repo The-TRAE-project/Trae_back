@@ -114,8 +114,6 @@ public class WorkingShiftService {
    * @return true if the employee is on shift; false otherwise.
    */
   public boolean employeeOnShift(boolean isOnShift, long empId) {
-    return workingShiftRepository
-        .existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(isOnShift,
-            empId);
+    return workingShiftRepository.existsEmpOnShift(isOnShift, empId);
   }
 }

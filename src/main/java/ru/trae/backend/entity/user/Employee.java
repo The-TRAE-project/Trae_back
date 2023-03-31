@@ -58,6 +58,7 @@ public class Employee extends User {
   @ToString.Exclude
   @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
   private List<TimeControl> timeControls = new ArrayList<>();
+  @ToString.Exclude
   @ManyToMany
   @JoinTable(name = "employees_type_works",
       joinColumns = @JoinColumn(name = "employee_id"),

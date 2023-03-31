@@ -11,6 +11,8 @@
 package ru.trae.backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.trae.backend.entity.WorkingShift;
 
@@ -42,7 +44,11 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
    * @param id        the id of the employee
    * @return true if the employee is on shift, false otherwise.
    */
-  boolean existsByIsEndedFalseAndTimeControls_IsOnShiftAndTimeControls_Employee_Id(
-      boolean isOnShift, Long id);
-
+  @Query(value = "select exists ("
+      + "select 1 from time_controls tc "
+      + "inner join employees e on tc.employee_id = e.id "
+      + "inner join working_shifts ws on ws.id = tc.working_shift_id "
+      + "where ws.is_ended = false and tc.is_on_shift = :isOnShift and e.id = :id)",
+      nativeQuery = true)
+  boolean existsEmpOnShift(@Param("isOnShift") boolean isOnShift, @Param("id") Long id);
 }
