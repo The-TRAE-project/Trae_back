@@ -10,10 +10,13 @@
 
 package ru.trae.backend.util;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * This is a class that contains different regular expressions.
  * for username, password, name, phone number, token, etc.
  */
+@UtilityClass
 public class RegExpression {
   public static final String USERNAME =
       "^(?=.{3,15}$)(?![_.-])(?!.*[_.-]{2})[a-zA-Z0-9._-]+(?<![_.-])$";
