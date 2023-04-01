@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import ru.trae.backend.dto.employee.NewEmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeRegisterDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.project.NewProjectDto;
@@ -79,41 +79,41 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
    * Inserting employee data.
    */
   public void insertEmployees() {
-    List<NewEmployeeDto> list = List.of(
-        new NewEmployeeDto("Иван", "Петрович", "Шилов",
+    List<EmployeeRegisterDto> list = List.of(
+        new EmployeeRegisterDto("Иван", "Петрович", "Шилов",
             "+7 (918) 333 1212", LocalDate.parse("2021-03-22"),
             List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
-        new NewEmployeeDto("Николай", "Игоревич", "Иванов",
+        new EmployeeRegisterDto("Николай", "Игоревич", "Иванов",
             "+7 (928) 333 2121", LocalDate.parse("2004-07-17"),
             List.of(3L, 4L, 5L, 6L, 7L)),
-        new NewEmployeeDto("Владимир", "Васильевич", "Петров",
+        new EmployeeRegisterDto("Владимир", "Васильевич", "Петров",
             "+7 (917) 444 5632", LocalDate.parse("2009-12-10"),
             List.of(8L, 9L)),
-        new NewEmployeeDto("Александр", "Григорьевич",
+        new EmployeeRegisterDto("Александр", "Григорьевич",
             "Красильников", "+7 (927) 123 8899",
             LocalDate.parse("2021-04-10"), List.of(8L, 9L)),
-        new NewEmployeeDto("Никита", "Владимирович", "Бондаренко",
+        new EmployeeRegisterDto("Никита", "Владимирович", "Бондаренко",
             "+7 (915) 333 4567", LocalDate.parse("2002-02-13"),
             List.of(1L)),
-        new NewEmployeeDto("Валентин", "Александрович", "Плотников",
+        new EmployeeRegisterDto("Валентин", "Александрович", "Плотников",
             "+7 (934) 777 8294", LocalDate.parse("2007-07-10"),
             List.of(1L, 5L, 6L, 7L)),
-        new NewEmployeeDto("Петр", "Иванович", "Абраменко",
+        new EmployeeRegisterDto("Петр", "Иванович", "Абраменко",
             "+7 (918) 345 4829", LocalDate.parse("2020-01-10"),
             List.of(1L, 2L, 3L, 4L)),
-        new NewEmployeeDto("Григорий", "Олегович", "Костромин",
+        new EmployeeRegisterDto("Григорий", "Олегович", "Костромин",
             "+7 (912) 334 5993", LocalDate.parse("2010-11-11"),
             List.of(4L, 5L, 6L, 7L)),
-        new NewEmployeeDto("Егор", "Антонович", "Карпов",
+        new EmployeeRegisterDto("Егор", "Антонович", "Карпов",
             "+7 (915) 567 5993", LocalDate.parse("2021-06-18"),
             List.of(1L, 2L, 5L, 6L, 7L)),
-        new NewEmployeeDto("Антон", "Петрович", "Рыбин",
+        new EmployeeRegisterDto("Антон", "Петрович", "Рыбин",
             "+7 (913) 224 5911", LocalDate.parse("2005-08-15"),
             List.of(1L, 2L, 3L, 4L, 5L, 6L, 7L)),
-        new NewEmployeeDto("Аркадий", "Олегович", "Павлов",
+        new EmployeeRegisterDto("Аркадий", "Олегович", "Павлов",
             "+7 (911) 333 5798", LocalDate.parse("2008-02-11"),
             List.of(1L, 2L, 3L, 4L, 5L)),
-        new NewEmployeeDto("Степан", "Степанович", "Никитин",
+        new EmployeeRegisterDto("Степан", "Степанович", "Никитин",
             "+7 (922) 324 5913", LocalDate.parse("2022-08-10"),
             List.of(1L, 2L, 5L, 6L, 7L, 8L, 9L))
     );

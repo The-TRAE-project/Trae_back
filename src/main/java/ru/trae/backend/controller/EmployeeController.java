@@ -32,7 +32,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.employee.EmployeeDto;
-import ru.trae.backend.dto.employee.NewEmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeRegisterDto;
+import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.service.EmployeeService;
 
@@ -155,15 +156,18 @@ public class EmployeeController {
   /**
    * Endpoint for registering a new employee.
    *
-   * @param dto The employee data transfer object
-   * @return An HTTP response with a status of 'CREATED'
+   * @param dto the new employee details
+   * @return the {@link ResponseEntity} of {@link EmployeeRegisterDtoResp} with HTTP status 201
+   *     (Created)
    * @throws ConstraintViolationException If the credentials provided are already in use
    */
   @Operation(summary = "Регистрация нового сотрудника",
-      description = "Доступен администратору. Ничего не возвращает, только статус")
+      description = "Доступен администратору. Возвращает имя, фамилию и пинкод сотрудника")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "201", description =
-          "Успешное создание учетной записи сотрудника", content = @Content),
+      @ApiResponse(responseCode = "201",
+          description = "Успешное создание учетной записи сотрудника",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = EmployeeRegisterDtoResp.class))}),
       @ApiResponse(responseCode = "400", description =
           "Неправильный формат данных создаваемого сотрудника", content = @Content),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
@@ -174,10 +178,10 @@ public class EmployeeController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @PostMapping("/register")
-  public ResponseEntity<HttpStatus> register(@Valid @RequestBody NewEmployeeDto dto) {
+  public ResponseEntity<EmployeeRegisterDtoResp> register(
+      @Valid @RequestBody EmployeeRegisterDto dto) {
     employeeService.checkAvailableCredentials(dto.firstName(), dto.middleName(), dto.lastName());
-    employeeService.saveNewEmployee(dto);
 
-    return new ResponseEntity<>(HttpStatus.CREATED);
+    return new ResponseEntity<>(employeeService.saveNewEmployee(dto), HttpStatus.CREATED);
   }
 }

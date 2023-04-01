@@ -20,7 +20,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.employee.EmployeeDto;
-import ru.trae.backend.dto.employee.NewEmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeRegisterDto;
+import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.mapper.EmployeeDtoMapper;
 import ru.trae.backend.entity.TypeWork;
@@ -49,7 +50,7 @@ public class EmployeeService {
    * @param dto contains data for creating a new employee
    * @return a saved employee entity
    */
-  public Employee saveNewEmployee(NewEmployeeDto dto) {
+  public EmployeeRegisterDtoResp saveNewEmployee(EmployeeRegisterDto dto) {
     int randomPinCode;
     do {
       randomPinCode = Util.generateRandomInteger(100, 999);
@@ -71,7 +72,10 @@ public class EmployeeService {
     e.setDateOfEmployment(dto.dateOfEmployment());
     e.setDateOfDismissal(null);
 
-    return employeeRepository.save(e);
+    Employee savedEmp = employeeRepository.save(e);
+
+    return new EmployeeRegisterDtoResp(
+        savedEmp.getFirstName(), savedEmp.getLastName(), savedEmp.getPinCode());
   }
 
   /**

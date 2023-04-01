@@ -21,7 +21,7 @@ import ru.trae.backend.exceptionhandler.exception.ManagerException;
  */
 public enum Role {
   ROLE_ADMINISTRATOR("Администратор"),
-  ROLE_EMPLOYEE("Сотрудник"),
+  ROLE_EMPLOYEE("Терминал цех"),
   ROLE_DEVELOPER("Разработчик"),
   ROLE_MANAGER("Конструктор");
 
