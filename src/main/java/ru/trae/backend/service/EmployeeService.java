@@ -246,7 +246,6 @@ public class EmployeeService {
     changeDateOfEmployment(dto, e);
     changeEmployeeTypesWork(dto, e);
 
-    //checkAvailableCredentials(e.getFirstName(), e.getMiddleName(), e.getLastName());
     employeeRepository.save(e);
   }
 
@@ -305,7 +304,7 @@ public class EmployeeService {
     }
 
     if (dto.isActive() != null) {
-      if ((e.isActive() != dto.isActive()) && dto.isActive()) {
+      if ((e.isActive() != dto.isActive()) && Boolean.TRUE.equals(dto.isActive())) {
         e.setActive(true);
         e.setDateOfDismissal(null);
       } else if ((e.isActive() != dto.isActive()) && (dto.dateOfDismissal() != null)) {
