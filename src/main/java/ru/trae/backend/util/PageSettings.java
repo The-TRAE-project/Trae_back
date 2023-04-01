@@ -88,4 +88,21 @@ public class PageSettings {
     }
     return sort;
   }
+
+  /**
+   * This method builds a sort for an employee object.
+   *
+   * @return The sort for the employee object
+   */
+  public Sort buildEmployeeSort() {
+    Sort sort;
+    key = "lastName";
+    String nextKey = "firstName";
+    if (direction.equals("asc")) {
+      sort = Sort.by(key).ascending().and(Sort.by(nextKey).ascending());
+    } else {
+      sort = Sort.by(key).descending().and(Sort.by(nextKey).descending());
+    }
+    return sort;
+  }
 }

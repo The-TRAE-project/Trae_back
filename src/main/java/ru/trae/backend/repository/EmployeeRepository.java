@@ -1,6 +1,8 @@
 package ru.trae.backend.repository;
 
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -46,4 +48,12 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
   boolean existsByFirstMiddleLastNameIgnoreCase(String firstName,
                                                 String middleName,
                                                 String lastName);
+
+  Page<Employee> findByIsActiveAndTypeWorks_Id(boolean isActive, Long id, Pageable pageable);
+
+  @Query("select e from Employee e where e.isActive = ?1")
+  Page<Employee> findByIsActive(boolean isActive, Pageable pageable);
+
+  @Query("select e from Employee e inner join e.typeWorks typeWorks where typeWorks.id = ?1")
+  Page<Employee> findByTypeWorksId(Long id, Pageable pageable);
 }

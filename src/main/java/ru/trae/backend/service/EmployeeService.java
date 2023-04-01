@@ -12,18 +12,21 @@ package ru.trae.backend.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.mapper.EmployeeDtoMapper;
+import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.EmployeeException;
@@ -43,6 +46,7 @@ public class EmployeeService {
   private final WorkingShiftService workingShiftService;
   private final TimeControlService timeControlService;
   private final TypeWorkService typeWorkService;
+  private final PageToPageDtoMapper pageToPageDtoMapper;
 
   /**
    * Method for saving new employee to the database.
@@ -162,15 +166,32 @@ public class EmployeeService {
   }
 
   /**
-   * Method returns all employees in the repository.
+   * Get Employee Page.
    *
-   * @return a list of {@link EmployeeDto} objects
+   * @param employeePage page
+   * @param typeWorkId   type work id
+   * @param isActive     is active
+   * @return page of employees
    */
-  public List<EmployeeDto> getAllEmployees() {
-    return employeeRepository.findAll()
-        .stream()
-        .map(employeeDtoMapper)
-        .toList();
+  public Page<Employee> getEmployeePage(Pageable employeePage, Long typeWorkId, Boolean isActive) {
+    Page<Employee> page;
+
+    if (isActive != null && typeWorkId != null) {
+      page = employeeRepository.findByIsActiveAndTypeWorks_Id(isActive, typeWorkId, employeePage);
+    } else if (isActive != null) {
+      page = employeeRepository.findByIsActive(isActive, employeePage);
+    } else if (typeWorkId != null) {
+      page = employeeRepository.findByTypeWorksId(typeWorkId, employeePage);
+    } else {
+      page = employeeRepository.findAll(employeePage);
+    }
+    return page;
+  }
+
+  public PageDto<EmployeeDto> getEmployeeDtoPage(
+      Pageable employeePage, Long typeWorkId, Boolean isActive) {
+    return pageToPageDtoMapper.employeePageToPageDto(
+        getEmployeePage(employeePage, typeWorkId, isActive));
   }
 
   /**

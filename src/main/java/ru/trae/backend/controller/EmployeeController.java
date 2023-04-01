@@ -16,12 +16,14 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.util.List;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,12 +32,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.service.EmployeeService;
+import ru.trae.backend.util.PageSettings;
 
 /**
  * Controller for handling employee related requests.
@@ -138,19 +143,30 @@ public class EmployeeController {
    * @return a list of all employees
    */
   @Operation(summary = "Список сотрудников",
-      description = "Доступен адмнистратору. Возвращает список ДТО сотрудников")
+      description = "Доступен адмнистратору. Возвращает список ДТО сотрудников. "
+          + "В примере указан единичный объект из списка")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Список ДТО сотрудников",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = List.class))}),
+              schema = @Schema(implementation = EmployeeDto.class))}),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/employees")
-  public ResponseEntity<List<EmployeeDto>> employees() {
-    return ResponseEntity.ok(employeeService.getAllEmployees());
+  public ResponseEntity<PageDto<EmployeeDto>> employees(
+      @Valid PageSettings pageSetting,
+      @RequestParam(required = false) @Parameter(description = "Фильтрация по роли")
+      Long typeWorkId,
+      @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")
+      Boolean isActive) {
+
+    Sort employeeSort = pageSetting.buildEmployeeSort();
+    Pageable employeePage = PageRequest.of(
+        pageSetting.getPage(), pageSetting.getElementPerPage(), employeeSort);
+    return ResponseEntity.ok(
+        employeeService.getEmployeeDtoPage(employeePage, typeWorkId, isActive));
   }
 
   /**
