@@ -2,6 +2,8 @@ package ru.trae.backend.dto.employee;
 
 import java.time.LocalDate;
 import java.util.List;
+import ru.trae.backend.dto.type.TypeWorkDto;
+import ru.trae.backend.entity.TypeWork;
 
 /**
  * EmployeeDto is a data transfer object (DTO) used to encapsulate data related to an employee.
@@ -18,6 +20,6 @@ public record EmployeeDto(
     boolean isActive,
     LocalDate dateOfRegister,
     LocalDate dateOfEmployment,
-    List<String> types
+    List<TypeWorkDto> types
 ) {
 }

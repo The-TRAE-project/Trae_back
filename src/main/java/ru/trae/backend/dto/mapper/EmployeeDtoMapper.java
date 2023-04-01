@@ -11,9 +11,9 @@
 package ru.trae.backend.dto.mapper;
 
 import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.employee.EmployeeDto;
-import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.user.Employee;
 
 /**
@@ -25,7 +25,10 @@ import ru.trae.backend.entity.user.Employee;
  * @author Vladimir Olennikov
  */
 @Service
+@RequiredArgsConstructor
 public class EmployeeDtoMapper implements Function<Employee, EmployeeDto> {
+  private final TypeWorkDtoMapper typeWorkDtoMapper;
+
   @Override
   public EmployeeDto apply(Employee e) {
     return new EmployeeDto(
@@ -39,7 +42,7 @@ public class EmployeeDtoMapper implements Function<Employee, EmployeeDto> {
         e.getDateOfEmployment(),
         e.getDateOfRegister(),
         e.getTypeWorks().stream()
-            .map(TypeWork::getName)
+            .map(typeWorkDtoMapper)
             .toList()
     );
   }
