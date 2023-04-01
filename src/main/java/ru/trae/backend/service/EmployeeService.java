@@ -330,6 +330,12 @@ public class EmployeeService {
     final Set<TypeWork> typeWorks = dto.changedTypesId().stream()
         .map(typeWorkService::getTypeWorkById)
         .collect(Collectors.toSet());
+
+    if (typeWorks.containsAll(e.getTypeWorks()) && e.getTypeWorks().containsAll(typeWorks)) {
+      throw new EmployeeException(HttpStatus.CONFLICT,
+          "The employee already has these types of works");
+    }
+
     e.getTypeWorks().clear();
     e.getTypeWorks().addAll(typeWorks);
   }
