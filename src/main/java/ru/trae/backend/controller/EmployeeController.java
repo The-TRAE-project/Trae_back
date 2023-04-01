@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.employee.ChangeDataDtoReq;
 import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
@@ -199,5 +200,12 @@ public class EmployeeController {
     employeeService.checkAvailableCredentials(dto.firstName(), dto.middleName(), dto.lastName());
 
     return new ResponseEntity<>(employeeService.saveNewEmployee(dto), HttpStatus.CREATED);
+  }
+
+  @PostMapping("/change-data")
+  public ResponseEntity<EmployeeDto> changeData(@Valid @RequestBody ChangeDataDtoReq dto) {
+    employeeService.changeEmployeeDataAndStatusAndPinCode(dto);
+
+    return ResponseEntity.ok(employeeService.getEmpDtoById(dto.employeeId()));
   }
 }

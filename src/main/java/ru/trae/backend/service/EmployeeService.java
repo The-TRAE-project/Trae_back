@@ -20,7 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.employee.ChangeDataDtoReq;
 import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
@@ -234,4 +236,84 @@ public class EmployeeService {
     }
   }
 
+  @Transactional
+  public void changeEmployeeDataAndStatusAndPinCode(ChangeDataDtoReq dto) {
+    Employee e = getEmployeeById(dto.employeeId());
+
+    changeEmployeeData(dto, e);
+    changeEmployeeStatus(dto, e);
+    changePinCode(dto, e);
+    changeDateOfEmployment(dto, e);
+
+    //checkAvailableCredentials(e.getFirstName(), e.getMiddleName(), e.getLastName());
+    employeeRepository.save(e);
+  }
+
+  private void changeDateOfEmployment(ChangeDataDtoReq dto, Employee e) {
+    if (dto.dateOfEmployment() != null) {
+      e.setDateOfRegister(dto.dateOfEmployment());
+    }
+  }
+
+  private void changePinCode(ChangeDataDtoReq dto, Employee e) {
+    if (dto.pinCode() == null) {
+      return;
+    }
+
+    if (existsEmpByPinCode(dto.pinCode())) {
+      throw new EmployeeException(HttpStatus.CONFLICT, "This pin code already used");
+    } else {
+      e.setPinCode(dto.pinCode());
+    }
+  }
+
+  private void changeEmployeeData(ChangeDataDtoReq dto, Employee e) {
+    if (dto.firstName() != null) {
+      if (dto.firstName().equals(e.getFirstName())) {
+        throw new EmployeeException(HttpStatus.CONFLICT,
+            "The new first name must not match the current one");
+      }
+      e.setFirstName(dto.firstName());
+    }
+    if (dto.middleName() != null) {
+      if (dto.middleName().equals(e.getMiddleName())) {
+        throw new EmployeeException(HttpStatus.CONFLICT,
+            "The new middle name must not match the current one");
+      }
+      e.setMiddleName(dto.middleName());
+    }
+    if (dto.lastName() != null) {
+      if (dto.lastName().equals(e.getLastName())) {
+        throw new EmployeeException(HttpStatus.CONFLICT,
+            "The new last name must not match the current one");
+      }
+      e.setLastName(dto.lastName());
+    }
+    if (dto.phone() != null) {
+      if (dto.phone().equals(e.getPhone())) {
+        throw new EmployeeException(HttpStatus.CONFLICT,
+            "The new phone must not match the current one");
+      }
+      e.setPhone(dto.phone());
+    }
+  }
+
+  private void changeEmployeeStatus(ChangeDataDtoReq dto, Employee e) {
+    if (dto.dateOfDismissal() == null && dto.isActive() == null) {
+      return;
+    }
+
+    if (dto.isActive() != null) {
+      if ((e.isActive() != dto.isActive()) && dto.isActive()) {
+        e.setActive(true);
+        e.setDateOfDismissal(null);
+      } else if ((e.isActive() != dto.isActive()) && (dto.dateOfDismissal() != null)) {
+        e.setActive(false);
+        e.setDateOfDismissal(dto.dateOfDismissal());
+      }
+    } else {
+      throw new EmployeeException(HttpStatus.BAD_REQUEST,
+          "Incorrect status or missing date of dismissal");
+    }
+  }
 }

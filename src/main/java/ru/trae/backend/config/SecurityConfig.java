@@ -111,7 +111,8 @@ public class SecurityConfig {
         .hasAuthority(ROLE_EMPLOYEE.name())
         .antMatchers(
             "/api/employee/employees",
-            "/api/employee/register")
+            "/api/employee/register",
+            "/api/change-data")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
 
         .antMatchers("/api/project/new")
