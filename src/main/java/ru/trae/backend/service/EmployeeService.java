@@ -237,13 +237,14 @@ public class EmployeeService {
   }
 
   @Transactional
-  public void changeEmployeeDataAndStatusAndPinCode(ChangeDataDtoReq dto) {
+  public void changeEmployeeDataAndStatusAndPinCodeAndTypesWork(ChangeDataDtoReq dto) {
     Employee e = getEmployeeById(dto.employeeId());
 
     changeEmployeeData(dto, e);
     changeEmployeeStatus(dto, e);
     changePinCode(dto, e);
     changeDateOfEmployment(dto, e);
+    changeEmployeeTypesWork(dto, e);
 
     //checkAvailableCredentials(e.getFirstName(), e.getMiddleName(), e.getLastName());
     employeeRepository.save(e);
@@ -315,5 +316,17 @@ public class EmployeeService {
       throw new EmployeeException(HttpStatus.BAD_REQUEST,
           "Incorrect status or missing date of dismissal");
     }
+  }
+
+  private void changeEmployeeTypesWork(ChangeDataDtoReq dto, Employee e) {
+    if (dto.changedTypesId() == null) {
+      return;
+    }
+
+    final Set<TypeWork> typeWorks = dto.changedTypesId().stream()
+        .map(typeWorkService::getTypeWorkById)
+        .collect(Collectors.toSet());
+    e.getTypeWorks().clear();
+    e.getTypeWorks().addAll(typeWorks);
   }
 }

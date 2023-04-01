@@ -204,7 +204,7 @@ public class EmployeeController {
 
   @PostMapping("/change-data")
   public ResponseEntity<EmployeeDto> changeData(@Valid @RequestBody ChangeDataDtoReq dto) {
-    employeeService.changeEmployeeDataAndStatusAndPinCode(dto);
+    employeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto);
 
     return ResponseEntity.ok(employeeService.getEmpDtoById(dto.employeeId()));
   }
