@@ -219,7 +219,7 @@ public class EmployeeController {
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = EmployeeDto.class))}),
       @ApiResponse(responseCode = "400", description = "Неправильный формат учетных данных,"
-          + " пин кода, статуса или ",
+          + " пин кода, статуса или даты увольнения/приема на работу",
           content = @Content),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
