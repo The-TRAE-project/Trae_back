@@ -259,8 +259,6 @@ public class ManagerController {
 
   /**
    * This controller is used to change manager role and account status.
-   *
-   * @author Vladimir Olennikov
    */
   @Operation(summary = "Изменение роли пользователя, отключение/включение учетной записи",
       description =

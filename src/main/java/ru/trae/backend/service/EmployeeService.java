@@ -236,6 +236,11 @@ public class EmployeeService {
     }
   }
 
+  /**
+   * Change employee data, status, pin code and types work.
+   *
+   * @param dto the change data dto request
+   */
   @Transactional
   public void changeEmployeeDataAndStatusAndPinCodeAndTypesWork(ChangeDataDtoReq dto) {
     Employee e = getEmployeeById(dto.employeeId());

@@ -40,6 +40,7 @@ import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
+import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.service.EmployeeService;
 import ru.trae.backend.util.PageSettings;
 
@@ -202,6 +203,35 @@ public class EmployeeController {
     return new ResponseEntity<>(employeeService.saveNewEmployee(dto), HttpStatus.CREATED);
   }
 
+  /**
+   * Endpoint for change employee data and work type.
+   *
+   * @param dto - Data transfer object for change employee data
+   * @return - data transfer object with changed employee data
+   */
+  @Operation(summary = "Изменение учетных данных, типов работ, пин кода сотрудника, "
+      + "отключение/включение учетной записи",
+      description = "Доступен администратору. Изменяет учетные данные, пин код, статус, типы работ"
+          + " выбранного сотрудника")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Возвращает ДТО с учетными данными, типами"
+          + " работ, статусом, датой приема на работу, датой увольнения (если ее нет, то NULL)",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = EmployeeDto.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат учетных данных,"
+          + " пин кода, статуса или ",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Сотрудник с таким идентификатором не найден", content = @Content),
+      @ApiResponse(responseCode = "409", description = "Сотрудник уже имеет такие учетные"
+          + " данные, типы работ, учетная запись уже отключена/включена",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @PostMapping("/change-data")
   public ResponseEntity<EmployeeDto> changeData(@Valid @RequestBody ChangeDataDtoReq dto) {
     employeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto);
