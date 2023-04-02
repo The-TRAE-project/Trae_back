@@ -28,8 +28,8 @@ import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
-import ru.trae.backend.dto.manager.ManagerShortDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
+import ru.trae.backend.dto.manager.ManagerShortDto;
 import ru.trae.backend.dto.manager.ResetPassResp;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
@@ -221,13 +221,15 @@ public class ManagerService {
       changeRole(request.managerId(), request.newRole());
     }
 
-    if (Boolean.TRUE.equals(request.accountStatus())) {
-      activateAccount(request.managerId());
-    } else if (request.dateOfDismissal() != null) {
-      deactivateAccount(request.managerId(), request.dateOfDismissal());
-    } else {
-      throw new ManagerException(HttpStatus.BAD_REQUEST,
-          "Не указана дата увольнения пользователя");
+    if (request.accountStatus() != null) {
+      if (Boolean.TRUE.equals(request.accountStatus())) {
+        activateAccount(request.managerId());
+      } else if (request.dateOfDismissal() != null) {
+        deactivateAccount(request.managerId(), request.dateOfDismissal());
+      } else {
+        throw new ManagerException(HttpStatus.BAD_REQUEST,
+            "Не указана дата увольнения пользователя");
+      }
     }
   }
 
