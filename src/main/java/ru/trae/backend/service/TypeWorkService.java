@@ -152,6 +152,7 @@ public class TypeWorkService {
   public List<TypeWorkDto> getTypes() {
     return typeWorkRepository.findAll()
         .stream()
+        .filter(TypeWork::isActive)
         .map(typeWorkDtoMapper)
         .toList();
   }

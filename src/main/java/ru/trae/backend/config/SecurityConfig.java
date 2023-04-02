@@ -85,25 +85,26 @@ public class SecurityConfig {
         .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
         .antMatchers(AUTH_WHITELIST).permitAll()
 
+        //auth
         .antMatchers(
             "/api/auth/logout",
             "/api/auth/refresh",
             "/api/manager/role").authenticated()
 
+        //managers
         .antMatchers(
             "/api/manager/change-password",
             "/api/manager/update-data")
         .hasAnyAuthority(ROLE_MANAGER.name(), ROLE_ADMINISTRATOR.name())
         .antMatchers(
             "/api/manager/reset-password",
-            "/api/manager/**",
             "/api/manager/change-role-status",
             "/api/manager/managers",
             "/api/manager/register",
-            "/api/manager/reset-password",
             "/api/manager/roles")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
 
+        //employees
         .antMatchers(
             "/api/employee/checkin/**",
             "/api/employee/checkout/**",
@@ -115,6 +116,15 @@ public class SecurityConfig {
             "/api/change-data")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
 
+        //types-work
+        .antMatchers(
+            "/api/type-work/active-types-list",
+            "/api/type-work/types",
+            "/api/type-work/new",
+            "/api/type-work/change-name-active")
+        .hasAuthority(ROLE_ADMINISTRATOR.name())
+
+        //projects
         .antMatchers("/api/project/new")
         .hasAnyAuthority(ROLE_MANAGER.name(), ROLE_ADMINISTRATOR.name())
 

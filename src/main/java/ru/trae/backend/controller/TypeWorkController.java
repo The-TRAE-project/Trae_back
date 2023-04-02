@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -56,8 +57,8 @@ public class TypeWorkController {
    *
    * @return a list of type work dtos
    */
-  @Operation(summary = "Список типов работ",
-      description = "Доступен администратору. Возвращает список типов работ")
+  @Operation(summary = "Список типов работ с пагинацией",
+      description = "Доступен администратору. Возвращает список типов работ с пагинацией")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Список типов работ. В примере указан единичный объект из списка",
@@ -79,6 +80,25 @@ public class TypeWorkController {
     Pageable typeWorkPage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), typeWorkSort);
     return ResponseEntity.ok(typeWorkService.getTypeWorkDtoPage(typeWorkPage, isActive));
+  }
+
+  @Operation(summary = "Список типов работ без пагинации (для фильтров и меню)",
+      description = "Доступен администратору. Возвращает отфильтрованный (по активности) список " +
+          "типов работ без пагинации (для фильтров и меню)")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Список типов работ. В примере указан единичный объект из списка",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = TypeWorkDto.class))}),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @GetMapping("/active-types-list")
+  public ResponseEntity<List<TypeWorkDto>> types() {
+    return ResponseEntity.ok(typeWorkService.getTypes());
   }
 
   /**
