@@ -7,4 +7,5 @@ WORKDIR /app
 RUN chown -R javauser:javauser /app
 USER javauser
 EXPOSE 8088
-CMD "dumb-init" "java" "-jar" "trae_backend.jar"
+#CMD "dumb-init" "java" "-jar" "trae_backend.jar"
+ENTRYPOINT ["dumb-init","java","-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005","-jar","trae_backend.jar"]

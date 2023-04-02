@@ -19,6 +19,7 @@ services:
     container_name: trae_back
     ports:
       - "8088:8088"
+      - "5005:5005" #debug port
     environment:
       - "TZ=Europe/Moscow"
       - "SPRING_PROFILES_ACTIVE=prod"
