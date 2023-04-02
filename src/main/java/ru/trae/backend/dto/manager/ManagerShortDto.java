@@ -11,12 +11,12 @@
 package ru.trae.backend.dto.manager;
 
 /**
- * ManagerDtoShort is a data transfer object (DTO) class used to encapsulate data related
+ * ManagerShortDto is a data transfer object (DTO) class used to encapsulate data related
  * to a manager.
  *
  * @author Vladimir Olennikov
  */
-public record ManagerDtoShort(
+public record ManagerShortDto(
     long managerId,
     String lastName,
     String firstName

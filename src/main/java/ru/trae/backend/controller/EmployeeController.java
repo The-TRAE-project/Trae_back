@@ -37,10 +37,9 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.employee.ChangeDataDtoReq;
 import ru.trae.backend.dto.employee.EmployeeDto;
-import ru.trae.backend.dto.employee.EmployeeRegisterDto;
+import ru.trae.backend.dto.employee.EmployeeRegisterDtoReq;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
-import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.service.EmployeeService;
 import ru.trae.backend.util.PageSettings;
 
@@ -197,7 +196,7 @@ public class EmployeeController {
           content = @Content)})
   @PostMapping("/register")
   public ResponseEntity<EmployeeRegisterDtoResp> register(
-      @Valid @RequestBody EmployeeRegisterDto dto) {
+      @Valid @RequestBody EmployeeRegisterDtoReq dto) {
     employeeService.checkAvailableCredentials(dto.firstName(), dto.middleName(), dto.lastName());
 
     return new ResponseEntity<>(employeeService.saveNewEmployee(dto), HttpStatus.CREATED);

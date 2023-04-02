@@ -15,7 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.employee.EmployeeDto;
-import ru.trae.backend.dto.manager.ManagerDtoShort;
+import ru.trae.backend.dto.manager.ManagerShortDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.user.Employee;
@@ -31,17 +31,18 @@ import ru.trae.backend.entity.user.Manager;
 public class PageToPageDtoMapper {
   private final EmployeeDtoMapper employeeDtoMapper;
   private final TypeWorkDtoMapper typeWorkDtoMapper;
+  private final ManagerShortDtoMapper managerShortDtoMapper;
 
 
   /**
-   * Map a page of Manager to a page of ManagerDtoShort.
+   * Map a page of Manager to a page of ManagerShortDto.
    *
    * @param page page of Manager
-   * @return page of ManagerDtoShort
+   * @return page of ManagerShortDto
    */
-  public PageDto<ManagerDtoShort> managerPageToPageDto(Page<Manager> page) {
+  public PageDto<ManagerShortDto> managerPageToPageDto(Page<Manager> page) {
     return new PageDto<>(page.getContent().stream()
-        .map(m -> new ManagerDtoShort(m.getId(), m.getLastName(), m.getFirstName()))
+        .map(managerShortDtoMapper)
         .toList(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
   }
 

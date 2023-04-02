@@ -38,7 +38,7 @@ import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
-import ru.trae.backend.dto.manager.ManagerDtoShort;
+import ru.trae.backend.dto.manager.ManagerShortDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.manager.ResetPassResp;
 import ru.trae.backend.entity.user.Manager;
@@ -122,16 +122,16 @@ class ManagerControllerTest {
     pageSettings.setPage(1);
     pageSettings.setElementPerPage(2);
 
-    ManagerDtoShort managerDtoShort = new ManagerDtoShort(1L, "managerLastName",
+    ManagerShortDto managerShortDto = new ManagerShortDto(1L, "managerLastName",
         "managerFirstName");
-    PageDto<ManagerDtoShort> pageDto =
-        new PageDto<>(Collections.singletonList(managerDtoShort), 1L, 1L, 0);
+    PageDto<ManagerShortDto> pageDto =
+        new PageDto<>(Collections.singletonList(managerShortDto), 1L, 1L, 0);
 
     //when
     when(managerService.getManagerDtoPage(Mockito.any(), Mockito.anyString(), Mockito.anyBoolean()))
         .thenReturn(pageDto);
 
-    ResponseEntity<PageDto<ManagerDtoShort>> responseEntity =
+    ResponseEntity<PageDto<ManagerShortDto>> responseEntity =
         managerController.managers(pageSettings, "Конструктор", true);
 
     //then

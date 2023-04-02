@@ -14,7 +14,7 @@ import ru.trae.backend.util.RegExpression;
  *
  * @author Vladimir Olennikov
  */
-public record EmployeeRegisterDto(
+public record EmployeeRegisterDtoReq(
     @NotNull(message = "Invalid first name: first name is NULL")
     @Pattern(regexp = RegExpression.FIRST_MIDDLE_LAST_NAME, message = "Invalid first name")
     String firstName,

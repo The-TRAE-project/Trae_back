@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.employee.ChangeDataDtoReq;
 import ru.trae.backend.dto.employee.EmployeeDto;
-import ru.trae.backend.dto.employee.EmployeeRegisterDto;
+import ru.trae.backend.dto.employee.EmployeeRegisterDtoReq;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.mapper.EmployeeDtoMapper;
@@ -56,7 +56,7 @@ public class EmployeeService {
    * @param dto contains data for creating a new employee
    * @return a saved employee entity
    */
-  public EmployeeRegisterDtoResp saveNewEmployee(EmployeeRegisterDto dto) {
+  public EmployeeRegisterDtoResp saveNewEmployee(EmployeeRegisterDtoReq dto) {
     int randomPinCode;
     do {
       randomPinCode = Util.generateRandomInteger(100, 999);

@@ -41,7 +41,7 @@ import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
-import ru.trae.backend.dto.manager.ManagerDtoShort;
+import ru.trae.backend.dto.manager.ManagerShortDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.manager.ResetPassResp;
 import ru.trae.backend.entity.user.Manager;
@@ -154,7 +154,7 @@ public class ManagerController {
       @ApiResponse(responseCode = "200", description = "Список ДТО пользователей. "
           + "В примере указан единичный объект из списка",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = ManagerDtoShort.class))}),
+              schema = @Schema(implementation = ManagerShortDto.class))}),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "403", description = "Доступ запрещен",
@@ -162,7 +162,7 @@ public class ManagerController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/managers")
-  public ResponseEntity<PageDto<ManagerDtoShort>> managers(
+  public ResponseEntity<PageDto<ManagerShortDto>> managers(
       @Valid PageSettings pageSetting,
       @RequestParam(required = false) @Parameter(description = "Фильтрация по роли") String role,
       @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")
