@@ -39,7 +39,7 @@ public class ManagerDtoMapper implements Function<Manager, ManagerDto> {
         m.isAccountNonLocked(),
         m.getDateOfEmployment().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
         m.getDateOfDismissal() != null
-            ? m.getDateOfEmployment().format(DateTimeFormatter.ofPattern(DATE_FORMAT)) : null
+            ? m.getDateOfDismissal().format(DateTimeFormatter.ofPattern(DATE_FORMAT)) : null
     );
   }
 }
