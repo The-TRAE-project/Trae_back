@@ -258,7 +258,7 @@ public class ManagerService {
    * @param managerId the manager id
    * @throws ManagerException in case if manager not found or already activated
    */
-  public void activateAccount(long managerId) {
+  private void activateAccount(long managerId) {
     if (!managerRepository.existsById(managerId)) {
       throw new ManagerException(HttpStatus.NOT_FOUND,
           "The manager with id: " + managerId + " not found");
@@ -277,7 +277,7 @@ public class ManagerService {
    * @param managerId the manager id
    * @throws ManagerException in case if manager not found or already deactivated
    */
-  public void deactivateAccount(long managerId, LocalDate dateOfDismissal) {
+  private void deactivateAccount(long managerId, LocalDate dateOfDismissal) {
     if (!managerRepository.existsById(managerId)) {
       throw new ManagerException(HttpStatus.NOT_FOUND,
           "The manager with id: " + managerId + " not found");
@@ -307,13 +307,13 @@ public class ManagerService {
       m.setFirstName(request.firstName());
     }
     if (request.middleName() != null && !request.middleName().equals(m.getMiddleName())) {
-      m.setFirstName(request.middleName());
+      m.setMiddleName(request.middleName());
     }
     if (request.lastName() != null && !request.lastName().equals(m.getLastName())) {
-      m.setFirstName(request.lastName());
+      m.setLastName(request.lastName());
     }
     if (request.phone() != null && !request.phone().equals(m.getPhone())) {
-      m.setFirstName(request.phone());
+      m.setPhone(request.phone());
     }
 
     managerRepository.save(m);
@@ -339,7 +339,7 @@ public class ManagerService {
    * @throws ManagerException in case the role is not found in the system or the account
    *                          already has such a role.
    */
-  public void changeRole(long managerId, final String newRole) {
+  private void changeRole(long managerId, final String newRole) {
     Role currentRole = managerRepository.getRoleById(managerId);
 
     if (currentRole.value.equals(newRole)) {
