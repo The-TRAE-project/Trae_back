@@ -268,6 +268,26 @@ class ManagerServiceTest {
   }
 
   @Test
+  void resetPassword_withNotFoundUsername() {
+    //when
+    when(managerRepository.existsByUsernameIgnoreCase(username)).thenReturn(false);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.resetPassword(username));
+  }
+
+  @Test
+  void resetPassword_withAdminAccount() {
+    //when
+    when(managerRepository.existsByUsernameIgnoreCase(username)).thenReturn(true);
+    when(managerRepository.existsByUsernameAndRole(username, Role.ROLE_ADMINISTRATOR))
+        .thenReturn(true);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.resetPassword(username));
+  }
+
+  @Test
   void shouldChangePassword() {
     // Given
     ChangePassReq request = new ChangePassReq("oldPass", "newPass");
@@ -278,8 +298,20 @@ class ManagerServiceTest {
     // When
     managerService.changePassword(request, username);
 
-    // Then
+    //then
     verify(managerRepository).updatePasswordByUsername(encodedPassword, username);
+  }
+
+  @Test
+  void changePassword_withSimilarPasswords() {
+    //given
+    ChangePassReq request = new ChangePassReq("simPass", "simPass");
+
+    //when
+    when(encoder.matches(request.newPassword(), request.oldPassword())).thenReturn(true);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.changePassword(request, username));
   }
 
   @Test
@@ -418,7 +450,33 @@ class ManagerServiceTest {
   }
 
   @Test
-  void getChangeRoleAndStatusResp_shouldReturnChangeRoleAndStatusResp_whenManagerIdIsGiven() {
+  void testChangeRoleAndStatus_onlyRole_alreadySuchRole() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, Role.ROLE_MANAGER.value, null, null);
+
+    //when
+    when(managerRepository.getRoleById(managerId)).thenReturn(Role.ROLE_MANAGER);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.changeRoleAndStatus(request));
+  }
+
+  @Test
+  void testChangeRoleAndStatus_onlyRole_noSuchRole() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, "wrong_role", null, null);
+
+    //when
+    when(managerRepository.getRoleById(managerId)).thenReturn(Role.ROLE_MANAGER);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.changeRoleAndStatus(request));
+  }
+
+  @Test
+  void getChangeRoleAndStatusResp_shouldReturnChangeRoleAndStatusResp() {
     //when
     when(managerRepository.findById(managerId)).thenReturn(Optional.of(m));
 
@@ -510,7 +568,7 @@ class ManagerServiceTest {
   }
 
   @Test
-  void whenUpdateData_thenReturnUpdatedManager() {
+  void updateData_thenReturnUpdatedManager() {
     //given
     ChangingManagerDataReq request =
         new ChangingManagerDataReq("newFirstName", "newMiddleName",
@@ -529,4 +587,44 @@ class ManagerServiceTest {
     assertEquals(request.phone(), m.getPhone());
   }
 
+  @Test
+  void updateData_withNullFieldsInReq() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq(null, null, null, null);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.updateData(request, username));
+  }
+
+  @Test
+  void updateData_onlyFirstName() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq("newFirstName", null,
+            null, null);
+
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+
+    managerService.updateData(request, username);
+
+    //then
+    verify(managerRepository).save(m);
+    assertEquals(request.firstName(), m.getFirstName());
+  }
+
+  @Test
+  void updateData_onlyFirstName_alreadySuchFirstName() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq(firstName, null,
+            null, null);
+
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.updateData(request, username));
+  }
 }

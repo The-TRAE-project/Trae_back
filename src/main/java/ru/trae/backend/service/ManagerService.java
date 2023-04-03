@@ -302,18 +302,46 @@ public class ManagerService {
    * @param username the username of the manager whose data needs to be updated
    */
   public void updateData(ChangingManagerDataReq request, String username) {
+    if (request.firstName() == null && request.middleName() == null
+        && request.lastName() == null && request.phone() == null) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST, "There is no data to update the account");
+    }
+
     Manager m = getManagerByUsername(username);
-    if (request.firstName() != null && !request.firstName().equals(m.getFirstName())) {
-      m.setFirstName(request.firstName());
+    if (request.firstName() != null) {
+      if (!request.firstName().equals(m.getFirstName())) {
+        m.setFirstName(request.firstName());
+      } else {
+        throw new ManagerException(HttpStatus.BAD_REQUEST,
+            "The first name must not match an existing one");
+      }
     }
-    if (request.middleName() != null && !request.middleName().equals(m.getMiddleName())) {
-      m.setMiddleName(request.middleName());
+
+    if (request.middleName() != null) {
+      if (!request.middleName().equals(m.getMiddleName())) {
+        m.setMiddleName(request.middleName());
+      } else {
+        throw new ManagerException(HttpStatus.BAD_REQUEST,
+            "The middle name must not match an existing one");
+      }
     }
-    if (request.lastName() != null && !request.lastName().equals(m.getLastName())) {
-      m.setLastName(request.lastName());
+
+    if (request.lastName() != null) {
+      if (!request.lastName().equals(m.getLastName())) {
+        m.setLastName(request.lastName());
+      } else {
+        throw new ManagerException(HttpStatus.BAD_REQUEST,
+            "The last name must not match an existing one");
+      }
     }
-    if (request.phone() != null && !request.phone().equals(m.getPhone())) {
-      m.setPhone(request.phone());
+
+    if (request.phone() != null) {
+      if (!request.phone().equals(m.getPhone())) {
+        m.setPhone(request.phone());
+      } else {
+        throw new ManagerException(HttpStatus.BAD_REQUEST,
+            "The phone must not match an existing one");
+      }
     }
 
     managerRepository.save(m);
