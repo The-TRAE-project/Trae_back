@@ -300,16 +300,121 @@ class ManagerServiceTest {
   void testChangeRoleAndStatus() {
     // given
     ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
-        1L, Role.ROLE_MANAGER.value, true, LocalDate.now());
+        managerId, Role.ROLE_MANAGER.value, true, LocalDate.now());
 
-    when(managerRepository.getRoleById(1L)).thenReturn(Role.ROLE_ADMINISTRATOR);
-    when(managerRepository.existsById(1L)).thenReturn(true);
+    when(managerRepository.getRoleById(managerId)).thenReturn(Role.ROLE_ADMINISTRATOR);
+    when(managerRepository.existsById(managerId)).thenReturn(true);
 
     // when
     managerService.changeRoleAndStatus(request);
 
     //then
     assertEquals(m.isAccountNonLocked(), request.accountStatus());
+  }
+
+  @Test
+  void testChangeRoleAndStatus_allNull() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, null, null, null);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.changeRoleAndStatus(request));
+  }
+
+  @Test
+  void testChangeRoleAndStatus_onlyStatus() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, null, false, LocalDate.now());
+
+    // when
+    when(managerRepository.existsById(managerId)).thenReturn(true);
+
+    managerService.changeRoleAndStatus(request);
+
+    //then
+    verify(managerRepository, times(1))
+        .updateAccountNonLockedAndDateOfDismissalById(
+            request.accountStatus(), request.dateOfDismissal(), request.managerId());
+  }
+
+  @Test
+  void testChangeRoleAndStatus_onlyFalseStatus_withoutDateOfDismissal() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, null, false, null);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.changeRoleAndStatus(request));
+  }
+
+  @Test
+  void testChangeRoleAndStatus_onlyStatus_withException_alreadyFalseStatus() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, null, false, LocalDate.now());
+
+    // when
+    when(managerRepository.existsById(managerId)).thenReturn(true);
+    when(managerRepository.existsByIdAndAccountNonLocked(managerId, false))
+        .thenReturn(true);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.changeRoleAndStatus(request));
+  }
+
+  @Test
+  void testChangeRoleAndStatus_onlyStatus_withException_alreadyTrueStatus() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, null, true, null);
+
+    // when
+    when(managerRepository.existsById(managerId)).thenReturn(true);
+    when(managerRepository.existsByIdAndAccountNonLocked(managerId, true)).thenReturn(true);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.changeRoleAndStatus(request));
+  }
+
+  @Test
+  void testChangeRoleAndStatus_onlyStatus_withException_notFoundById() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, null, true, null);
+
+    // when
+    when(managerRepository.existsById(managerId)).thenReturn(false);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.changeRoleAndStatus(request));
+  }
+
+  @Test
+  void testChangeRoleAndStatus_onlyDateOfDismissal() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, null, null, LocalDate.now());
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.changeRoleAndStatus(request));
+  }
+
+  @Test
+  void testChangeRoleAndStatus_onlyRole() {
+    // given
+    ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
+        managerId, Role.ROLE_MANAGER.value, null, null);
+
+    //when
+    when(managerRepository.getRoleById(managerId)).thenReturn(Role.ROLE_ADMINISTRATOR);
+
+    managerService.changeRoleAndStatus(request);
+
+    //then
+    verify(managerRepository, times(1))
+        .updateRoleById(Role.ROLE_MANAGER, request.managerId());
   }
 
   @Test
@@ -325,6 +430,22 @@ class ManagerServiceTest {
     assertEquals(Role.ROLE_ADMINISTRATOR.value, result.role());
     Assertions.assertTrue(result.accountStatus());
     assertNull(result.dateOfDismissal());
+  }
+
+  @Test
+  void getChangeRoleAndStatusResp_shouldReturnChangeRoleAndStatusResp_withDateOfDismissal() {
+    //when
+    m.setDateOfDismissal(LocalDate.now());
+    when(managerRepository.findById(managerId)).thenReturn(Optional.of(m));
+
+    ChangeRoleAndStatusResp result = managerService.getChangeRoleAndStatusResp(managerId);
+
+    //then
+    assertEquals(lastName, result.lastName());
+    assertEquals(firstName, result.firstName());
+    assertEquals(Role.ROLE_ADMINISTRATOR.value, result.role());
+    Assertions.assertTrue(result.accountStatus());
+    assertNotNull(result.dateOfDismissal());
   }
 
   @Test
@@ -393,7 +514,7 @@ class ManagerServiceTest {
     //given
     ChangingManagerDataReq request =
         new ChangingManagerDataReq("newFirstName", "newMiddleName",
-            "newLastName", "+7 (000) 000 0000");
+            "newLastName", "+7 (111) 111 1111");
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));

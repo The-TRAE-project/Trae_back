@@ -221,7 +221,7 @@ public class ManagerService {
       changeRole(request.managerId(), request.newRole());
     }
 
-    if (request.accountStatus() != null) {
+    if (request.accountStatus() != null || request.dateOfDismissal() != null) {
       if (Boolean.TRUE.equals(request.accountStatus())) {
         activateAccount(request.managerId());
       } else if (request.dateOfDismissal() != null) {
