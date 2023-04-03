@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -68,14 +69,35 @@ class ManagerServiceTest {
   private JwtUtil jwtUtil;
   @InjectMocks
   private ManagerService managerService;
+  Manager m = new Manager();
+  long managerId = 1L;
+  String lastName = "testLastName";
+  String middleName = "testMiddleName";
+  String firstName = "testFirstName";
+  String phone = "+7 (000) 000 0000";
+  String role = Role.ROLE_ADMINISTRATOR.value;
+  String username = "username";
+  boolean status = true;
+  LocalDate dateOfEmp = LocalDate.now();
+
+  @BeforeEach
+  public void init() {
+    m.setId(managerId);
+    m.setLastName(lastName);
+    m.setMiddleName(middleName);
+    m.setFirstName(firstName);
+    m.setPhone(phone);
+    m.setUsername(username);
+    m.setRole(Role.ROLE_ADMINISTRATOR);
+    m.setAccountNonLocked(status);
+    m.setDateOfEmployment(dateOfEmp);
+  }
 
   @Test
   void saveNewManagerTest() {
     //given
-    ManagerRegisterDto dto = new ManagerRegisterDto(
-        "Ivan", "Ivanovich", "Ivanov",
-        "ivanov@email.com", "ivan",
-        LocalDate.now());
+    ManagerRegisterDto dto =
+        new ManagerRegisterDto(firstName, middleName, lastName, phone, username, LocalDate.now());
 
     //when
     when(encoder.encode(anyString()))
@@ -109,11 +131,9 @@ class ManagerServiceTest {
   @Test
   void getManagerById_whenManagerDoesNotExist_shouldThrowException() {
     // given
-    long managerId = 1L;
-    Mockito.when(managerRepository.findById(managerId))
+    when(managerRepository.findById(managerId))
         .thenReturn(Optional.empty());
 
-    // when
     // then
     assertThrows(ManagerException.class, () -> managerService.getManagerById(managerId));
   }
@@ -121,7 +141,6 @@ class ManagerServiceTest {
   @Test
   void whenGetManagerByUsername_thenReturnManager() {
     // given
-    String username = "test";
     Manager manager = new Manager();
     manager.setUsername(username);
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(manager));
@@ -136,11 +155,8 @@ class ManagerServiceTest {
   @Test
   void getManagerByUsername_whenManagerDoesNotExist_shouldThrowException() {
     // given
-    String username = "test";
-    when(managerRepository.findByUsername(username))
-        .thenReturn(Optional.empty());
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.empty());
 
-    // when
     // then
     assertThrows(ManagerException.class, () -> managerService.getManagerByUsername(username));
   }
@@ -149,7 +165,6 @@ class ManagerServiceTest {
   void getManagerPage_shouldReturnManagerPage() {
     // given
     Pageable pageable = PageRequest.of(0, 10);
-    boolean status = true;
 
     Page<Manager> expectedPage = Page.empty();
     when(managerRepository.findByAccountNonLockedAndRole(pageable, status, Role.ROLE_ADMINISTRATOR))
@@ -166,11 +181,60 @@ class ManagerServiceTest {
   }
 
   @Test
+  void getManagerPage_shouldReturnManagerPage_withoutStatus() {
+    // given
+    Pageable pageable = PageRequest.of(0, 10);
+
+    Page<Manager> expectedPage = Page.empty();
+    when(managerRepository.findByRole(pageable, Role.ROLE_ADMINISTRATOR)).thenReturn(expectedPage);
+
+    // when
+    Page<Manager> actualPage =
+        managerService.getManagerPage(pageable, Role.ROLE_ADMINISTRATOR.value, null);
+
+    // then
+    assertEquals(expectedPage, actualPage);
+    verify(managerRepository).findByRole(pageable, Role.ROLE_ADMINISTRATOR);
+  }
+
+  @Test
+  void getManagerPage_shouldReturnManagerPage_withoutRole() {
+    // given
+    Pageable pageable = PageRequest.of(0, 10);
+
+    Page<Manager> expectedPage = Page.empty();
+    when(managerRepository.findByAccountNonLocked(pageable, status)).thenReturn(expectedPage);
+
+    // when
+    Page<Manager> actualPage =
+        managerService.getManagerPage(pageable, null, status);
+
+    // then
+    assertEquals(expectedPage, actualPage);
+    verify(managerRepository).findByAccountNonLocked(pageable, status);
+  }
+
+  @Test
+  void getManagerPage_shouldReturnManagerPage_withoutRoleAndStatus() {
+    // given
+    Pageable pageable = PageRequest.of(0, 10);
+
+    Page<Manager> expectedPage = Page.empty();
+    when(managerRepository.findAll(pageable)).thenReturn(expectedPage);
+
+    // when
+    Page<Manager> actualPage =
+        managerService.getManagerPage(pageable, null, null);
+
+    // then
+    assertEquals(expectedPage, actualPage);
+    verify(managerRepository).findAll(pageable);
+  }
+
+  @Test
   void testGetManagerDtoPage() {
     // given
     Pageable managerPage = PageRequest.of(0, 10);
-    String role = Role.ROLE_ADMINISTRATOR.value;
-    boolean status = true;
     Page<Manager> page = mock(Page.class);
     PageDto<ManagerShortDto> expectedPageDto = mock(PageDto.class);
 
@@ -188,9 +252,6 @@ class ManagerServiceTest {
   @Test
   void shouldResetPassword() {
     // given
-    String username = "username";
-    String lastName = "lastNameTest";
-    String firstName = "firstNameTest";
     String lastAndFirstName = lastName + "," + firstName;
     when(managerRepository.existsByUsernameIgnoreCase(username)).thenReturn(true);
     when(managerRepository.getLastAndFirstNameByUsername(username)).thenReturn(lastAndFirstName);
@@ -210,7 +271,6 @@ class ManagerServiceTest {
   void shouldChangePassword() {
     // Given
     ChangePassReq request = new ChangePassReq("oldPass", "newPass");
-    String username = "testUser";
     String encodedPassword = "newEncodedPassword";
 
     when(encoder.encode(request.newPassword())).thenReturn(encodedPassword);
@@ -225,27 +285,8 @@ class ManagerServiceTest {
   @Test
   void testConvertFromManager() {
     //given
-    long managerId = 1L;
-    String lastName = "testLastName";
-    String middleName = "testMiddleName";
-    String firstName = "testFirstName";
-    String phone = "+7 (000) 000 0000";
-    String role = "admin";
-    String username = "username";
-    boolean status = true;
-    LocalDate dateOfEmp = LocalDate.now();
-    Manager m = new Manager();
-    m.setId(managerId);
-    m.setLastName(lastName);
-    m.setMiddleName(middleName);
-    m.setFirstName(firstName);
-    m.setPhone(phone);
-    m.setUsername(username);
-    m.setAccountNonLocked(status);
-    m.setDateOfEmployment(dateOfEmp);
-
-    ManagerDto expectedManagerDto = new ManagerDto(managerId, firstName, middleName, lastName, phone,
-        role, username, status, dateOfEmp.toString(), null);
+    ManagerDto expectedManagerDto = new ManagerDto(managerId, firstName, middleName, lastName,
+        phone, role, username, status, dateOfEmp.toString(), null);
 
     //when
     when(managerDtoMapper.apply(m)).thenReturn(expectedManagerDto);
@@ -259,42 +300,28 @@ class ManagerServiceTest {
   void testChangeRoleAndStatus() {
     // given
     ChangeRoleAndStatusReq request = new ChangeRoleAndStatusReq(
-        1L, Role.ROLE_ADMINISTRATOR.value, true, LocalDate.now());
-    Manager manager = new Manager();
-    manager.setRole(Role.ROLE_MANAGER);
-    manager.setDateOfDismissal(LocalDate.now());
-    manager.setId(1L);
-    manager.setAccountNonLocked(true);
+        1L, Role.ROLE_MANAGER.value, true, LocalDate.now());
 
-    when(managerRepository.getRoleById(1L)).thenReturn(Role.ROLE_MANAGER);
+    when(managerRepository.getRoleById(1L)).thenReturn(Role.ROLE_ADMINISTRATOR);
     when(managerRepository.existsById(1L)).thenReturn(true);
 
     // when
     managerService.changeRoleAndStatus(request);
 
     //then
-    assertEquals(manager.isAccountNonLocked(), request.accountStatus());
+    assertEquals(m.isAccountNonLocked(), request.accountStatus());
   }
 
   @Test
   void getChangeRoleAndStatusResp_shouldReturnChangeRoleAndStatusResp_whenManagerIdIsGiven() {
-    //given
-    long managerId = 1;
-    Manager m = new Manager();
-    m.setLastName("lastName");
-    m.setFirstName("firstName");
-    m.setRole(Role.ROLE_ADMINISTRATOR);
-    m.setAccountNonLocked(true);
-    m.setDateOfDismissal(null);
-
     //when
     when(managerRepository.findById(managerId)).thenReturn(Optional.of(m));
 
     ChangeRoleAndStatusResp result = managerService.getChangeRoleAndStatusResp(managerId);
 
     //then
-    assertEquals("lastName", result.lastName());
-    assertEquals("firstName", result.firstName());
+    assertEquals(lastName, result.lastName());
+    assertEquals(firstName, result.firstName());
     assertEquals(Role.ROLE_ADMINISTRATOR.value, result.role());
     Assertions.assertTrue(result.accountStatus());
     assertNull(result.dateOfDismissal());
@@ -319,7 +346,7 @@ class ManagerServiceTest {
   void getRoleAuthUser_shouldReturnRole_whenUsernameIsValid() {
     //given
     Principal principal = Mockito.mock(Principal.class);
-    when(principal.getName()).thenReturn("username");
+    when(principal.getName()).thenReturn(username);
     when(managerRepository.getRoleByUsername(principal.getName())).thenReturn(Role.ROLE_ADMINISTRATOR);
 
     //when
@@ -340,11 +367,9 @@ class ManagerServiceTest {
 
   @Test
   void checkAvailableUsername_WhenUsernameIsAvailable_ShouldNotThrowException() {
-    //given
-    String username = "test";
+    //when
     when(managerRepository.existsByUsernameIgnoreCase(username)).thenReturn(false);
 
-    //when
     managerService.checkAvailableUsername(username);
 
     //then
@@ -353,11 +378,10 @@ class ManagerServiceTest {
 
   @Test
   void checkAvailableUsername_WhenUsernameIsNotAvailable_ShouldThrowException() {
-    //given
-    String username = "test";
+    //when
     when(managerRepository.existsByUsernameIgnoreCase(username)).thenReturn(true);
 
-    //when
+    //then
     assertThrows(
         ManagerException.class,
         () -> managerService.checkAvailableUsername(username),
@@ -371,17 +395,10 @@ class ManagerServiceTest {
         new ChangingManagerDataReq("newFirstName", "newMiddleName",
             "newLastName", "+7 (000) 000 0000");
 
-    Manager m = new Manager();
-    m.setPhone("+7 (111) 111 1111");
-    m.setUsername("username");
-    m.setFirstName("testFirstName");
-    m.setMiddleName("testMiddleName");
-    m.setLastName("testLastName");
-
     //when
-    when(managerRepository.findByUsername("username")).thenReturn(Optional.of(m));
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
 
-    managerService.updateData(request, "username");
+    managerService.updateData(request, username);
 
     //then
     verify(managerRepository).save(m);

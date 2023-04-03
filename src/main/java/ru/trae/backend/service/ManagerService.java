@@ -214,7 +214,7 @@ public class ManagerService {
     if (request.accountStatus() == null
         && request.dateOfDismissal() == null && request.newRole() == null) {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
-          "Не указаны статус учетной записи или новоя роль");
+          "Account status or new role are not specified");
     }
 
     if (request.newRole() != null) {
@@ -228,7 +228,7 @@ public class ManagerService {
         deactivateAccount(request.managerId(), request.dateOfDismissal());
       } else {
         throw new ManagerException(HttpStatus.BAD_REQUEST,
-            "Не указана дата увольнения пользователя");
+            "The date of the user's dismissal is not specified");
       }
     }
   }
