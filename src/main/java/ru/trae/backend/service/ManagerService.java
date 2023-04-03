@@ -308,6 +308,15 @@ public class ManagerService {
     }
 
     Manager m = getManagerByUsername(username);
+    updateFirstName(request, m);
+    updateMiddleName(request, m);
+    updateLastName(request, m);
+    updatePhone(request, m);
+
+    managerRepository.save(m);
+  }
+
+  private void updateFirstName(ChangingManagerDataReq request, Manager m) {
     if (request.firstName() != null) {
       if (!request.firstName().equals(m.getFirstName())) {
         m.setFirstName(request.firstName());
@@ -316,7 +325,9 @@ public class ManagerService {
             "The first name must not match an existing one");
       }
     }
+  }
 
+  private void updateMiddleName(ChangingManagerDataReq request, Manager m) {
     if (request.middleName() != null) {
       if (!request.middleName().equals(m.getMiddleName())) {
         m.setMiddleName(request.middleName());
@@ -325,7 +336,9 @@ public class ManagerService {
             "The middle name must not match an existing one");
       }
     }
+  }
 
+  private void updateLastName(ChangingManagerDataReq request, Manager m) {
     if (request.lastName() != null) {
       if (!request.lastName().equals(m.getLastName())) {
         m.setLastName(request.lastName());
@@ -334,7 +347,9 @@ public class ManagerService {
             "The last name must not match an existing one");
       }
     }
+  }
 
+  private void updatePhone(ChangingManagerDataReq request, Manager m) {
     if (request.phone() != null) {
       if (!request.phone().equals(m.getPhone())) {
         m.setPhone(request.phone());
@@ -343,8 +358,6 @@ public class ManagerService {
             "The phone must not match an existing one");
       }
     }
-
-    managerRepository.save(m);
   }
 
   /**

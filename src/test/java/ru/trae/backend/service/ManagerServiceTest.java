@@ -601,8 +601,7 @@ class ManagerServiceTest {
   void updateData_onlyFirstName() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq("newFirstName", null,
-            null, null);
+        new ChangingManagerDataReq("newFirstName", null, null, null);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
@@ -618,8 +617,94 @@ class ManagerServiceTest {
   void updateData_onlyFirstName_alreadySuchFirstName() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq(firstName, null,
-            null, null);
+        new ChangingManagerDataReq(firstName, null, null, null);
+
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.updateData(request, username));
+  }
+
+  @Test
+  void updateData_onlyMiddleName() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq(null, "newMiddleName", null, null);
+
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+
+    managerService.updateData(request, username);
+
+    //then
+    verify(managerRepository).save(m);
+    assertEquals(request.middleName(), m.getMiddleName());
+  }
+
+  @Test
+  void updateData_onlyMiddleName_alreadySuchMiddleName() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq(null, middleName, null, null);
+
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.updateData(request, username));
+  }
+
+  @Test
+  void updateData_onlyLastName() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq(null, null, "newLastName", null);
+
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+
+    managerService.updateData(request, username);
+
+    //then
+    verify(managerRepository).save(m);
+    assertEquals(request.lastName(), m.getLastName());
+  }
+
+  @Test
+  void updateData_onlyLastName_alreadySuchLastName() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq(null, null, lastName, null);
+
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.updateData(request, username));
+  }
+
+  @Test
+  void updateData_onlyPhone() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq(null, null, null, "newPhone");
+
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+
+    managerService.updateData(request, username);
+
+    //then
+    verify(managerRepository).save(m);
+    assertEquals(request.phone(), m.getPhone());
+  }
+
+  @Test
+  void updateData_onlyPhone_alreadySuchPhone() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq(null, null, null, phone);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
