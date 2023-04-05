@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.util.List;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -158,8 +159,8 @@ public class EmployeeController {
   @GetMapping("/employees")
   public ResponseEntity<PageDto<EmployeeDto>> employees(
       @Valid PageSettings pageSetting,
-      @RequestParam(required = false) @Parameter(description = "Фильтрация по роли")
-      Long typeWorkId,
+      @RequestParam(required = false) @Parameter(description = "Фильтрация по роли(ям)")
+      List<Long> typeWorkId,
       @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")
       Boolean isActive) {
 

@@ -33,7 +33,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
   /**
    * Checks if an {@link Employee} exists with the given first, middle and last name
-   * (case insensitive).
+   * (case-insensitive).
    *
    * @param firstName  the first name to search for
    * @param middleName the middle name to search for
@@ -49,11 +49,20 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
                                                 String middleName,
                                                 String lastName);
 
-  Page<Employee> findByIsActiveAndTypeWorks_Id(boolean isActive, Long id, Pageable pageable);
+  @Query("select distinct e "
+      + "from Employee e "
+      + "inner join e.typeWorks typeWorks "
+      + "where typeWorks.isActive = ?1 and typeWorks.id in ?2")
+  Page<Employee> findByIsActiveAndTypeWorksId(
+      boolean isActive, Iterable<Long> id, Pageable pageable);
+
 
   @Query("select e from Employee e where e.isActive = ?1")
   Page<Employee> findByIsActive(boolean isActive, Pageable pageable);
 
-  @Query("select e from Employee e inner join e.typeWorks typeWorks where typeWorks.id = ?1")
-  Page<Employee> findByTypeWorksId(Long id, Pageable pageable);
+  @Query("select distinct e "
+      + "from Employee e "
+      + "inner join e.typeWorks typeWorks "
+      + "where typeWorks.id in ?1")
+  Page<Employee> findByTypeWorksId(Iterable<Long> id, Pageable pageable);
 }

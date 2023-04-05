@@ -12,6 +12,7 @@ package ru.trae.backend.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -175,11 +176,12 @@ public class EmployeeService {
    * @param isActive     is active
    * @return page of employees
    */
-  public Page<Employee> getEmployeePage(Pageable employeePage, Long typeWorkId, Boolean isActive) {
+  public Page<Employee> getEmployeePage(
+      Pageable employeePage, List<Long> typeWorkId, Boolean isActive) {
     Page<Employee> page;
 
     if (isActive != null && typeWorkId != null) {
-      page = employeeRepository.findByIsActiveAndTypeWorks_Id(isActive, typeWorkId, employeePage);
+      page = employeeRepository.findByIsActiveAndTypeWorksId(isActive, typeWorkId, employeePage);
     } else if (isActive != null) {
       page = employeeRepository.findByIsActive(isActive, employeePage);
     } else if (typeWorkId != null) {
@@ -191,7 +193,7 @@ public class EmployeeService {
   }
 
   public PageDto<EmployeeDto> getEmployeeDtoPage(
-      Pageable employeePage, Long typeWorkId, Boolean isActive) {
+      Pageable employeePage, List<Long> typeWorkId, Boolean isActive) {
     return pageToPageDtoMapper.employeePageToPageDto(
         getEmployeePage(employeePage, typeWorkId, isActive));
   }
