@@ -49,20 +49,24 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
                                                 String middleName,
                                                 String lastName);
 
-  @Query("select distinct e "
-      + "from Employee e "
-      + "inner join e.typeWorks typeWorks "
-      + "where typeWorks.isActive = ?1 and typeWorks.id in ?2")
+  @Query("select distinct e " +
+      "from Employee e " +
+      "inner join e.typeWorks tw " +
+      "where tw.id in (:idList) and e.isActive = :isActive " +
+      "group by e.id " +
+      "having count(*) = (select count(*) from TypeWork where id in (:idList))")
   Page<Employee> findByIsActiveAndTypeWorksId(
-      boolean isActive, Iterable<Long> id, Pageable pageable);
+      boolean isActive, Iterable<Long> idList, Pageable pageable);
 
 
   @Query("select e from Employee e where e.isActive = ?1")
   Page<Employee> findByIsActive(boolean isActive, Pageable pageable);
 
-  @Query("select distinct e "
-      + "from Employee e "
-      + "inner join e.typeWorks typeWorks "
-      + "where typeWorks.id in ?1")
-  Page<Employee> findByTypeWorksId(Iterable<Long> id, Pageable pageable);
+    @Query("select distinct e " +
+      "from Employee e " +
+      "inner join e.typeWorks tw " +
+      "where tw.id in (:idList) " +
+      "group by e.id " +
+      "having count(*) = (select count(*) from TypeWork where id in (:idList))")
+  Page<Employee> findByTypeWorksId(Iterable<Long> idList, Pageable pageable);
 }
