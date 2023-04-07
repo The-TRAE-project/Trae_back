@@ -39,7 +39,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.PageDto;
-import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
@@ -285,33 +284,6 @@ class ManagerServiceTest {
 
     //then
     assertThrows(ManagerException.class, () -> managerService.resetPassword(username));
-  }
-
-  @Test
-  void shouldChangePassword() {
-    // Given
-    ChangePassReq request = new ChangePassReq("oldPass", "newPass");
-    String encodedPassword = "newEncodedPassword";
-
-    when(encoder.encode(request.newPassword())).thenReturn(encodedPassword);
-
-    // When
-    managerService.changePassword(request, username);
-
-    //then
-    verify(managerRepository).updatePasswordByUsername(encodedPassword, username);
-  }
-
-  @Test
-  void changePassword_withSimilarPasswords() {
-    //given
-    ChangePassReq request = new ChangePassReq("simPass", "simPass");
-
-    //when
-    when(encoder.matches(request.newPassword(), request.oldPassword())).thenReturn(true);
-
-    //then
-    assertThrows(ManagerException.class, () -> managerService.changePassword(request, username));
   }
 
   @Test
@@ -572,10 +544,11 @@ class ManagerServiceTest {
     //given
     ChangingManagerDataReq request =
         new ChangingManagerDataReq("newFirstName", "newMiddleName",
-            "newLastName", "+7 (111) 111 1111");
+            "newLastName", "+7 (111) 111 1111", "oldPass", "newPass");
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+    when(encoder.matches("oldPass",m.getPassword())).thenReturn(true);
 
     managerService.updateData(request, username);
 
@@ -591,7 +564,7 @@ class ManagerServiceTest {
   void updateData_withNullFieldsInReq() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq(null, null, null, null);
+        new ChangingManagerDataReq(null, null, null, null, null, null);
 
     //then
     assertThrows(ManagerException.class, () -> managerService.updateData(request, username));
@@ -601,7 +574,7 @@ class ManagerServiceTest {
   void updateData_onlyFirstName() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq("newFirstName", null, null, null);
+        new ChangingManagerDataReq("newFirstName", null, null, null,null,null);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
@@ -617,7 +590,7 @@ class ManagerServiceTest {
   void updateData_onlyFirstName_alreadySuchFirstName() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq(firstName, null, null, null);
+        new ChangingManagerDataReq(firstName, null, null, null,null,null);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
@@ -630,7 +603,7 @@ class ManagerServiceTest {
   void updateData_onlyMiddleName() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq(null, "newMiddleName", null, null);
+        new ChangingManagerDataReq(null, "newMiddleName", null, null,null,null);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
@@ -646,7 +619,7 @@ class ManagerServiceTest {
   void updateData_onlyMiddleName_alreadySuchMiddleName() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq(null, middleName, null, null);
+        new ChangingManagerDataReq(null, middleName, null, null,null,null);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
@@ -659,7 +632,7 @@ class ManagerServiceTest {
   void updateData_onlyLastName() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq(null, null, "newLastName", null);
+        new ChangingManagerDataReq(null, null, "newLastName", null,null,null);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
@@ -675,7 +648,7 @@ class ManagerServiceTest {
   void updateData_onlyLastName_alreadySuchLastName() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq(null, null, lastName, null);
+        new ChangingManagerDataReq(null, null, lastName, null,null,null);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
@@ -688,7 +661,7 @@ class ManagerServiceTest {
   void updateData_onlyPhone() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq(null, null, null, "newPhone");
+        new ChangingManagerDataReq(null, null, null, "newPhone",null,null);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
@@ -704,7 +677,7 @@ class ManagerServiceTest {
   void updateData_onlyPhone_alreadySuchPhone() {
     //given
     ChangingManagerDataReq request =
-        new ChangingManagerDataReq(null, null, null, phone);
+        new ChangingManagerDataReq(null, null, null, phone,null,null);
 
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));

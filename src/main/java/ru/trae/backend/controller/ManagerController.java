@@ -198,27 +198,27 @@ public class ManagerController {
     return ResponseEntity.ok(managerService.resetPassword(username));
   }
 
-  @Operation(summary = "Изменение пароля",
-      description = "Доступен аутентифицированным пользователям. "
-          + "Позволяет пользователям изменять собственные пароли")
-  @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ничего не возвращает, только статус",
-          content = @Content),
-      @ApiResponse(responseCode = "400", description = "Неправильный формат нового пароля,"
-          + " не совпадение старого пароля",
-          content = @Content),
-      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
-          content = @Content),
-      @ApiResponse(responseCode = "409", description = "Новый пароль должен отличаться от старого",
-          content = @Content),
-      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
-          content = @Content)})
-  @PostMapping("/change-password")
-  public ResponseEntity<HttpStatus> changePassword(
-      @Valid @RequestBody ChangePassReq request, Principal principal) {
-    managerService.changePassword(request, principal.getName());
-    return ResponseEntity.ok().build();
-  }
+//  @Operation(summary = "Изменение пароля",
+//      description = "Доступен аутентифицированным пользователям. "
+//          + "Позволяет пользователям изменять собственные пароли")
+//  @ApiResponses(value = {
+//      @ApiResponse(responseCode = "200", description = "Ничего не возвращает, только статус",
+//          content = @Content),
+//      @ApiResponse(responseCode = "400", description = "Неправильный формат нового пароля,"
+//          + " не совпадение старого пароля",
+//          content = @Content),
+//      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+//          content = @Content),
+//      @ApiResponse(responseCode = "409", description = "Новый пароль должен отличаться от старого",
+//          content = @Content),
+//      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+//          content = @Content)})
+//  @PostMapping("/change-password")
+//  public ResponseEntity<HttpStatus> changePassword(
+//      @Valid @RequestBody ChangePassReq request, Principal principal) {
+//    managerService.changePassword(request, principal.getName());
+//    return ResponseEntity.ok().build();
+//  }
 
   @Operation(summary = "Изменение данных учетной записи",
       description = "Доступен аутентифицированным пользователям. "

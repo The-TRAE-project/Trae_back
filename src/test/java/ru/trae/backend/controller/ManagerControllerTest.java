@@ -33,13 +33,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.PageDto;
-import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
 import ru.trae.backend.dto.manager.ManagerDto;
-import ru.trae.backend.dto.manager.ManagerShortDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
+import ru.trae.backend.dto.manager.ManagerShortDto;
 import ru.trae.backend.dto.manager.ResetPassResp;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.service.ManagerService;
@@ -167,24 +166,11 @@ class ManagerControllerTest {
   }
 
   @Test
-  void changePasswordTest() {
-    //given
-    ChangePassReq request = new ChangePassReq("test-password", "test-password1");
-    Principal principal = () -> "test-user";
-
-    ResponseEntity<HttpStatus> response = managerController.changePassword(request, principal);
-
-    //then
-    verify(managerService, times(1))
-        .changePassword(request, principal.getName());
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-  }
-
-  @Test
   void updateDataTest() {
     //given
     ChangingManagerDataReq changeManagerData =
-        new ChangingManagerDataReq("firstName", "middleName", "lastName", "phone");
+        new ChangingManagerDataReq("firstName", "middleName", "lastName",
+            "phone", "oldPass", "newPass");
     Principal principal = Mockito.mock(Principal.class);
 
     //when

@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.PageDto;
-import ru.trae.backend.dto.manager.ChangePassReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
@@ -187,18 +186,6 @@ public class ManagerService {
         lastAndFirstName.substring(lastAndFirstName.indexOf(",") + 1), temporaryRandomPass);
   }
 
-  /**
-   * Allows to change the password of a manager.
-   *
-   * @param request the request for change the password.
-   */
-  public void changePassword(ChangePassReq request, String username) {
-    checkDifferencePasswords(request.newPassword(), request.oldPassword());
-
-    String encodedPass = encoder.encode(request.newPassword());
-    managerRepository.updatePasswordByUsername(encodedPass, username);
-  }
-
   public ManagerDto convertFromManager(Manager manager) {
     return managerDtoMapper.apply(manager);
   }
@@ -303,7 +290,8 @@ public class ManagerService {
    */
   public void updateData(ChangingManagerDataReq request, String username) {
     if (request.firstName() == null && request.middleName() == null
-        && request.lastName() == null && request.phone() == null) {
+        && request.lastName() == null && request.phone() == null
+        && request.oldPassword() == null && request.newPassword() == null) {
       throw new ManagerException(HttpStatus.BAD_REQUEST, "There is no data to update the account");
     }
 
@@ -312,6 +300,7 @@ public class ManagerService {
     updateMiddleName(request, m);
     updateLastName(request, m);
     updatePhone(request, m);
+    changePassword(request, m);
 
     managerRepository.save(m);
   }
@@ -357,6 +346,19 @@ public class ManagerService {
         throw new ManagerException(HttpStatus.BAD_REQUEST,
             "The phone must not match an existing one");
       }
+    }
+  }
+
+  private void changePassword(ChangingManagerDataReq request, Manager m) {
+    if (request.newPassword() != null && request.oldPassword() != null) {
+      checkEqualsCurrentPassword(request.oldPassword(), m);
+      checkDifferencePasswords(request.newPassword(), m);
+
+      String encodedPass = encoder.encode(request.newPassword());
+      m.setPassword(encodedPass);
+    } else if (request.oldPassword() != null || request.newPassword() != null) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST,
+          "To change the password, the old and new password must be entered");
     }
   }
 
@@ -438,9 +440,16 @@ public class ManagerService {
     }
   }
 
-  private void checkDifferencePasswords(String newPassword, String oldPassword) {
-    if (encoder.matches(newPassword, oldPassword)) {
+  private void checkDifferencePasswords(String newPassword, Manager m) {
+    if (encoder.matches(newPassword, m.getPassword())) {
       throw new ManagerException(HttpStatus.CONFLICT, "The password must not match the old one");
+    }
+  }
+
+  private void checkEqualsCurrentPassword(String oldPassword, Manager m) {
+    if (!encoder.matches(oldPassword, m.getPassword())) {
+      throw new ManagerException(HttpStatus.BAD_REQUEST,
+          "The old password must match the stored one");
     }
   }
 }
