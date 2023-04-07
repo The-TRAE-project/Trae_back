@@ -12,12 +12,15 @@ package ru.trae.backend.controller;
 
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -63,22 +66,42 @@ class TypeWorkControllerTest {
 
   @Test
   void typeWorkPersist() {
+    //when
     when(typeWorkService.saveNewTypeWork(any())).thenReturn(new TypeWorkDto(1, "type1", true));
 
     ResponseEntity<TypeWorkDto> response = controller.typeWorkPersist(new NewTypeWorkDto("type1"));
 
+    //then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
     assertThat(response.getBody()).isNotNull();
   }
 
   @Test
   void typeWorkChange() {
+    //when
     when(typeWorkService.getTypeWorkDtoById(anyLong())).thenReturn(new TypeWorkDto(1, "type1", true));
 
     ResponseEntity<TypeWorkDto> response = controller.typeWorkChange(
         new ChangeNameAndActiveReq(1, "type2", false));
 
+    //then
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(response.getBody()).isNotNull();
+  }
+
+  @Test
+  void activeTypes() {
+    //given
+    List<TypeWorkDto> typeWorkDtos = new ArrayList<>();
+    typeWorkDtos.add(new TypeWorkDto(1L, "test", true));
+
+    //when
+    when(typeWorkService.getTypes()).thenReturn(typeWorkDtos);
+
+    ResponseEntity<List<TypeWorkDto>> response = controller.activeTypes();
+
+    //then
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+    assertEquals(typeWorkDtos, response.getBody());
   }
 }

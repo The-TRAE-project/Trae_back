@@ -42,6 +42,7 @@ import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
+import ru.trae.backend.dto.manager.ChangingManagerDataResp;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.manager.ManagerShortDto;
@@ -702,6 +703,20 @@ class ManagerServiceTest {
   }
 
   @Test
+  void updateData_onlyPassword_withWrongOldPassword() {
+    //given
+    ChangingManagerDataReq request =
+        new ChangingManagerDataReq(null, null, null, null, "oldPass", "newPass");
+
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.of(m));
+    when(encoder.matches("oldPass", m.getPassword())).thenReturn(false);
+
+    //then
+    assertThrows(ManagerException.class, () -> managerService.updateData(request, username));
+  }
+
+  @Test
   void updateData_onlyPassword_withoutOldPass() {
     //given
     ChangingManagerDataReq request =
@@ -736,5 +751,34 @@ class ManagerServiceTest {
     when(encoder.matches(request.newPassword(), m.getPassword())).thenReturn(true);
 
     assertThrows(ManagerException.class, () -> managerService.updateData(request, username));
+  }
+
+  @Test
+  void testGetResultOfChangingData() {
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.ofNullable(m));
+
+    ChangingManagerDataResp result = managerService.getResultOfChangingData(username);
+
+    //then
+    assertEquals(firstName, result.firstName());
+    assertEquals(middleName, result.middleName());
+    assertEquals(lastName, result.lastName());
+    assertEquals(phone, result.phone());
+  }
+
+  @Test
+  void testGetResultOfChangingData_withoutMiddleName() {
+    //when
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.ofNullable(m));
+
+    m.setMiddleName(null);
+    ChangingManagerDataResp result = managerService.getResultOfChangingData(username);
+
+    //then
+    assertEquals(firstName, result.firstName());
+    assertNull(result.middleName());
+    assertEquals(lastName, result.lastName());
+    assertEquals(phone, result.phone());
   }
 }

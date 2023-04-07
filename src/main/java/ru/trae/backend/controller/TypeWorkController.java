@@ -97,7 +97,7 @@ public class TypeWorkController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/active-types-list")
-  public ResponseEntity<List<TypeWorkDto>> types() {
+  public ResponseEntity<List<TypeWorkDto>> activeTypes() {
     return ResponseEntity.ok(typeWorkService.getTypes());
   }
 
