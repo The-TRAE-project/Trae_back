@@ -26,6 +26,7 @@ import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
+import ru.trae.backend.dto.manager.ChangingManagerDataResp;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.manager.ManagerShortDto;
@@ -360,6 +361,22 @@ public class ManagerService {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
           "To change the password, the old and new password must be entered");
     }
+  }
+
+  /**
+   * This method is used to get the result of changing data for a manager with a given username.
+   *
+   * @param username The username of the manager to get the data from.
+   * @return A ChangingManagerDataResp object containing the first name, middle name, last name,
+   *     and phone number of the given manager.
+   */
+  public ChangingManagerDataResp getResultOfChangingData(String username) {
+    Manager m = getManagerByUsername(username);
+    return new ChangingManagerDataResp(
+        m.getFirstName(),
+        m.getMiddleName() != null ? m.getMiddleName() : null,
+        m.getLastName(),
+        m.getPhone());
   }
 
   /**

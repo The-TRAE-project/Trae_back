@@ -39,6 +39,7 @@ import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
+import ru.trae.backend.dto.manager.ChangingManagerDataResp;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.manager.ManagerRegisterDto;
 import ru.trae.backend.dto.manager.ManagerShortDto;
@@ -203,22 +204,24 @@ public class ManagerController {
           + "Позволяет пользователям изменять собственные данные, включая пароль."
           + " Поля, не требующие изменения должны быть NULL")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Ничего не возвращает, только статус",
-          content = @Content),
+      @ApiResponse(responseCode = "200",
+          description = "Возвращает ФИО и номер телефона, за исключением пароля.",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ChangingManagerDataResp.class))}),
       @ApiResponse(responseCode = "400", description = "Неправильный формат новых данных",
           content = @Content),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "409", description = "Пользователь уже имеет такие данные,"
-          + " новый пароль такой же, как старый.",
+          + " новый пароль совпадает с текущим.",
           content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @PostMapping("update-data")
-  public ResponseEntity<HttpStatus> updateData(
+  public ResponseEntity<ChangingManagerDataResp> updateData(
       @Valid @RequestBody ChangingManagerDataReq changeManagerData, Principal principal) {
     managerService.updateData(changeManagerData, principal.getName());
-    return ResponseEntity.ok().build();
+    return ResponseEntity.ok(managerService.getResultOfChangingData(principal.getName()));
   }
 
   @Operation(summary = "Список ролей",
