@@ -41,6 +41,7 @@ public class EmployeeDtoMapper implements Function<Employee, EmployeeDto> {
         e.isActive(),
         e.getDateOfEmployment(),
         e.getDateOfRegister(),
+        e.getDateOfDismissal() != null ? e.getDateOfDismissal() : null,
         e.getTypeWorks().stream()
             .map(typeWorkDtoMapper)
             .toList()

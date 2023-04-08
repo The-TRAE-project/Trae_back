@@ -20,6 +20,7 @@ public record EmployeeDto(
     boolean isActive,
     LocalDate dateOfRegister,
     LocalDate dateOfEmployment,
+    LocalDate dateOfDismissal,
     List<TypeWorkDto> types
 ) {
 }
