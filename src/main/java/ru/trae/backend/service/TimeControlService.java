@@ -55,15 +55,14 @@ public class TimeControlService {
    *
    * @param empId Employee id
    * @param time  Departure time
-   * @return The updated TimeControl record
    */
-  public TimeControl updateTimeControlForDeparture(Long empId, LocalDateTime time) {
+  public void updateTimeControlForDeparture(Long empId, LocalDateTime time) {
     TimeControl tc = timeControlRepository
         .findByEmployee_IdAndIsOnShiftTrueAndWorkingShift_IsEndedFalse(empId);
     tc.setDeparture(time);
     tc.setOnShift(false);
 
-    return timeControlRepository.save(tc);
+    timeControlRepository.save(tc);
   }
 
   /**

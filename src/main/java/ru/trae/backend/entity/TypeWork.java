@@ -12,6 +12,7 @@ package ru.trae.backend.entity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -49,4 +50,26 @@ public class TypeWork {
   @ToString.Exclude
   @OneToMany(mappedBy = "typeWork", fetch = FetchType.LAZY)
   private List<Operation> operations = new ArrayList<>();
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    TypeWork typeWork = (TypeWork) o;
+    return Objects.equals(id, typeWork.id) && Objects.equals(name, typeWork.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, name);
+  }
+
+  @Override
+  public String toString() {
+    return "TypeWork{" +
+        "id=" + id +
+        ", name='" + name + '\'' +
+        ", isActive=" + isActive +
+        '}';
+  }
 }

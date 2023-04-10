@@ -17,6 +17,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ import ru.trae.backend.util.Util;
  *
  * @author Vladimir Olennikov
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
@@ -80,6 +82,8 @@ public class EmployeeService {
     e.setDateOfDismissal(null);
 
     Employee savedEmp = employeeRepository.save(e);
+
+    log.info("employee successfully created with data: " + savedEmp);
 
     return new EmployeeRegisterDtoResp(
         savedEmp.getFirstName(), savedEmp.getLastName(), savedEmp.getPinCode());
@@ -138,6 +142,7 @@ public class EmployeeService {
 
     if (!workingShiftService.employeeOnShift(true, e.getId())) {
       workingShiftService.arrivalEmployeeOnShift(e);
+      log.info("employee with id: " + e.getId() + " successful arrival on working shift");
     }
 
     return new ShortEmployeeDto(
@@ -159,6 +164,7 @@ public class EmployeeService {
 
     if (workingShiftService.employeeOnShift(true, e.getId())) {
       timeControlService.updateTimeControlForDeparture(employeeId, LocalDateTime.now());
+      log.info("employee with id: " + employeeId + " successful departed from working shift");
     }
 
     return new ShortEmployeeDto(
