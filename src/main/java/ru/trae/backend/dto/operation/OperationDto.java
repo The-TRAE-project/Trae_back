@@ -19,6 +19,7 @@ public record OperationDto(
     LocalDateTime plannedEndDate,
     LocalDateTime realEndDate,
     int period,
+    //todo add fact period
     boolean isEnded,
     boolean inWork,
     boolean readyToAcceptance,

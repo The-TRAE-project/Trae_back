@@ -42,6 +42,7 @@ public class ProjectDtoMapper implements Function<Project, ProjectDto> {
             .map(operationDtoMapper)
             .toList(),
         managerDtoMapper.apply(p.getManager()),
+        p.getCustomer(),
         p.getComment() != null ? p.getComment() : null
     );
   }

@@ -24,6 +24,7 @@ public record ProjectDto(
     boolean isEnded,
     List<OperationDto> operations,
     ManagerDto managerDto,
+    String customer,
     String comment
 ) {
 }
