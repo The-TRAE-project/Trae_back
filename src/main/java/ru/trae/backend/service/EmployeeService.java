@@ -260,6 +260,8 @@ public class EmployeeService {
     changeEmployeeTypesWork(dto, e);
 
     employeeRepository.save(e);
+
+    log.info("employee data successfully changed on this data: " + dto);
   }
 
   private void changeDateOfEmployment(ChangeDataDtoReq dto, Employee e) {
