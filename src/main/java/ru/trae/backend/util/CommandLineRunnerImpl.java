@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -34,6 +35,7 @@ import ru.trae.backend.service.TypeWorkService;
  *
  * @author Vladimir Olennikov
  */
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CommandLineRunnerImpl implements CommandLineRunner {
@@ -168,9 +170,9 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         "manager8", LocalDate.parse("2022-01-10"));
 
     if (!managerService.existsManagerByUsername(dto.username())) {
-      System.out.println("=================================");
-      System.out.println(managerService.saveNewManager(dto));
-      System.out.println("=================================");
+      log.info("=================================");
+      log.info(managerService.saveNewManager(dto).toString());
+      log.info("=================================");
     }
   }
 
