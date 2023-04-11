@@ -21,6 +21,7 @@ public record ProjectDto(
     LocalDateTime plannedEndDate,
     LocalDateTime realEndDate,
     int period,
+    Integer actualPeriod,
     boolean isEnded,
     List<OperationDto> operations,
     ManagerDto managerDto,

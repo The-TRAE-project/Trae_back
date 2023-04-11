@@ -1,5 +1,7 @@
 package ru.trae.backend.dto.mapper;
 
+import static java.time.temporal.ChronoUnit.HOURS;
+
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,13 @@ public class OperationDtoMapper implements Function<Operation, OperationDto> {
     Project p = o.getProject();
     Employee e = o.getEmployee();
 
+    Integer actualPeriod;
+    if (o.isEnded()) {
+      actualPeriod = Math.toIntExact(HOURS.between(o.getStartDate(), o.getRealEndDate()));
+    } else {
+      actualPeriod = null;
+    }
+
     return new OperationDto(
         o.getId(),
         o.getPriority(),
@@ -37,6 +46,7 @@ public class OperationDtoMapper implements Function<Operation, OperationDto> {
         o.getPlannedEndDate(),
         o.getRealEndDate(),
         o.getPeriod(),
+        actualPeriod,
         o.isEnded(),
         o.isInWork(),
         o.isReadyToAcceptance(),

@@ -212,7 +212,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
       NewProjectDto dto1 = new NewProjectDto(
           345,
           "Шкаф",
-          LocalDateTime.parse("2023-05-10T11:22:33"),
+          LocalDateTime.now().plusDays(40),
           "Шишкина М.М.",
           "Комментарий",
           List.of(
@@ -226,7 +226,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
       NewProjectDto dto2 = new NewProjectDto(
           346,
           "Дверь",
-          LocalDateTime.parse("2023-04-15T18:21:33"),
+          LocalDateTime.now().plusDays(25),
           "ГосСтройБыт",
           "Комментарий",
           List.of(
@@ -239,7 +239,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
       NewProjectDto dto3 = new NewProjectDto(
           284,
           "Стол",
-          LocalDateTime.parse("2023-04-18T08:23:33"),
+          LocalDateTime.now().plusDays(33),
           "Петров В.Г.",
           null,
           List.of(
