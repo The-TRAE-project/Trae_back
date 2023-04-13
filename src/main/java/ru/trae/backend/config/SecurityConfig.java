@@ -89,6 +89,7 @@ public class SecurityConfig {
         .antMatchers(
             "/api/auth/logout",
             "/api/auth/refresh",
+            "/api/manager/account-info",
             "/api/manager/role").authenticated()
 
         //managers

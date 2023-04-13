@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.manager.AccountInfo;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
@@ -119,6 +120,16 @@ public class ManagerService {
     return managerRepository.findByUsername(username).orElseThrow(
         () -> new ManagerException(HttpStatus.NOT_FOUND,
             "Manager with username: " + username + " not found"));
+  }
+
+  public AccountInfo getAccountInfoAuthUser(Principal principal) {
+    Manager m = getManagerByUsername(principal.getName());
+    return new AccountInfo(
+        m.getId(),
+        m.getFirstName(),
+        m.getMiddleName() != null ? m.getMiddleName() : null,
+        m.getLastName(),
+        m.getPhone());
   }
 
   /**

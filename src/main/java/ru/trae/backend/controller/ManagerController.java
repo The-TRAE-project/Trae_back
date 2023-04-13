@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.manager.AccountInfo;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
@@ -81,6 +82,23 @@ public class ManagerController {
   @GetMapping(path = "/role", produces = {"application/json; charset=UTF-8"})
   public ResponseEntity<String> roleAuthUser(Principal principal) {
     return ResponseEntity.ok(managerService.getRoleAuthUser(principal));
+  }
+
+  @Operation(summary = "Информация для личного кабинета аутентифицированного пользователя",
+      description = "Доступен аутентифицированным пользователям. "
+          + "Возвращает информацию для личного кабиента аутентифицированного пользователя")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "ФИО, номер телефона аутентифицированного пользователя",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = AccountInfo.class))}),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @GetMapping(path = "/account-info", produces = {"application/json; charset=UTF-8"})
+  public ResponseEntity<AccountInfo> accountInfo(Principal principal) {
+    return ResponseEntity.ok(managerService.getAccountInfoAuthUser(principal));
   }
 
   /**
