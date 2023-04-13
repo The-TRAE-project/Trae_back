@@ -84,11 +84,11 @@ public class Employee extends User {
 
   @Override
   public String toString() {
-    return "Employee{" +
-        "id=" + id +
-        ", pinCode=" + pinCode +
-        ", isActive=" + isActive +
-        ", typeWorks=" + typeWorks +
-        '}';
+    return "Employee{"
+        + "id=" + id
+        + ", pinCode=" + pinCode
+        + ", isActive=" + isActive
+        + ", typeWorks=" + typeWorks
+        + '}';
   }
 }

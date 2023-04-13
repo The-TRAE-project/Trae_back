@@ -53,8 +53,12 @@ public class TypeWork {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     TypeWork typeWork = (TypeWork) o;
     return Objects.equals(id, typeWork.id) && Objects.equals(name, typeWork.name);
   }
@@ -66,10 +70,10 @@ public class TypeWork {
 
   @Override
   public String toString() {
-    return "TypeWork{" +
-        "id=" + id +
-        ", name='" + name + '\'' +
-        ", isActive=" + isActive +
-        '}';
+    return "TypeWork{"
+        + "id=" + id
+        + ", name='" + name + '\''
+        + ", isActive=" + isActive
+        + '}';
   }
 }
