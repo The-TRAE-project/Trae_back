@@ -11,15 +11,15 @@
 package ru.trae.backend.dto.manager;
 
 /**
- * The
+ * This class represents the account information for a manager.
  *
  * @author Vladimir Olennikov
  */
 public record AccountInfo(
-        long managerId,
-        String firstName,
-        String middleName,
-        String lastName,
-        String phone
+    long managerId,
+    String firstName,
+    String middleName,
+    String lastName,
+    String phone
 ) {
 }

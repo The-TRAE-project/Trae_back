@@ -122,6 +122,12 @@ public class ManagerService {
             "Manager with username: " + username + " not found"));
   }
 
+  /**
+   * Get the account information of the authenticated user.
+   *
+   * @param principal The {@link Principal} of the authenticated user.
+   * @return The account info of the authenticated user.
+   */
   public AccountInfo getAccountInfoAuthUser(Principal principal) {
     Manager m = getManagerByUsername(principal.getName());
     return new AccountInfo(
