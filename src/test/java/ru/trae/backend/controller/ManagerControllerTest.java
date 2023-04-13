@@ -33,6 +33,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.manager.AccountInfo;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
@@ -63,6 +64,21 @@ class ManagerControllerTest {
     //then
     assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     assertThat(responseEntity.getBody()).isEqualTo("ADMIN");
+  }
+
+  @Test
+  void accountInfoAuthUserTest() {
+    //given
+    AccountInfo ai = new AccountInfo(1L, "testFirstName",
+        "testMiddleName", "testLastName", "+7 (000) 111 2222");
+    //when
+    when(managerService.getAccountInfoAuthUser(principal)).thenReturn(ai);
+
+    ResponseEntity<AccountInfo> responseEntity = managerController.accountInfo(principal);
+
+    //then
+    assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    assertThat(responseEntity.getBody()).isEqualTo(ai);
   }
 
   @Test

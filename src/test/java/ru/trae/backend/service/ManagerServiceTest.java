@@ -39,6 +39,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.manager.AccountInfo;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusReq;
 import ru.trae.backend.dto.manager.ChangeRoleAndStatusResp;
 import ru.trae.backend.dto.manager.ChangingManagerDataReq;
@@ -515,6 +516,47 @@ class ManagerServiceTest {
 
     //then
     assertEquals("Anonymous", role);
+  }
+
+  @Test
+  void getAccountInfoAuthUserTest() {
+    //given
+    Principal principal = mock(Principal.class);
+
+    //when
+    when(principal.getName()).thenReturn(username);
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.ofNullable(m));
+
+    AccountInfo accountInfo = managerService.getAccountInfoAuthUser(principal);
+
+    //then
+    assertNotNull(accountInfo);
+    assertEquals(managerId, accountInfo.managerId());
+    assertEquals(firstName, accountInfo.firstName());
+    assertEquals(middleName, accountInfo.middleName());
+    assertEquals(lastName, accountInfo.lastName());
+    assertEquals(phone, accountInfo.phone());
+  }
+
+  @Test
+  void getAccountInfoAuthUserTest_withNoMiddleName() {
+    //given
+    Principal principal = mock(Principal.class);
+    m.setMiddleName(null);
+
+    //when
+    when(principal.getName()).thenReturn(username);
+    when(managerRepository.findByUsername(username)).thenReturn(Optional.ofNullable(m));
+
+    AccountInfo accountInfo = managerService.getAccountInfoAuthUser(principal);
+
+    //then
+    assertNotNull(accountInfo);
+    assertEquals(managerId, accountInfo.managerId());
+    assertEquals(firstName, accountInfo.firstName());
+    assertNull(accountInfo.middleName());
+    assertEquals(lastName, accountInfo.lastName());
+    assertEquals(phone, accountInfo.phone());
   }
 
   @Test
