@@ -30,6 +30,7 @@ import ru.trae.backend.dto.Credentials;
 import ru.trae.backend.dto.jwt.JwtResponse;
 import ru.trae.backend.dto.jwt.RefreshJwtRequest;
 import ru.trae.backend.service.AuthService;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * AuthController is a controller class which provides various APIs for authentication and
@@ -72,7 +73,7 @@ public class AuthController {
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content)})
   @DeleteMapping("/logout")
-  public ResponseEntity<HttpStatus> logout(Principal principal) {
+  public ResponseEntity<HttpStatus> logout(@ApiIgnore Principal principal) {
     authService.logout(principal);
     return ResponseEntity.ok().build();
   }

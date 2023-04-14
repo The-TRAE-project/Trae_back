@@ -30,6 +30,7 @@ import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.service.ProjectService;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller class for managing {@link Project}s.
@@ -53,7 +54,7 @@ public class ProjectController {
    */
   @PostMapping("/new")
   public ResponseEntity<HttpStatus> projectPersist(
-      @Valid @RequestBody NewProjectDto dto, Principal principal) {
+      @Valid @RequestBody NewProjectDto dto, @ApiIgnore Principal principal) {
     projectService.saveNewProject(dto, principal.getName());
     return new ResponseEntity<>(HttpStatus.CREATED);
   }

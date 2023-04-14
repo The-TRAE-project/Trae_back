@@ -49,6 +49,7 @@ import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.service.ManagerService;
 import ru.trae.backend.util.PageSettings;
 import ru.trae.backend.util.RegExpression;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * Controller class for operations related to managers.
@@ -80,7 +81,7 @@ public class ManagerController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping(path = "/role", produces = {"application/json; charset=UTF-8"})
-  public ResponseEntity<String> roleAuthUser(Principal principal) {
+  public ResponseEntity<String> roleAuthUser(@ApiIgnore Principal principal) {
     return ResponseEntity.ok(managerService.getRoleAuthUser(principal));
   }
 
@@ -97,7 +98,7 @@ public class ManagerController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping(path = "/account-info", produces = {"application/json; charset=UTF-8"})
-  public ResponseEntity<AccountInfo> accountInfo(Principal principal) {
+  public ResponseEntity<AccountInfo> accountInfo(@ApiIgnore Principal principal) {
     return ResponseEntity.ok(managerService.getAccountInfoAuthUser(principal));
   }
 
