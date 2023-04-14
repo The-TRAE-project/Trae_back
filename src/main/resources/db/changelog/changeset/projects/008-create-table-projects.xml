@@ -22,7 +22,7 @@
             <column name="customer" type="VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
-            <column name="number" type="BIGINT">
+            <column name="number" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
             <column name="comment" type="VARCHAR(1000)"/>

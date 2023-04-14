@@ -47,9 +47,9 @@ public class Project extends Task {
   @Column(name = "id", nullable = false)
   private Long id;
   @Min(1)
-  @Max(9999)
+  @Max(999)
   @Column(name = "number", nullable = false)
-  private long number;
+  private int number;
   @Column(name = "comment", columnDefinition = "varchar(1000)")
   private String comment;
   @Size(min = 3, max = 200)

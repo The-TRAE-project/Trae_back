@@ -15,7 +15,7 @@ import ru.trae.backend.dto.operation.OperationDto;
  */
 public record ProjectDto(
     long id,
-    long number,
+    int number,
     String name,
     LocalDateTime startDate,
     LocalDateTime plannedEndDate,
