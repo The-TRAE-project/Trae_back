@@ -10,6 +10,8 @@
 
 package ru.trae.backend.service;
 
+import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
+
 import java.security.Principal;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -106,7 +108,7 @@ public class ManagerService {
   public Manager getManagerById(long managerId) {
     return managerRepository.findById(managerId).orElseThrow(
         () -> new ManagerException(HttpStatus.NOT_FOUND,
-            "Manager with ID: " + managerId + " not found"));
+            "Manager with ID: " + managerId + NOT_FOUND_CONST.value));
   }
 
   /**
@@ -119,7 +121,7 @@ public class ManagerService {
   public Manager getManagerByUsername(String username) {
     return managerRepository.findByUsername(username).orElseThrow(
         () -> new ManagerException(HttpStatus.NOT_FOUND,
-            "Manager with username: " + username + " not found"));
+            "Manager with username: " + username + NOT_FOUND_CONST.value));
   }
 
   /**
@@ -266,7 +268,7 @@ public class ManagerService {
   private void activateAccount(long managerId) {
     if (!managerRepository.existsById(managerId)) {
       throw new ManagerException(HttpStatus.NOT_FOUND,
-          "The manager with id: " + managerId + " not found");
+          "The manager with id: " + managerId + NOT_FOUND_CONST.value);
     }
     if (managerRepository.existsByIdAndAccountNonLocked(managerId, true)) {
       throw new ManagerException(HttpStatus.CONFLICT, "This manager already activated");
@@ -285,7 +287,7 @@ public class ManagerService {
   private void deactivateAccount(long managerId, LocalDate dateOfDismissal) {
     if (!managerRepository.existsById(managerId)) {
       throw new ManagerException(HttpStatus.NOT_FOUND,
-          "The manager with id: " + managerId + " not found");
+          "The manager with id: " + managerId + NOT_FOUND_CONST.value);
     }
     if (managerRepository.existsByIdAndAccountNonLocked(managerId, false)) {
       throw new ManagerException(HttpStatus.CONFLICT, "This manager already deactivated");
@@ -429,7 +431,7 @@ public class ManagerService {
       managerRepository.updateRoleById(role, managerId);
     } else {
       throw new ManagerException(HttpStatus.BAD_REQUEST,
-          "The role: " + newRole + " not found");
+          "The role: " + newRole + NOT_FOUND_CONST.value);
     }
   }
 
@@ -464,7 +466,8 @@ public class ManagerService {
 
   private void checkExistsUsername(String username) {
     if (!existsManagerByUsername(username)) {
-      throw new ManagerException(HttpStatus.NOT_FOUND, "Username: " + username + " not found");
+      throw new ManagerException(HttpStatus.NOT_FOUND,
+          "Username: " + username + NOT_FOUND_CONST.value);
     }
   }
 

@@ -186,7 +186,7 @@ public class ManagerController {
       @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")
       Boolean status) {
 
-    Sort managerSort = pageSetting.buildManagerSort();
+    Sort managerSort = pageSetting.buildManagerOrEmpSort();
     Pageable managerPage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), managerSort);
     return ResponseEntity.ok(managerService.getManagerDtoPage(managerPage, role, status));

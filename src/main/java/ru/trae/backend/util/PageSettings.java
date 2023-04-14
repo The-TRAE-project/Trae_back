@@ -48,11 +48,10 @@ public class PageSettings {
    * @return a {@link Sort} instance based on the {@link #direction} and {@link #key} fields
    */
   public Sort buildSort() {
-    return switch (direction) {
-      case "dsc" -> Sort.by(key).descending();
-      case "asc" -> Sort.by(key).ascending();
-      default -> Sort.by(key).descending();
-    };
+    if (direction.equals("asc")) {
+      return Sort.by(key).ascending();
+    }
+    return Sort.by(key).descending();
   }
 
   /**
@@ -60,7 +59,7 @@ public class PageSettings {
    *
    * @return The sort for the manager object
    */
-  public Sort buildManagerSort() {
+  public Sort buildManagerOrEmpSort() {
     Sort sort;
     key = "lastName";
     String nextKey = "firstName";
@@ -81,23 +80,6 @@ public class PageSettings {
     Sort sort;
     key = "name";
     String nextKey = "id";
-    if (direction.equals("asc")) {
-      sort = Sort.by(key).ascending().and(Sort.by(nextKey).ascending());
-    } else {
-      sort = Sort.by(key).descending().and(Sort.by(nextKey).descending());
-    }
-    return sort;
-  }
-
-  /**
-   * This method builds a sort for an employee object.
-   *
-   * @return The sort for the employee object
-   */
-  public Sort buildEmployeeSort() {
-    Sort sort;
-    key = "lastName";
-    String nextKey = "firstName";
     if (direction.equals("asc")) {
       sort = Sort.by(key).ascending().and(Sort.by(nextKey).ascending());
     } else {

@@ -10,6 +10,8 @@
 
 package ru.trae.backend.service;
 
+import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -62,7 +64,7 @@ public class TypeWorkService {
   public TypeWork getTypeWorkById(long id) {
     return typeWorkRepository.findById(id).orElseThrow(
         () -> new TypeWorkException(HttpStatus.NOT_FOUND,
-            "Type work with ID: " + id + " not found")
+            "Type work with ID: " + id + NOT_FOUND_CONST.value)
     );
   }
 
@@ -85,7 +87,7 @@ public class TypeWorkService {
     }
     if (!typeWorkRepository.existsById(request.typeWorkId())) {
       throw new TypeWorkException(HttpStatus.NOT_FOUND,
-          "Type work with ID: " + request.typeWorkId() + " not found");
+          "Type work with ID: " + request.typeWorkId() + NOT_FOUND_CONST.value);
     }
 
     if (request.newName() != null) {
@@ -140,7 +142,7 @@ public class TypeWorkService {
   public TypeWork getTypeWorkByName(String name) {
     return typeWorkRepository.findByName(name).orElseThrow(
         () -> new TypeWorkException(HttpStatus.NOT_FOUND,
-            "Type work with name: " + name + " not found")
+            "Type work with name: " + name + NOT_FOUND_CONST.value)
     );
   }
 

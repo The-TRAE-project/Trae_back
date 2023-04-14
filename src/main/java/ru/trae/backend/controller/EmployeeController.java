@@ -164,7 +164,7 @@ public class EmployeeController {
       @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")
       Boolean isActive) {
 
-    Sort employeeSort = pageSetting.buildEmployeeSort();
+    Sort employeeSort = pageSetting.buildManagerOrEmpSort();
     Pageable employeePage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), employeeSort);
     return ResponseEntity.ok(
