@@ -10,6 +10,11 @@
 
 package ru.trae.backend.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -38,6 +43,24 @@ public class WorkingShiftController {
     return ResponseEntity.ok(workingShiftService.getActive());
   }
 
+  @Operation(summary = "Проверка нахождения сотрудника на смене",
+      description = "Доступен сотрудникам. Проверяет, находится ли сотрудник на смене. "
+          + "Если да, то возвращает true, если нет, то - false.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Возвращает булеан значения (true или false).",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = Boolean.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат идентификатора",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Сотрудник с таким идентификатором не найден", content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @GetMapping("/on-shift/{employeeId}")
   public ResponseEntity<Boolean> statusEmployee(@PathVariable long employeeId) {
     return ResponseEntity.ok(workingShiftService.employeeOnShift(true, employeeId));

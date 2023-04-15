@@ -151,7 +151,7 @@ public class ProjectController {
    * @param projectId the project's id
    * @return ResponseEntity with status ok
    */
-  @Operation(summary = "Закрывает проект",
+  @Operation(summary = "Закрытие проекта",
       description = "Доступен администратору. Закрывает проект, возвращает статус 200.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
@@ -182,7 +182,7 @@ public class ProjectController {
    * @param projectId the project id
    * @return the response entity
    */
-  @Operation(summary = "Удаляет проект",
+  @Operation(summary = "Удаление проекта",
       description = "Доступен администратору. Удаляет проект и все операции(этапы) "
           + "связанные с ним, возвращает статус 204.")
   @ApiResponses(value = {
