@@ -123,6 +123,20 @@ public class ProjectController {
    * @param number      filter by project number
    * @return a page of short project dtos
    */
+  @Operation(summary = "Список проектов с пагинацией, сортировкой и фильтрацией",
+      description = "Доступен администратору. Возвращает список ДТО проектов с сортировкой по "
+          + "дате окончания, с возможностью фильтрации по номеру и статусу(открыт/закрыт) проекта")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Список ДТО проектов. "
+          + "В примере указан единичный объект из списка",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ShortProjectDto.class))}),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @GetMapping("/projects")
   public ResponseEntity<PageDto<ShortProjectDto>> projects(
       @Valid PageSettings pageSetting,
