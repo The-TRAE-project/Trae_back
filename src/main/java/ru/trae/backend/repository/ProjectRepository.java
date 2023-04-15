@@ -12,6 +12,8 @@ package ru.trae.backend.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -43,4 +45,12 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   @Query("update Project p set p.isEnded = ?1, p.realEndDate = ?2 where p.id = ?3")
   void updateIsEndedAndRealEndDateById(boolean isEnded, LocalDateTime realEndDate, Long id);
 
+  @Query("select p from Project p where p.isEnded = ?1 and p.number = ?2")
+  Page<Project> findByIsEndedAndNumber(boolean isEnded, int number, Pageable pageable);
+
+  @Query("select p from Project p where p.isEnded = ?1")
+  Page<Project> findByIsEnded(boolean isEnded, Pageable pageable);
+
+  @Query("select p from Project p where p.number = ?1")
+  Page<Project> findByNumber(int number, Pageable pageable);
 }

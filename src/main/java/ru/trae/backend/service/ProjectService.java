@@ -16,14 +16,19 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectAvailableDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectDtoMapper;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
+import ru.trae.backend.dto.project.ShortProjectDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
@@ -45,6 +50,7 @@ public class ProjectService {
   private final EmployeeService employeeService;
   private final ProjectDtoMapper projectDtoMapper;
   private final ProjectAvailableDtoMapper projectAvailableDtoMapper;
+  private final PageToPageDtoMapper pageToPageDtoMapper;
 
   /**
    * Saves a new {@link Project} to the database.
@@ -98,6 +104,26 @@ public class ProjectService {
         .stream()
         .map(projectDtoMapper)
         .toList();
+  }
+
+  public Page<Project> getProjectPage(Pageable projectPage, Boolean isEnded, Integer number) {
+    Page<Project> page;
+
+    if (isEnded != null && number != null) {
+      page = projectRepository.findByIsEndedAndNumber(isEnded, number, projectPage);
+    } else if (isEnded != null) {
+      page = projectRepository.findByIsEnded(isEnded, projectPage);
+    } else if (number != null) {
+      page = projectRepository.findByNumber(number, projectPage);
+    } else {
+      page = projectRepository.findAll(projectPage);
+    }
+    return page;
+  }
+
+  public PageDto<ShortProjectDto> getProjectDtoPage(
+      Pageable projectPage, Boolean isEnded, Integer number) {
+    return pageToPageDtoMapper.projectPageToPageDto(getProjectPage(projectPage, isEnded, number));
   }
 
   /**

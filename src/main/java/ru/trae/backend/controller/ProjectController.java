@@ -11,6 +11,7 @@
 package ru.trae.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,6 +20,9 @@ import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,11 +34,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
+import ru.trae.backend.dto.project.ShortProjectDto;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.service.ProjectService;
+import ru.trae.backend.util.PageSettings;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
@@ -108,14 +115,19 @@ public class ProjectController {
     return ResponseEntity.ok(projectService.getProjectDtoById(projectId));
   }
 
-  /**
-   * Get all projects.
-   *
-   * @return a list of all projects
-   */
   @GetMapping("/projects")
-  public ResponseEntity<List<ProjectDto>> projects() {
-    return ResponseEntity.ok(projectService.getAllProjects());
+  public ResponseEntity<PageDto<ShortProjectDto>> projects(
+      @Valid PageSettings pageSetting,
+      @RequestParam(required = false) @Parameter(description =
+          "Фильтрация по статусу открыт/закрыт") Boolean isEnded,
+      @RequestParam(required = false) @Parameter(description =
+          "Фильтрация по номеру проекта") Integer number) {
+
+    Sort projectSort = pageSetting.buildProjectSort();
+    Pageable projectPage = PageRequest.of(
+        pageSetting.getPage(), pageSetting.getElementPerPage(), projectSort);
+
+    return ResponseEntity.ok(projectService.getProjectDtoPage(projectPage, isEnded, number));
   }
 
   /**

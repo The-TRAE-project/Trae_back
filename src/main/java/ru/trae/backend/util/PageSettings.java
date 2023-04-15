@@ -87,4 +87,21 @@ public class PageSettings {
     }
     return sort;
   }
+
+  /**
+   * This method builds a sort for a project object.
+   *
+   * @return The sort for the project object
+   */
+  public Sort buildProjectSort() {
+    Sort sort;
+    key = "plannedEndDate";
+    String nextKey = "id";
+    if (direction.equals("asc")) {
+      sort = Sort.by(key).ascending().and(Sort.by(nextKey).ascending());
+    } else {
+      sort = Sort.by(key).descending().and(Sort.by(nextKey).descending());
+    }
+    return sort;
+  }
 }
