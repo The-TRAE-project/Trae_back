@@ -142,7 +142,7 @@ public class ManagerController {
       @ApiResponse(responseCode = "200", description = "ДТО пользователя",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ManagerDto.class))}),
-      @ApiResponse(responseCode = "400", description = "Неправильные формат идентификатора",
+      @ApiResponse(responseCode = "400", description = "Неправильный формат идентификатора",
           content = @Content),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
