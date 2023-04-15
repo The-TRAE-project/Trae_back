@@ -10,6 +10,9 @@
 
 package ru.trae.backend.util;
 
+/**
+ * Enum class Constant provides constants.
+ */
 public enum Constant {
   NOT_FOUND_CONST(" not found");
 

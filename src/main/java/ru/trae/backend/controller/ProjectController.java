@@ -115,6 +115,14 @@ public class ProjectController {
     return ResponseEntity.ok(projectService.getProjectDtoById(projectId));
   }
 
+  /**
+   * Gets a page of projects.
+   *
+   * @param pageSetting the page settings
+   * @param isEnded     filter by open/closed status
+   * @param number      filter by project number
+   * @return a page of short project dtos
+   */
   @GetMapping("/projects")
   public ResponseEntity<PageDto<ShortProjectDto>> projects(
       @Valid PageSettings pageSetting,

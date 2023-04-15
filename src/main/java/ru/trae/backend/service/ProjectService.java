@@ -106,6 +106,14 @@ public class ProjectService {
         .toList();
   }
 
+  /**
+   * Gets a page of {@code Project} objects according to the given parameters.
+   *
+   * @param projectPage the requested page for the {@code Project} objects
+   * @param isEnded     a boolean flag indicating if the {@code Project} is ended or not
+   * @param number      the number associated with the {@code Project}
+   * @return a page of {@code Project} objects
+   */
   public Page<Project> getProjectPage(Pageable projectPage, Boolean isEnded, Integer number) {
     Page<Project> page;
 

@@ -72,7 +72,12 @@ public class PageToPageDtoMapper {
         .toList(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
   }
 
-
+  /**
+   * Converts a page of projects to page DTO.
+   *
+   * @param page page of projects
+   * @return page DTO
+   */
   public PageDto<ShortProjectDto> projectPageToPageDto(Page<Project> page) {
     return new PageDto<>(page.getContent().stream()
         .map(p -> new ShortProjectDto(p.getId(), p.getNumber(), p.getName()))
