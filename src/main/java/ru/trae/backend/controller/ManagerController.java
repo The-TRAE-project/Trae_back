@@ -217,7 +217,13 @@ public class ManagerController {
     return ResponseEntity.ok(managerService.resetPassword(username));
   }
 
-
+  /**
+   * Method for updating manager data.
+   *
+   * @param changeManagerData {@link ChangingManagerDataReq}
+   * @param principal         {@link Principal}
+   * @return {@link ChangingManagerDataResp}
+   */
   @Operation(summary = "Изменение данных учетной записи",
       description = "Доступен аутентифицированным пользователям. "
           + "Позволяет пользователям изменять собственные данные, включая пароль."
