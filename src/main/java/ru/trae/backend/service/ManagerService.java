@@ -389,13 +389,14 @@ public class ManagerService {
    * @return A ChangingManagerDataResp object containing the first name, middle name, last name,
    *     and phone number of the given manager.
    */
-  public ChangingManagerDataResp getResultOfChangingData(String username) {
+  public ChangingManagerDataResp getResultOfChangingData(String username, String newPassword) {
     Manager m = getManagerByUsername(username);
     return new ChangingManagerDataResp(
         m.getFirstName(),
         m.getMiddleName() != null ? m.getMiddleName() : null,
         m.getLastName(),
-        m.getPhone());
+        m.getPhone(),
+        newPassword);
   }
 
   /**

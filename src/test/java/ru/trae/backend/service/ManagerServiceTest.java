@@ -800,7 +800,7 @@ class ManagerServiceTest {
     //when
     when(managerRepository.findByUsername(username)).thenReturn(Optional.ofNullable(m));
 
-    ChangingManagerDataResp result = managerService.getResultOfChangingData(username);
+    ChangingManagerDataResp result = managerService.getResultOfChangingData(username, "newPass");
 
     //then
     assertEquals(firstName, result.firstName());
@@ -815,7 +815,7 @@ class ManagerServiceTest {
     when(managerRepository.findByUsername(username)).thenReturn(Optional.ofNullable(m));
 
     m.setMiddleName(null);
-    ChangingManagerDataResp result = managerService.getResultOfChangingData(username);
+    ChangingManagerDataResp result = managerService.getResultOfChangingData(username, "newPass");
 
     //then
     assertEquals(firstName, result.firstName());

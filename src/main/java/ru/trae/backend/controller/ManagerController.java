@@ -240,7 +240,9 @@ public class ManagerController {
   public ResponseEntity<ChangingManagerDataResp> updateData(
       @Valid @RequestBody ChangingManagerDataReq changeManagerData, Principal principal) {
     managerService.updateData(changeManagerData, principal.getName());
-    return ResponseEntity.ok(managerService.getResultOfChangingData(principal.getName()));
+    return ResponseEntity.ok(
+        managerService.getResultOfChangingData(principal.getName(),
+            changeManagerData.newPassword() != null ? changeManagerData.newPassword() : null));
   }
 
   @Operation(summary = "Список ролей",

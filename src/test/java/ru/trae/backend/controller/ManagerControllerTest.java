@@ -202,6 +202,26 @@ class ManagerControllerTest {
   }
 
   @Test
+  void updateDataTest_withoutPasswords() {
+    //given
+    ChangingManagerDataReq changeManagerData =
+        new ChangingManagerDataReq("firstName", "middleName", "lastName",
+            "phone", null, null);
+    Principal principal = Mockito.mock(Principal.class);
+
+    //when
+    when(principal.getName()).thenReturn("userName");
+
+    managerController.updateData(changeManagerData, principal);
+
+    //then
+    assertDoesNotThrow(
+        () ->
+            verify(managerService, times(1))
+                .updateData(changeManagerData, principal.getName()));
+  }
+
+  @Test
   void changeRoleAndStatusTest() {
     //given
     ChangeRoleAndStatusReq request =

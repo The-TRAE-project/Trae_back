@@ -22,6 +22,7 @@ public record ChangingManagerDataResp(
     String firstName,
     String middleName,
     String lastName,
-    String phone
+    String phone,
+    String password
 ) {
 }
