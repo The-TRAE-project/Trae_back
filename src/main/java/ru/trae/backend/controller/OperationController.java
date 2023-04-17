@@ -194,6 +194,28 @@ public class OperationController {
    * @param dto The request body of type {@link ReqOpEmpIdDto}
    * @return {@link ResponseEntity} HttpStatus.OK
    */
+  @io.swagger.v3.oas.annotations.Operation(
+      summary = "Принятие операции сотрудником", description = "Доступен сотрудникам. "
+      + "Закрепляет выбранную операцию за сотрудником, возвращает статус 200")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Возвращает статус 200 при успешном принятии операции",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = HttpStatus.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "Неправильный формат идентификаторов (операции и/или сотрудника). "
+              + "Операция не доступна для принятия. "
+              + "Работник не имеет требуемой квалификации(типа работы)",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Операция и/или сотрудник с таким идентификатором не найдена",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @PostMapping("/employee/receive-operation")
   public ResponseEntity<HttpStatus> receiveOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
     operationService.receiveOperation(dto);
@@ -206,6 +228,27 @@ public class OperationController {
    * @param dto The request body of type {@link ReqOpEmpIdDto}
    * @return {@link ResponseEntity} HttpStatus.OK
    */
+  @io.swagger.v3.oas.annotations.Operation(
+      summary = "Закрытие операции сотрудником", description = "Доступен сотрудникам. "
+      + "Закрывает выбранную операцию, возвращает статус 200")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Возвращает статус 200 при успешном закрытии операции",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = HttpStatus.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "Неправильный формат идентификаторов (операции и/или сотрудника). "
+              + "ID принявшего сотрудника и указанного в запросе - не совпадают",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Операция и/или сотрудник с таким идентификатором не найдена",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @PostMapping("/employee/finish-operation")
   public ResponseEntity<HttpStatus> finishOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
     Operation o = operationService.getOperationById(dto.operationId());
