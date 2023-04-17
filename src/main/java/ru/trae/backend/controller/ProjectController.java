@@ -164,9 +164,10 @@ public class ProjectController {
           + "согласно типам работ конкретного работника. "
           + "Возвращает пустой список, если такие проекты не найдены в системе.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Список доступных проектов",
+      @ApiResponse(responseCode = "200",
+          description = "Список доступных проектов. В примере указан единичный объект из списка",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = List.class))}),
+              schema = @Schema(implementation = ProjectAvailableForEmpDto.class))}),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "403", description = "Доступ запрещен",

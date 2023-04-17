@@ -137,6 +137,21 @@ public class OperationController {
    * @param projectId the id of the project to retrieve operations for
    * @return the list of operations associated with the given project
    */
+  @io.swagger.v3.oas.annotations.Operation(summary = "Список операций проекта для сотрудников",
+      description = "Доступен сотрудникам. Возвращает список операций, по указанному ID проекта")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Список операций выбранного проекта"
+          + "В примере указан единичный объект из списка",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = OperationForEmpDto.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат идентификатора",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @GetMapping("/employee/project-operations/{projectId}")
   public ResponseEntity<List<OperationForEmpDto>> operationsByProjectId(
       @PathVariable long projectId) {
@@ -149,6 +164,24 @@ public class OperationController {
    * @param employeeId id of employee
    * @return list of operations in work for specified employee
    */
+  @io.swagger.v3.oas.annotations.Operation(
+      summary = "Список операций принятых в работу сотрудником",
+      description = "Доступен сотрудникам. Возвращает список операций принятых в работу "
+          + "сотрудником по его ID")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Список операций принятых в работу указанным сотрудником"
+              + "В примере указан единичный объект из списка",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = OperationInWorkForEmpDto.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат идентификатора",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @GetMapping("/employee/operations-in-work/{employeeId}")
   public ResponseEntity<List<OperationInWorkForEmpDto>> operationsInWorkByEmpId(
       @PathVariable long employeeId) {

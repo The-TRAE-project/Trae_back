@@ -24,19 +24,22 @@ import ru.trae.backend.util.RegExpression;
  * @author Vladimir Olennikov
  */
 public record InsertingOperationDto(
+    @Schema(description = "Идентификатор проекта, к которому относится вставляемая операция")
     @NotNull(message = "Invalid project id: id is NULL")
     @Min(value = 0, message = "The project id cannot be less than 0")
     @Max(value = Integer.MAX_VALUE, message =
         "The project id cannot be more than " + Integer.MAX_VALUE)
     long projectId,
-    @Schema(description = "Название этапа")
+    @Schema(description = "Название этапа, обычно совпадает с названием типа работы")
     @Pattern(regexp = RegExpression.OPERATION_NAME, message = "Invalid name format")
     String name,
+    @Schema(description = "Идентификатор типа работы")
     @NotNull(message = "Invalid type work id: id is NULL")
     @Min(value = 0, message = "The type work id cannot be less than 0")
     @Max(value = Integer.MAX_VALUE, message =
         "The type work id cannot be more than " + Integer.MAX_VALUE)
     long typeWorkId,
+    @Schema(description = "Приоритет вставляемой операции")
     @NotNull(message = "Invalid priority: priority is NULL")
     @Min(value = 1, message = "The priority cannot be less than 1")
     @Max(value = 989, message = "The priority cannot be more than 989")
