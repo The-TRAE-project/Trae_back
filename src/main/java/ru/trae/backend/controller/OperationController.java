@@ -10,6 +10,10 @@
 
 package ru.trae.backend.controller;
 
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +68,27 @@ public class OperationController {
    * @param dto contains the data of the new {@link Operation}
    * @return {@link HttpStatus#OK} if the operation was added successfully
    */
+  @io.swagger.v3.oas.annotations.Operation(summary = "Вставка операции в существующий проект",
+      description = "Доступен администратору. Вставляет операцию в проект, возвращает статус 200.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Возвращает статус 200 при успешной вставке операции",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = HttpStatus.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат идентификаторов. "
+          + "Новая операция не может иметь приоритет ниже доступной для принятия.",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Проект или тип работы с таким идентификатором не найдена",
+          content = @Content),
+      @ApiResponse(responseCode = "409",
+          description = "Операция с таким приоритетом уже существует", content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @PostMapping("/insert")
   public ResponseEntity<HttpStatus> insertOperation(
       @Valid @RequestBody InsertingOperationDto dto) {
@@ -79,6 +104,26 @@ public class OperationController {
    * @param operationId id of the operation to close.
    * @return OK if the operation has been closed.
    */
+  @io.swagger.v3.oas.annotations.Operation(summary = "Закрытие операции",
+      description = "Доступен администратору. Закрывает операцию, возвращает статус 200.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Возвращает статус 200 при успешном закрытии операции",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = HttpStatus.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат идентификатора или "
+          + "операция еще/уже не доступна для принятия и не может быть закрыта",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Операция с таким идентификатором не найдена", content = @Content),
+      @ApiResponse(responseCode = "409", description = "Операция уже закрыта",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @PostMapping("/close")
   public ResponseEntity<HttpStatus> closeOperation(
       @RequestParam(value = "operationId") long operationId) {

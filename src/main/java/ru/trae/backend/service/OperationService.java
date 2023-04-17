@@ -263,7 +263,7 @@ public class OperationService {
   public void closeOperation(long operationId) {
     Operation o = getOperationById(operationId);
     if (o.isEnded()) {
-      throw new OperationException(HttpStatus.BAD_REQUEST, "This operation is already finished");
+      throw new OperationException(HttpStatus.CONFLICT, "This operation is already finished");
     }
 
     if (o.isInWork() || o.isReadyToAcceptance()) {
