@@ -242,7 +242,7 @@ public class ManagerController {
           content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
-  @PostMapping("update-data")
+  @PostMapping("/update-data")
   public ResponseEntity<ChangingManagerDataResp> updateData(
       @Valid @RequestBody ChangingManagerDataReq changeManagerData, Principal principal) {
     managerService.updateData(changeManagerData, principal.getName());
