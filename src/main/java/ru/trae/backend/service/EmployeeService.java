@@ -319,16 +319,24 @@ public class EmployeeService {
     }
 
     if (dto.isActive() != null) {
-      if ((e.isActive() != dto.isActive()) && Boolean.TRUE.equals(dto.isActive())) {
+      if (Boolean.TRUE.equals(dto.isActive())) {
+        if (Boolean.TRUE.equals(dto.isActive()) == e.isActive()) {
+          throw new EmployeeException(HttpStatus.CONFLICT, "The employee already has this status");
+        }
+
         e.setActive(true);
         e.setDateOfDismissal(null);
-      } else if ((e.isActive() != dto.isActive()) && (dto.dateOfDismissal() != null)) {
+      } else if (dto.dateOfDismissal() != null) {
+        if (!e.isActive()) {
+          throw new EmployeeException(HttpStatus.CONFLICT, "The employee already has this status");
+        }
+
         e.setActive(false);
         e.setDateOfDismissal(dto.dateOfDismissal());
+      } else {
+        throw new EmployeeException(HttpStatus.BAD_REQUEST,
+            "Incorrect status or missing date of dismissal");
       }
-    } else {
-      throw new EmployeeException(HttpStatus.BAD_REQUEST,
-          "Incorrect status or missing date of dismissal");
     }
   }
 
