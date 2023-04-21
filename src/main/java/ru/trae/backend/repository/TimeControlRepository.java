@@ -11,6 +11,7 @@
 package ru.trae.backend.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.trae.backend.entity.TimeControl;
 
 /**
@@ -26,6 +27,10 @@ public interface TimeControlRepository extends JpaRepository<TimeControl, Long> 
    * @param id The ID of the employee to search for
    * @return The TimeControl object with the given parameters
    */
-  TimeControl findByEmployee_IdAndIsOnShiftTrueAndWorkingShift_IsEndedFalse(Long id);
-
+  @Query(value = """
+      select * from time_controls as tc
+              inner join employees e on e.id = tc.employee_id
+              inner join working_shifts ws on ws.id = tc.working_shift_id
+      where tc.is_on_shift = true and ws.is_ended = false and e.id = ?1""", nativeQuery = true)
+  TimeControl findByEmployeeIdAndIsOnShiftTrueAndWorkingShiftIsEndedFalse(Long id);
 }
