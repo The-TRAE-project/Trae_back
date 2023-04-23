@@ -1,28 +1,44 @@
 <?xml version="1.1" encoding="UTF-8" standalone="no"?>
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
-                   xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
-                   xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.6.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
-    <include file="/db/changelog/changeset/employees/002-create-table-employees.xml"/>
-    <include file="/db/changelog/changeset/employees_type_works/003-create-table-employees-type-works.xml"/>
-    <include file="/db/changelog/changeset/managers/004-create-table-managers.xml"/>
-    <include file="/db/changelog/changeset/operations/005-create-table-operations.xml"/>
-    <include file="/db/changelog/changeset/pieces/007-create-table-pieces.xml"/>
-    <include file="/db/changelog/changeset/projects/008-create-table-projects.xml"/>
-    <include file="/db/changelog/changeset/time_controls/009-create-table-time-controls.xml"/>
-    <include file="/db/changelog/changeset/types/010-create-table-types.xml"/>
-    <include file="/db/changelog/changeset/working_shifts/011-create-table-working-shifts.xml"/>
-    <include file="/db/changelog/changeset/managers/012-add-unique-constraint-username.xml"/>
-    <include file="/db/changelog/changeset/employees/014-add-unique-constraint-pin-code.xml"/>
-    <include file="/db/changelog/changeset/operations/016-add-foreign-key-constraint-operations-types.xml"/>
-    <include file="/db/changelog/changeset/projects/017-add-foreign-key-constraint-projects-managers.xml"/>
-    <include file="/db/changelog/changeset/employees_type_works/018-add-foreign-key-constraint-employees-type-works-employees.xml"/>
-    <include file="/db/changelog/changeset/time_controls/019-add-foreign-key-constraint-time-controls-employees.xml"/>
-    <include file="/db/changelog/changeset/time_controls/020-add-foreign-key-constraint-time-controls-working-shift.xml"/>
-    <include file="/db/changelog/changeset/operations/021-add-foreign-key-constraint-operations-employees.xml"/>
-    <include file="/db/changelog/changeset/employees_type_works/023-add-foreign-key-constraint-employees-type-works-type-works.xml"/>
-    <include file="/db/changelog/changeset/operations/025-add-foreign-key-constraint-operations-projects.xml"/>
-    <include file="/db/changelog/changeset/types/027-add-unique-constraint-name.xml"/>
-    <include file="/db/changelog/changeset/pieces/028-add-unique-constraint-uuid.xml"/>
-    <include file="/db/changelog/changeset/pieces/029-add-unique-constraint-username.xml"/>
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <include file="/db/changelog/changeset-create-tables/employees/002-create-table-employees.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/employees_type_works/003-create-table-employees-type-works.xml"/>
+    <include file="/db/changelog/changeset-create-tables/managers/004-create-table-managers.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/operations/005-create-table-operations.xml"/>
+    <include file="/db/changelog/changeset-create-tables/pieces/007-create-table-pieces.xml"/>
+    <include file="/db/changelog/changeset-create-tables/projects/008-create-table-projects.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/time_controls/009-create-table-time-controls.xml"/>
+    <include file="/db/changelog/changeset-create-tables/types/010-create-table-types.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/working_shifts/011-create-table-working-shifts.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/managers/012-add-unique-constraint-username.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/employees/014-add-unique-constraint-pin-code.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/operations/016-add-foreign-key-constraint-operations-types.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/projects/017-add-foreign-key-constraint-projects-managers.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/employees_type_works/018-add-foreign-key-constraint-employees-type-works-employees.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/time_controls/019-add-foreign-key-constraint-time-controls-employees.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/time_controls/020-add-foreign-key-constraint-time-controls-working-shift.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/operations/021-add-foreign-key-constraint-operations-employees.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/employees_type_works/023-add-foreign-key-constraint-employees-type-works-type-works.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/operations/025-add-foreign-key-constraint-operations-projects.xml"/>
+    <include file="/db/changelog/changeset-create-tables/types/027-add-unique-constraint-name.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/pieces/028-add-unique-constraint-uuid.xml"/>
+    <include
+            file="/db/changelog/changeset-create-tables/pieces/029-add-unique-constraint-username.xml"/>
+    <include file="/db/changelog/changeset-insert-data/001-insert-types-work.xml"/>
 </databaseChangeLog>

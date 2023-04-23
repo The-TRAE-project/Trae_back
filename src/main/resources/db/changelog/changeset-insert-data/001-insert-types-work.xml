@@ -1,0 +1,47 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <changeSet author="Val_Demar" id="insert-1">
+        <insert tableName="types">
+            <column name="name" value="Раскрой"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
+            <column name="name" value="Кромка"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
+            <column name="name" value="Присадка"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
+            <column name="name" value="Фрезеровка"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
+            <column name="name" value="Склейка"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
+            <column name="name" value="Сборка"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
+            <column name="name" value="Подготовка к покраске"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
+            <column name="name" value="Шлифовка/покраска"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
+            <column name="name" value="Упаковка"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
+            <column name="name" value="Отгрузка"/>
+            <column name="is_active" value="true"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
