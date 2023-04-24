@@ -359,7 +359,7 @@ public class OperationService {
     if (opRemaining == 1) {
       return 24;
     }
-    // здесь вычитается из оставшися операций - "отгрузка" и время на нее - 24 часа.
+    // здесь вычитается из оставшихся операций - "отгрузка" и время на нее - 24 часа.
     return Util.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
   }
 
