@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -41,6 +42,7 @@ import ru.trae.backend.util.Util;
  *
  * @author Vladimir Olennikov
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProjectService {
@@ -184,20 +186,13 @@ public class ProjectService {
     }
 
     long hours = HOURS.between(o.getPlannedEndDate(), LocalDateTime.now());
+    log.info("the time of the operation has been increased, the planned end date of the project "
+        + "will be moved by {} hours", hours);
     Project p = o.getProject();
     LocalDateTime newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
 
-    updatePlannedEndDate(newPlannedEndDate, p.getId());
-  }
-
-  /**
-   * Updates the planned end date for a {@link Project} with the given id.
-   *
-   * @param newPlannedEndDate the new planned end date for the {@link Project}
-   * @param projectId         the id of the {@link Project} to be updated
-   */
-  public void updatePlannedEndDate(LocalDateTime newPlannedEndDate, long projectId) {
-    projectRepository.updatePlannedEndDateById(newPlannedEndDate, projectId);
+    projectRepository.updatePlannedEndDateById(newPlannedEndDate, p.getId());
+    log.info("the end date of the project has been increased by {} hours", hours);
   }
 
   /**

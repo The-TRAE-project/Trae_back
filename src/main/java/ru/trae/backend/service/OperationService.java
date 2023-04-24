@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.mapper.OperationDtoMapper;
@@ -40,6 +41,7 @@ import ru.trae.backend.util.Util;
  *
  * @author Vladimir Olennikov
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OperationService {
@@ -152,6 +154,8 @@ public class OperationService {
     o.setRealEndDate(LocalDateTime.now());
 
     Operation op = operationRepository.save(o);
+    log.info("the employee with id {} has finished the operation with id {}",
+        o.getEmployee().getId(), o.getId());
 
     startNextOperation(op);
   }
@@ -164,6 +168,7 @@ public class OperationService {
    * @param o current operation
    */
   public void startNextOperation(Operation o) {
+    log.info("starting next operation...");
     List<Operation> operations = o.getProject().getOperations()
         .stream()
         .sorted(Comparator.comparing(Operation::getPriority))
@@ -171,8 +176,11 @@ public class OperationService {
 
     if (operations.indexOf(o) + 1 < operations.size()) {
       Operation nextOp = operations.get(operations.indexOf(o) + 1);
+      log.info("next operation with id {} from project with id {}",
+          nextOp.getId(), nextOp.getProject().getId());
 
       int newPeriod = recalculationRemainingPeriod(nextOp, operations);
+      log.info("period for next operation with id {} = {}", nextOp.getId(), newPeriod);
 
       nextOp.setReadyToAcceptance(true);
       nextOp.setPeriod(newPeriod);
@@ -180,6 +188,7 @@ public class OperationService {
       nextOp.setPlannedEndDate(LocalDateTime.now().plusHours(newPeriod));
 
       operationRepository.save(nextOp);
+      log.info("next operation with id {} started", nextOp.getId());
     }
   }
 
