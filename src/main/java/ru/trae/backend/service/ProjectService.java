@@ -183,7 +183,7 @@ public class ProjectService {
       return;
     }
 
-    long hours = HOURS.between(o.getPlannedEndDate(), o.getRealEndDate());
+    long hours = HOURS.between(o.getPlannedEndDate(), LocalDateTime.now());
     Project p = o.getProject();
     LocalDateTime newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
 

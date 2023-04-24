@@ -26,7 +26,7 @@ public class RegExpression {
   //password is 3-15 characters with no space
   public static final String PASSWORD =
       "^((?=\\S*?[A-Z])(?=\\S*?[a-z])(?=\\S*?[0-9]?).{4,14})\\S$";
-  public static final String FIRST_MIDDLE_LAST_NAME = "^[А-Я][а-я]+$";
+  public static final String FIRST_MIDDLE_LAST_NAME = "^[А-Я][а-я]{1,14}$";
   //"^[А-Я](?=.{2,14}$)(?!.*[-]{2})[а-я-]+([а-я])$";
   public static final String PHONE_NUMBER = "^(\\+\\d{1,3} )\\(?\\d{2,4}\\)[ ]\\d{3}[ ]\\d{4}$";
   public static final String TOKEN =
