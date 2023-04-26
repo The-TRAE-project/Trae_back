@@ -10,6 +10,7 @@
 
 package ru.trae.backend.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -60,6 +61,9 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
 
   @Transactional
   @Modifying
-  @Query("update Operation o set o.isEnded = ?1 where o.id = ?2")
-  void updateIsEndedById(boolean isEnded, Long id);
+  @Query("""
+      update Operation o set o.isEnded = ?1, o.readyToAcceptance = ?2, o.realEndDate = ?3
+      where o.id = ?4""")
+  void updateIsEndedAndReadyToAcceptanceAndRealEndDateById(
+      boolean isEnded, boolean readyToAcceptance, LocalDateTime realEndDate, Long id);
 }
