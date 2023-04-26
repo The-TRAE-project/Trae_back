@@ -126,6 +126,7 @@ public class ManagerController {
           content = @Content)})
   @PostMapping("/register")
   public ResponseEntity<Credentials> register(@Valid @RequestBody ManagerRegisterDto dto) {
+    managerService.checkAvailableCredentials(dto.firstName(), dto.middleName(), dto.lastName());
     managerService.checkAvailableUsername(dto.username());
     return new ResponseEntity<>(managerService.saveNewManager(dto), HttpStatus.CREATED);
   }

@@ -19,6 +19,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.entity.user.Manager;
 import ru.trae.backend.util.Role;
 
@@ -91,4 +92,22 @@ public interface ManagerRepository extends PagingAndSortingRepository<Manager, L
 
   @Query("select m.lastName, m.firstName from Manager m where m.username =?1")
   String getLastAndFirstNameByUsername(String username);
+
+  /**
+   * Checks if an {@link Manager} exists with the given first, middle and last name
+   * (case-insensitive).
+   *
+   * @param firstName  the first name to search for
+   * @param middleName the middle name to search for
+   * @param lastName   the last name to search for
+   * @return true if an {@link Manager} exists with given first, middle and last name,
+   *     false otherwise
+   */
+  @Query("""
+      select (count(m) > 0) from Manager m
+      where upper(m.firstName) = upper(?1) and upper(m.middleName) = upper(?2) and\s
+      upper(m.lastName) = upper(?3)""")
+  boolean existsByFirstMiddleLastNameIgnoreCase(String firstName,
+                                                String middleName,
+                                                String lastName);
 }

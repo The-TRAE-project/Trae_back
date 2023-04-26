@@ -37,6 +37,7 @@ import ru.trae.backend.dto.manager.ResetPassResp;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.entity.user.Manager;
+import ru.trae.backend.exceptionhandler.exception.EmployeeException;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 import ru.trae.backend.util.PasswordGenerator;
@@ -463,6 +464,27 @@ public class ManagerService {
     if (existsManagerByUsername(username)) {
       throw new ManagerException(HttpStatus.CONFLICT, "Username: " + username + " already in use");
     }
+  }
+
+  /**
+   * Checks whether employee with specified credentials already exists.
+   *
+   * @param firstName  employee's first name
+   * @param middleName employee's middle name
+   * @param lastName   employee's last name
+   * @throws ManagerException if such employee already exists
+   */
+  public void checkAvailableCredentials(String firstName, String middleName, String lastName) {
+    if (existsByCredentials(firstName, middleName, lastName)) {
+      throw new ManagerException(HttpStatus.CONFLICT, "Such credentials are already in use");
+    }
+  }
+
+  private boolean existsByCredentials(String firstName, String middleName, String lastName) {
+    return managerRepository.existsByFirstMiddleLastNameIgnoreCase(
+        firstName,
+        middleName,
+        lastName);
   }
 
   private void checkExistsUsername(String username) {
