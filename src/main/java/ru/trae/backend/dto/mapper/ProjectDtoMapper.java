@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.util.Util;
 
 /**
  * A mapper for mapping a {@link Project} to a {@link ProjectDto}.
@@ -50,6 +51,7 @@ public class ProjectDtoMapper implements Function<Project, ProjectDto> {
         p.isEnded(),
         p.getOperations().stream()
             .map(operationDtoMapper)
+            .sorted(Util::prioritySorting)
             .toList(),
         managerDtoMapper.apply(p.getManager()),
         p.getCustomer(),

@@ -12,6 +12,7 @@ package ru.trae.backend.util;
 
 import java.security.SecureRandom;
 import java.util.Date;
+import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 
@@ -76,5 +77,16 @@ public class Util {
    */
   public static int prioritySorting(Operation o1, Operation o2) {
     return Integer.compare(o1.getPriority(), o2.getPriority());
+  }
+
+  /**
+   * Compares two operationDtos based on their priorities.
+   *
+   * @param o1 The first operationDto
+   * @param o2 The second operationDto
+   * @return An integer representing the comparison result
+   */
+  public static int prioritySorting(OperationDto o1, OperationDto o2) {
+    return Integer.compare(o1.priority(), o2.priority());
   }
 }
