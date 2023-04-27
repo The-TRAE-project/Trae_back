@@ -5,13 +5,11 @@ import static java.time.temporal.ChronoUnit.HOURS;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.employee.ShortEmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeFirstLastNameDto;
 import ru.trae.backend.dto.operation.OperationDto;
-import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
-import ru.trae.backend.service.WorkingShiftService;
 
 /**
  * The OperationDtoMapper is a Function class that maps an {@link Operation} object to an
@@ -22,7 +20,6 @@ import ru.trae.backend.service.WorkingShiftService;
 @Service
 @RequiredArgsConstructor
 public class OperationDtoMapper implements Function<Operation, OperationDto> {
-  private final WorkingShiftService workingShiftService;
 
   @Override
   public OperationDto apply(Operation o) {
@@ -50,15 +47,10 @@ public class OperationDtoMapper implements Function<Operation, OperationDto> {
         o.isInWork(),
         o.isReadyToAcceptance(),
         p.getNumber(),
-        new TypeWorkDto(
-            o.getTypeWork().getId(),
-            o.getTypeWork().getName(),
-            o.getTypeWork().isActive()),
-        e == null ? null : new ShortEmployeeDto(
-            e.getId(),
+        o.getTypeWork().getName(),
+        e == null ? null : new EmployeeFirstLastNameDto(
             e.getFirstName(),
-            e.getLastName(),
-            workingShiftService.employeeOnShift(true, e.getId()))
-    );
+            e.getLastName()
+        ));
   }
 }

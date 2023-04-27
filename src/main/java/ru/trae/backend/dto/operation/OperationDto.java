@@ -1,6 +1,7 @@
 package ru.trae.backend.dto.operation;
 
 import java.time.LocalDateTime;
+import ru.trae.backend.dto.employee.EmployeeFirstLastNameDto;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
 
@@ -23,7 +24,7 @@ public record OperationDto(
     boolean inWork,
     boolean readyToAcceptance,
     int projectNumber,
-    TypeWorkDto typeWorkDto,
-    ShortEmployeeDto shortEmployeeDto
+    String typeWorkName,
+    EmployeeFirstLastNameDto employeeFirstLastNameDto
 ) {
 }
