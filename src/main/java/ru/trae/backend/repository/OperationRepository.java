@@ -62,10 +62,15 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
   @Transactional
   @Modifying
   @Query("""
-      update Operation o set o.isEnded = ?1, o.readyToAcceptance = ?2, o.realEndDate = ?3
-      where o.id = ?4""")
-  void updateIsEndedAndReadyToAcceptanceAndRealEndDateById(
-      boolean isEnded, boolean readyToAcceptance, LocalDateTime realEndDate, Long id);
+      update Operation o\s
+      set o.realEndDate = ?1, o.isEnded = ?2, o.readyToAcceptance = ?3, o.inWork = ?4
+      where o.id = ?5""")
+  void updateRealEndDateAndIsEndedAndReadyToAcceptanceAndInWorkById(
+      LocalDateTime realEndDate,
+      boolean isEnded,
+      boolean readyToAcceptance,
+      boolean inWork,
+      Long id);
 
   @Query("""
       select (count(o) > 0) from Operation o

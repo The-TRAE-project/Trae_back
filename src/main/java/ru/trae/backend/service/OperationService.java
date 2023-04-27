@@ -298,8 +298,8 @@ public class OperationService {
     }
 
     if (o.isInWork() || o.isReadyToAcceptance()) {
-      operationRepository.updateIsEndedAndReadyToAcceptanceAndRealEndDateById(
-          true, false, LocalDateTime.now(), o.getId());
+      operationRepository.updateRealEndDateAndIsEndedAndReadyToAcceptanceAndInWorkById(
+          LocalDateTime.now(), true, false, false, o.getId());
     } else {
       throw new OperationException(HttpStatus.BAD_REQUEST,
           "The operation is not yet in operation or is not available for acceptance");

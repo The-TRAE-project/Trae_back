@@ -150,7 +150,7 @@ public class SecurityConfig {
         .hasAuthority(ROLE_ADMINISTRATOR.name())
         .antMatchers(
             "/api/working-shift/on-shift/*")
-        .hasAnyAuthority(ROLE_ADMINISTRATOR.name(),ROLE_EMPLOYEE.name())
+        .hasAnyAuthority(ROLE_ADMINISTRATOR.name(), ROLE_EMPLOYEE.name())
 
         .anyRequest().authenticated()
         .and()
