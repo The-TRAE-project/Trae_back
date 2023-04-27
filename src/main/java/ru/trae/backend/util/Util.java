@@ -12,7 +12,9 @@ package ru.trae.backend.util;
 
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.function.Predicate;
 import ru.trae.backend.dto.operation.OperationDto;
+import ru.trae.backend.dto.operation.OperationInfoForProjectTemplateDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 
@@ -88,5 +90,17 @@ public class Util {
    */
   public static int prioritySorting(OperationDto o1, OperationDto o2) {
     return Integer.compare(o1.priority(), o2.priority());
+  }
+
+  /**
+   * Returns a predicate that returns true if the Operation is either ready to accept or in work.
+   *
+   * @return Predicate {@link Operation} predicate
+   */
+  public static Predicate<Operation> opIsAcceptanceInWorkInIsAllEnded() {
+    Predicate<Operation> predicate1 = Operation::isReadyToAcceptance;
+    Predicate<Operation> predicate2 = Operation::isInWork;
+
+    return predicate1.or(predicate2);
   }
 }

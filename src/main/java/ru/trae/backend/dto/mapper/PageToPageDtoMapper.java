@@ -34,6 +34,7 @@ public class PageToPageDtoMapper {
   private final EmployeeDtoMapper employeeDtoMapper;
   private final TypeWorkDtoMapper typeWorkDtoMapper;
   private final ManagerShortDtoMapper managerShortDtoMapper;
+  private final ProjectShortDtoMapper projectShortDtoMapper;
 
 
   /**
@@ -80,7 +81,7 @@ public class PageToPageDtoMapper {
    */
   public PageDto<ProjectShortDto> projectPageToPageDto(Page<Project> page) {
     return new PageDto<>(page.getContent().stream()
-        .map(p -> new ProjectShortDto(p.getId(), p.getNumber(), p.getName()))
+        .map(projectShortDtoMapper)
         .toList(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
   }
 }
