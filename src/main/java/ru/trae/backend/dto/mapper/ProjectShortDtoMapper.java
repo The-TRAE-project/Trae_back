@@ -31,7 +31,7 @@ public class ProjectShortDtoMapper implements Function<Project, ProjectShortDto>
   @Override
   public ProjectShortDto apply(Project p) {
     OperationInfoForProjectTemplateDto opDto = p.getOperations().stream()
-        .filter(Util.opIsAcceptanceInWorkInIsAllEnded())
+        .filter(Util.opIsAcceptanceOrInWork())
         .findFirst()
         .map(operationInfoForProjectTemplateDtoMapper)
         .orElse(operationInfoForProjectTemplateDtoMapper.apply(

@@ -262,6 +262,15 @@ public class OperationService {
     checkAndUpdateShipmentOp(operations, dto.priority());
   }
 
+  public void deleteOperation(long operationId) {
+    if (operationRepository.existsByIdOrIsEndedOrInWorkOrReadyToAcceptance(
+        operationId, true, true, true)) {
+      throw new OperationException(HttpStatus.BAD_REQUEST, "this operation cannot be deleted");
+    }
+
+    operationRepository.deleteById(operationId);
+  }
+
   /**
    * Closes the operation.
    *

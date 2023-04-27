@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -96,6 +97,35 @@ public class OperationController {
     operationService.insertNewOperation(dto, p);
 
     return ResponseEntity.ok().build();
+  }
+
+  /**
+   * Delete operation by id.
+   *
+   * @param operationId the operation id
+   * @return the response entity
+   */
+  @io.swagger.v3.oas.annotations.Operation(summary = "Удаление операции",
+      description = "Доступен администратору. Удаляет операцию, возвращает статус 204.")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "204",
+          description = "Возвращает статус 204 при успешном удалении операции",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = HttpStatus.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат идентификатора",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Операция с таким идентификатором не найдена", content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @DeleteMapping("/delete-operation/{operationId}")
+  public ResponseEntity<HttpStatus> deleteOperation(@PathVariable long operationId) {
+    operationService.deleteOperation(operationId);
+    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
   /**

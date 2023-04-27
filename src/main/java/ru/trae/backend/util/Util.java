@@ -14,7 +14,6 @@ import java.security.SecureRandom;
 import java.util.Date;
 import java.util.function.Predicate;
 import ru.trae.backend.dto.operation.OperationDto;
-import ru.trae.backend.dto.operation.OperationInfoForProjectTemplateDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 
@@ -97,7 +96,7 @@ public class Util {
    *
    * @return Predicate {@link Operation} predicate
    */
-  public static Predicate<Operation> opIsAcceptanceInWorkInIsAllEnded() {
+  public static Predicate<Operation> opIsAcceptanceOrInWork() {
     Predicate<Operation> predicate1 = Operation::isReadyToAcceptance;
     Predicate<Operation> predicate2 = Operation::isInWork;
 

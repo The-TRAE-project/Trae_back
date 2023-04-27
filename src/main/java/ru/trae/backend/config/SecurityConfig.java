@@ -128,6 +128,12 @@ public class SecurityConfig {
         //projects
         .antMatchers("/api/project/new")
         .hasAnyAuthority(ROLE_MANAGER.name(), ROLE_ADMINISTRATOR.name())
+        .antMatchers("/api/project/**")
+        .hasAuthority(ROLE_ADMINISTRATOR.name())
+
+        //operations
+        .antMatchers("/api/operation/delete-operation/")
+        .hasAuthority(ROLE_ADMINISTRATOR.name())
 
         .anyRequest().authenticated()
         .and()

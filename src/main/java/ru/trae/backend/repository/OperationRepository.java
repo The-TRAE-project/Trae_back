@@ -66,4 +66,14 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
       where o.id = ?4""")
   void updateIsEndedAndReadyToAcceptanceAndRealEndDateById(
       boolean isEnded, boolean readyToAcceptance, LocalDateTime realEndDate, Long id);
+
+  @Query("""
+      select (count(o) > 0) from Operation o
+      where o.id = ?1 and (o.isEnded = ?2 or o.inWork = ?3 or o.readyToAcceptance = ?4)""")
+  boolean existsByIdOrIsEndedOrInWorkOrReadyToAcceptance(
+      Long id, boolean isEnded, boolean inWork, boolean readyToAcceptance);
+
+  @Modifying
+  @Query("delete from Operation o where o.id = ?1")
+  void deleteById(long operationId);
 }
