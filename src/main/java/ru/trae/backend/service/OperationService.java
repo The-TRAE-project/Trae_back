@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.mapper.OperationDtoMapper;
 import ru.trae.backend.dto.operation.InsertingOperationDto;
 import ru.trae.backend.dto.operation.NewOperationDto;
@@ -262,10 +263,22 @@ public class OperationService {
     checkAndUpdateShipmentOp(operations, dto.priority());
   }
 
+  /**
+   * Deletes operation.
+   *
+   * @param operationId - operation ID
+   * @throws OperationException if operation with given ID not found or cannot be deleted
+   */
+  @Transactional
   public void deleteOperation(long operationId) {
+    if (!operationRepository.existsById(operationId)) {
+      throw new OperationException(HttpStatus.NOT_FOUND,
+          "Operation with ID " + operationId + " not found");
+    }
     if (operationRepository.existsByIdOrIsEndedOrInWorkOrReadyToAcceptance(
         operationId, true, true, true)) {
-      throw new OperationException(HttpStatus.BAD_REQUEST, "this operation cannot be deleted");
+      throw new OperationException(HttpStatus.BAD_REQUEST,
+          "Operation with ID " + operationId + " cannot be deleted");
     }
 
     operationRepository.deleteById(operationId);
