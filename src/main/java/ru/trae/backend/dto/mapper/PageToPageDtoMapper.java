@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.employee.EmployeeDto;
 import ru.trae.backend.dto.manager.ManagerShortDto;
-import ru.trae.backend.dto.project.ShortProjectDto;
+import ru.trae.backend.dto.project.ProjectShortDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.task.Project;
@@ -78,9 +78,9 @@ public class PageToPageDtoMapper {
    * @param page page of projects
    * @return page DTO
    */
-  public PageDto<ShortProjectDto> projectPageToPageDto(Page<Project> page) {
+  public PageDto<ProjectShortDto> projectPageToPageDto(Page<Project> page) {
     return new PageDto<>(page.getContent().stream()
-        .map(p -> new ShortProjectDto(p.getId(), p.getNumber(), p.getName()))
+        .map(p -> new ProjectShortDto(p.getId(), p.getNumber(), p.getName()))
         .toList(), page.getTotalElements(), page.getTotalPages(), page.getNumber());
   }
 }

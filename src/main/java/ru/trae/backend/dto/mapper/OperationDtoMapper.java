@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.operation.OperationDto;
-import ru.trae.backend.dto.project.ShortProjectDto;
 import ru.trae.backend.dto.type.TypeWorkDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
@@ -50,11 +49,11 @@ public class OperationDtoMapper implements Function<Operation, OperationDto> {
         o.isEnded(),
         o.isInWork(),
         o.isReadyToAcceptance(),
+        p.getNumber(),
         new TypeWorkDto(
             o.getTypeWork().getId(),
             o.getTypeWork().getName(),
             o.getTypeWork().isActive()),
-        new ShortProjectDto(p.getId(), p.getNumber(), p.getName()),
         e == null ? null : new ShortEmployeeDto(
             e.getId(),
             e.getFirstName(),

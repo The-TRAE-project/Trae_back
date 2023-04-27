@@ -38,7 +38,7 @@ import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
-import ru.trae.backend.dto.project.ShortProjectDto;
+import ru.trae.backend.dto.project.ProjectShortDto;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.service.ProjectService;
 import ru.trae.backend.util.PageSettings;
@@ -130,7 +130,7 @@ public class ProjectController {
       @ApiResponse(responseCode = "200", description = "Список ДТО проектов. "
           + "В примере указан единичный объект из списка",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = ShortProjectDto.class))}),
+              schema = @Schema(implementation = ProjectShortDto.class))}),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "403", description = "Доступ запрещен",
@@ -138,7 +138,7 @@ public class ProjectController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/projects")
-  public ResponseEntity<PageDto<ShortProjectDto>> projects(
+  public ResponseEntity<PageDto<ProjectShortDto>> projects(
       @Valid PageSettings pageSetting,
       @RequestParam(required = false) @Parameter(description =
           "Фильтрация по статусу открыт/закрыт") Boolean isEnded,

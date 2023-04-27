@@ -29,7 +29,7 @@ import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
-import ru.trae.backend.dto.project.ShortProjectDto;
+import ru.trae.backend.dto.project.ProjectShortDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
@@ -131,7 +131,7 @@ public class ProjectService {
     return page;
   }
 
-  public PageDto<ShortProjectDto> getProjectDtoPage(
+  public PageDto<ProjectShortDto> getProjectDtoPage(
       Pageable projectPage, Boolean isEnded, Integer number) {
     return pageToPageDtoMapper.projectPageToPageDto(getProjectPage(projectPage, isEnded, number));
   }
