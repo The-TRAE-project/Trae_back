@@ -35,7 +35,10 @@ public class ProjectShortDtoMapper implements Function<Project, ProjectShortDto>
         .findFirst()
         .map(operationInfoForProjectTemplateDtoMapper)
         .orElse(operationInfoForProjectTemplateDtoMapper.apply(
-            p.getOperations().get(p.getOperations().size() - 1)));
+            p.getOperations().stream()
+                .sorted(Util::prioritySorting)
+                .toList()
+                .get(p.getOperations().size() - 1)));
 
     return new ProjectShortDto(
         p.getId(),
