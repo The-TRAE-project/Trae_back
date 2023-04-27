@@ -90,50 +90,67 @@ public class SecurityConfig {
             "/api/auth/logout",
             "/api/auth/refresh",
             "/api/manager/account-info",
+            "/api/manager/update-data",
             "/api/manager/role").authenticated()
 
         //managers
         .antMatchers(
-            "/api/manager/change-password",
-            "/api/manager/update-data")
-        .hasAnyAuthority(ROLE_MANAGER.name(), ROLE_ADMINISTRATOR.name())
-        .antMatchers(
-            "/api/manager/reset-password",
-            "/api/manager/change-role-status",
-            "/api/manager/managers",
-            "/api/manager/register",
-            "/api/manager/roles")
+            "/api/manager/*")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
 
         //employees
         .antMatchers(
-            "/api/employee/checkin/**",
-            "/api/employee/checkout/**",
-            "/api/employee/login/**")
+            "/api/employee/checkin/*",
+            "/api/employee/checkout/*",
+            "/api/employee/login/*")
         .hasAuthority(ROLE_EMPLOYEE.name())
         .antMatchers(
             "/api/employee/employees",
             "/api/employee/register",
-            "/api/change-data")
+            "/api/employee/change-data")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
 
         //types-work
         .antMatchers(
-            "/api/type-work/active-types-list",
             "/api/type-work/types",
             "/api/type-work/new",
             "/api/type-work/change-name-active")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
+        .antMatchers(
+            "/api/type-work/active-types-list")
+        .hasAnyAuthority(ROLE_ADMINISTRATOR.name(), ROLE_MANAGER.name())
 
         //projects
-        .antMatchers("/api/project/new")
+        .antMatchers(
+            "/api/project/new")
         .hasAnyAuthority(ROLE_MANAGER.name(), ROLE_ADMINISTRATOR.name())
-        .antMatchers("/api/project/**")
+        .antMatchers(
+            "/api/project/*",
+            "/api/project/delete-project/*")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
+        .antMatchers(
+            "/api/project/employee/available-projects/*")
+        .hasAuthority(ROLE_EMPLOYEE.name())
 
         //operations
-        .antMatchers("/api/operation/delete-operation/")
+        .antMatchers(
+            "/api/operation/*",
+            "/api/operation/delete-operation/*")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
+        .antMatchers(
+            "/api/operation/employee/project-operations/*",
+            "/api/operation/employee/operations-in-work/*",
+            "/api/operation/employee/receive-operation",
+            "/api/operation/employee/finish-operation")
+        .hasAuthority(ROLE_EMPLOYEE.name())
+
+        //working shifts
+        .antMatchers(
+            "/api/working-shift/active")
+        .hasAuthority(ROLE_ADMINISTRATOR.name())
+        .antMatchers(
+            "/api/working-shift/on-shift/*")
+        .hasAnyAuthority(ROLE_ADMINISTRATOR.name(),ROLE_EMPLOYEE.name())
 
         .anyRequest().authenticated()
         .and()
