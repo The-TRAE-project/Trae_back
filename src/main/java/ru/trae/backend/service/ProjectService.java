@@ -224,6 +224,12 @@ public class ProjectService {
     return projectRepository.findChangedPlannedEndDateById(projectId);
   }
 
+  /**
+   * Updates the planned end date of the project.
+   *
+   * @param req Request with new planned end date of the project.
+   * @throws ProjectException wrong new planned end date.
+   */
   public void updatePlannedEndDate(ChangingPlannedEndDateReq req) {
     Project p = getProjectById(req.projectId());
     if (p.getPlannedEndDate().equals(req.newPlannedEndDate())) {

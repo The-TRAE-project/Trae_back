@@ -17,6 +17,12 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
+/**
+ * Request body for changing planned end date of a project.
+ *
+ * @param projectId         Identifier of the project
+ * @param newPlannedEndDate New planned end date of the project
+ */
 public record ChangingPlannedEndDateReq(
     @Schema(description = "Идентификатор проекта")
     @NotNull(message = "Invalid project id: id is NULL")

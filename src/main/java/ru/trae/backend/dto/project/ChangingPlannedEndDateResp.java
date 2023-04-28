@@ -13,6 +13,12 @@ package ru.trae.backend.dto.project;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
+/**
+ * A response object for changing the planned end date of a project.
+ *
+ * @param id             The ID of the project.
+ * @param plannedEndDate The updated planned end date of the project.
+ */
 public record ChangingPlannedEndDateResp(
     @JsonProperty("projectId")
     long id,
