@@ -221,6 +221,12 @@ public class ProjectService {
     return projectRepository.findChangedCommonDataById(projectId);
   }
 
+  /**
+   * Checks if data for updating is available.
+   *
+   * @param req The request for changing common data.
+   * @throws ProjectException If no data for updating is available.
+   */
   public void checkAvailableUpdateCommonData(ChangingCommonDataReq req) {
     if (req.projectNumber() == null && req.projectName() == null
         && req.customer() == null && req.commentary() == null) {

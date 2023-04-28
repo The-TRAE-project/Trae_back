@@ -243,6 +243,12 @@ public class ProjectController {
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
 
+  /**
+   * Update common data of project.
+   *
+   * @param request the request
+   * @return the response entity
+   */
   @Operation(summary = "Изменение общих сведений проекта", description =
       "Доступен администратору. Изменяет общие сведения указанного проекта")
   @ApiResponses(value = {
