@@ -19,6 +19,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import ru.trae.backend.dto.project.ChangingCommonDataResp;
 import ru.trae.backend.entity.task.Project;
 
 /**
@@ -53,4 +54,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
   @Query("select p from Project p where p.number = ?1")
   Page<Project> findByNumber(int number, Pageable pageable);
+
+  ChangingCommonDataResp findChangedCommonDataById(long projectId);
 }

@@ -26,6 +26,8 @@ import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectAvailableDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectDtoMapper;
 import ru.trae.backend.dto.operation.NewOperationDto;
+import ru.trae.backend.dto.project.ChangingCommonDataReq;
+import ru.trae.backend.dto.project.ChangingCommonDataResp;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
@@ -213,6 +215,85 @@ public class ProjectService {
    */
   public ProjectDto convertFromProject(Project p) {
     return projectDtoMapper.apply(p);
+  }
+
+  public ChangingCommonDataResp getChangingCommonDataResp(long projectId) {
+    return projectRepository.findChangedCommonDataById(projectId);
+  }
+
+  public void checkAvailableUpdateCommonData(ChangingCommonDataReq req) {
+    if (req.projectNumber() == null && req.projectName() == null
+        && req.customer() == null && req.commentary() == null) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST, "No data for updating");
+    }
+  }
+
+  /**
+   * Updates the common data of a project.
+   *
+   * @param req the request containing the projectId, projectNumber, projectName, customer
+   *            and commentary.
+   */
+  public void updateCommonData(ChangingCommonDataReq req) {
+    Project p = getProjectById(req.projectId());
+    updateProjectNumber(p, req.projectNumber());
+    updateProjectName(p, req.projectName());
+    updateCustomerInfo(p, req.customer());
+    updateCommentary(p, req.commentary());
+
+    projectRepository.save(p);
+  }
+
+  private void updateCommentary(Project p, String commentary) {
+    if (commentary == null) {
+      return;
+    }
+
+    if (!commentary.equals(p.getComment())) {
+      p.setComment(commentary);
+    } else {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The project commentary info must not match an existing one");
+    }
+  }
+
+  private void updateCustomerInfo(Project p, String newCustomerInfo) {
+    if (newCustomerInfo == null) {
+      return;
+    }
+
+    if (!newCustomerInfo.equals(p.getCustomer())) {
+      p.setCustomer(newCustomerInfo);
+    } else {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The project customer info must not match an existing one");
+    }
+  }
+
+  private void updateProjectName(Project p, String newName) {
+    if (newName == null) {
+      return;
+    }
+
+    if (!newName.equals(p.getName())) {
+      p.setName(newName);
+    } else {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The project name must not match an existing one");
+    }
+  }
+
+  private void updateProjectNumber(Project p, Integer newProjectNumber) {
+    if (newProjectNumber == null) {
+      return;
+    }
+
+    if (newProjectNumber != p.getNumber()) {
+      p.setNumber(newProjectNumber);
+    } else {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The project number must not match an existing one");
+    }
   }
 
   private void checkOperationsNotEmpty(List<NewOperationDto> operations) {

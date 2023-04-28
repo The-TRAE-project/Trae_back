@@ -35,6 +35,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.project.ChangingCommonDataReq;
+import ru.trae.backend.dto.project.ChangingCommonDataResp;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
@@ -239,5 +241,32 @@ public class ProjectController {
   public ResponseEntity<HttpStatus> deleteProject(@PathVariable long projectId) {
     projectService.deleteProject(projectId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+  }
+
+  @Operation(summary = "Изменение общих сведений проекта", description =
+      "Доступен администратору. Изменяет общие сведения указанного проекта")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Возвращает ДТО с общими сведениями проекта",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ChangingCommonDataResp.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат новых данных",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Проект с таким идентификатором не найден", content = @Content),
+      @ApiResponse(responseCode = "409", description = "Проект уже имеет такое название, номер, "
+          + "данные заказчика или комментарий",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @PostMapping("/update-common-data")
+  public ResponseEntity<ChangingCommonDataResp> updateCommonData(
+      @Valid @RequestBody ChangingCommonDataReq request) {
+    projectService.checkAvailableUpdateCommonData(request);
+    projectService.updateCommonData(request);
+    return ResponseEntity.ok(projectService.getChangingCommonDataResp(request.projectId()));
   }
 }
