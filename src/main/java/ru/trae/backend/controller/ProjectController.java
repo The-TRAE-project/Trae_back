@@ -37,6 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.project.ChangingCommonDataReq;
 import ru.trae.backend.dto.project.ChangingCommonDataResp;
+import ru.trae.backend.dto.project.ChangingPlannedEndDateReq;
+import ru.trae.backend.dto.project.ChangingPlannedEndDateResp;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
@@ -274,5 +276,36 @@ public class ProjectController {
     projectService.checkAvailableUpdateCommonData(request);
     projectService.updateCommonData(request);
     return ResponseEntity.ok(projectService.getChangingCommonDataResp(request.projectId()));
+  }
+
+  @Operation(summary = "Изменение планируемой даты окончания проекта", description =
+      "Доступен администратору. Изменяет планируемую дату окончания проекта")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Возвращает ДТО с планируемой датой окончания проекта",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ChangingPlannedEndDateResp.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат новых данных",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Проект с таким идентификатором не найден. "
+              + "Нельзя изменить дату окончания в закрытом проекте. "
+              + "Дата окончания не может быть меньше, чем планируемая дата окончания этапа "
+              + "находящегося в работе или доступного для принятия + 2 запасных дня.",
+          content = @Content),
+      @ApiResponse(responseCode = "409",
+          description = "Проект уже имеет такую дату окончания проекта, номер",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @PostMapping("/update-planned-end-date")
+  public ResponseEntity<ChangingPlannedEndDateResp> updatePlannedEndDate(
+      @Valid @RequestBody ChangingPlannedEndDateReq request) {
+    projectService.updatePlannedEndDate(request);
+    return ResponseEntity.ok(projectService.getChangingPlannedEndDateResp(request.projectId()));
   }
 }

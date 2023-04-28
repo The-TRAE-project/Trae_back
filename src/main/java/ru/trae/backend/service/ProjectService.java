@@ -28,12 +28,15 @@ import ru.trae.backend.dto.mapper.ProjectDtoMapper;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.project.ChangingCommonDataReq;
 import ru.trae.backend.dto.project.ChangingCommonDataResp;
+import ru.trae.backend.dto.project.ChangingPlannedEndDateReq;
+import ru.trae.backend.dto.project.ChangingPlannedEndDateResp;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.dto.project.ProjectShortDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.entity.task.Task;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.repository.ProjectRepository;
@@ -215,6 +218,43 @@ public class ProjectService {
    */
   public ProjectDto convertFromProject(Project p) {
     return projectDtoMapper.apply(p);
+  }
+
+  public ChangingPlannedEndDateResp getChangingPlannedEndDateResp(long projectId) {
+    return projectRepository.findChangedPlannedEndDateById(projectId);
+  }
+
+  public void updatePlannedEndDate(ChangingPlannedEndDateReq req) {
+    Project p = getProjectById(req.projectId());
+    if (p.getPlannedEndDate().equals(req.newPlannedEndDate())) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The project planned end date must not match an existing one");
+    }
+    if (p.isEnded()) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The planned end date cannot be changed in a completed project");
+    }
+
+    //Вычисление минимально возможной планируемой даты окончания проекта.
+    // + 2 дня добавляется с учетом отгрузки 24 часа.
+    LocalDateTime minDateTime = p.getOperations().stream()
+        .filter(Util.opIsAcceptanceOrInWork())
+        .findFirst()
+        .filter(o -> o.getPlannedEndDate().isAfter(LocalDateTime.now()))
+        .map(Task::getPlannedEndDate)
+        .orElse(LocalDateTime.now())
+        .plusDays(2);
+
+    if (minDateTime.isAfter(req.newPlannedEndDate())) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The end date cannot be less than the planned end date of the stage that is in work "
+              + "or available for acceptance + 2 spare days.");
+    }
+
+    p.setPlannedEndDate(req.newPlannedEndDate());
+    p.setPeriod((int) HOURS.between(p.getStartDate(), req.newPlannedEndDate()));
+
+    projectRepository.save(p);
   }
 
   public ChangingCommonDataResp getChangingCommonDataResp(long projectId) {
