@@ -67,6 +67,7 @@ public class ProjectService {
    */
   public void saveNewProject(NewProjectDto dto, String authUsername) {
     checkOperationsNotEmpty(dto.operations());
+    checkCorrectPlannedEndDate(dto.plannedEndDate());
 
     Project p = new Project();
 
@@ -351,6 +352,13 @@ public class ProjectService {
   private void checkOperationsNotEmpty(List<NewOperationDto> operations) {
     if (operations == null || operations.isEmpty()) {
       throw new ProjectException(HttpStatus.BAD_REQUEST, "List of operations cannot be empty");
+    }
+  }
+
+  private void checkCorrectPlannedEndDate(LocalDateTime plannedEndDate) {
+    if (plannedEndDate.isBefore(LocalDateTime.now().plusHours(48))) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The planned end date cannot be less than start date of project + 2 spare days.");
     }
   }
 
