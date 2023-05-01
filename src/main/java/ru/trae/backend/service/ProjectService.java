@@ -255,7 +255,12 @@ public class ProjectService {
     if (minDateTime.isAfter(req.newPlannedEndDate())) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
           "The end date cannot be less than the planned end date of the stage that is in work "
-              + "or available for acceptance + 2 spare days.");
+              + "or available for acceptance + 2 additional days.");
+    }
+
+    if (req.newPlannedEndDate().isAfter(p.getStartDate().plusHours(8760))) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST, "The planned end date cannot be more than "
+          + "start date of project + 1 year (or 8760 hours).");
     }
 
     p.setPlannedEndDate(req.newPlannedEndDate());
@@ -358,7 +363,11 @@ public class ProjectService {
   private void checkCorrectPlannedEndDate(LocalDateTime plannedEndDate) {
     if (plannedEndDate.isBefore(LocalDateTime.now().plusHours(48))) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
-          "The planned end date cannot be less than start date of project + 2 spare days.");
+          "The planned end date cannot be less than start date of project + 2 additional days.");
+    }
+    if (plannedEndDate.isAfter(LocalDateTime.now().plusHours(8760))) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST, "The planned end date cannot be more than "
+          + "start date of project + 1 year (or 8760 hours).");
     }
   }
 
