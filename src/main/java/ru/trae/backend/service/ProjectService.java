@@ -74,7 +74,9 @@ public class ProjectService {
     p.setNumber(dto.number());
     p.setName(dto.name());
     p.setStartDate(LocalDateTime.now());
+    p.setStartFirstOperationDate(null);
     p.setPlannedEndDate(dto.plannedEndDate());
+    p.setEndDateInContract(dto.plannedEndDate());
     p.setRealEndDate(null);
     p.setPeriod((int) HOURS.between(LocalDateTime.now(), p.getPlannedEndDate()));
     p.setEnded(false);
