@@ -10,6 +10,7 @@
 
 package ru.trae.backend.entity.task;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +27,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,13 +50,19 @@ public class Project extends Task {
   private Long id;
   @Min(1)
   @Max(999)
+  @NotNull
   @Column(name = "number", nullable = false)
   private int number;
   @Column(name = "comment", columnDefinition = "varchar(1000)")
   private String comment;
   @Size(min = 3, max = 200)
+  @NotNull
   @Column(name = "customer", nullable = false, columnDefinition = "varchar(200)")
   private String customer;
+  @Column(name = "start_first_operation_date")
+  private LocalDateTime startFirstOperationDate;
+  @Column(name = "end_date_in_contract")
+  private LocalDateTime endDateInContract;
   @ToString.Exclude
   @ManyToOne
   @JoinColumn(name = "manager_id", nullable = false)

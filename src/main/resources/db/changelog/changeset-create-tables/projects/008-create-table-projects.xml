@@ -17,6 +17,8 @@
             <column name="planned_end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="real_end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="start_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="start_first_operation_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="end_date_in_contract" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="customer" type="VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
