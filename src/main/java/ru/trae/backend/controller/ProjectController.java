@@ -19,6 +19,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -147,7 +151,7 @@ public class ProjectController {
       @RequestParam(required = false) @Parameter(description =
           "Фильтрация по статусу открыт/закрыт") Boolean isEnded,
       @RequestParam(required = false) @Parameter(description =
-          "Фильтрация по номеру проекта") Integer number) {
+          "Фильтрация по номеру проекта") @Min(0) @Max(999) Integer number) {
 
     Sort projectSort = pageSetting.buildProjectSort();
     Pageable projectPage = PageRequest.of(
@@ -307,5 +311,19 @@ public class ProjectController {
       @Valid @RequestBody ChangingPlannedEndDateReq request) {
     projectService.updatePlannedEndDate(request);
     return ResponseEntity.ok(projectService.getChangingPlannedEndDateResp(request.projectId()));
+  }
+
+  @GetMapping("/search")
+  public ResponseEntity<PageDto<ProjectShortDto>> searchProjects(
+      @Valid PageSettings pageSetting, @RequestParam(name = "projectNumberOrCustomer")
+  @Parameter(description = "Номер проекта или данные заказчика")
+  @NotBlank @Size(max = 30) String projectNumberOrCustomer) {
+
+    Sort projectSort = pageSetting.buildProjectSort();
+    Pageable projectPage = PageRequest.of(
+        pageSetting.getPage(), pageSetting.getElementPerPage(), projectSort);
+
+    return ResponseEntity.ok(
+        projectService.findProjectByNumberOrCustomer(projectPage, projectNumberOrCustomer));
   }
 }

@@ -116,6 +116,23 @@ public class ProjectService {
         .toList();
   }
 
+  public PageDto<ProjectShortDto> findProjectByNumberOrCustomer(Pageable projectPage, String projectNumberOrCustomer) {
+    return pageToPageDtoMapper.projectPageToPageDto(findProjectPage(projectPage, projectNumberOrCustomer));
+  }
+
+  public Page<Project> findProjectPage(Pageable projectPage, String projectNumberOrCustomer) {
+    Page<Project> page;
+
+    try {
+      int number = Integer.parseInt(projectNumberOrCustomer);
+      page = projectRepository.findByNumber(number, projectPage);
+    } catch (NumberFormatException e) {
+      page = projectRepository.findByCustomerLikeIgnoreCase(projectNumberOrCustomer.toUpperCase(), projectPage);
+    }
+
+    return page;
+  }
+
   /**
    * Gets a page of {@code Project} objects according to the given parameters.
    *

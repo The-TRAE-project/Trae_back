@@ -56,6 +56,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   @Query("select p from Project p where p.number = ?1")
   Page<Project> findByNumber(int number, Pageable pageable);
 
+  @Query("select p from Project p where upper(p.customer) like %?1%")
+  Page<Project> findByCustomerLikeIgnoreCase(String customer, Pageable pageable);
+
   ChangingCommonDataResp findChangedCommonDataById(long projectId);
 
   ChangingPlannedEndDateResp findChangedPlannedEndDateById(long projectId);
