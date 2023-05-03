@@ -320,12 +320,29 @@ public class ProjectController {
    * @param projectNumberOrCustomer the number or customer data associated with the {@code Project}
    * @return a page of short project dtos
    */
+  @Operation(summary = "Поиск проектов с пагинацией и сортировкой",
+      description = "Доступен администратору. Возвращает результаты поиска(список ДТО проектов с "
+          + "сортировкой по дате окончания) по номеру проекта или данным заказчика")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Список ДТО проектов. "
+          + "В примере указан единичный объект из списка",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ProjectShortDto.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "Поисковой запрос пустой, короче 1 знака или длиннее 30 знаков",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @GetMapping("/search")
   public ResponseEntity<PageDto<ProjectShortDto>> searchProjects(
       @Valid PageSettings pageSetting,
       @RequestParam(name = "projectNumberOrCustomer")
       @Parameter(description = "Номер проекта или данные заказчика")
-      @NotBlank @Size(max = 30) String projectNumberOrCustomer) {
+      @NotBlank @Size(min = 1, max = 30) String projectNumberOrCustomer) {
     
     Sort projectSort = pageSetting.buildProjectSort();
     Pageable projectPage = PageRequest.of(
