@@ -116,10 +116,19 @@ public class ProjectService {
         .toList();
   }
 
-  public PageDto<ProjectShortDto> findProjectByNumberOrCustomer(Pageable projectPage, String projectNumberOrCustomer) {
-    return pageToPageDtoMapper.projectPageToPageDto(findProjectPage(projectPage, projectNumberOrCustomer));
+  public PageDto<ProjectShortDto> findProjectByNumberOrCustomer(
+      Pageable projectPage, String projectNumberOrCustomer) {
+    return pageToPageDtoMapper.projectPageToPageDto(
+        findProjectPage(projectPage, projectNumberOrCustomer));
   }
 
+  /**
+   * Gets a page of {@code Project} objects according to the given parameters.
+   *
+   * @param projectPage             the requested page for the {@code Project} objects
+   * @param projectNumberOrCustomer the number or customer data associated with the {@code Project}
+   * @return a page of {@code Project} objects
+   */
   public Page<Project> findProjectPage(Pageable projectPage, String projectNumberOrCustomer) {
     Page<Project> page;
 
@@ -127,7 +136,8 @@ public class ProjectService {
       int number = Integer.parseInt(projectNumberOrCustomer);
       page = projectRepository.findByNumber(number, projectPage);
     } catch (NumberFormatException e) {
-      page = projectRepository.findByCustomerLikeIgnoreCase(projectNumberOrCustomer.toUpperCase(), projectPage);
+      page = projectRepository.findByCustomerLikeIgnoreCase(
+          projectNumberOrCustomer.toUpperCase(), projectPage);
     }
 
     return page;

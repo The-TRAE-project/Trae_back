@@ -62,9 +62,9 @@ import springfox.documentation.annotations.ApiIgnore;
 @Validated
 @RequestMapping("/api/project")
 public class ProjectController {
-
+  
   private final ProjectService projectService;
-
+  
   /**
    * Endpoint for saving a new project.
    *
@@ -95,7 +95,7 @@ public class ProjectController {
     projectService.saveNewProject(dto, principal.getName());
     return new ResponseEntity<>(HttpStatus.CREATED);
   }
-
+  
   /**
    * Get project by id.
    *
@@ -122,7 +122,7 @@ public class ProjectController {
   public ResponseEntity<ProjectDto> project(@PathVariable long projectId) {
     return ResponseEntity.ok(projectService.getProjectDtoById(projectId));
   }
-
+  
   /**
    * Gets a page of projects.
    *
@@ -152,14 +152,14 @@ public class ProjectController {
           "Фильтрация по статусу открыт/закрыт") Boolean isEnded,
       @RequestParam(required = false) @Parameter(description =
           "Фильтрация по номеру проекта") @Min(0) @Max(999) Integer number) {
-
+    
     Sort projectSort = pageSetting.buildProjectSort();
     Pageable projectPage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), projectSort);
-
+    
     return ResponseEntity.ok(projectService.getProjectDtoPage(projectPage, isEnded, number));
   }
-
+  
   /**
    * Get list of available projects for employee.
    *
@@ -187,7 +187,7 @@ public class ProjectController {
       @PathVariable long employeeId) {
     return ResponseEntity.ok(projectService.getAvailableProjects(employeeId));
   }
-
+  
   /**
    * This method is used for finish a project.
    *
@@ -218,7 +218,7 @@ public class ProjectController {
     projectService.finishProject(projectId);
     return ResponseEntity.ok().build();
   }
-
+  
   /**
    * Delete project by id.
    *
@@ -248,7 +248,7 @@ public class ProjectController {
     projectService.deleteProject(projectId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
-
+  
   /**
    * Update common data of project.
    *
@@ -281,7 +281,7 @@ public class ProjectController {
     projectService.updateCommonData(request);
     return ResponseEntity.ok(projectService.getChangingCommonDataResp(request.projectId()));
   }
-
+  
   @Operation(summary = "Изменение планируемой даты окончания проекта", description =
       "Доступен администратору. Изменяет планируемую дату окончания проекта")
   @ApiResponses(value = {
@@ -312,17 +312,25 @@ public class ProjectController {
     projectService.updatePlannedEndDate(request);
     return ResponseEntity.ok(projectService.getChangingPlannedEndDateResp(request.projectId()));
   }
-
+  
+  /**
+   * Find a page of projects with parameters.
+   *
+   * @param pageSetting             the page settings
+   * @param projectNumberOrCustomer the number or customer data associated with the {@code Project}
+   * @return a page of short project dtos
+   */
   @GetMapping("/search")
   public ResponseEntity<PageDto<ProjectShortDto>> searchProjects(
-      @Valid PageSettings pageSetting, @RequestParam(name = "projectNumberOrCustomer")
-  @Parameter(description = "Номер проекта или данные заказчика")
-  @NotBlank @Size(max = 30) String projectNumberOrCustomer) {
-
+      @Valid PageSettings pageSetting,
+      @RequestParam(name = "projectNumberOrCustomer")
+      @Parameter(description = "Номер проекта или данные заказчика")
+      @NotBlank @Size(max = 30) String projectNumberOrCustomer) {
+    
     Sort projectSort = pageSetting.buildProjectSort();
     Pageable projectPage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), projectSort);
-
+    
     return ResponseEntity.ok(
         projectService.findProjectByNumberOrCustomer(projectPage, projectNumberOrCustomer));
   }
