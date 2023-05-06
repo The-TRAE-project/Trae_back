@@ -170,7 +170,7 @@ public class OperationController {
   @io.swagger.v3.oas.annotations.Operation(summary = "Список операций проекта для сотрудников",
       description = "Доступен сотрудникам. Возвращает список операций, по указанному ID проекта")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Список операций выбранного проекта"
+      @ApiResponse(responseCode = "200", description = "Список операций выбранного проекта. "
           + "В примере указан единичный объект из списка",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = OperationForEmpDto.class))}),
@@ -248,6 +248,10 @@ public class OperationController {
           content = @Content)})
   @PostMapping("/employee/receive-operation")
   public ResponseEntity<HttpStatus> receiveOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
+    operationService.checkCorrectIdAndPriority(dto.operationId(), dto.operationPriority());
+    if (dto.operationPriority() == 0) {
+      projectService.updateStartFirstOperationDate(dto.operationId());
+    }
     operationService.receiveOperation(dto);
     return ResponseEntity.ok().build();
   }

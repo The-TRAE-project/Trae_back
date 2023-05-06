@@ -208,6 +208,7 @@ public class OperationService {
         .sorted(Util::prioritySorting)
         .map(o -> new OperationForEmpDto(
             o.getId(),
+            o.getPriority(),
             o.getName(),
             o.isReadyToAcceptance(),
             o.isEnded(),

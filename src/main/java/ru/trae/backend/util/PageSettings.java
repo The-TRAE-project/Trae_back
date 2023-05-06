@@ -95,7 +95,7 @@ public class PageSettings {
    */
   public Sort buildProjectSort() {
     Sort sort;
-    key = "plannedEndDate";
+    key = "endDateInContract";
     String nextKey = "id";
     if (direction.equals("asc")) {
       sort = Sort.by(key).ascending().and(Sort.by(nextKey).ascending());

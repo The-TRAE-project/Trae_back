@@ -7,6 +7,7 @@ package ru.trae.backend.dto.operation;
  */
 public record OperationForEmpDto(
     long id,
+    int priority,
     String name,
     boolean readyToAcceptance,
     boolean isEnded,
