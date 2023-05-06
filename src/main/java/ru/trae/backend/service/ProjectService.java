@@ -21,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectAvailableDtoMapper;
@@ -29,8 +28,8 @@ import ru.trae.backend.dto.mapper.ProjectDtoMapper;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.project.ChangingCommonDataReq;
 import ru.trae.backend.dto.project.ChangingCommonDataResp;
-import ru.trae.backend.dto.project.ChangingPlannedEndDateReq;
-import ru.trae.backend.dto.project.ChangingPlannedEndDateResp;
+import ru.trae.backend.dto.project.ChangingEndDatesReq;
+import ru.trae.backend.dto.project.ChangingEndDatesResp;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
@@ -251,25 +250,25 @@ public class ProjectService {
     return projectDtoMapper.apply(p);
   }
   
-  public ChangingPlannedEndDateResp getChangingPlannedEndDateResp(long projectId) {
+  public ChangingEndDatesResp getChangingEndDatesResp(long projectId) {
     return projectRepository.findChangedPlannedEndDateById(projectId);
   }
   
   /**
-   * Updates the planned end date of the project.
+   * Updates the planned and contract end date of the project.
    *
-   * @param req Request with new planned end date of the project.
-   * @throws ProjectException wrong new planned end date.
+   * @param req Request with new planned and contract end date of the project.
+   * @throws ProjectException wrong new planned and contract end date.
    */
-  public void updatePlannedEndDate(ChangingPlannedEndDateReq req) {
+  public void updateEndDates(ChangingEndDatesReq req) {
     Project p = getProjectById(req.projectId());
-    if (p.getPlannedEndDate().equals(req.newPlannedEndDate())) {
+    if (p.getPlannedEndDate().equals(req.newPlannedAndContractEndDate())) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
-          "The project planned end date must not match an existing one");
+          "The project planned and contract end date must not match an existing one");
     }
     if (p.isEnded()) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
-          "The planned end date cannot be changed in a completed project");
+          "The planned and contract end date cannot be changed in a completed project");
     }
     
     //Вычисление минимально возможной планируемой даты окончания проекта.
@@ -282,19 +281,21 @@ public class ProjectService {
         .orElse(LocalDateTime.now())
         .plusDays(2);
     
-    if (minDateTime.isAfter(req.newPlannedEndDate())) {
+    if (minDateTime.isAfter(req.newPlannedAndContractEndDate())) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
-          "The end date cannot be less than the planned end date of the stage that is in work "
-              + "or available for acceptance + 2 additional days.");
+          "The planned and contract end date cannot be less than the planned end date of the "
+              + "stage that is in work or available for acceptance + 2 additional days.");
     }
     
-    if (req.newPlannedEndDate().isAfter(p.getStartDate().plusHours(8760))) {
-      throw new ProjectException(HttpStatus.BAD_REQUEST, "The planned end date cannot be more than "
-          + "start date of project + 1 year (or 8760 hours).");
+    if (req.newPlannedAndContractEndDate().isAfter(p.getStartDate().plusHours(8760))) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The planned and contract end date cannot be more than "
+              + "start date of project + 1 year (or 8760 hours).");
     }
     
-    p.setPlannedEndDate(req.newPlannedEndDate());
-    p.setPeriod((int) HOURS.between(p.getStartDate(), req.newPlannedEndDate()));
+    p.setEndDateInContract(req.newPlannedAndContractEndDate());
+    p.setPlannedEndDate(req.newPlannedAndContractEndDate());
+    p.setPeriod((int) HOURS.between(p.getStartDate(), req.newPlannedAndContractEndDate()));
     
     projectRepository.save(p);
   }

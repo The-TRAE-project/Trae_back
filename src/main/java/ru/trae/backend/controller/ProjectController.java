@@ -41,8 +41,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.project.ChangingCommonDataReq;
 import ru.trae.backend.dto.project.ChangingCommonDataResp;
-import ru.trae.backend.dto.project.ChangingPlannedEndDateReq;
-import ru.trae.backend.dto.project.ChangingPlannedEndDateResp;
+import ru.trae.backend.dto.project.ChangingEndDatesReq;
+import ru.trae.backend.dto.project.ChangingEndDatesResp;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
@@ -282,13 +282,13 @@ public class ProjectController {
     return ResponseEntity.ok(projectService.getChangingCommonDataResp(request.projectId()));
   }
   
-  @Operation(summary = "Изменение планируемой даты окончания проекта", description =
-      "Доступен администратору. Изменяет планируемую дату окончания проекта")
+  @Operation(summary = "Изменение планируемой и контрактной даты окончания проекта", description =
+      "Доступен администратору. Изменяет планируемую и контрактную дату окончания проекта")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
-          description = "Возвращает ДТО с планируемой датой окончания проекта",
+          description = "Возвращает ДТО с планируемой/контрактной датой окончания проекта",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = ChangingPlannedEndDateResp.class))}),
+              schema = @Schema(implementation = ChangingEndDatesResp.class))}),
       @ApiResponse(responseCode = "400", description = "Неправильный формат новых данных",
           content = @Content),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
@@ -306,11 +306,11 @@ public class ProjectController {
           content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
-  @PostMapping("/update-planned-end-date")
-  public ResponseEntity<ChangingPlannedEndDateResp> updatePlannedEndDate(
-      @Valid @RequestBody ChangingPlannedEndDateReq request) {
-    projectService.updatePlannedEndDate(request);
-    return ResponseEntity.ok(projectService.getChangingPlannedEndDateResp(request.projectId()));
+  @PostMapping("/update-end-dates")
+  public ResponseEntity<ChangingEndDatesResp> updateEndDates(
+      @Valid @RequestBody ChangingEndDatesReq request) {
+    projectService.updateEndDates(request);
+    return ResponseEntity.ok(projectService.getChangingEndDatesResp(request.projectId()));
   }
   
   /**

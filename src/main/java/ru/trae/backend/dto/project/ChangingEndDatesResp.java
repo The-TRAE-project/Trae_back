@@ -19,10 +19,10 @@ import java.time.LocalDateTime;
  * @param id             The ID of the project.
  * @param plannedEndDate The updated planned end date of the project.
  */
-public record ChangingPlannedEndDateResp(
+public record ChangingEndDatesResp(
     @JsonProperty("projectId")
     long id,
-    @JsonProperty("updatedPlannedEndDate")
+    @JsonProperty("updatedPlannedAndContractEndDate")
     LocalDateTime plannedEndDate
 ) {
 }

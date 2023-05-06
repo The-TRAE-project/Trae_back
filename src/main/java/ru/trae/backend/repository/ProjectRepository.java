@@ -20,7 +20,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.project.ChangingCommonDataResp;
-import ru.trae.backend.dto.project.ChangingPlannedEndDateResp;
+import ru.trae.backend.dto.project.ChangingEndDatesResp;
 import ru.trae.backend.entity.task.Project;
 
 /**
@@ -61,7 +61,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   
   ChangingCommonDataResp findChangedCommonDataById(long projectId);
   
-  ChangingPlannedEndDateResp findChangedPlannedEndDateById(long projectId);
+  ChangingEndDatesResp findChangedPlannedEndDateById(long projectId);
   
   @Transactional
   @Modifying
