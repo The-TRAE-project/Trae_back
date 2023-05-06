@@ -62,4 +62,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   ChangingCommonDataResp findChangedCommonDataById(long projectId);
 
   ChangingPlannedEndDateResp findChangedPlannedEndDateById(long projectId);
+  
+  @Query()
+  void updateStartFirstOperationDateByOperationId(long operationId);
 }

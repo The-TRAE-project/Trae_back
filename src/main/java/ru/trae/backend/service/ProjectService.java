@@ -21,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectAvailableDtoMapper;
@@ -58,7 +59,7 @@ public class ProjectService {
   private final ProjectDtoMapper projectDtoMapper;
   private final ProjectAvailableDtoMapper projectAvailableDtoMapper;
   private final PageToPageDtoMapper pageToPageDtoMapper;
-
+  
   /**
    * Saves a new {@link Project} to the database.
    *
@@ -68,9 +69,9 @@ public class ProjectService {
   public void saveNewProject(NewProjectDto dto, String authUsername) {
     checkOperationsNotEmpty(dto.operations());
     checkCorrectPlannedEndDate(dto.plannedEndDate());
-
+    
     Project p = new Project();
-
+    
     p.setNumber(dto.number());
     p.setName(dto.name());
     p.setStartDate(LocalDateTime.now());
@@ -83,14 +84,14 @@ public class ProjectService {
     p.setManager(managerService.getManagerByUsername(authUsername));
     p.setCustomer(dto.customer());
     p.setComment(dto.comment());
-
+    
     projectRepository.save(p);
-
+    
     List<Operation> operations = operationService.saveNewOperations(p, dto.operations());
     p.setOperations(operations);
     projectRepository.save(p);
   }
-
+  
   /**
    * Returns a {@link Project} entity with the given id.
    *
@@ -103,7 +104,7 @@ public class ProjectService {
         () -> new ProjectException(HttpStatus.NOT_FOUND,
             "Project with ID: " + id + " not found"));
   }
-
+  
   /**
    * Returns a list of all {@link Project} entities from the database.
    *
@@ -115,13 +116,13 @@ public class ProjectService {
         .map(projectDtoMapper)
         .toList();
   }
-
+  
   public PageDto<ProjectShortDto> findProjectByNumberOrCustomer(
       Pageable projectPage, String projectNumberOrCustomer) {
     return pageToPageDtoMapper.projectPageToPageDto(
         findProjectPage(projectPage, projectNumberOrCustomer));
   }
-
+  
   /**
    * Gets a page of {@code Project} objects according to the given parameters.
    *
@@ -131,7 +132,7 @@ public class ProjectService {
    */
   public Page<Project> findProjectPage(Pageable projectPage, String projectNumberOrCustomer) {
     Page<Project> page;
-
+    
     try {
       int number = Integer.parseInt(projectNumberOrCustomer);
       page = projectRepository.findByNumber(number, projectPage);
@@ -139,10 +140,10 @@ public class ProjectService {
       page = projectRepository.findByCustomerLikeIgnoreCase(
           projectNumberOrCustomer.toUpperCase(), projectPage);
     }
-
+    
     return page;
   }
-
+  
   /**
    * Gets a page of {@code Project} objects according to the given parameters.
    *
@@ -153,7 +154,7 @@ public class ProjectService {
    */
   public Page<Project> getProjectPage(Pageable projectPage, Boolean isEnded, Integer number) {
     Page<Project> page;
-
+    
     if (isEnded != null && number != null) {
       page = projectRepository.findByIsEndedAndNumber(isEnded, number, projectPage);
     } else if (isEnded != null) {
@@ -165,12 +166,12 @@ public class ProjectService {
     }
     return page;
   }
-
+  
   public PageDto<ProjectShortDto> getProjectDtoPage(
       Pageable projectPage, Boolean isEnded, Integer number) {
     return pageToPageDtoMapper.projectPageToPageDto(getProjectPage(projectPage, isEnded, number));
   }
-
+  
   /**
    * Returns a list of all available {@link Project} entities for a given {@link Employee}.
    *
@@ -180,16 +181,16 @@ public class ProjectService {
   public List<ProjectAvailableForEmpDto> getAvailableProjects(long employeeId) {
     Employee e = employeeService.getEmployeeById(employeeId);
     List<Project> projects = new ArrayList<>();
-
+    
     e.getTypeWorks().forEach(tw -> projects.addAll(
         projectRepository.findAvailableProjectsByTypeWork(tw.getId())));
-
+    
     return projects.stream()
         .sorted(Util::dateSorting)
         .map(projectAvailableDtoMapper)
         .toList();
   }
-
+  
   /**
    * This method is used to finish a project by setting isEnded to true and setting the realEndDate
    * to the current date.
@@ -199,7 +200,7 @@ public class ProjectService {
   public void finishProject(long projectId) {
     projectRepository.updateIsEndedAndRealEndDateById(true, LocalDateTime.now(), projectId);
   }
-
+  
   /**
    * This method deletes a project from the database.
    *
@@ -209,7 +210,7 @@ public class ProjectService {
     Project p = getProjectById(projectId);
     projectRepository.delete(p);
   }
-
+  
   /**
    * Checks and updates the end date of the project, if necessary.
    *
@@ -219,17 +220,17 @@ public class ProjectService {
     if (LocalDateTime.now().isBefore(o.getPlannedEndDate())) {
       return;
     }
-
+    
     long hours = HOURS.between(o.getPlannedEndDate(), LocalDateTime.now());
     log.info("the time of the operation has been increased, the planned end date of the project "
         + "will be moved by {} hours", hours);
     Project p = o.getProject();
     LocalDateTime newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
-
+    
     projectRepository.updatePlannedEndDateById(newPlannedEndDate, p.getId());
     log.info("the end date of the project has been increased by {} hours", hours);
   }
-
+  
   /**
    * Returns a {@link ProjectDto} object for the {@link Project} with the given id.
    *
@@ -239,7 +240,7 @@ public class ProjectService {
   public ProjectDto getProjectDtoById(long id) {
     return projectDtoMapper.apply(getProjectById(id));
   }
-
+  
   /**
    * Returns a {@link ProjectDto} object for the given {@link Project}.
    *
@@ -249,11 +250,11 @@ public class ProjectService {
   public ProjectDto convertFromProject(Project p) {
     return projectDtoMapper.apply(p);
   }
-
+  
   public ChangingPlannedEndDateResp getChangingPlannedEndDateResp(long projectId) {
     return projectRepository.findChangedPlannedEndDateById(projectId);
   }
-
+  
   /**
    * Updates the planned end date of the project.
    *
@@ -270,7 +271,7 @@ public class ProjectService {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
           "The planned end date cannot be changed in a completed project");
     }
-
+    
     //Вычисление минимально возможной планируемой даты окончания проекта.
     // + 2 дня добавляется с учетом отгрузки 24 часа.
     LocalDateTime minDateTime = p.getOperations().stream()
@@ -280,28 +281,32 @@ public class ProjectService {
         .map(Task::getPlannedEndDate)
         .orElse(LocalDateTime.now())
         .plusDays(2);
-
+    
     if (minDateTime.isAfter(req.newPlannedEndDate())) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
           "The end date cannot be less than the planned end date of the stage that is in work "
               + "or available for acceptance + 2 additional days.");
     }
-
+    
     if (req.newPlannedEndDate().isAfter(p.getStartDate().plusHours(8760))) {
       throw new ProjectException(HttpStatus.BAD_REQUEST, "The planned end date cannot be more than "
           + "start date of project + 1 year (or 8760 hours).");
     }
-
+    
     p.setPlannedEndDate(req.newPlannedEndDate());
     p.setPeriod((int) HOURS.between(p.getStartDate(), req.newPlannedEndDate()));
-
+    
     projectRepository.save(p);
   }
-
+  
+  public void updateStartFirstOperationDate(long operationId) {
+    projectRepository.updateStartFirstOperationDateByOperationId(operationId);
+  }
+  
   public ChangingCommonDataResp getChangingCommonDataResp(long projectId) {
     return projectRepository.findChangedCommonDataById(projectId);
   }
-
+  
   /**
    * Checks if data for updating is available.
    *
@@ -314,7 +319,7 @@ public class ProjectService {
       throw new ProjectException(HttpStatus.BAD_REQUEST, "No data for updating");
     }
   }
-
+  
   /**
    * Updates the common data of a project.
    *
@@ -327,15 +332,15 @@ public class ProjectService {
     updateProjectName(p, req.projectName());
     updateCustomerInfo(p, req.customer());
     updateCommentary(p, req.commentary());
-
+    
     projectRepository.save(p);
   }
-
+  
   private void updateCommentary(Project p, String commentary) {
     if (commentary == null) {
       return;
     }
-
+    
     if (!commentary.equals(p.getComment())) {
       p.setComment(commentary);
     } else {
@@ -343,12 +348,12 @@ public class ProjectService {
           "The project commentary info must not match an existing one");
     }
   }
-
+  
   private void updateCustomerInfo(Project p, String newCustomerInfo) {
     if (newCustomerInfo == null) {
       return;
     }
-
+    
     if (!newCustomerInfo.equals(p.getCustomer())) {
       p.setCustomer(newCustomerInfo);
     } else {
@@ -356,12 +361,12 @@ public class ProjectService {
           "The project customer info must not match an existing one");
     }
   }
-
+  
   private void updateProjectName(Project p, String newName) {
     if (newName == null) {
       return;
     }
-
+    
     if (!newName.equals(p.getName())) {
       p.setName(newName);
     } else {
@@ -369,12 +374,12 @@ public class ProjectService {
           "The project name must not match an existing one");
     }
   }
-
+  
   private void updateProjectNumber(Project p, Integer newProjectNumber) {
     if (newProjectNumber == null) {
       return;
     }
-
+    
     if (newProjectNumber != p.getNumber()) {
       p.setNumber(newProjectNumber);
     } else {
@@ -382,13 +387,13 @@ public class ProjectService {
           "The project number must not match an existing one");
     }
   }
-
+  
   private void checkOperationsNotEmpty(List<NewOperationDto> operations) {
     if (operations == null || operations.isEmpty()) {
       throw new ProjectException(HttpStatus.BAD_REQUEST, "List of operations cannot be empty");
     }
   }
-
+  
   private void checkCorrectPlannedEndDate(LocalDateTime plannedEndDate) {
     if (plannedEndDate.isBefore(LocalDateTime.now().plusHours(48))) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
@@ -399,7 +404,7 @@ public class ProjectService {
           + "start date of project + 1 year (or 8760 hours).");
     }
   }
-
+  
   /**
    * This method checks if the project by ID exists in the repository.
    *

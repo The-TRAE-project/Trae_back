@@ -50,7 +50,7 @@ public class OperationService {
   private final EmployeeService employeeService;
   private final OperationDtoMapper operationDtoMapper;
   private final TypeWorkService typeWorkService;
-
+  
   /**
    * Gets an operation by its ID.
    *
@@ -63,7 +63,7 @@ public class OperationService {
         () -> new OperationException(HttpStatus.NOT_FOUND,
             "Operation with ID " + id + " not found"));
   }
-
+  
   /**
    * This method saves new operations to the project.
    * If operations size is greater than 0, the first operation is created.
@@ -78,21 +78,21 @@ public class OperationService {
     if (operations == null || operations.isEmpty()) {
       return Collections.emptyList();
     }
-
+    
     final List<Operation> savedOperations = new ArrayList<>();
     NewOperationDto dto = operations.get(0);
-
+    
     int period = Util.getPeriodForFirstOperation(p.getPeriod(), operations.size()) - 24;
-
+    
     Operation fo = prepareOperation(
         p, dto.name(), period, 0,
         LocalDateTime.now(),
         LocalDateTime.now().plusHours(period),
         true,
         typeWorkService.getTypeWorkById(dto.typeWorkId()));
-
+    
     savedOperations.add(operationRepository.save(fo));
-
+    
     if (operations.size() > 1) {
       operations.stream()
           .skip(1)
@@ -101,17 +101,17 @@ public class OperationService {
                 p, no.name(), 0, operations.indexOf(no) * 10,
                 null, null,
                 false, typeWorkService.getTypeWorkById(no.typeWorkId()));
-
+            
             savedOperations.add(operationRepository.save(o));
           });
     }
-
+    
     Operation shipment = prepareShipmentOp(p, operations.size() * 10);
     savedOperations.add(operationRepository.save(shipment));
-
+    
     return savedOperations;
   }
-
+  
   /**
    * Gets the list of {@link OperationDto} objects by project id.
    *
@@ -123,7 +123,7 @@ public class OperationService {
         .map(operationDtoMapper)
         .toList();
   }
-
+  
   /**
    * Use to receive operation.
    *
@@ -132,18 +132,18 @@ public class OperationService {
   public void receiveOperation(ReqOpEmpIdDto dto) {
     Employee e = employeeService.getEmployeeById(dto.employeeId());
     Operation o = getOperationById(dto.operationId());
-
+    
     checkForAcceptance(o);
     checkCompatibilityTypeWork(o, e);
-
+    
     o.setInWork(true);
     o.setReadyToAcceptance(false);
     o.setEmployee(e);
     o.setAcceptanceDate(LocalDateTime.now());
-
+    
     operationRepository.save(o);
   }
-
+  
   /**
    * Finishes the operation.
    *
@@ -153,14 +153,14 @@ public class OperationService {
     o.setInWork(false);
     o.setEnded(true);
     o.setRealEndDate(LocalDateTime.now());
-
+    
     Operation op = operationRepository.save(o);
     log.info("the employee with id {} has finished the operation with id {}",
         o.getEmployee().getId(), o.getId());
-
+    
     startNextOperation(op);
   }
-
+  
   /**
    * This is method sets the start date, the period, and the planned end date to the next operation
    * in the project. Recalculate the remaining period of the operation.
@@ -174,25 +174,25 @@ public class OperationService {
         .stream()
         .sorted(Comparator.comparing(Operation::getPriority))
         .toList();
-
+    
     if (operations.indexOf(o) + 1 < operations.size()) {
       Operation nextOp = operations.get(operations.indexOf(o) + 1);
       log.info("next operation with id {} from project with id {}",
           nextOp.getId(), nextOp.getProject().getId());
-
+      
       int newPeriod = recalculationRemainingPeriod(nextOp, operations);
       log.info("period for next operation with id {} = {}", nextOp.getId(), newPeriod);
-
+      
       nextOp.setReadyToAcceptance(true);
       nextOp.setPeriod(newPeriod);
       nextOp.setStartDate(LocalDateTime.now());
       nextOp.setPlannedEndDate(LocalDateTime.now().plusHours(newPeriod));
-
+      
       operationRepository.save(nextOp);
       log.info("next operation with id {} started", nextOp.getId());
     }
   }
-
+  
   /**
    * Retrieves the list of operations for the specified project in the {@link OperationForEmpDto}
    * format.
@@ -203,7 +203,7 @@ public class OperationService {
    */
   public List<OperationForEmpDto> getOperationsByProjectIdForEmp(long projectId) {
     List<Operation> operations = operationRepository.findByProjectId(projectId);
-
+    
     return operations.stream()
         .sorted(Util::prioritySorting)
         .map(o -> new OperationForEmpDto(
@@ -218,7 +218,7 @@ public class OperationService {
         ))
         .toList();
   }
-
+  
   /**
    * Retrieves a list of operations for a given employee, where the operation is in work.
    *
@@ -239,7 +239,7 @@ public class OperationService {
         ))
         .toList();
   }
-
+  
   /**
    * A method to insert new operation without close the active operations.
    *
@@ -250,20 +250,20 @@ public class OperationService {
    */
   public void insertNewOperation(InsertingOperationDto dto, Project p) {
     List<Operation> operations = p.getOperations();
-
+    
     checkExistsPriority(operations, dto.priority());
     checkAvailablePriority(operations, dto.priority());
-
+    
     Operation newOp = prepareOperation(
         p, dto.name(), 0, dto.priority(),
         null, null,
         false, typeWorkService.getTypeWorkById(dto.typeWorkId()));
-
+    
     operationRepository.save(newOp);
-
+    
     checkAndUpdateShipmentOp(operations, dto.priority());
   }
-
+  
   /**
    * Deletes operation.
    *
@@ -281,10 +281,10 @@ public class OperationService {
       throw new OperationException(HttpStatus.BAD_REQUEST,
           "Operation with ID " + operationId + " cannot be deleted");
     }
-
+    
     operationRepository.deleteById(operationId);
   }
-
+  
   /**
    * Closes the operation.
    *
@@ -297,7 +297,7 @@ public class OperationService {
     if (o.isEnded()) {
       throw new OperationException(HttpStatus.CONFLICT, "This operation is already finished");
     }
-
+    
     if (o.isInWork() || o.isReadyToAcceptance()) {
       operationRepository.updateRealEndDateAndIsEndedAndReadyToAcceptanceAndInWorkById(
           LocalDateTime.now(), true, false, false, o.getId());
@@ -305,10 +305,10 @@ public class OperationService {
       throw new OperationException(HttpStatus.BAD_REQUEST,
           "The operation is not yet in operation or is not available for acceptance");
     }
-
+    
     startNextOperation(o);
   }
-
+  
   private void checkAndUpdateShipmentOp(List<Operation> operations, int priority) {
     int maxPriority = operations.stream()
         .mapToInt(Operation::getPriority)
@@ -317,14 +317,14 @@ public class OperationService {
       createOrUpdateShipmentOp(operations, maxPriority, priority);
     }
   }
-
+  
   private void createOrUpdateShipmentOp(List<Operation> operations,
                                         int maxPriority, int priorityNewOp) {
     Operation lastOp = operations.stream().filter(o -> o.getPriority() == maxPriority)
         .findFirst()
         .orElseThrow(() -> new OperationException(HttpStatus.BAD_REQUEST,
             "Problem with operation priority"));
-
+    
     if (!lastOp.isEnded() && !lastOp.isInWork() && !lastOp.isReadyToAcceptance()
         && priorityNewOp > lastOp.getPriority()) {
       operationRepository.updatePriorityById(priorityNewOp + 10, lastOp.getId());
@@ -333,14 +333,14 @@ public class OperationService {
       operationRepository.save(shipment);
     }
   }
-
+  
   private void checkExistsPriority(List<Operation> operations, int priority) {
     if (operations.stream().anyMatch(o -> o.getPriority() == priority)) {
       throw new OperationException(HttpStatus.CONFLICT,
           "The operation with priority: " + priority + " already exists");
     }
   }
-
+  
   private void checkAvailablePriority(List<Operation> operations, int priority) {
     int actualPriority = operations.stream()
         .filter(o -> o.isInWork() || o.isReadyToAcceptance())
@@ -354,20 +354,20 @@ public class OperationService {
               + actualPriority);
     }
   }
-
+  
   private void checkForAcceptance(Operation o) {
     if (!o.isReadyToAcceptance()) {
       throw new OperationException(HttpStatus.BAD_REQUEST,
           "The operation is currently unavailable for acceptance.");
     }
   }
-
+  
   private void checkCompatibilityTypeWork(Operation o, Employee e) {
     if (!e.getTypeWorks().contains(o.getTypeWork())) {
       throw new OperationException(HttpStatus.BAD_REQUEST, "Types of work are not compatible.");
     }
   }
-
+  
   /**
    * Checks if the confirming employee is the same as the one who accepted the operation.
    *
@@ -382,12 +382,12 @@ public class OperationService {
               + " to the ID of the person who accepted the operation");
     }
   }
-
+  
   private int recalculationRemainingPeriod(Operation nextOp, List<Operation> operations) {
     long remainingPeriod = HOURS.between(LocalDateTime.now(),
         nextOp.getProject().getPlannedEndDate());
     long opRemaining = operations.stream().filter(op -> !op.isEnded()).count();
-
+    
     // здесь отслеживается последний этап "отгрузка" = на него всегда 24 часа.
     if (opRemaining == 1) {
       return 24;
@@ -395,7 +395,7 @@ public class OperationService {
     // здесь вычитается из оставшихся операций - "отгрузка" и время на нее - 24 часа.
     return Util.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
   }
-
+  
   private Operation prepareOperation(Project p, String name, int period, int priority,
                                      LocalDateTime start,
                                      LocalDateTime end,
@@ -413,13 +413,20 @@ public class OperationService {
     o.setInWork(false);
     o.setReadyToAcceptance(ready);
     o.setTypeWork(typeWork);
-
+    
     return o;
   }
-
+  
   private Operation prepareShipmentOp(Project p, int priority) {
     return prepareOperation(p, "Отгрузка", 24, priority,
         null, null,
         false, typeWorkService.getTypeWorkByName("Отгрузка"));
+  }
+  
+  public void checkCorrectIdAndPriority(long operationId, int operationPriority) {
+    if (!operationRepository.existsByIdAndPriority(operationId, operationPriority)) {
+      throw new OperationException(HttpStatus.BAD_REQUEST,
+          "The priority of the operation does not match the operation id");
+    }
   }
 }

@@ -26,6 +26,7 @@ import ru.trae.backend.entity.task.Operation;
  */
 @Repository
 public interface OperationRepository extends JpaRepository<Operation, Long> {
+
   /**
    * Retrieve all operations associated with a given project.
    *
@@ -81,4 +82,7 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
   @Modifying
   @Query("delete from Operation o where o.id = ?1")
   void deleteById(long operationId);
+  
+  @Query("select (count(o) > 0) from Operation o where o.id = ?1 and o.priority = ?2")
+  boolean existsByIdAndPriority(Long id, int priority);
 }

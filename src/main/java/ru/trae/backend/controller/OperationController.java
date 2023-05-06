@@ -29,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.operation.InsertingOperationDto;
-import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
 import ru.trae.backend.dto.operation.ReqOpEmpIdDto;
@@ -48,7 +47,7 @@ import ru.trae.backend.service.ProjectService;
 @Validated
 @RequestMapping("/api/operation")
 public class OperationController {
-
+  
   private final OperationService operationService;
   private final ProjectService projectService;
 
@@ -62,7 +61,7 @@ public class OperationController {
 //  public ResponseEntity<List<OperationDto>> shortOperationsByProject(@PathVariable long projectId) {
 //    return ResponseEntity.ok(operationService.getOpsDtoListByProject(projectId));
 //  }
-
+  
   /**
    * Inserts new {@link Operation} to the database.
    *
@@ -95,10 +94,10 @@ public class OperationController {
       @Valid @RequestBody InsertingOperationDto dto) {
     Project p = projectService.getProjectById(dto.projectId());
     operationService.insertNewOperation(dto, p);
-
+    
     return ResponseEntity.ok().build();
   }
-
+  
   /**
    * Delete operation by id.
    *
@@ -127,7 +126,7 @@ public class OperationController {
     operationService.deleteOperation(operationId);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
-
+  
   /**
    * Close an existing operation.
    *
@@ -160,7 +159,7 @@ public class OperationController {
     operationService.closeOperation(operationId);
     return ResponseEntity.ok().build();
   }
-
+  
   /**
    * Retrieves the list of operations associated with a given project id.
    *
@@ -187,7 +186,7 @@ public class OperationController {
       @PathVariable long projectId) {
     return ResponseEntity.ok(operationService.getOperationsByProjectIdForEmp(projectId));
   }
-
+  
   /**
    * Get all operations in work for specified employee.
    *
@@ -217,7 +216,7 @@ public class OperationController {
       @PathVariable long employeeId) {
     return ResponseEntity.ok(operationService.getOperationsInWorkByEmpIdForEmp(employeeId));
   }
-
+  
   /**
    * Endpoint to receive operation.
    *
@@ -249,13 +248,13 @@ public class OperationController {
   @PostMapping("/employee/receive-operation")
   public ResponseEntity<HttpStatus> receiveOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
     operationService.checkCorrectIdAndPriority(dto.operationId(), dto.operationPriority());
+    operationService.receiveOperation(dto);
     if (dto.operationPriority() == 0) {
       projectService.updateStartFirstOperationDate(dto.operationId());
     }
-    operationService.receiveOperation(dto);
     return ResponseEntity.ok().build();
   }
-
+  
   /**
    * The method is used to finish an operation and update the project end date if needed.
    *
@@ -286,7 +285,7 @@ public class OperationController {
   @PostMapping("/employee/finish-operation")
   public ResponseEntity<HttpStatus> finishOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
     Operation o = operationService.getOperationById(dto.operationId());
-
+    
     operationService.checkConfirmingEmployee(o, dto.employeeId());
     projectService.checkAndUpdateProjectEndDate(o);
     operationService.finishOperation(o);
