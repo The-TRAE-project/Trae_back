@@ -19,8 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.security.Principal;
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
@@ -126,14 +124,19 @@ public class ProjectController {
   /**
    * Gets a page of projects.
    *
-   * @param pageSetting the page settings
-   * @param isEnded     filter by open/closed status
-   * @param number      filter by project number
+   * @param pageSetting                    the page settings
+   * @param isEnded                        filter by open/closed status
+   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@code Project}
+   *                                       has first operation without acceptance
+   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@code Project}
+   *                                       has last operation in work
    * @return a page of short project dtos
    */
   @Operation(summary = "Список проектов с пагинацией, сортировкой и фильтрацией",
       description = "Доступен администратору. Возвращает список ДТО проектов с сортировкой по "
-          + "дате окончания, с возможностью фильтрации по номеру и статусу(открыт/закрыт) проекта")
+          + "контрактной дате окончания, с возможностью фильтрации по статусу(открыт/закрыт) "
+          + "проекта, по первой, не взятой в работу, операции, "
+          + "по последней операции, взятой в работу.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Список ДТО проектов. "
           + "В примере указан единичный объект из списка",
@@ -150,14 +153,19 @@ public class ProjectController {
       @Valid PageSettings pageSetting,
       @RequestParam(required = false) @Parameter(description =
           "Фильтрация по статусу открыт/закрыт") Boolean isEnded,
-      @RequestParam(required = false) @Parameter(description =
-          "Фильтрация по номеру проекта") @Min(0) @Max(999) Integer number) {
+      @RequestParam(required = false) @Parameter(
+          description = "Фильтрация по первому, непринятому в работу, этапу проекта")
+      Boolean isOnlyFirstOpWithoutAcceptance,
+      @RequestParam(required = false) @Parameter(
+          description = "Фильтрация по последнему, находящемуся в работе, этапу проекта")
+      Boolean isOnlyLastOpInWork) {
     
     Sort projectSort = pageSetting.buildProjectSort();
     Pageable projectPage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), projectSort);
     
-    return ResponseEntity.ok(projectService.getProjectDtoPage(projectPage, isEnded, number));
+    return ResponseEntity.ok(projectService.getProjectDtoPage(
+        projectPage, isEnded, isOnlyFirstOpWithoutAcceptance, isOnlyLastOpInWork));
   }
   
   /**

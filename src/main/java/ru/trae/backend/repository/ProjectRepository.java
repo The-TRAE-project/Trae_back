@@ -31,6 +31,27 @@ import ru.trae.backend.entity.task.Project;
  */
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
+  @Query("""
+      select p from Project p inner join p.operations operations
+      where p.isEnded = false and operations.priority = (select max(o.priority)\s
+      from Operation o where o.project.id = p.id) and operations.inWork = true""")
+  Page<Project> findLastByIsEndedAndOpPriorityAndInWorkTrue(Pageable pageable);
+  
+  @Query("""
+      select p from Project p inner join p.operations o
+      where p.isEnded = false and o.priority = ?1 and o.readyToAcceptance = true""")
+  Page<Project> findFirstByIsEndedAndOpPriorityAndReadyToAcceptance(
+      int priority, Pageable pageable);
+  
+  @Query("""
+      select p from Project p inner join p.operations operations
+      where p.isEnded = false and\s
+      (operations.priority = (select max(o.priority)\s
+      from Operation o where o.project.id = p.id) and operations.inWork = true) or\s
+      (operations.priority = (select min(o.priority)\s
+      from Operation o where o.project.id = p.id) and operations.readyToAcceptance = true)""")
+  Page<Project> findFirstAndLast(Pageable pageable);
+  
   @Transactional
   @Modifying
   @Query("update Project p set p.plannedEndDate = ?1 where p.id = ?2")
@@ -46,9 +67,6 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   @Modifying
   @Query("update Project p set p.isEnded = ?1, p.realEndDate = ?2 where p.id = ?3")
   void updateIsEndedAndRealEndDateById(boolean isEnded, LocalDateTime realEndDate, Long id);
-  
-  @Query("select p from Project p where p.isEnded = ?1 and p.number = ?2")
-  Page<Project> findByIsEndedAndNumber(boolean isEnded, int number, Pageable pageable);
   
   @Query("select p from Project p where p.isEnded = ?1")
   Page<Project> findByIsEnded(boolean isEnded, Pageable pageable);

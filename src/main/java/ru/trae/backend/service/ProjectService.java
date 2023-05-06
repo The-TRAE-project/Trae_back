@@ -146,20 +146,34 @@ public class ProjectService {
   /**
    * Gets a page of {@code Project} objects according to the given parameters.
    *
-   * @param projectPage the requested page for the {@code Project} objects
-   * @param isEnded     a boolean flag indicating if the {@code Project} is ended or not
-   * @param number      the number associated with the {@code Project}
+   * @param projectPage                    the requested page for the {@code Project} objects
+   * @param isEnded                        a boolean flag indicating if the {@code Project}
+   *                                       is ended or not
+   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@code Project}
+   *                                       has first operation without acceptance
+   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@code Project}
+   *                                       has last operation in work
    * @return a page of {@code Project} objects
    */
-  public Page<Project> getProjectPage(Pageable projectPage, Boolean isEnded, Integer number) {
+  public Page<Project> getProjectPage(
+      Pageable projectPage,
+      Boolean isEnded,
+      Boolean isOnlyFirstOpWithoutAcceptance,
+      Boolean isOnlyLastOpInWork) {
     Page<Project> page;
     
-    if (isEnded != null && number != null) {
-      page = projectRepository.findByIsEndedAndNumber(isEnded, number, projectPage);
-    } else if (isEnded != null) {
-      page = projectRepository.findByIsEnded(isEnded, projectPage);
-    } else if (number != null) {
-      page = projectRepository.findByNumber(number, projectPage);
+    if (Boolean.TRUE.equals(isEnded)) {
+      page = projectRepository.findByIsEnded(true, projectPage);
+    } else if (Boolean.FALSE.equals(isEnded) && Boolean.TRUE.equals(isOnlyLastOpInWork)
+        && Boolean.TRUE.equals(isOnlyFirstOpWithoutAcceptance)) {
+      page = projectRepository.findFirstAndLast(projectPage);
+    } else if (Boolean.FALSE.equals(isEnded)
+        && Boolean.TRUE.equals(isOnlyFirstOpWithoutAcceptance)) {
+      page = projectRepository.findFirstByIsEndedAndOpPriorityAndReadyToAcceptance(0, projectPage);
+    } else if (Boolean.FALSE.equals(isEnded) && Boolean.TRUE.equals(isOnlyLastOpInWork)) {
+      page = projectRepository.findLastByIsEndedAndOpPriorityAndInWorkTrue(projectPage);
+    } else if (Boolean.FALSE.equals(isEnded)) {
+      page = projectRepository.findByIsEnded(false, projectPage);
     } else {
       page = projectRepository.findAll(projectPage);
     }
@@ -167,8 +181,15 @@ public class ProjectService {
   }
   
   public PageDto<ProjectShortDto> getProjectDtoPage(
-      Pageable projectPage, Boolean isEnded, Integer number) {
-    return pageToPageDtoMapper.projectPageToPageDto(getProjectPage(projectPage, isEnded, number));
+      Pageable projectPage,
+      Boolean isEnded,
+      Boolean isOnlyFirstOpWithoutAcceptance,
+      Boolean isOnlyLastOpInWork) {
+    return pageToPageDtoMapper.projectPageToPageDto(getProjectPage(
+        projectPage,
+        isEnded,
+        isOnlyFirstOpWithoutAcceptance,
+        isOnlyLastOpInWork));
   }
   
   /**
