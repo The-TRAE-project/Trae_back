@@ -35,34 +35,43 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   @Modifying
   @Query("update Project p set p.plannedEndDate = ?1 where p.id = ?2")
   void updatePlannedEndDateById(LocalDateTime plannedEndDate, Long id);
-
+  
   @Query("""
       select p from Project p inner join p.operations operations
       where p.isEnded = false and operations.readyToAcceptance = true\s
       and operations.typeWork.id = ?1""")
   List<Project> findAvailableProjectsByTypeWork(long typeWorkId);
-
+  
   @Transactional
   @Modifying
   @Query("update Project p set p.isEnded = ?1, p.realEndDate = ?2 where p.id = ?3")
   void updateIsEndedAndRealEndDateById(boolean isEnded, LocalDateTime realEndDate, Long id);
-
+  
   @Query("select p from Project p where p.isEnded = ?1 and p.number = ?2")
   Page<Project> findByIsEndedAndNumber(boolean isEnded, int number, Pageable pageable);
-
+  
   @Query("select p from Project p where p.isEnded = ?1")
   Page<Project> findByIsEnded(boolean isEnded, Pageable pageable);
-
+  
   @Query("select p from Project p where p.number = ?1")
   Page<Project> findByNumber(int number, Pageable pageable);
-
+  
   @Query("select p from Project p where upper(p.customer) like %?1%")
   Page<Project> findByCustomerLikeIgnoreCase(String customer, Pageable pageable);
-
+  
   ChangingCommonDataResp findChangedCommonDataById(long projectId);
-
+  
   ChangingPlannedEndDateResp findChangedPlannedEndDateById(long projectId);
   
-  @Query()
+  @Transactional
+  @Modifying
+  @Query(value = """
+      update projects
+      set start_first_operation_date = (select o.acceptance_date
+                                        from operations as o
+                                        where o.id = ?1)
+      where id = (select o.project_id
+                  from operations as o
+                  where o.id = ?1 and o.in_work = true)""", nativeQuery = true)
   void updateStartFirstOperationDateByOperationId(long operationId);
 }
