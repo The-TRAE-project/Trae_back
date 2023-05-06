@@ -262,7 +262,7 @@ public class ProjectService {
    */
   public void updateEndDates(ChangingEndDatesReq req) {
     Project p = getProjectById(req.projectId());
-    if (p.getPlannedEndDate().equals(req.newPlannedAndContractEndDate())) {
+    if (p.getEndDateInContract().equals(req.newPlannedAndContractEndDate())) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
           "The project planned and contract end date must not match an existing one");
     }
