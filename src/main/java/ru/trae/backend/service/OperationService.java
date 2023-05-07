@@ -22,10 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.trae.backend.dto.mapper.OperationDtoMapper;
 import ru.trae.backend.dto.operation.InsertingOperationDto;
 import ru.trae.backend.dto.operation.NewOperationDto;
-import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
 import ru.trae.backend.dto.operation.ReqOpEmpIdDto;
@@ -48,7 +46,6 @@ import ru.trae.backend.util.Util;
 public class OperationService {
   private final OperationRepository operationRepository;
   private final EmployeeService employeeService;
-  private final OperationDtoMapper operationDtoMapper;
   private final TypeWorkService typeWorkService;
   
   /**
@@ -110,18 +107,6 @@ public class OperationService {
     savedOperations.add(operationRepository.save(shipment));
     
     return savedOperations;
-  }
-  
-  /**
-   * Gets the list of {@link OperationDto} objects by project id.
-   *
-   * @param projectId the id of the project
-   * @return the list of {@link OperationDto} objects
-   */
-  public List<OperationDto> getOpsDtoListByProject(long projectId) {
-    return operationRepository.findByProjectIdOrderByPriorityAsc(projectId).stream()
-        .map(operationDtoMapper)
-        .toList();
   }
   
   /**

@@ -50,17 +50,6 @@ public class OperationController {
   
   private final OperationService operationService;
   private final ProjectService projectService;
-
-//  /**
-//   * This method provides a list of short operations by project.
-//   *
-//   * @param projectId the project id
-//   * @return the list of operation dto
-//   */
-//  @GetMapping("/project-operations/{projectId}")
-//  public ResponseEntity<List<OperationDto>> shortOperationsByProject(@PathVariable long projectId) {
-//    return ResponseEntity.ok(operationService.getOpsDtoListByProject(projectId));
-//  }
   
   /**
    * Inserts new {@link Operation} to the database.
