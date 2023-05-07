@@ -423,6 +423,12 @@ public class OperationService {
         false, typeWorkService.getTypeWorkByName("Отгрузка"));
   }
   
+  /**
+   * Checks whether the priority of the operation matches its id.
+   *
+   * @param operationId       id of the operation
+   * @param operationPriority priority of the operation
+   */
   public void checkCorrectIdAndPriority(long operationId, int operationPriority) {
     if (!operationRepository.existsByIdAndPriority(operationId, operationPriority)) {
       throw new OperationException(HttpStatus.BAD_REQUEST,

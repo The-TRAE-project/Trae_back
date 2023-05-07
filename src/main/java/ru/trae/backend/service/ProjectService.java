@@ -123,11 +123,11 @@ public class ProjectService {
   }
   
   /**
-   * Gets a page of {@code Project} objects according to the given parameters.
+   * Gets a page of {@link Project} objects according to the given parameters.
    *
-   * @param projectPage             the requested page for the {@code Project} objects
-   * @param projectNumberOrCustomer the number or customer data associated with the {@code Project}
-   * @return a page of {@code Project} objects
+   * @param projectPage             the requested page for the {@link Project} objects
+   * @param projectNumberOrCustomer the number or customer data associated with the {@link Project}
+   * @return a page of {@link Project} objects
    */
   public Page<Project> findProjectPage(Pageable projectPage, String projectNumberOrCustomer) {
     Page<Project> page;
@@ -146,14 +146,14 @@ public class ProjectService {
   /**
    * Gets a page of {@code Project} objects according to the given parameters.
    *
-   * @param projectPage                    the requested page for the {@code Project} objects
-   * @param isEnded                        a boolean flag indicating if the {@code Project}
+   * @param projectPage                    the requested page for the {@link Project} objects
+   * @param isEnded                        a boolean flag indicating if the {@link Project}
    *                                       is ended or not
-   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@code Project}
+   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@link Project}
    *                                       has first operation without acceptance
-   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@code Project}
+   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@link Project}
    *                                       has last operation in work
-   * @return a page of {@code Project} objects
+   * @return a page of {@link Project} objects
    */
   public Page<Project> getProjectPage(
       Pageable projectPage,
@@ -180,6 +180,18 @@ public class ProjectService {
     return page;
   }
   
+  /**
+   * Accepts pagination settings, filtering parameters, returns {@link  ProjectShortDto}.
+   *
+   * @param projectPage                    the requested page for the {@link Project} objects
+   * @param isEnded                        a boolean flag indicating if the {@link Project}
+   *                                       is ended or not
+   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@link Project}
+   *                                       has first operation without acceptance
+   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@link Project}
+   *                                       has last operation in work
+   * @return a {@link PageDto} of {@link ProjectShortDto} objects
+   */
   public PageDto<ProjectShortDto> getProjectDtoPage(
       Pageable projectPage,
       Boolean isEnded,
