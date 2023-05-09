@@ -42,13 +42,13 @@ public class Util {
   }
 
   /**
-   * Gets the period for a first operation.
+   * Gets the period for operation.
    *
    * @param period The total period
    * @param size   The size of the operation
    * @return The period for the first operation
    */
-  public static int getPeriodForFirstOperation(int period, int size) {
+  public static int calculateOperationPeriod(int period, int size) {
     return (int) Math.floor(((double) period / (double) size));
   }
 

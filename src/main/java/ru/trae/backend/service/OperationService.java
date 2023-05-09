@@ -10,8 +10,6 @@
 
 package ru.trae.backend.service;
 
-import static java.time.temporal.ChronoUnit.HOURS;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -79,7 +77,7 @@ public class OperationService {
     final List<Operation> savedOperations = new ArrayList<>();
     NewOperationDto dto = operations.get(0);
     
-    int period = Util.getPeriodForFirstOperation(p.getPeriod(), operations.size()) - 24;
+    int period = p.getOperationPeriod();
     
     Operation fo = prepareOperation(
         p, dto.name(), period, 0,
@@ -165,13 +163,13 @@ public class OperationService {
       log.info("next operation with id {} from project with id {}",
           nextOp.getId(), nextOp.getProject().getId());
       
-      int newPeriod = recalculationRemainingPeriod(nextOp, operations);
-      log.info("period for next operation with id {} = {}", nextOp.getId(), newPeriod);
+      int operationPeriod = getOperationPeriod(nextOp, operations);
+      log.info("period for next operation with id {} = {}", nextOp.getId(), operationPeriod);
       
       nextOp.setReadyToAcceptance(true);
-      nextOp.setPeriod(newPeriod);
       nextOp.setStartDate(LocalDateTime.now());
-      nextOp.setPlannedEndDate(LocalDateTime.now().plusHours(newPeriod));
+      nextOp.setPeriod(operationPeriod);
+      nextOp.setPlannedEndDate(nextOp.getStartDate().plusHours(operationPeriod));
       
       operationRepository.save(nextOp);
       log.info("next operation with id {} started", nextOp.getId());
@@ -368,17 +366,15 @@ public class OperationService {
     }
   }
   
-  private int recalculationRemainingPeriod(Operation nextOp, List<Operation> operations) {
-    long remainingPeriod = HOURS.between(LocalDateTime.now(),
-        nextOp.getProject().getPlannedEndDate());
+  private int getOperationPeriod(Operation nextOp, List<Operation> operations) {
     long opRemaining = operations.stream().filter(op -> !op.isEnded()).count();
     
     // здесь отслеживается последний этап "отгрузка" = на него всегда 24 часа.
     if (opRemaining == 1) {
       return 24;
+    } else {
+      return nextOp.getProject().getOperationPeriod();
     }
-    // здесь вычитается из оставшихся операций - "отгрузка" и время на нее - 24 часа.
-    return Util.getPeriodForFirstOperation((int) remainingPeriod - 24, (int) opRemaining - 1);
   }
   
   private Operation prepareOperation(Project p, String name, int period, int priority,
