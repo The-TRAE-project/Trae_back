@@ -251,19 +251,25 @@ public class ProjectService {
    *
    * @param o the operation
    */
-  public void checkAndUpdateProjectEndDate(Operation o) {
-    if (LocalDateTime.now().isBefore(o.getPlannedEndDate())) {
-      return;
+  public void checkAndUpdateProjectEndDateAfterFinishOperation(Operation o) {
+    long hours = HOURS.between(o.getPlannedEndDate(), LocalDateTime.now());
+    
+    if (hours == 0) return;
+    
+    Project p = o.getProject();
+    LocalDateTime newPlannedEndDate;
+    if (hours > 0) {
+       newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
+      log.info("the time of the operation has been increased, the planned end date of the project "
+          + "will be moved by +{} hours", hours);
+    } else  {
+      newPlannedEndDate = p.getPlannedEndDate().minusHours(Math.abs(hours));
+      log.info("the time of the operation has been decreased, the planned end date of the project "
+          + "will be moved by -{} hours", hours);
     }
     
-    long hours = HOURS.between(o.getPlannedEndDate(), LocalDateTime.now());
-    log.info("the time of the operation has been increased, the planned end date of the project "
-        + "will be moved by {} hours", hours);
-    Project p = o.getProject();
-    LocalDateTime newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
-    
     projectRepository.updatePlannedEndDateById(newPlannedEndDate, p.getId());
-    log.info("the end date of the project has been increased by {} hours", hours);
+    log.info("the end date of the project has been changed by {} hours", hours);
   }
   
   /**

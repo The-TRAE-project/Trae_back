@@ -83,6 +83,7 @@ public class OperationController {
       @Valid @RequestBody InsertingOperationDto dto) {
     Project p = projectService.getProjectById(dto.projectId());
     operationService.insertNewOperation(dto, p);
+    projectService.
     
     return ResponseEntity.ok().build();
   }
@@ -276,7 +277,7 @@ public class OperationController {
     Operation o = operationService.getOperationById(dto.operationId());
     
     operationService.checkConfirmingEmployee(o, dto.employeeId());
-    projectService.checkAndUpdateProjectEndDate(o);
+    projectService.checkAndUpdateProjectEndDateAfterFinishOperation(o);
     operationService.finishOperation(o);
     return ResponseEntity.ok().build();
   }
