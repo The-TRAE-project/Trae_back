@@ -14,6 +14,9 @@
             <column name="period" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
+            <column name="operation_period" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
             <column name="planned_end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="real_end_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
             <column name="start_date" type="TIMESTAMP WITHOUT TIME ZONE"/>

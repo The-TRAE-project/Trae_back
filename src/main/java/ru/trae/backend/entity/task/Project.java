@@ -53,6 +53,10 @@ public class Project extends Task {
   @NotNull
   @Column(name = "number", nullable = false)
   private int number;
+  @Max(value = 8760,
+      message = "The operation period cannot be more than the number (8760) of hours per year")
+  @Column(name = "operation_period", nullable = false)
+  private int operationPeriod;
   @Column(name = "comment", columnDefinition = "varchar(1000)")
   private String comment;
   @Size(min = 3, max = 200)

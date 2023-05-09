@@ -69,6 +69,7 @@ public class ProjectService {
     checkOperationsNotEmpty(dto.operations());
     checkCorrectPlannedEndDate(dto.plannedEndDate());
     
+    
     Project p = new Project();
     
     p.setNumber(dto.number());
@@ -79,6 +80,8 @@ public class ProjectService {
     p.setEndDateInContract(dto.plannedEndDate());
     p.setRealEndDate(null);
     p.setPeriod((int) HOURS.between(LocalDateTime.now(), p.getPlannedEndDate()));
+    p.setOperationPeriod(Util.calculateOperationPeriod(
+        p.getPeriod(), dto.operations().size()) - 24);
     p.setEnded(false);
     p.setManager(managerService.getManagerByUsername(authUsername));
     p.setCustomer(dto.customer());
