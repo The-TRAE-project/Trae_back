@@ -82,8 +82,8 @@ public class OperationController {
   public ResponseEntity<HttpStatus> insertOperation(
       @Valid @RequestBody InsertingOperationDto dto) {
     Project p = projectService.getProjectById(dto.projectId());
-    operationService.insertNewOperation(dto, p);
-    projectService.
+    boolean shipmentIsAdded = operationService.insertNewOperation(dto, p);
+    projectService.updatePlannedEndDateAfterInsertDeleteOp(p, true, shipmentIsAdded);
     
     return ResponseEntity.ok().build();
   }
@@ -114,6 +114,8 @@ public class OperationController {
   @DeleteMapping("/delete-operation/{operationId}")
   public ResponseEntity<HttpStatus> deleteOperation(@PathVariable long operationId) {
     operationService.deleteOperation(operationId);
+    projectService.updatePlannedEndDateAfterInsertDeleteOp(
+        projectService.getProjectByOperationId(operationId), false, false);
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
   
