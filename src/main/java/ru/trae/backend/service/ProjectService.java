@@ -107,6 +107,12 @@ public class ProjectService {
             "Project with ID: " + id + " not found"));
   }
   
+  public Project getProjectByOperationId(long operationId) {
+    return projectRepository.(operationId).orElseThrow(
+        () -> new ProjectException(HttpStatus.NOT_FOUND,
+            "Project with operation ID: " + operationId + " not found"));
+  }
+  
   /**
    * Returns a list of all {@link Project} entities from the database.
    *
@@ -259,10 +265,10 @@ public class ProjectService {
     Project p = o.getProject();
     LocalDateTime newPlannedEndDate;
     if (hours > 0) {
-       newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
+      newPlannedEndDate = p.getPlannedEndDate().plusHours(hours);
       log.info("the time of the operation has been increased, the planned end date of the project "
           + "will be moved by +{} hours", hours);
-    } else  {
+    } else {
       newPlannedEndDate = p.getPlannedEndDate().minusHours(Math.abs(hours));
       log.info("the time of the operation has been decreased, the planned end date of the project "
           + "will be moved by -{} hours", hours);
@@ -339,6 +345,24 @@ public class ProjectService {
     p.setPlannedEndDate(req.newPlannedAndContractEndDate());
     p.setPeriod((int) HOURS.between(p.getStartDate(), req.newPlannedAndContractEndDate()));
     
+    projectRepository.save(p);
+  }
+  
+  public void updatePlannedEndDateAfterInsertDeleteOp(Project p,
+                                                      boolean isIncreased,
+                                                      boolean shipmentIsAdded) {
+    int period = p.getOperationPeriod();
+    //добавляется время на новую отгрузку, если предыдущая отгрузка в проекте уже завершена,
+    // находится в работе или готова к принятию.
+    if (shipmentIsAdded) {
+      period += 24;
+    }
+    //флаг isIncreased дает представление, надо увеличить планируемы срок или уменьшить
+    if (isIncreased) {
+      p.setPlannedEndDate(p.getPlannedEndDate().plusHours(period));
+    } else {
+      p.setPlannedEndDate(p.getPlannedEndDate().minusHours(period));
+    }
     projectRepository.save(p);
   }
   

@@ -231,7 +231,7 @@ public class OperationService {
    * @throws IllegalStateException    if the priority already exists
    * @throws IllegalArgumentException if the priority is not available
    */
-  public void insertNewOperation(InsertingOperationDto dto, Project p) {
+  public boolean insertNewOperation(InsertingOperationDto dto, Project p) {
     List<Operation> operations = p.getOperations();
     
     checkExistsPriority(operations, dto.priority());
@@ -244,7 +244,7 @@ public class OperationService {
     
     operationRepository.save(newOp);
     
-    checkAndUpdateShipmentOp(operations, dto.priority());
+    return checkAndUpdateShipmentOp(operations, dto.priority());
   }
   
   /**
@@ -292,25 +292,30 @@ public class OperationService {
     startNextOperation(o);
   }
   
-  private void checkAndUpdateShipmentOp(List<Operation> operations, int priority) {
+  private boolean checkAndUpdateShipmentOp(List<Operation> operations, int priority) {
     int maxPriority = operations.stream()
         .mapToInt(Operation::getPriority)
         .max().getAsInt();
     if (maxPriority < priority) {
       createOrUpdateShipmentOp(operations, maxPriority, priority);
+      return true;
     }
+    return false;
   }
   
   private void createOrUpdateShipmentOp(List<Operation> operations,
                                         int maxPriority, int priorityNewOp) {
+    //здесь происходит поиск этапа "отгрузка" текущего проекта
     Operation lastOp = operations.stream().filter(o -> o.getPriority() == maxPriority)
         .findFirst()
         .orElseThrow(() -> new OperationException(HttpStatus.BAD_REQUEST,
             "Problem with operation priority"));
-    
+    //если отгрузка еще не доступна для принятия, не в работе или не выполнена,
+    // то ее приоритет становится на 10 больше вставленной операции
     if (!lastOp.isEnded() && !lastOp.isInWork() && !lastOp.isReadyToAcceptance()
         && priorityNewOp > lastOp.getPriority()) {
       operationRepository.updatePriorityById(priorityNewOp + 10, lastOp.getId());
+      //в другом случае создается новая отгрузка с приоритетом на 10 выше вставленной операции
     } else {
       Operation shipment = prepareShipmentOp(lastOp.getProject(), priorityNewOp + 10);
       operationRepository.save(shipment);
