@@ -108,7 +108,7 @@ public class ProjectService {
   }
   
   public Project getProjectByOperationId(long operationId) {
-    return projectRepository.(operationId).orElseThrow(
+    return projectRepository.findByOperations_Id(operationId).orElseThrow(
         () -> new ProjectException(HttpStatus.NOT_FOUND,
             "Project with operation ID: " + operationId + " not found"));
   }
@@ -260,7 +260,9 @@ public class ProjectService {
   public void checkAndUpdateProjectEndDateAfterFinishOperation(Operation o) {
     long hours = HOURS.between(o.getPlannedEndDate(), LocalDateTime.now());
     
-    if (hours == 0) return;
+    if (hours == 0) {
+      return;
+    }
     
     Project p = o.getProject();
     LocalDateTime newPlannedEndDate;
