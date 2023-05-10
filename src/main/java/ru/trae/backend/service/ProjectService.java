@@ -36,7 +36,6 @@ import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.dto.project.ProjectShortDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
-import ru.trae.backend.entity.task.Task;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.repository.ProjectRepository;
@@ -81,7 +80,7 @@ public class ProjectService {
     p.setRealEndDate(null);
     p.setPeriod((int) HOURS.between(LocalDateTime.now(), p.getPlannedEndDate()));
     p.setOperationPeriod(Util.calculateOperationPeriod(
-        p.getPeriod(), dto.operations().size()) - 24);
+        p.getPeriod() - 24, dto.operations().size()));
     p.setEnded(false);
     p.setManager(managerService.getManagerByUsername(authUsername));
     p.setCustomer(dto.customer());
@@ -312,40 +311,64 @@ public class ProjectService {
    */
   public void updateEndDates(ChangingEndDatesReq req) {
     Project p = getProjectById(req.projectId());
-    if (p.getEndDateInContract().equals(req.newPlannedAndContractEndDate())) {
-      throw new ProjectException(HttpStatus.BAD_REQUEST,
-          "The project planned and contract end date must not match an existing one");
-    }
+    
     if (p.isEnded()) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
           "The planned and contract end date cannot be changed in a completed project");
     }
     
-    //Вычисление минимально возможной планируемой даты окончания проекта.
-    // + 2 дня добавляется с учетом отгрузки 24 часа.
-    LocalDateTime minDateTime = p.getOperations().stream()
-        .filter(Util.opIsAcceptanceOrInWork())
-        .findFirst()
-        .filter(o -> o.getPlannedEndDate().isAfter(LocalDateTime.now()))
-        .map(Task::getPlannedEndDate)
-        .orElse(LocalDateTime.now())
-        .plusDays(2);
-    
-    if (minDateTime.isAfter(req.newPlannedAndContractEndDate())) {
+    if (p.getEndDateInContract().equals(req.newPlannedAndContractEndDate())) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
-          "The planned and contract end date cannot be less than the planned end date of the "
-              + "stage that is in work or available for acceptance + 2 additional days.");
+          "The project planned and contract end date must not match an existing one");
+    }
+    
+    if (req.newPlannedAndContractEndDate().isBefore(p.getEndDateInContract())) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The new planned and contract end date must not be earlier"
+              + " than the current date under the contract");
+    }
+    
+    if (req.newPlannedAndContractEndDate().isBefore(LocalDateTime.now().plusHours(24))) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "The new planned and contract end date must not be earlier"
+              + " than the current date + 24 hours");
     }
     
     if (req.newPlannedAndContractEndDate().isAfter(p.getStartDate().plusHours(8760))) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
           "The planned and contract end date cannot be more than "
-              + "start date of project + 1 year (or 8760 hours).");
+              + "start date of project + 1 year (or 8760 hours)");
     }
     
     p.setEndDateInContract(req.newPlannedAndContractEndDate());
     p.setPlannedEndDate(req.newPlannedAndContractEndDate());
     p.setPeriod((int) HOURS.between(p.getStartDate(), req.newPlannedAndContractEndDate()));
+    
+    int period;
+    List<Operation> ops = p.getOperations();
+    if (ops.stream().allMatch(Operation::isEnded)
+        || ops.stream().filter(o -> !o.isEnded()).count() == 1) {
+      period = p.getOperationPeriod();
+    } else {
+      Operation currentOp = ops.stream()
+          .filter(o -> o.isInWork() || o.isReadyToAcceptance())
+          .findFirst()
+          .orElseThrow(() -> new ProjectException(HttpStatus.BAD_REQUEST,
+              "Incorrect state of project operations. Critical error"));
+      
+      int remainingNotEndedOps = (int) ops.stream().filter(o -> !o.isEnded()
+          && (!o.isInWork() || !o.isReadyToAcceptance())).count();
+      int remainingProjectPeriod;
+      if (LocalDateTime.now().isAfter(currentOp.getPlannedEndDate())) {
+        remainingProjectPeriod = (int) HOURS.between(LocalDateTime.now(), p.getEndDateInContract());
+      } else {
+        remainingProjectPeriod = (int) HOURS.between(currentOp.getPlannedEndDate(), p.getEndDateInContract());
+      }
+      period = Util.calculateOperationPeriod(remainingProjectPeriod, remainingNotEndedOps);
+    }
+    
+    p.setOperationPeriod(period);
+
     
     projectRepository.save(p);
   }
