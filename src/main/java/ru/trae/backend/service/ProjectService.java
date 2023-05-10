@@ -312,6 +312,19 @@ public class ProjectService {
   public void updateEndDates(ChangingEndDatesReq req) {
     Project p = getProjectById(req.projectId());
     
+    checkCorrectNewPlannedAndContractDate(req, p);
+    
+    p.setEndDateInContract(req.newPlannedAndContractEndDate());
+    p.setPlannedEndDate(req.newPlannedAndContractEndDate());
+    p.setPeriod((int) HOURS.between(p.getStartDate(), req.newPlannedAndContractEndDate()));
+    
+    int period = calculateNewPeriodAfterChangingEndDates(p);
+    p.setOperationPeriod(period);
+    
+    projectRepository.save(p);
+  }
+  
+  private void checkCorrectNewPlannedAndContractDate(ChangingEndDatesReq req, Project p) {
     if (p.isEnded()) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
           "The planned and contract end date cannot be changed in a completed project");
@@ -339,11 +352,9 @@ public class ProjectService {
           "The planned and contract end date cannot be more than "
               + "start date of project + 1 year (or 8760 hours)");
     }
-    
-    p.setEndDateInContract(req.newPlannedAndContractEndDate());
-    p.setPlannedEndDate(req.newPlannedAndContractEndDate());
-    p.setPeriod((int) HOURS.between(p.getStartDate(), req.newPlannedAndContractEndDate()));
-    
+  }
+  
+  private int calculateNewPeriodAfterChangingEndDates(Project p) {
     int period;
     List<Operation> ops = p.getOperations();
     if (ops.stream().allMatch(Operation::isEnded)
@@ -362,15 +373,12 @@ public class ProjectService {
       if (LocalDateTime.now().isAfter(currentOp.getPlannedEndDate())) {
         remainingProjectPeriod = (int) HOURS.between(LocalDateTime.now(), p.getEndDateInContract());
       } else {
-        remainingProjectPeriod = (int) HOURS.between(currentOp.getPlannedEndDate(), p.getEndDateInContract());
+        remainingProjectPeriod =
+            (int) HOURS.between(currentOp.getPlannedEndDate(), p.getEndDateInContract());
       }
       period = Util.calculateOperationPeriod(remainingProjectPeriod, remainingNotEndedOps);
     }
-    
-    p.setOperationPeriod(period);
-
-    
-    projectRepository.save(p);
+    return period;
   }
   
   public void updatePlannedEndDateAfterInsertDeleteOp(Project p,
