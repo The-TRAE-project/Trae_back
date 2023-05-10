@@ -11,6 +11,8 @@
 package ru.trae.backend.service;
 
 import static java.time.temporal.ChronoUnit.HOURS;
+import static ru.trae.backend.service.OperationService.MIN_PERIOD_OPERATION;
+import static ru.trae.backend.service.OperationService.SHIPMENT_PERIOD;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.repository.ProjectRepository;
+import ru.trae.backend.util.Constant;
 import ru.trae.backend.util.Util;
 
 /**
@@ -78,9 +81,11 @@ public class ProjectService {
     p.setPlannedEndDate(dto.plannedEndDate());
     p.setEndDateInContract(dto.plannedEndDate());
     p.setRealEndDate(null);
-    p.setPeriod((int) HOURS.between(LocalDateTime.now(), p.getPlannedEndDate()));
-    p.setOperationPeriod(Util.calculateOperationPeriod(
-        p.getPeriod() - 24, dto.operations().size()));
+    p.setPeriod((int) HOURS.between(p.getStartDate(), p.getPlannedEndDate()));
+    int operationPeriod =
+        Util.calculateOperationPeriod(p.getPeriod() - SHIPMENT_PERIOD, dto.operations().size());
+    checkMinimalPeriodForOperations(operationPeriod);
+    p.setOperationPeriod(operationPeriod);
     p.setEnded(false);
     p.setManager(managerService.getManagerByUsername(authUsername));
     p.setCustomer(dto.customer());
@@ -103,13 +108,13 @@ public class ProjectService {
   public Project getProjectById(long id) {
     return projectRepository.findById(id).orElseThrow(
         () -> new ProjectException(HttpStatus.NOT_FOUND,
-            "Project with ID: " + id + " not found"));
+            "Project with ID: " + id + Constant.NOT_FOUND_CONST));
   }
   
   public Project getProjectByOperationId(long operationId) {
     return projectRepository.findByOperations_Id(operationId).orElseThrow(
         () -> new ProjectException(HttpStatus.NOT_FOUND,
-            "Project with operation ID: " + operationId + " not found"));
+            "Project with operation ID: " + operationId + Constant.NOT_FOUND_CONST));
   }
   
   /**
@@ -341,7 +346,8 @@ public class ProjectService {
               + " than the current date under the contract");
     }
     
-    if (req.newPlannedAndContractEndDate().isBefore(LocalDateTime.now().plusHours(24))) {
+    if (req.newPlannedAndContractEndDate().isBefore(
+        LocalDateTime.now().plusHours(MIN_PERIOD_OPERATION))) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
           "The new planned and contract end date must not be earlier"
               + " than the current date + 24 hours");
@@ -388,7 +394,7 @@ public class ProjectService {
     //добавляется время на новую отгрузку, если предыдущая отгрузка в проекте уже завершена,
     // находится в работе или готова к принятию.
     if (shipmentIsAdded) {
-      period += 24;
+      period += SHIPMENT_PERIOD;
     }
     //флаг isIncreased дает представление, надо увеличить планируемы срок или уменьшить
     if (isIncreased) {
@@ -494,10 +500,20 @@ public class ProjectService {
     }
   }
   
+  private void checkMinimalPeriodForOperations(int operationPeriod) {
+    if (operationPeriod < MIN_PERIOD_OPERATION) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST, "The calculated period(" + operationPeriod
+          + " hours) for performing operations should not be less than "
+          + MIN_PERIOD_OPERATION + " hours");
+    }
+  }
+  
   private void checkCorrectPlannedEndDate(LocalDateTime plannedEndDate) {
-    if (plannedEndDate.isBefore(LocalDateTime.now().plusHours(48))) {
+    if (plannedEndDate.isBefore(
+        LocalDateTime.now().plusHours(MIN_PERIOD_OPERATION + SHIPMENT_PERIOD))) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
-          "The planned end date cannot be less than start date of project + 2 additional days.");
+          "The planned end date cannot be less than start date of project + "
+              + MIN_PERIOD_OPERATION + SHIPMENT_PERIOD + " additional hours.");
     }
     if (plannedEndDate.isAfter(LocalDateTime.now().plusHours(8760))) {
       throw new ProjectException(HttpStatus.BAD_REQUEST, "The planned end date cannot be more than "

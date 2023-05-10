@@ -45,6 +45,8 @@ public class OperationService {
   private final OperationRepository operationRepository;
   private final EmployeeService employeeService;
   private final TypeWorkService typeWorkService;
+  public static final int MIN_PERIOD_OPERATION = 24;
+  public static final int SHIPMENT_PERIOD = 24;
   
   /**
    * Gets an operation by its ID.
