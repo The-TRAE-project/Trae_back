@@ -53,6 +53,14 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       from Operation o where o.project.id = p.id) and operations.readyToAcceptance = true)""")
   Page<Project> findFirstAndLast(Pageable pageable);
   
+  @Query("""
+      select p from Project p left join p.operations operations
+      where p.isEnded = false\s
+      and (operations.inWork = true or operations.readyToAcceptance = true)\s
+      and operations.plannedEndDate < ?1""")
+  Page<Project> findProjectsWithOverdueCurrentOperation(
+      LocalDateTime currentDate, Pageable pageable);
+  
   @Transactional
   @Modifying
   @Query("update Project p set p.plannedEndDate = ?1 where p.id = ?2")

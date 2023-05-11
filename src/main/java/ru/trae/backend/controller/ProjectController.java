@@ -158,14 +158,18 @@ public class ProjectController {
       Boolean isOnlyFirstOpWithoutAcceptance,
       @RequestParam(required = false) @Parameter(
           description = "Фильтрация по последнему, находящемуся в работе, этапу проекта")
-      Boolean isOnlyLastOpInWork) {
+      Boolean isOnlyLastOpInWork,
+      @RequestParam(required = false) @Parameter(description = "Фильтрация по просроченному этапу, "
+          + "находящемуся в работе или готовому для принятия в работу")
+      Boolean isOverdueCurrentOpInProject) {
     
     Sort projectSort = pageSetting.buildProjectSort();
     Pageable projectPage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), projectSort);
     
     return ResponseEntity.ok(projectService.getProjectDtoPage(
-        projectPage, isEnded, isOnlyFirstOpWithoutAcceptance, isOnlyLastOpInWork));
+        projectPage, isEnded, isOnlyFirstOpWithoutAcceptance,
+        isOnlyLastOpInWork, isOverdueCurrentOpInProject));
   }
   
   /**

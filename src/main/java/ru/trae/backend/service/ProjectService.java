@@ -17,6 +17,8 @@ import static ru.trae.backend.service.OperationService.SHIPMENT_PERIOD;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -172,14 +174,20 @@ public class ProjectService {
       Pageable projectPage,
       Boolean isEnded,
       Boolean isOnlyFirstOpWithoutAcceptance,
-      Boolean isOnlyLastOpInWork) {
+      Boolean isOnlyLastOpInWork,
+      Boolean isOverdueCurrentOpInProject) {
     Page<Project> page;
+    
+    if (Boolean.FALSE.equals(isEnded)) {
+      checkOnlyOneInternalParameterForNotEndedProjects(
+          isOnlyFirstOpWithoutAcceptance, isOnlyLastOpInWork, isOverdueCurrentOpInProject);
+    }
     
     if (Boolean.TRUE.equals(isEnded)) {
       page = projectRepository.findByIsEnded(true, projectPage);
-    } else if (Boolean.FALSE.equals(isEnded) && Boolean.TRUE.equals(isOnlyLastOpInWork)
-        && Boolean.TRUE.equals(isOnlyFirstOpWithoutAcceptance)) {
-      page = projectRepository.findFirstAndLast(projectPage);
+    } else if (Boolean.FALSE.equals(isEnded) && Boolean.TRUE.equals(isOverdueCurrentOpInProject)) {
+      page = projectRepository.findProjectsWithOverdueCurrentOperation(
+          LocalDateTime.now(), projectPage);
     } else if (Boolean.FALSE.equals(isEnded)
         && Boolean.TRUE.equals(isOnlyFirstOpWithoutAcceptance)) {
       page = projectRepository.findFirstByIsEndedAndOpPriorityAndReadyToAcceptance(0, projectPage);
@@ -191,6 +199,22 @@ public class ProjectService {
       page = projectRepository.findAll(projectPage);
     }
     return page;
+  }
+  
+  private void checkOnlyOneInternalParameterForNotEndedProjects(
+      Boolean isOnlyFirstOpWithoutAcceptance,
+      Boolean isOnlyLastOpInWork,
+      Boolean isOverdueCurrentOpInProject) {
+    List<Optional<Boolean>> filterParameters =
+        List.of(
+            Optional.ofNullable(isOnlyFirstOpWithoutAcceptance),
+            Optional.ofNullable(isOnlyLastOpInWork),
+            Optional.ofNullable(isOverdueCurrentOpInProject));
+    
+    if (filterParameters.stream().filter(Optional::isPresent).count() > 1) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST,
+          "Incorrect number of filters in the request");
+    }
   }
   
   /**
@@ -209,12 +233,14 @@ public class ProjectService {
       Pageable projectPage,
       Boolean isEnded,
       Boolean isOnlyFirstOpWithoutAcceptance,
-      Boolean isOnlyLastOpInWork) {
+      Boolean isOnlyLastOpInWork,
+      Boolean isOverdueCurrentOpInProject) {
     return pageToPageDtoMapper.projectPageToPageDto(getProjectPage(
         projectPage,
         isEnded,
         isOnlyFirstOpWithoutAcceptance,
-        isOnlyLastOpInWork));
+        isOnlyLastOpInWork,
+        isOverdueCurrentOpInProject));
   }
   
   /**
@@ -383,6 +409,7 @@ public class ProjectService {
             (int) HOURS.between(currentOp.getPlannedEndDate(), p.getEndDateInContract());
       }
       period = Util.calculateOperationPeriod(remainingProjectPeriod, remainingNotEndedOps);
+      checkMinimalPeriodForOperations(period);
     }
     return period;
   }
