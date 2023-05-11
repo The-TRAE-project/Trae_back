@@ -413,7 +413,9 @@ public class ProjectService {
         remainingProjectPeriod =
             (int) HOURS.between(currentOp.getPlannedEndDate(), p.getEndDateInContract());
       }
-      period = Util.calculateOperationPeriod(remainingProjectPeriod, remainingNotEndedOps);
+      period = Util.calculateOperationPeriod(
+          remainingProjectPeriod - SHIPMENT_PERIOD,
+          remainingNotEndedOps - 1 == 0 ? 1 : remainingProjectPeriod);
       checkMinimalPeriodForOperations(period);
     }
     return period;

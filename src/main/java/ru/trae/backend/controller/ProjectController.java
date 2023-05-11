@@ -88,7 +88,7 @@ public class ProjectController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @PostMapping("/new")
-  public ResponseEntity<HttpStatus> projectPersist(
+  public ResponseEntity<HttpStatus> createNewProject(
       @Valid @RequestBody NewProjectDto dto, @ApiIgnore Principal principal) {
     projectService.saveNewProject(dto, principal.getName());
     return new ResponseEntity<>(HttpStatus.CREATED);
