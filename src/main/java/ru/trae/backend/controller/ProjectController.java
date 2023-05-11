@@ -126,17 +126,21 @@ public class ProjectController {
    *
    * @param pageSetting                    the page settings
    * @param isEnded                        filter by open/closed status
-   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@code Project}
+   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@link  Project}
    *                                       has first operation without acceptance
-   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@code Project}
+   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@link  Project}
    *                                       has last operation in work
+   * @param isOverdueCurrentOpInProject    a boolean flag indicating if the {@link  Project}
+   *                                       has overdue current operation in work
+   *                                       or ready for acceptance
    * @return a page of short project dtos
    */
   @Operation(summary = "Список проектов с пагинацией, сортировкой и фильтрацией",
       description = "Доступен администратору. Возвращает список ДТО проектов с сортировкой по "
           + "контрактной дате окончания, с возможностью фильтрации по статусу(открыт/закрыт) "
           + "проекта, по первой, не взятой в работу, операции, "
-          + "по последней операции, взятой в работу.")
+          + "по последней операции, взятой в работу, "
+          + "по проектам, с просроченному текущему этапу.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Список ДТО проектов. "
           + "В примере указан единичный объект из списка",
