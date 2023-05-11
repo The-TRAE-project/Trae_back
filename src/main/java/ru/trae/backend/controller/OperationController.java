@@ -28,10 +28,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.operation.FinishOpReq;
 import ru.trae.backend.dto.operation.InsertingOperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
-import ru.trae.backend.dto.operation.ReqOpEmpIdDto;
+import ru.trae.backend.dto.operation.ReceiveOpReq;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.service.OperationService;
@@ -212,7 +213,7 @@ public class OperationController {
   /**
    * Endpoint to receive operation.
    *
-   * @param dto The request body of type {@link ReqOpEmpIdDto}
+   * @param dto The request body of type {@link ReceiveOpReq}
    * @return {@link ResponseEntity} HttpStatus.OK
    */
   @io.swagger.v3.oas.annotations.Operation(
@@ -238,7 +239,7 @@ public class OperationController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @PostMapping("/employee/receive-operation")
-  public ResponseEntity<HttpStatus> receiveOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
+  public ResponseEntity<HttpStatus> receiveOperation(@Valid @RequestBody ReceiveOpReq dto) {
     operationService.checkCorrectIdAndPriority(dto.operationId(), dto.operationPriority());
     operationService.receiveOperation(dto);
     if (dto.operationPriority() == 0) {
@@ -250,7 +251,7 @@ public class OperationController {
   /**
    * The method is used to finish an operation and update the project end date if needed.
    *
-   * @param dto The request body of type {@link ReqOpEmpIdDto}
+   * @param req The request body of type {@link FinishOpReq}
    * @return {@link ResponseEntity} HttpStatus.OK
    */
   @io.swagger.v3.oas.annotations.Operation(
@@ -275,11 +276,11 @@ public class OperationController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @PostMapping("/employee/finish-operation")
-  public ResponseEntity<HttpStatus> finishOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
-    Operation o = operationService.getOperationById(dto.operationId());
+  public ResponseEntity<HttpStatus> finishOperation(@Valid @RequestBody FinishOpReq req) {
+    Operation o = operationService.getOperationById(req.operationId());
     
     operationService.checkIfOpAlreadyFinishedOrClosed(o);
-    operationService.checkConfirmingEmployee(o, dto.employeeId());
+    operationService.checkConfirmingEmployee(o, req.employeeId());
     operationService.finishOperation(o);
     projectService.checkAndUpdateProjectEndDateAfterFinishOperation(o);
     

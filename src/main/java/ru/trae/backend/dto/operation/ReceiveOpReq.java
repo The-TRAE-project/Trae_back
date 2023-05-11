@@ -5,12 +5,12 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
- * The {@code ReqOpEmpIdDto} class represents a data transfer object for requesting
- * operation and employee ID.
+ * The {@code ReceiveOpReq} class represents a data transfer object for requesting
+ * operation and employee ID and operation priority.
  *
  * @author Vladimir Olennikov
  */
-public record ReqOpEmpIdDto(
+public record ReceiveOpReq(
     @NotNull(message = "Invalid operation id: id is NULL")
     @Min(value = 0, message = "The operation id cannot be less than 0")
     @Max(value = Integer.MAX_VALUE, message =
