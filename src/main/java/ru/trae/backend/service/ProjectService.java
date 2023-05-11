@@ -510,10 +510,10 @@ public class ProjectService {
   
   private void checkCorrectPlannedEndDate(LocalDateTime plannedEndDate) {
     if (plannedEndDate.isBefore(
-        LocalDateTime.now().plusHours(MIN_PERIOD_OPERATION + SHIPMENT_PERIOD))) {
+        LocalDateTime.now().plusHours((long) MIN_PERIOD_OPERATION + SHIPMENT_PERIOD))) {
       throw new ProjectException(HttpStatus.BAD_REQUEST,
-          "The planned end date cannot be less than start date of project + "
-              + MIN_PERIOD_OPERATION + SHIPMENT_PERIOD + " additional hours.");
+          "The planned end date cannot be less than current(start) date of project + "
+              + (MIN_PERIOD_OPERATION + SHIPMENT_PERIOD) + " additional hours.");
     }
     if (plannedEndDate.isAfter(LocalDateTime.now().plusHours(8760))) {
       throw new ProjectException(HttpStatus.BAD_REQUEST, "The planned end date cannot be more than "
