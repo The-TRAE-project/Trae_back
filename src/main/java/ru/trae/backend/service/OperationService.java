@@ -423,4 +423,11 @@ public class OperationService {
           "The priority of the operation does not match the operation id");
     }
   }
+  
+  public void checkIfOpAlreadyFinishedOrClosed(Operation o) {
+    if (o.isEnded()) {
+      throw new OperationException(HttpStatus.CONFLICT,
+          "The operation with id: " + o.getId() + " is already finished or closed");
+    }
+  }
 }

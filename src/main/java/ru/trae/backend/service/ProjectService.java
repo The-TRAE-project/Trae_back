@@ -277,7 +277,7 @@ public class ProjectService {
     } else {
       newPlannedEndDate = p.getPlannedEndDate().minusHours(Math.abs(hours));
       log.info("the time of the operation has been decreased, the planned end date of the project "
-          + "will be moved by -{} hours", hours);
+          + "will be moved by {} hours", hours);
     }
     
     projectRepository.updatePlannedEndDateById(newPlannedEndDate, p.getId());
