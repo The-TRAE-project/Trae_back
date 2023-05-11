@@ -278,9 +278,11 @@ public class OperationController {
   public ResponseEntity<HttpStatus> finishOperation(@Valid @RequestBody ReqOpEmpIdDto dto) {
     Operation o = operationService.getOperationById(dto.operationId());
     
+    operationService.checkIfOpAlreadyFinishedOrClosed(o);
     operationService.checkConfirmingEmployee(o, dto.employeeId());
-    projectService.checkAndUpdateProjectEndDateAfterFinishOperation(o);
     operationService.finishOperation(o);
+    projectService.checkAndUpdateProjectEndDateAfterFinishOperation(o);
+    
     return ResponseEntity.ok().build();
   }
 }
