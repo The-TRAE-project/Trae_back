@@ -273,16 +273,11 @@ public class OperationService {
   /**
    * Closes the operation.
    *
-   * @param operationId id of the operation
-   * @throws OperationException if the operation is already finished or is not yet in operation
-   *                            or is not available for acceptance
+   * @param o The operation to be closed.
+   * @throws OperationException The operation is not yet in operation or is not available
+   *                            for acceptance
    */
-  public void closeOperation(long operationId) {
-    Operation o = getOperationById(operationId);
-    if (o.isEnded()) {
-      throw new OperationException(HttpStatus.CONFLICT, "This operation is already finished");
-    }
-    
+  public void closeOperation(Operation o) {
     if (o.isInWork() || o.isReadyToAcceptance()) {
       operationRepository.updateRealEndDateAndIsEndedAndReadyToAcceptanceAndInWorkById(
           LocalDateTime.now(), true, false, false, o.getId());

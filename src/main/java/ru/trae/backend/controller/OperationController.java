@@ -149,7 +149,12 @@ public class OperationController {
   @PostMapping("/close")
   public ResponseEntity<HttpStatus> closeOperation(
       @RequestParam(value = "operationId") long operationId) {
-    operationService.closeOperation(operationId);
+    Operation o = operationService.getOperationById(operationId);
+    
+    operationService.checkIfOpAlreadyFinishedOrClosed(o);
+    operationService.closeOperation(o);
+    projectService.checkAndUpdateProjectEndDateAfterFinishOperation(o);
+    
     return ResponseEntity.ok().build();
   }
   
