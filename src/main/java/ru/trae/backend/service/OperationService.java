@@ -24,7 +24,7 @@ import ru.trae.backend.dto.operation.InsertingOperationDto;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
-import ru.trae.backend.dto.operation.ReqOpEmpIdDto;
+import ru.trae.backend.dto.operation.ReceiveOpReq;
 import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
@@ -114,7 +114,7 @@ public class OperationService {
    *
    * @param dto contain employee id and operation id
    */
-  public void receiveOperation(ReqOpEmpIdDto dto) {
+  public void receiveOperation(ReceiveOpReq dto) {
     Employee e = employeeService.getEmployeeById(dto.employeeId());
     Operation o = getOperationById(dto.operationId());
     
