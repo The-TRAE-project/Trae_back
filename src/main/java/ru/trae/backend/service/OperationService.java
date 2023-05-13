@@ -430,6 +430,12 @@ public class OperationService {
     }
   }
   
+  /**
+   * Checks if an operation is already finished or closed.
+   *
+   * @param o The operation to check.
+   * @throws OperationException if the operation is already finished or closed.
+   */
   public void checkIfOpAlreadyFinishedOrClosed(Operation o) {
     if (o.isEnded()) {
       throw new OperationException(HttpStatus.CONFLICT,

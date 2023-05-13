@@ -112,6 +112,14 @@ public class ProjectService {
             "Project with ID: " + id + Constant.NOT_FOUND_CONST));
   }
   
+  
+  /**
+   * Retrieves a project by its operation ID.
+   *
+   * @param operationId The ID of the operation associated with the project.
+   * @return The project object associated with the specified operation ID.
+   * @throws ProjectException if the project is not found.
+   */
   public Project getProjectByOperationId(long operationId) {
     return projectRepository.findByOperations_Id(operationId).orElseThrow(
         () -> new ProjectException(HttpStatus.NOT_FOUND,
@@ -421,6 +429,14 @@ public class ProjectService {
     return period;
   }
   
+  /**
+   * Updates the planned end date of a project after an insert or delete operation.
+   *
+   * @param p               The project object to update.
+   * @param isIncreased     A flag indicating whether the planned end date should be increased
+   *                        or decreased.
+   * @param shipmentIsAdded A flag indicating whether a shipment is added to the project.
+   */
   public void updatePlannedEndDateAfterInsertDeleteOp(Project p,
                                                       boolean isIncreased,
                                                       boolean shipmentIsAdded) {
