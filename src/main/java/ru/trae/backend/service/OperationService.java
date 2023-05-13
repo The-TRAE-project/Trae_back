@@ -239,10 +239,21 @@ public class OperationService {
     checkExistsPriority(operations, dto.priority());
     checkAvailablePriority(operations, dto.priority());
     
-    Operation newOp = prepareOperation(
-        p, dto.name(), 0, dto.priority(),
-        null, null,
-        false, typeWorkService.getTypeWorkById(dto.typeWorkId()));
+    Operation newOp;
+    if (operations.stream().allMatch(Operation::isEnded)) {
+      //Вставка операции, когда другие уже закончены.
+      //Новая операция сразу получает дату старта и статус - готова для принятия
+      newOp = prepareOperation(p, dto.name(), p.getOperationPeriod(), dto.priority(),
+          LocalDateTime.now(), LocalDateTime.now().plusHours(p.getOperationPeriod()),
+          true, typeWorkService.getTypeWorkById(dto.typeWorkId()));
+    } else {
+      //Вставка операции, когда в проекте есть какая-то другая операция в работе
+      // или готовая для принятия
+      newOp = prepareOperation(
+          p, dto.name(), 0, dto.priority(),
+          null, null,
+          false, typeWorkService.getTypeWorkById(dto.typeWorkId()));
+    }
     
     operationRepository.save(newOp);
     
