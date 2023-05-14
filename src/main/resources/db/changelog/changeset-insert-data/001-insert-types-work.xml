@@ -4,6 +4,10 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
     <changeSet author="Val_Demar" id="insert-1">
         <insert tableName="types">
+            <column name="name" value="Отгрузка"/>
+            <column name="is_active" value="true"/>
+        </insert>
+        <insert tableName="types">
             <column name="name" value="Раскрой"/>
             <column name="is_active" value="true"/>
         </insert>
@@ -37,10 +41,6 @@
         </insert>
         <insert tableName="types">
             <column name="name" value="Упаковка"/>
-            <column name="is_active" value="true"/>
-        </insert>
-        <insert tableName="types">
-            <column name="name" value="Отгрузка"/>
             <column name="is_active" value="true"/>
         </insert>
     </changeSet>

@@ -45,7 +45,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
   private final TypeWorkService typeWorkService;
   private final ManagerRepository managerRepository;
   private final BCryptPasswordEncoder encoder;
-
+  
   @Override
   public void run(String... args) {
     insertTypeWork();
@@ -55,12 +55,13 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     insertEmployeeServiceAccount();
     insertProject();
   }
-
+  
   /**
    * Inserting data types of work.
    */
   public void insertTypeWork() {
     List<NewTypeWorkDto> list = List.of(
+        new NewTypeWorkDto("Отгрузка"),
         new NewTypeWorkDto("Раскрой"),
         new NewTypeWorkDto("Кромка"),
         new NewTypeWorkDto("Присадка"),
@@ -69,14 +70,13 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
         new NewTypeWorkDto("Сборка"),
         new NewTypeWorkDto("Подготовка к покраске"),
         new NewTypeWorkDto("Шлифовка/покраска"),
-        new NewTypeWorkDto("Упаковка"),
-        new NewTypeWorkDto("Отгрузка"));
-
+        new NewTypeWorkDto("Упаковка"));
+    
     list.stream()
         .filter(t -> !typeWorkService.existsTypeByName(t.name()))
         .forEach(typeWorkService::saveNewTypeWork);
   }
-
+  
   /**
    * Inserting employee data.
    */
@@ -119,14 +119,14 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
             "+7 (922) 324 5913", LocalDate.parse("2022-08-10"),
             List.of(1L, 2L, 5L, 6L, 7L, 8L, 9L))
     );
-
+    
     list.stream()
         .filter(e -> !employeeService.existsByCredentials(e.firstName(),
             e.middleName(),
             e.lastName()))
         .forEach(employeeService::saveNewEmployee);
   }
-
+  
   /**
    * Inserting admin data.
    */
@@ -134,9 +134,9 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     if (managerRepository.existsByUsernameIgnoreCase("admin")) {
       return;
     }
-
+    
     String encodedPass = encoder.encode("TopSec");
-
+    
     Manager m = new Manager();
     m.setFirstName("admin");
     m.setMiddleName("admin");
@@ -148,15 +148,15 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     m.setDateOfRegister(LocalDate.now());
     m.setDateOfEmployment(LocalDate.now());
     m.setDateOfDismissal(null);
-
+    
     m.setEnabled(true);
     m.setAccountNonExpired(true);
     m.setAccountNonLocked(true);
     m.setCredentialsNonExpired(true);
-
+    
     managerRepository.save(m);
   }
-
+  
   /**
    * Inserting manager data.
    */
@@ -164,18 +164,18 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     if (managerRepository.existsByUsernameIgnoreCase("manager8")) {
       return;
     }
-
+    
     ManagerRegisterDto dto = new ManagerRegisterDto("Михаил", "Михаилович",
         "Мишин", "+7 (999) 111 2233",
         "manager8", LocalDate.parse("2022-01-10"));
-
+    
     if (!managerService.existsManagerByUsername(dto.username())) {
       log.info("=================================");
       log.info(managerService.saveNewManager(dto).toString());
       log.info("=================================");
     }
   }
-
+  
   /**
    * Inserting Service account data.
    */
@@ -183,9 +183,9 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     if (managerRepository.existsByUsernameIgnoreCase("service_account")) {
       return;
     }
-
+    
     String encodedPass = encoder.encode("Work24x7");
-
+    
     Manager m = new Manager();
     m.setFirstName("service account");
     m.setMiddleName("for");
@@ -197,15 +197,15 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
     m.setDateOfRegister(LocalDate.now());
     m.setDateOfEmployment(LocalDate.now());
     m.setDateOfDismissal(null);
-
+    
     m.setEnabled(true);
     m.setAccountNonExpired(true);
     m.setAccountNonLocked(true);
     m.setCredentialsNonExpired(true);
-
+    
     managerRepository.save(m);
   }
-
+  
   /**
    * Inserting project data.
    */
@@ -224,7 +224,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               new NewOperationDto("Присадка", 3),
               new NewOperationDto("Сборка", 6),
               new NewOperationDto("Покраска", 7)));
-
+      
       NewProjectDto dto2 = new NewProjectDto(
           346,
           "Дверь",
@@ -237,7 +237,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               new NewOperationDto("Фрезеровка", 4),
               new NewOperationDto("Сборка", 6),
               new NewOperationDto("Лакировка", 7)));
-
+      
       NewProjectDto dto3 = new NewProjectDto(
           284,
           "Стол",
@@ -251,7 +251,7 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
               new NewOperationDto("Сборка", 6),
               new NewOperationDto("Покраска", 7),
               new NewOperationDto("Покраска", 7)));
-
+      
       projectService.saveNewProject(dto1, "manager8");
       projectService.saveNewProject(dto2, "manager8");
       projectService.saveNewProject(dto3, "manager8");
