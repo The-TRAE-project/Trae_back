@@ -40,7 +40,7 @@ public class TypeWorkService {
   private final TypeWorkRepository typeWorkRepository;
   private final TypeWorkDtoMapper typeWorkDtoMapper;
   private final PageToPageDtoMapper pageToPageDtoMapper;
-
+  
   /**
    * Saves a new TypeWork entity.
    *
@@ -51,10 +51,10 @@ public class TypeWorkService {
     TypeWork tw = new TypeWork();
     tw.setName(dto.name());
     tw.setActive(true);
-
+    
     return typeWorkDtoMapper.apply(typeWorkRepository.save(tw));
   }
-
+  
   /**
    * Gets a TypeWork entity by its ID.
    *
@@ -67,11 +67,11 @@ public class TypeWorkService {
             "Type work with ID: " + id + NOT_FOUND_CONST.value)
     );
   }
-
+  
   public TypeWorkDto getTypeWorkDtoById(long typeWorkId) {
     return typeWorkDtoMapper.apply(getTypeWorkById(typeWorkId));
   }
-
+  
   /**
    * This method changes type work name or active using request.
    *
@@ -83,22 +83,26 @@ public class TypeWorkService {
   public void changeNameAndActive(ChangeNameAndActiveReq request) {
     if (request.newName() == null && request.isActive() == null) {
       throw new TypeWorkException(HttpStatus.BAD_REQUEST,
-          "Не указаны доступность типа работы или новое название");
+          "The availability of the type work or the new name are not specified");
     }
     if (!typeWorkRepository.existsById(request.typeWorkId())) {
       throw new TypeWorkException(HttpStatus.NOT_FOUND,
           "Type work with ID: " + request.typeWorkId() + NOT_FOUND_CONST.value);
     }
-
+    if (request.typeWorkId() == 1) {
+      throw new TypeWorkException(HttpStatus.BAD_REQUEST,
+          "The \"Отгрузка\" job type is not available for disabling or renaming");
+    }
+    
     if (request.newName() != null) {
       changeTypeWorkName(request.newName(), request.typeWorkId());
     }
-
+    
     if (request.isActive() != null) {
       changeTypeWorkActive(request.isActive(), request.typeWorkId());
     }
   }
-
+  
   /**
    * Change type work active.
    *
@@ -111,10 +115,10 @@ public class TypeWorkService {
       throw new TypeWorkException(HttpStatus.CONFLICT,
           "This type work already have active: " + currentActive);
     }
-
+    
     typeWorkRepository.updateIsActiveById(newActive, typeWorkId);
   }
-
+  
   /**
    * Change type work name.
    *
@@ -123,16 +127,16 @@ public class TypeWorkService {
    */
   private void changeTypeWorkName(String newName, long typeWorkId) {
     checkAvailableByName(newName);
-
+    
     String currentName = typeWorkRepository.getTypeWorkNameById(typeWorkId);
     if (currentName.equals(newName.trim())) {
       throw new TypeWorkException(HttpStatus.CONFLICT,
           "This type work already have name: " + currentName);
     }
-
+    
     typeWorkRepository.updateNameById(newName.trim(), typeWorkId);
   }
-
+  
   /**
    * Gets a TypeWork entity by its name.
    *
@@ -145,7 +149,7 @@ public class TypeWorkService {
             "Type work with name: " + name + NOT_FOUND_CONST.value)
     );
   }
-
+  
   /**
    * Gets a list of all TypeWork entities.
    *
@@ -158,7 +162,7 @@ public class TypeWorkService {
         .map(typeWorkDtoMapper)
         .toList();
   }
-
+  
   /**
    * Gets a page of TypeWork objects.
    *
@@ -168,7 +172,7 @@ public class TypeWorkService {
    */
   public Page<TypeWork> getTypeWorkPage(Pageable typeWorkPage, Boolean isActive) {
     Page<TypeWork> page;
-
+    
     if (isActive != null) {
       page = typeWorkRepository.findByIsActive(isActive, typeWorkPage);
     } else {
@@ -176,11 +180,11 @@ public class TypeWorkService {
     }
     return page;
   }
-
+  
   public PageDto<TypeWorkDto> getTypeWorkDtoPage(Pageable typeWorkPage, Boolean status) {
     return pageToPageDtoMapper.typeWorkPageToPageDto(getTypeWorkPage(typeWorkPage, status));
   }
-
+  
   /**
    * Checks if a TypeWork entity with the given name exists.
    *
@@ -190,7 +194,7 @@ public class TypeWorkService {
   public boolean existsTypeByName(String name) {
     return typeWorkRepository.existsByNameIgnoreCase(name.trim());
   }
-
+  
   /**
    * Throws an exception if a TypeWork entity with the given name exists.
    *
