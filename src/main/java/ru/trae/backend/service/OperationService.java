@@ -12,7 +12,6 @@ package ru.trae.backend.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -69,14 +68,12 @@ public class OperationService {
    *
    * @param p          this is the project associated with the operations
    * @param operations this is the list of {@link NewOperationDto} to be saved
-   * @return List of saved Operation objects
    */
-  public List<Operation> saveNewOperations(Project p, List<NewOperationDto> operations) {
+  public void saveNewOperations(Project p, List<NewOperationDto> operations) {
     if (operations == null || operations.isEmpty()) {
-      return Collections.emptyList();
+      return;
     }
     
-    final List<Operation> savedOperations = new ArrayList<>();
     NewOperationDto dto = operations.get(0);
     
     int period = p.getOperationPeriod();
@@ -88,7 +85,7 @@ public class OperationService {
         true,
         typeWorkService.getTypeWorkById(dto.typeWorkId()));
     
-    savedOperations.add(operationRepository.save(fo));
+    operationRepository.save(fo);
     
     if (operations.size() > 1) {
       operations.stream()
@@ -99,14 +96,12 @@ public class OperationService {
                 null, null,
                 false, typeWorkService.getTypeWorkById(no.typeWorkId()));
             
-            savedOperations.add(operationRepository.save(o));
+            operationRepository.save(o);
           });
     }
     
     Operation shipment = prepareShipmentOp(p, operations.size() * 10);
-    savedOperations.add(operationRepository.save(shipment));
-    
-    return savedOperations;
+    operationRepository.save(shipment);
   }
   
   /**
