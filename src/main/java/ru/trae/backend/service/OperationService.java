@@ -11,7 +11,6 @@
 package ru.trae.backend.service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +23,11 @@ import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
 import ru.trae.backend.dto.operation.ReceiveOpReq;
-import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.OperationException;
+import ru.trae.backend.factory.OperationFactory;
 import ru.trae.backend.repository.OperationRepository;
 import ru.trae.backend.util.Util;
 
@@ -43,7 +42,8 @@ import ru.trae.backend.util.Util;
 public class OperationService {
   private final OperationRepository operationRepository;
   private final EmployeeService employeeService;
-  private final TypeWorkService typeWorkService;
+  
+  private final OperationFactory operationFactory;
   public static final int MIN_PERIOD_OPERATION = 24;
   public static final int SHIPMENT_PERIOD = 24;
   
@@ -78,12 +78,10 @@ public class OperationService {
     
     int period = p.getOperationPeriod();
     
-    Operation fo = prepareOperation(
+    Operation fo = operationFactory.create(
         p, dto.name(), period, 0,
         LocalDateTime.now(),
-        LocalDateTime.now().plusHours(period),
-        true,
-        typeWorkService.getTypeWorkById(dto.typeWorkId()));
+        true, dto.typeWorkId());
     
     operationRepository.save(fo);
     
@@ -91,16 +89,16 @@ public class OperationService {
       operations.stream()
           .skip(1)
           .forEach(no -> {
-            Operation o = prepareOperation(
+            Operation o = operationFactory.create(
                 p, no.name(), 0, operations.indexOf(no) * 10,
-                null, null,
-                false, typeWorkService.getTypeWorkById(no.typeWorkId()));
+                null,
+                false, no.typeWorkId());
             
             operationRepository.save(o);
           });
     }
     
-    Operation shipment = prepareShipmentOp(p, operations.size() * 10);
+    Operation shipment = operationFactory.createShipmentOp(p, operations.size() * 10);
     operationRepository.save(shipment);
   }
   
@@ -238,16 +236,14 @@ public class OperationService {
     if (operations.stream().allMatch(Operation::isEnded)) {
       //Вставка операции, когда другие уже закончены.
       //Новая операция сразу получает дату старта и статус - готова для принятия
-      newOp = prepareOperation(p, dto.name(), p.getOperationPeriod(), dto.priority(),
-          LocalDateTime.now(), LocalDateTime.now().plusHours(p.getOperationPeriod()),
-          true, typeWorkService.getTypeWorkById(dto.typeWorkId()));
+      newOp = operationFactory.create(p, dto.name(), p.getOperationPeriod(), dto.priority(),
+          LocalDateTime.now(), true, dto.typeWorkId());
     } else {
       //Вставка операции, когда в проекте есть какая-то другая операция в работе
       // или готовая для принятия
-      newOp = prepareOperation(
+      newOp = operationFactory.create(
           p, dto.name(), 0, dto.priority(),
-          null, null,
-          false, typeWorkService.getTypeWorkById(dto.typeWorkId()));
+          null, false, dto.typeWorkId());
     }
     
     operationRepository.save(newOp);
@@ -320,7 +316,7 @@ public class OperationService {
       operationRepository.updatePriorityById(priorityNewOp + 10, lastOp.getId());
       //в другом случае создается новая отгрузка с приоритетом на 10 выше вставленной операции
     } else {
-      Operation shipment = prepareShipmentOp(lastOp.getProject(), priorityNewOp + 10);
+      Operation shipment = operationFactory.createShipmentOp(lastOp.getProject(), priorityNewOp + 10);
       operationRepository.save(shipment);
     }
   }
@@ -383,33 +379,6 @@ public class OperationService {
     } else {
       return nextOp.getProject().getOperationPeriod();
     }
-  }
-  
-  private Operation prepareOperation(Project p, String name, int period, int priority,
-                                     LocalDateTime start,
-                                     LocalDateTime end,
-                                     boolean ready, TypeWork typeWork
-  ) {
-    Operation o = new Operation();
-    o.setProject(p);
-    o.setName(name);
-    o.setPeriod(period);
-    o.setPriority(priority);
-    o.setStartDate(start);
-    o.setPlannedEndDate(end);
-    o.setAcceptanceDate(null);
-    o.setEnded(false);
-    o.setInWork(false);
-    o.setReadyToAcceptance(ready);
-    o.setTypeWork(typeWork);
-    
-    return o;
-  }
-  
-  private Operation prepareShipmentOp(Project p, int priority) {
-    return prepareOperation(p, "Отгрузка", 24, priority,
-        null, null,
-        false, typeWorkService.getTypeWorkByName("Отгрузка"));
   }
   
   /**
