@@ -24,6 +24,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectAvailableDtoMapper;
@@ -41,6 +42,7 @@ import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
+import ru.trae.backend.factory.ProjectFactory;
 import ru.trae.backend.repository.ProjectRepository;
 import ru.trae.backend.util.Constant;
 import ru.trae.backend.util.Util;
@@ -55,7 +57,7 @@ import ru.trae.backend.util.Util;
 @RequiredArgsConstructor
 public class ProjectService {
   private final ProjectRepository projectRepository;
-  private final ManagerService managerService;
+  private final ProjectFactory projectFactory;
   private final OperationService operationService;
   private final EmployeeService employeeService;
   private final ProjectDtoMapper projectDtoMapper;
@@ -68,35 +70,25 @@ public class ProjectService {
    * @param dto the {@link NewProjectDto} object containing the data of the new {@link Project}
    *            the {@link ProjectDto} object for the given {@link Project}
    */
+  @Transactional
   public void saveNewProject(NewProjectDto dto, String authUsername) {
     checkOperationsNotEmpty(dto.operations());
     checkCorrectPlannedEndDate(dto.plannedEndDate());
     
+    Project p = projectFactory.create(
+        dto.number(),
+        dto.name(),
+        LocalDateTime.now(),
+        dto.plannedEndDate(),
+        dto.operations().size(),
+        dto.customer(),
+        dto.comment(),
+        authUsername);
     
-    Project p = new Project();
-    
-    p.setNumber(dto.number());
-    p.setName(dto.name());
-    p.setStartDate(LocalDateTime.now());
-    p.setStartFirstOperationDate(null);
-    p.setPlannedEndDate(dto.plannedEndDate());
-    p.setEndDateInContract(dto.plannedEndDate());
-    p.setRealEndDate(null);
-    p.setPeriod((int) HOURS.between(p.getStartDate(), p.getPlannedEndDate()));
-    int operationPeriod =
-        Util.calculateOperationPeriod(p.getPeriod() - SHIPMENT_PERIOD, dto.operations().size());
-    checkMinimalPeriodForOperations(operationPeriod);
-    p.setOperationPeriod(operationPeriod);
-    p.setEnded(false);
-    p.setManager(managerService.getManagerByUsername(authUsername));
-    p.setCustomer(dto.customer());
-    p.setComment(dto.comment());
+    checkMinimalPeriodForOperations(p.getOperationPeriod());
     
     projectRepository.save(p);
-    
-    List<Operation> operations = operationService.saveNewOperations(p, dto.operations());
-    p.setOperations(operations);
-    projectRepository.save(p);
+    operationService.saveNewOperations(p, dto.operations());
   }
   
   /**
