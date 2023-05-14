@@ -151,14 +151,25 @@ public class TypeWorkService {
   }
   
   /**
-   * Gets a list of all TypeWork entities.
+   * Gets a list of all(exclusive "shipment") active TypeWork entities.
+   *
+   * @return the list of TypeWorkDto
+   */
+  public List<TypeWorkDto> getTypesWithoutShipment() {
+    return typeWorkRepository.findByIsActiveTrueAndIdNot(1)
+        .stream()
+        .map(typeWorkDtoMapper)
+        .toList();
+  }
+  
+  /**
+   * Gets a list of all active TypeWork entities.
    *
    * @return the list of TypeWorkDto
    */
   public List<TypeWorkDto> getTypes() {
-    return typeWorkRepository.findAll()
+    return typeWorkRepository.findByIsActiveTrue()
         .stream()
-        .filter(TypeWork::isActive)
         .map(typeWorkDtoMapper)
         .toList();
   }

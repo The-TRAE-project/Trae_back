@@ -51,7 +51,7 @@ import ru.trae.backend.util.PageSettings;
 @RequestMapping("/api/type-work")
 public class TypeWorkController {
   private final TypeWorkService typeWorkService;
-
+  
   /**
    * This endpoint is used to retrieve a list of types of work.
    *
@@ -75,13 +75,13 @@ public class TypeWorkController {
       @Valid PageSettings pageSetting,
       @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")
       Boolean isActive) {
-
+    
     Sort typeWorkSort = pageSetting.buildTypeWorkSort();
     Pageable typeWorkPage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), typeWorkSort);
     return ResponseEntity.ok(typeWorkService.getTypeWorkDtoPage(typeWorkPage, isActive));
   }
-
+  
   @Operation(summary = "Список типов работ без пагинации (для фильтров и меню)",
       description = "Доступен администратору. Возвращает отфильтрованный (по активности) список "
           + "типов работ без пагинации (для фильтров и меню)")
@@ -96,11 +96,31 @@ public class TypeWorkController {
           content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
-  @GetMapping("/active-types-list")
+  @GetMapping("/active/list")
   public ResponseEntity<List<TypeWorkDto>> activeTypes() {
     return ResponseEntity.ok(typeWorkService.getTypes());
   }
-
+  
+  @Operation(summary = "Список типов работ (за исключением \"Отгрузка\") "
+      + "без пагинации (для фильтров и меню)",
+      description = "Доступен администратору. Возвращает отфильтрованный (по активности) список "
+          + "типов работ без пагинации (для фильтров и меню)")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Список типов работ. В примере указан единичный объект из списка",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = TypeWorkDto.class))}),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @GetMapping("/active/list-without-shipment")
+  public ResponseEntity<List<TypeWorkDto>> activeTypesWithoutShipment() {
+    return ResponseEntity.ok(typeWorkService.getTypesWithoutShipment());
+  }
+  
   /**
    * This endpoint is used to create a new type of work.
    *
@@ -126,10 +146,10 @@ public class TypeWorkController {
   @PostMapping("/new")
   public ResponseEntity<TypeWorkDto> typeWorkPersist(@Valid @RequestBody NewTypeWorkDto dto) {
     typeWorkService.checkAvailableByName(dto.name());
-
+    
     return new ResponseEntity<>(typeWorkService.saveNewTypeWork(dto), HttpStatus.CREATED);
   }
-
+  
   /**
    * This API is used to change the name and active status of a specified type of work.
    *
@@ -160,7 +180,7 @@ public class TypeWorkController {
   public ResponseEntity<TypeWorkDto> typeWorkChange(
       @Valid @RequestBody ChangeNameAndActiveReq request) {
     typeWorkService.changeNameAndActive(request);
-
+    
     return ResponseEntity.ok(typeWorkService.getTypeWorkDtoById(request.typeWorkId()));
   }
 }

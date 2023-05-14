@@ -114,10 +114,11 @@ public class SecurityConfig {
         .antMatchers(
             "/api/type-work/types",
             "/api/type-work/new",
-            "/api/type-work/change-name-active")
+            "/api/type-work/change-name-active",
+            "/api/type-work/active/list")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
         .antMatchers(
-            "/api/type-work/active-types-list")
+            "/api/type-work/active/list-without-shipment")
         .hasAnyAuthority(ROLE_ADMINISTRATOR.name(), ROLE_MANAGER.name())
 
         //projects
