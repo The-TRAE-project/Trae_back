@@ -581,6 +581,32 @@ class ManagerServiceTest {
         () -> managerService.checkAvailableUsername(username),
         "Username: test already in use");
   }
+  
+  @Test
+  void checkAvailableCredentials_WhenCredentialsIsNotAvailable_ShouldThrowException() {
+    //when
+    when(managerRepository.existsByFirstMiddleLastNameIgnoreCase(
+        username, middleName, lastName)).thenReturn(true);
+    
+    //then
+    assertThrows(
+        ManagerException.class,
+        () -> managerService.checkAvailableCredentials(username, middleName, lastName),
+        "Such credentials are already in use");
+  }
+  
+  @Test
+  void checkAvailableCredentials_WhenCredentialsIsAvailable_ShouldNotThrowException() {
+    //when
+    when(managerRepository.existsByFirstMiddleLastNameIgnoreCase(
+        username, middleName, lastName)).thenReturn(false);
+    
+    managerService.checkAvailableCredentials(username, middleName, lastName);
+    
+    //then
+    verify(managerRepository, times(1))
+        .existsByFirstMiddleLastNameIgnoreCase(username, middleName, lastName);
+  }
 
   @Test
   void updateData_thenReturnUpdatedManager() {
