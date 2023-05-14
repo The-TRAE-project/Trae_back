@@ -37,7 +37,6 @@ import ru.trae.backend.dto.manager.ResetPassResp;
 import ru.trae.backend.dto.mapper.ManagerDtoMapper;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.entity.user.Manager;
-import ru.trae.backend.exceptionhandler.exception.EmployeeException;
 import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 import ru.trae.backend.util.PasswordGenerator;

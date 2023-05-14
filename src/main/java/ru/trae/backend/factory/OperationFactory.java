@@ -69,7 +69,8 @@ public class OperationFactory {
    * @return a newly created Operation object representing the shipment operation
    */
   public Operation createShipmentOp(Project p, int priority) {
-    TypeWork shipment = typeWorkService.getTypeWorkByName("Отгрузка");
+    //у типа работы "Отгрузка" ID всегда = 1
+    TypeWork shipment = typeWorkService.getTypeWorkById(1);
     
     return create(
         p,
