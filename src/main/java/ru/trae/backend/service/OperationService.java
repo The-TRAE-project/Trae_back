@@ -316,7 +316,8 @@ public class OperationService {
       operationRepository.updatePriorityById(priorityNewOp + 10, lastOp.getId());
       //в другом случае создается новая отгрузка с приоритетом на 10 выше вставленной операции
     } else {
-      Operation shipment = operationFactory.createShipmentOp(lastOp.getProject(), priorityNewOp + 10);
+      Operation shipment =
+          operationFactory.createShipmentOp(lastOp.getProject(), priorityNewOp + 10);
       operationRepository.save(shipment);
     }
   }

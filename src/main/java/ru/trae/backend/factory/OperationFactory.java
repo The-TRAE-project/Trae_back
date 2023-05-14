@@ -18,11 +18,28 @@ import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.service.TypeWorkService;
 
+/**
+ * Service class for creation operation objects.
+ *
+ * @author Vladimir Olennikov
+ */
 @Component
 @RequiredArgsConstructor
 public class OperationFactory {
   private final TypeWorkService typeWorkService;
   
+  /**
+   * Creates a new Operation object with the specified details.
+   *
+   * @param p          the project to which the operation belongs
+   * @param name       the name of the operation
+   * @param period     the duration of the operation in hours
+   * @param priority   the priority of the operation
+   * @param start      the start date/time of the operation
+   * @param ready      a flag indicating if the operation is ready for acceptance
+   * @param typeWorkId the ID of the type of work associated with the operation
+   * @return a newly created Operation object with the specified details
+   */
   public Operation create(Project p, String name, int period, int priority,
                           LocalDateTime start,
                           boolean ready, long typeWorkId
@@ -44,6 +61,13 @@ public class OperationFactory {
     return o;
   }
   
+  /**
+   * Creates a shipment operation for the specified project with the given priority.
+   *
+   * @param p        the project for which the shipment operation is created
+   * @param priority the priority of the shipment operation
+   * @return a newly created Operation object representing the shipment operation
+   */
   public Operation createShipmentOp(Project p, int priority) {
     TypeWork shipment = typeWorkService.getTypeWorkByName("Отгрузка");
     

@@ -20,11 +20,29 @@ import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.service.ManagerService;
 import ru.trae.backend.util.Util;
 
+/**
+ * Service class for creation project objects.
+ *
+ * @author Vladimir Olennikov
+ */
 @Component
 @RequiredArgsConstructor
 public class ProjectFactory {
   private final ManagerService managerService;
   
+  /**
+   * Creates a new Project object with the specified details.
+   *
+   * @param number         the project number
+   * @param name           the project name
+   * @param currentDate    the current date/time
+   * @param plannedEndDate the planned end date/time
+   * @param operationCount the number of operations
+   * @param customer       the customer name
+   * @param comment        additional comment or information about the project
+   * @param authUsername   the username of the authenticated user creating the project
+   * @return a newly created Project object with the specified details
+   */
   public Project create(int number,
                         String name,
                         LocalDateTime currentDate,
