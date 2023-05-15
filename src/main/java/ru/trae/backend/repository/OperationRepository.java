@@ -26,7 +26,9 @@ import ru.trae.backend.entity.task.Operation;
  */
 @Repository
 public interface OperationRepository extends JpaRepository<Operation, Long> {
-
+  @Query("select (count(o) > 0) from Operation o where o.id = ?1 and o.typeWork.id = ?2")
+  boolean existsByTypeWorkIdEqualsShipment(long operationId, long shipmentId);
+  
   /**
    * Retrieve all operations associated with a given project.
    *
@@ -35,7 +37,7 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
    */
   @Query("select o from Operation o where o.project.id = ?1")
   List<Operation> findByProjectId(long projectId);
-
+  
   /**
    * Retrieve all operations that are currently in-work for a given employee.
    *
@@ -45,7 +47,7 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
   @Query("select o from Operation o where o.inWork = true and o.employee.id = ?1 "
       + "order by o.acceptanceDate")
   List<Operation> findByEmpIdAndInWork(long employeeId);
-
+  
   /**
    * Returns a list of operations based on the project id, ordered by priority in ascending order.
    *
@@ -54,12 +56,12 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
    */
   @Query("select o from Operation o where o.project.id = ?1 order by o.priority")
   List<Operation> findByProjectIdOrderByPriorityAsc(Long projectId);
-
+  
   @Transactional
   @Modifying
   @Query("update Operation o set o.priority = ?1 where o.id = ?2")
   void updatePriorityById(int priority, Long id);
-
+  
   @Transactional
   @Modifying
   @Query("""
@@ -72,13 +74,13 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
       boolean readyToAcceptance,
       boolean inWork,
       Long id);
-
+  
   @Query("""
       select (count(o) > 0) from Operation o
       where o.id = ?1 and (o.isEnded = ?2 or o.inWork = ?3 or o.readyToAcceptance = ?4)""")
   boolean existsByIdOrIsEndedOrInWorkOrReadyToAcceptance(
       Long id, boolean isEnded, boolean inWork, boolean readyToAcceptance);
-
+  
   @Modifying
   @Query("delete from Operation o where o.id = ?1")
   void deleteById(long operationId);

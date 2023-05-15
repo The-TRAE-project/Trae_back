@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.operation.InsertingOperationDto;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
@@ -42,7 +41,6 @@ import ru.trae.backend.util.Util;
 public class OperationService {
   private final OperationRepository operationRepository;
   private final EmployeeService employeeService;
-  
   private final OperationFactory operationFactory;
   public static final int MIN_PERIOD_OPERATION = 24;
   public static final int SHIPMENT_PERIOD = 24;
@@ -257,16 +255,22 @@ public class OperationService {
    * @param operationId - operation ID
    * @throws OperationException if operation with given ID not found or cannot be deleted
    */
-  @Transactional
   public void deleteOperation(long operationId) {
     if (!operationRepository.existsById(operationId)) {
       throw new OperationException(HttpStatus.NOT_FOUND,
           "Operation with ID " + operationId + " not found");
     }
+    //проверка, что операция не доступна для принятия и не находится в работе
     if (operationRepository.existsByIdOrIsEndedOrInWorkOrReadyToAcceptance(
         operationId, true, true, true)) {
       throw new OperationException(HttpStatus.BAD_REQUEST,
-          "Operation with ID " + operationId + " cannot be deleted");
+          "Operation with ID " + operationId
+              + " cannot be deleted. Operation in work or ready to acceptance");
+    }
+    //проверка, что операция не является отгрузкой
+    if (operationRepository.existsByTypeWorkIdEqualsShipment(operationId, 1)) {
+      throw new OperationException(HttpStatus.BAD_REQUEST, "Operation with ID " + operationId
+          + " is shipment. Shipment operation cannot be deleted");
     }
     
     operationRepository.deleteById(operationId);

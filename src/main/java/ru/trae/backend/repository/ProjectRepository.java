@@ -90,7 +90,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   
   ChangingEndDatesResp findChangedPlannedEndDateById(long projectId);
   
-  Optional<Project> findByOperations_Id(Long id);
+  @Query("select p from Project p where p.id = "
+      + "(select o.project.id from Operation o where o.id = ?1)")
+  Optional<Project> findByOperationId(long id);
   
   @Transactional
   @Modifying

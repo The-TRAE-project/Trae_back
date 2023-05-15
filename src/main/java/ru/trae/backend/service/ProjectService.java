@@ -113,9 +113,9 @@ public class ProjectService {
    * @throws ProjectException if the project is not found.
    */
   public Project getProjectByOperationId(long operationId) {
-    return projectRepository.findByOperations_Id(operationId).orElseThrow(
+    return projectRepository.findByOperationId(operationId).orElseThrow(
         () -> new ProjectException(HttpStatus.NOT_FOUND,
-            "Project with operation ID: " + operationId + Constant.NOT_FOUND_CONST));
+            "Project with operation ID: " + operationId + Constant.NOT_FOUND_CONST.value));
   }
   
   /**

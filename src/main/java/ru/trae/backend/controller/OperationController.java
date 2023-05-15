@@ -19,6 +19,7 @@ import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -79,6 +80,7 @@ public class OperationController {
           description = "Операция с таким приоритетом уже существует", content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
+  @Transactional
   @PostMapping("/insert")
   public ResponseEntity<HttpStatus> insertOperation(
       @Valid @RequestBody InsertingOperationDto dto) {
@@ -112,11 +114,13 @@ public class OperationController {
           description = "Операция с таким идентификатором не найдена", content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
+  @Transactional
   @DeleteMapping("/delete-operation/{operationId}")
   public ResponseEntity<HttpStatus> deleteOperation(@PathVariable long operationId) {
+    Project p = projectService.getProjectByOperationId(operationId);
     operationService.deleteOperation(operationId);
-    projectService.updatePlannedEndDateAfterInsertDeleteOp(
-        projectService.getProjectByOperationId(operationId), false, false);
+    projectService.updatePlannedEndDateAfterInsertDeleteOp(p, false, false);
+    
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }
   
