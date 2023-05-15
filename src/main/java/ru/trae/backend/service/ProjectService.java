@@ -72,7 +72,9 @@ public class ProjectService {
    */
   @Transactional
   public void saveNewProject(NewProjectDto dto, String authUsername) {
+    //проверка на не пустой список операций
     checkOperationsNotEmpty(dto.operations());
+    //проверка корректности даты планируемого окончания и даты окончания по контракту
     checkCorrectPlannedEndDate(dto.plannedEndDate());
     
     Project p = projectFactory.create(
@@ -85,6 +87,7 @@ public class ProjectService {
         dto.comment(),
         authUsername);
     
+    //проверка минимально допустимого рассчитываемого периода выполнения операции (минимум 24 часа)
     checkMinimalPeriodForOperations(p.getOperationPeriod());
     
     projectRepository.save(p);
@@ -148,8 +151,10 @@ public class ProjectService {
     
     try {
       int number = Integer.parseInt(projectNumberOrCustomer);
+      //поиск проектов по номеру
       page = projectRepository.findByNumber(number, projectPage);
     } catch (NumberFormatException e) {
+      //поиск проектов по заказчику
       page = projectRepository.findByCustomerLikeIgnoreCase(
           projectNumberOrCustomer.toUpperCase(), projectPage);
     }
@@ -181,21 +186,27 @@ public class ProjectService {
     Page<Project> page;
     
     if (Boolean.FALSE.equals(isEnded)) {
+      //проверка на наличие только одного из трех параметров для фильтрации
       checkOnlyOneInternalParameterForNotEndedProjects(
           isOnlyFirstOpWithoutAcceptance, isOnlyLastOpInWork, isOverdueCurrentOpInProject);
     }
     
     if (Boolean.TRUE.equals(isEnded)) {
+      //выборка всех завершенных проектов
       page = projectRepository.findByIsEnded(true, projectPage);
     } else if (Boolean.FALSE.equals(isEnded) && Boolean.TRUE.equals(isOverdueCurrentOpInProject)) {
+      //выборка проектов с просроченной текущей(в работе или доступной для принятия) операцией
       page = projectRepository.findProjectsWithOverdueCurrentOperation(
           LocalDateTime.now(), projectPage);
     } else if (Boolean.FALSE.equals(isEnded)
         && Boolean.TRUE.equals(isOnlyFirstOpWithoutAcceptance)) {
+      //выборка проектов с первой операцией доступной для принятия, но не принятой в работу
       page = projectRepository.findFirstByIsEndedAndOpPriorityAndReadyToAcceptance(0, projectPage);
     } else if (Boolean.FALSE.equals(isEnded) && Boolean.TRUE.equals(isOnlyLastOpInWork)) {
+      //выборка проектов с последней операцией (отгрузкой) принятой в работу
       page = projectRepository.findLastByIsEndedAndOpPriorityAndInWorkTrue(projectPage);
     } else if (Boolean.FALSE.equals(isEnded)) {
+      //выборка всех не завершенных проектов
       page = projectRepository.findByIsEnded(false, projectPage);
     } else {
       page = projectRepository.findAll(projectPage);
@@ -258,11 +269,13 @@ public class ProjectService {
     Employee e = employeeService.getEmployeeById(employeeId);
     List<Project> projects = new ArrayList<>();
     
+    //выборка проектов с доступными для принятия операциям согласно типу работы
     e.getTypeWorks().forEach(tw -> projects.addAll(
         projectRepository.findAvailableProjectsByTypeWork(tw.getId())));
     
     return projects.stream()
-        .sorted(Util::dateSorting)
+        //сортировка по дате окончания по контракту
+        .sorted(Util::endDateInContractSorting)
         .map(projectAvailableDtoMapper)
         .toList();
   }
@@ -348,12 +361,15 @@ public class ProjectService {
   public void updateEndDates(ChangingEndDatesReq req) {
     Project p = getProjectById(req.projectId());
     
+    //проверка корректности новой даты окончания контракта и планируемой даты окончания проекта
     checkCorrectNewPlannedAndContractDate(req, p);
     
     p.setEndDateInContract(req.newPlannedAndContractEndDate());
     p.setPlannedEndDate(req.newPlannedAndContractEndDate());
+    //пересчет общего периода проекта
     p.setPeriod((int) HOURS.between(p.getStartDate(), req.newPlannedAndContractEndDate()));
     
+    //вычисление нового периода для выполнения оставшихся операций
     int period = calculateNewPeriodAfterChangingEndDates(p);
     p.setOperationPeriod(period);
     
@@ -394,16 +410,20 @@ public class ProjectService {
   private int calculateNewPeriodAfterChangingEndDates(Project p) {
     int period;
     List<Operation> ops = p.getOperations();
+    //если все операции закончены или осталась одна, которая в работе или доступна для выполнения,
+    // то период остается прежним
     if (ops.stream().allMatch(Operation::isEnded)
         || ops.stream().filter(o -> !o.isEnded()).count() == 1) {
       period = p.getOperationPeriod();
     } else {
+      //поиск текущей операции (в работе или доступной для принятия) в проекте
       Operation currentOp = ops.stream()
           .filter(o -> o.isInWork() || o.isReadyToAcceptance())
           .findFirst()
           .orElseThrow(() -> new ProjectException(HttpStatus.BAD_REQUEST,
               "Incorrect state of project operations. Critical error"));
       
+      //подсчет оставшихся операций за исключением текущей
       int remainingNotEndedOps = (int) ops.stream().filter(o -> !o.isEnded()
           && (!o.isInWork() || !o.isReadyToAcceptance())).count();
       int remainingProjectPeriod;
@@ -413,9 +433,12 @@ public class ProjectService {
         remainingProjectPeriod =
             (int) HOURS.between(currentOp.getPlannedEndDate(), p.getEndDateInContract());
       }
+      //здесь вычитание единицы это отгрузка и чтобы избежать деления на 0,
+      // то в случае нулевого результата всегда остается единица
       period = Util.calculateOperationPeriod(
           remainingProjectPeriod - SHIPMENT_PERIOD,
           remainingNotEndedOps - 1 == 0 ? 1 : remainingProjectPeriod);
+      //проверка на минимальный период выполнения операции
       checkMinimalPeriodForOperations(period);
     }
     return period;
@@ -438,7 +461,7 @@ public class ProjectService {
     if (shipmentIsAdded) {
       period += SHIPMENT_PERIOD;
     }
-    //флаг isIncreased дает представление, надо увеличить планируемы срок или уменьшить
+    //флаг isIncreased дает представление, надо увеличить или уменьшить планируемый срок
     if (isIncreased) {
       p.setPlannedEndDate(p.getPlannedEndDate().plusHours(period));
     } else {
@@ -476,6 +499,7 @@ public class ProjectService {
    */
   public void updateCommonData(ChangingCommonDataReq req) {
     Project p = getProjectById(req.projectId());
+    
     updateProjectNumber(p, req.projectNumber());
     updateProjectName(p, req.projectName());
     updateCustomerInfo(p, req.customer());

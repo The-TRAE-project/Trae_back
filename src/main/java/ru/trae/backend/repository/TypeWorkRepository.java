@@ -30,6 +30,7 @@ import ru.trae.backend.entity.TypeWork;
 public interface TypeWorkRepository extends JpaRepository<TypeWork, Long> {
   @Query("select t from TypeWork t where t.isActive = true")
   List<TypeWork> findByIsActiveTrue();
+  
   @Query("select t from TypeWork t where t.isActive = true and t.id <> ?1")
   List<TypeWork> findByIsActiveTrueAndIdNot(long id);
   

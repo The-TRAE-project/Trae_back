@@ -59,10 +59,10 @@ public class Util {
    * @param p2 The second project
    * @return An integer representing the comparison result
    */
-  public static int dateSorting(Project p1, Project p2) {
-    if (p1.getPlannedEndDate().isAfter(p2.getPlannedEndDate())) {
+  public static int endDateInContractSorting(Project p1, Project p2) {
+    if (p1.getEndDateInContract().isAfter(p2.getEndDateInContract())) {
       return 1;
-    } else if (p1.getPlannedEndDate().isEqual(p2.getPlannedEndDate())) {
+    } else if (p1.getEndDateInContract().isEqual(p2.getEndDateInContract())) {
       return 0;
     } else {
       return -1;
