@@ -437,7 +437,7 @@ public class ProjectService {
       // то в случае нулевого результата всегда остается единица
       period = Util.calculateOperationPeriod(
           remainingProjectPeriod - SHIPMENT_PERIOD,
-          remainingNotEndedOps - 1 == 0 ? 1 : remainingProjectPeriod);
+          remainingNotEndedOps - 1 == 0 ? 1 : remainingNotEndedOps);
       //проверка на минимальный период выполнения операции
       checkMinimalPeriodForOperations(period);
     }
