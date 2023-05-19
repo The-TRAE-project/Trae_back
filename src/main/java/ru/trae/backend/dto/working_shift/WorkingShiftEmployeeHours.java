@@ -12,9 +12,14 @@ package ru.trae.backend.dto.working_shift;
 
 import java.time.LocalDate;
 
-public record WorkingShiftEmployeePercentage(
+/**
+ * Data record representing the employee's working shift hours for a specific shift.
+ *
+ * @author Vladimir Olennikov
+ */
+public record WorkingShiftEmployeeHours(
     long employeeId,
     LocalDate shiftDate,
-    Float percentOfShift
+    Float percentOnShift
 ) {
 }

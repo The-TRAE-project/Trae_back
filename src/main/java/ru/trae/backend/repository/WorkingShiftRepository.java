@@ -17,7 +17,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.trae.backend.entity.WorkingShift;
-import ru.trae.backend.projection.WorkingShiftEmployeePercentage;
+import ru.trae.backend.projection.WorkingShiftEmployeeHours;
 
 /**
  * Repository interface for WorkingShift entity which enables basic CRUD operations.
@@ -66,7 +66,7 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
                                (case
                                     when cast(ws.start_shift as date) + time '08:00' > tc.arrival
                                         then cast(ws.start_shift as date) + time '08:00'
-                                    else tc.arrival end)) / 60) / 6, 1) as percent_of_shift
+                                    else tc.arrival end)) / 60) / 60, 1) as hours_on_shift
       from working_shifts ws
                inner join time_controls tc on ws.id = tc.working_shift_id
       group by tc.employee_id, tc.auto_closing_shift, ws.is_ended, ws.start_shift
@@ -74,6 +74,6 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
          and ws.is_ended = false
          and cast(ws.start_shift as date) between ?1 and ?2""", nativeQuery = true)
   //TODO change ws.is_ended = false on ws.is_ended = true
-  List<WorkingShiftEmployeePercentage> getWorkingShiftsDates(
+  List<WorkingShiftEmployeeHours> getWorkingShiftsDates(
       LocalDate startOfPeriod, LocalDate endOfPeriod);
 }

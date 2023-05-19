@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
-import ru.trae.backend.projection.WorkingShiftEmployeePercentage;
+import ru.trae.backend.projection.WorkingShiftEmployeeHours;
 
 /**
  * Service class for generating reports.
@@ -40,15 +40,15 @@ public class ReportService {
    */
   public ReportWorkingShiftForPeriodDto reportWorkingShiftForPeriod(
       LocalDate startOfPeriod, LocalDate endOfPeriod) {
-    List<WorkingShiftEmployeePercentage> percentageList =
-        workingShiftService.getWorkingShiftEmployeePercentage(startOfPeriod, endOfPeriod);
+    List<WorkingShiftEmployeeHours> hoursWorkingShiftList =
+        workingShiftService.getWorkingShiftEmployeeHours(startOfPeriod, endOfPeriod);
     List<EmployeeIdFirstLastNameDto> shortEmployeeDtoList = employeeService.getEmployeeDtoByListId(
-        percentageList.stream()
-            .map(WorkingShiftEmployeePercentage::getEmployeeId)
+        hoursWorkingShiftList.stream()
+            .map(WorkingShiftEmployeeHours::getEmployeeId)
             .distinct()
             .toList());
     
     return new ReportWorkingShiftForPeriodDto(
-        startOfPeriod, endOfPeriod, shortEmployeeDtoList, percentageList);
+        startOfPeriod, endOfPeriod, shortEmployeeDtoList, hoursWorkingShiftList);
   }
 }
