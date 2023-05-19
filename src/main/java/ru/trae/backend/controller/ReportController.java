@@ -11,16 +11,19 @@
 package ru.trae.backend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
 import ru.trae.backend.service.ReportService;
@@ -62,14 +65,11 @@ public class ReportController {
           content = @Content)})
   @GetMapping("/working-shifts-for-period")
   public ResponseEntity<ReportWorkingShiftForPeriodDto> workingShiftsForPeriod(
-//      @RequestParam(name = "startOfPeriod")
-//      @Parameter(description = "Начало периода запроса рабочих смен") LocalDate startOfPeriod,
-//      @RequestParam(name = "endOfPeriod")
-//      @Parameter(description = "Конец периода запроса рабочих смен") LocalDate endOfPeriod
+      @RequestParam(name = "startOfPeriod") @DateTimeFormat(pattern="yyyy-MM-dd")
+      @Parameter(description = "Начало периода запроса рабочих смен") LocalDate startOfPeriod,
+      @RequestParam(name = "endOfPeriod") @DateTimeFormat(pattern="yyyy-MM-dd")
+      @Parameter(description = "Конец периода запроса рабочих смен") LocalDate endOfPeriod
   ) {
-    return ResponseEntity.ok(
-        //workingShiftService.getWorkingShiftEmployeePercentage(startOfPeriod, endOfPeriod));
-        reportService.reportWorkingShiftForPeriod(
-            LocalDate.now().minusDays(2), LocalDate.now().plusDays(2)));
+    return ResponseEntity.ok(reportService.reportWorkingShiftForPeriod(startOfPeriod, endOfPeriod));
   }
 }
