@@ -42,14 +42,16 @@ public class ReportController {
   private final ReportService reportService;
   
   @Operation(summary = "Список отчетов по рабочим сменам за указанный период, список сотрудников, "
-      + "входящих в отчет",
+      + "входящих в отчет, список общего количества часов по каждому сотруднику",
       description = "Доступен администратору. Возвращает даты с началом и концом запрошенного "
-          + "периода, два списка - с информацией по сотрудникам (id, имя и фамилию) и выборку по "
-          + "рабочим сменам с часами нахождения сотрудника на смене.")
+          + "периода, три списка - с информацией по сотрудникам (id, имя и фамилию), выборку по "
+          + "рабочим сменам с часами нахождения сотрудника на смене и данные с общим количеством "
+          + "часов по каждому сотруднику в указанный период.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Список отчетов по рабочим сменам за указанный период и список сотрудников,"
-              + " входящих в отчет. В схеме указан единичный объект",
+              + " входящих в отчет, список общего количества часов по каждому сотруднику. "
+              + "В схеме указан единичный объект",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ReportWorkingShiftForPeriodDto.class))}),
       @ApiResponse(responseCode = "400",
@@ -65,9 +67,9 @@ public class ReportController {
           content = @Content)})
   @GetMapping("/working-shifts-for-period")
   public ResponseEntity<ReportWorkingShiftForPeriodDto> workingShiftsForPeriod(
-      @RequestParam(name = "startOfPeriod") @DateTimeFormat(pattern="yyyy-MM-dd")
+      @RequestParam(name = "startOfPeriod") @DateTimeFormat(pattern = "yyyy-MM-dd")
       @Parameter(description = "Начало периода запроса рабочих смен") LocalDate startOfPeriod,
-      @RequestParam(name = "endOfPeriod") @DateTimeFormat(pattern="yyyy-MM-dd")
+      @RequestParam(name = "endOfPeriod") @DateTimeFormat(pattern = "yyyy-MM-dd")
       @Parameter(description = "Конец периода запроса рабочих смен") LocalDate endOfPeriod
   ) {
     return ResponseEntity.ok(reportService.reportWorkingShiftForPeriod(startOfPeriod, endOfPeriod));

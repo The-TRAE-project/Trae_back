@@ -17,7 +17,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.trae.backend.entity.WorkingShift;
-import ru.trae.backend.projection.WorkingShiftEmployeeHours;
+import ru.trae.backend.projection.WorkingShiftEmployeeHoursDto;
 
 /**
  * Repository interface for WorkingShift entity which enables basic CRUD operations.
@@ -74,6 +74,6 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
          and ws.is_ended = false
          and cast(ws.start_shift as date) between ?1 and ?2""", nativeQuery = true)
   //TODO change ws.is_ended = false on ws.is_ended = true
-  List<WorkingShiftEmployeeHours> getWorkingShiftsDates(
+  List<WorkingShiftEmployeeHoursDto> getWorkingShiftsDates(
       LocalDate startOfPeriod, LocalDate endOfPeriod);
 }

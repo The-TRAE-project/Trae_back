@@ -12,12 +12,14 @@ package ru.trae.backend.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
+import ru.trae.backend.dto.employee.EmployeeIdTotalHoursDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
-import ru.trae.backend.projection.WorkingShiftEmployeeHours;
+import ru.trae.backend.projection.WorkingShiftEmployeeHoursDto;
 
 /**
  * Service class for generating reports.
@@ -40,15 +42,27 @@ public class ReportService {
    */
   public ReportWorkingShiftForPeriodDto reportWorkingShiftForPeriod(
       LocalDate startOfPeriod, LocalDate endOfPeriod) {
-    List<WorkingShiftEmployeeHours> hoursWorkingShiftList =
+    List<WorkingShiftEmployeeHoursDto> hoursWorkingShiftList =
         workingShiftService.getWorkingShiftEmployeeHours(startOfPeriod, endOfPeriod);
     List<EmployeeIdFirstLastNameDto> shortEmployeeDtoList = employeeService.getEmployeeDtoByListId(
         hoursWorkingShiftList.stream()
-            .map(WorkingShiftEmployeeHours::getEmployeeId)
+            .map(WorkingShiftEmployeeHoursDto::getEmployeeId)
             .distinct()
             .toList());
     
+    List<EmployeeIdTotalHoursDto> employeeIdTotalHoursDtoList = hoursWorkingShiftList.stream()
+        .collect(Collectors.groupingBy(WorkingShiftEmployeeHoursDto::getEmployeeId,
+            Collectors.summingDouble(WorkingShiftEmployeeHoursDto::getHoursOnShift)))
+        .entrySet()
+        .stream()
+        .map(e -> new EmployeeIdTotalHoursDto(e.getKey(), e.getValue().floatValue()))
+        .toList();
+    
     return new ReportWorkingShiftForPeriodDto(
-        startOfPeriod, endOfPeriod, shortEmployeeDtoList, hoursWorkingShiftList);
+        startOfPeriod,
+        endOfPeriod,
+        shortEmployeeDtoList,
+        hoursWorkingShiftList,
+        employeeIdTotalHoursDtoList);
   }
 }
