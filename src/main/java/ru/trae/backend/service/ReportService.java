@@ -19,6 +19,11 @@ import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
 import ru.trae.backend.projection.WorkingShiftEmployeePercentage;
 
+/**
+ * Service class for generating reports.
+ *
+ * @author Vladimir Olennikov
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,13 @@ public class ReportService {
   private final WorkingShiftService workingShiftService;
   private final EmployeeService employeeService;
   
+  /**
+   * Generates a report of working shifts for a specific period.
+   *
+   * @param startOfPeriod The start date of the period.
+   * @param endOfPeriod   The end date of the period.
+   * @return The {@link ReportWorkingShiftForPeriodDto} containing the report data.
+   */
   public ReportWorkingShiftForPeriodDto reportWorkingShiftForPeriod(
       LocalDate startOfPeriod, LocalDate endOfPeriod) {
     List<WorkingShiftEmployeePercentage> percentageList =
