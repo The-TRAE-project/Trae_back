@@ -10,6 +10,7 @@
 
 package ru.trae.backend.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.mapper.WorkingShiftDtoMapper;
 import ru.trae.backend.dto.working_shift.WorkingShiftDto;
-import ru.trae.backend.dto.working_shift.WorkingShiftEmployeePercentage;
 import ru.trae.backend.entity.TimeControl;
 import ru.trae.backend.entity.WorkingShift;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.WorkingShiftException;
+import ru.trae.backend.projection.WorkingShiftEmployeePercentage;
 import ru.trae.backend.repository.WorkingShiftRepository;
 
 /**
@@ -119,8 +120,8 @@ public class WorkingShiftService {
     return workingShiftRepository.existsEmpOnShift(isOnShift, empId);
   }
   
-  public List<WorkingShiftEmployeePercentage> getWorkingShiftEmployeePercentage() {
-    List<WorkingShiftEmployeePercentage> list = workingShiftRepository.getWorkingShiftsDates(LocalDateTime.now().minusDays(2), LocalDateTime.now().plusDays(2));
-    return list;
+  public List<WorkingShiftEmployeePercentage> getWorkingShiftEmployeePercentage(
+      LocalDate startOfPeriod, LocalDate endOfPeriod) {
+    return workingShiftRepository.getWorkingShiftsDates(startOfPeriod, endOfPeriod);
   }
 }
