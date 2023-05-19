@@ -16,15 +16,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.trae.backend.dto.working_shift.WorkingShiftEmployeePercentage;
-import ru.trae.backend.service.WorkingShiftService;
+import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
+import ru.trae.backend.service.ReportService;
 
 /**
  * ReportController is used to provide endpoints to handle requests related to Report
@@ -37,15 +36,19 @@ import ru.trae.backend.service.WorkingShiftService;
 @Validated
 @RequestMapping("/api/report")
 public class ReportController {
-  private final WorkingShiftService workingShiftService;
+  private final ReportService reportService;
   
-  @Operation(summary = "Список отчетов по рабочим сменам за указанный период",
-      description = "Доступен администратору. .")
+  @Operation(summary = "Список отчетов по рабочим сменам за указанный период, список сотрудников, "
+      + "входящих в отчет",
+      description = "Доступен администратору. Возвращает даты с началом и концом запрошенного "
+          + "периода, два списка - с информацией по сотрудникам (id, имя и фамилию) и выборку по "
+          + "рабочим сменам с процентным соотношением нахождения сотрудника на смене.")
   @ApiResponses(value = {
-      @ApiResponse(responseCode = "200", description = "Список отчетов по рабочим сменам за "
-          + "указанный период. В схеме указан единичный объект",
+      @ApiResponse(responseCode = "200",
+          description = "Список отчетов по рабочим сменам за указанный период и список сотрудников,"
+              + " входящих в отчет. В схеме указан единичный объект",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = WorkingShiftEmployeePercentage.class))}),
+              schema = @Schema(implementation = ReportWorkingShiftForPeriodDto.class))}),
       @ApiResponse(responseCode = "400",
           description = "Неправильный формат даты начала и/или конца периода",
           content = @Content),
@@ -58,7 +61,7 @@ public class ReportController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/working-shifts-for-period")
-  public ResponseEntity<List<ru.trae.backend.projection.WorkingShiftEmployeePercentage>> workingShiftsForPeriod(
+  public ResponseEntity<ReportWorkingShiftForPeriodDto> workingShiftsForPeriod(
 //      @RequestParam(name = "startOfPeriod")
 //      @Parameter(description = "Начало периода запроса рабочих смен") LocalDate startOfPeriod,
 //      @RequestParam(name = "endOfPeriod")
@@ -66,7 +69,7 @@ public class ReportController {
   ) {
     return ResponseEntity.ok(
         //workingShiftService.getWorkingShiftEmployeePercentage(startOfPeriod, endOfPeriod));
-        workingShiftService.getWorkingShiftEmployeePercentage(
+        reportService.reportWorkingShiftForPeriod(
             LocalDate.now().minusDays(2), LocalDate.now().plusDays(2)));
   }
 }
