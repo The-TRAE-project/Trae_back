@@ -1,11 +1,13 @@
 package ru.trae.backend.repository;
 
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
+import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.entity.user.Employee;
 
 /**
@@ -69,4 +71,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
       + "group by e.id "
       + "having count(*) = (select count(*) from TypeWork where id in (:idList))")
   Page<Employee> findByTypeWorksId(Iterable<Long> idList, Pageable pageable);
+  
+  List<EmployeeIdFirstLastNameDto> findByIdIn(List<Long> listEmpId);
 }

@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.employee.ChangeDataDtoReq;
 import ru.trae.backend.dto.employee.EmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoReq;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
@@ -202,6 +203,10 @@ public class EmployeeService {
       Pageable employeePage, List<Long> typeWorkId, Boolean isActive) {
     return pageToPageDtoMapper.employeePageToPageDto(
         getEmployeePage(employeePage, typeWorkId, isActive));
+  }
+  
+  public List<EmployeeIdFirstLastNameDto> getEmployeeDtoByListId(List<Long> listEmpId) {
+    return employeeRepository.findByIdIn(listEmpId);
   }
 
   /**
