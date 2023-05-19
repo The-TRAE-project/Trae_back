@@ -73,6 +73,7 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
       having tc.auto_closing_shift = false
          and ws.is_ended = false
          and cast(ws.start_shift as date) between ?1 and ?2""", nativeQuery = true)
+  //TODO change ws.is_ended = false on ws.is_ended = true
   List<WorkingShiftEmployeePercentage> getWorkingShiftsDates(
       LocalDate startOfPeriod, LocalDate endOfPeriod);
 }
