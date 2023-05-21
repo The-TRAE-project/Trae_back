@@ -42,6 +42,7 @@ public class ProjectShortDtoMapper implements Function<Project, ProjectShortDto>
 
     return new ProjectShortDto(
         p.getId(),
+        p.isEnded(),
         p.getNumber(),
         p.getName(),
         p.getCustomer(),
