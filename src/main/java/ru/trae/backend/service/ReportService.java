@@ -44,6 +44,7 @@ public class ReportService {
       LocalDate startOfPeriod, LocalDate endOfPeriod) {
     List<WorkingShiftEmployeeHoursDto> hoursWorkingShiftList =
         workingShiftService.getWorkingShiftEmployeeHours(startOfPeriod, endOfPeriod);
+    
     List<EmployeeIdFirstLastNameDto> shortEmployeeDtoList = employeeService.getEmployeeDtoByListId(
         hoursWorkingShiftList.stream()
             .map(WorkingShiftEmployeeHoursDto::getEmployeeId)
