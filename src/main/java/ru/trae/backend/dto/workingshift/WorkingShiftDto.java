@@ -8,7 +8,7 @@
  * limitations under the License.
  */
 
-package ru.trae.backend.dto.working_shift;
+package ru.trae.backend.dto.workingshift;
 
 import java.time.LocalDateTime;
 import java.util.List;

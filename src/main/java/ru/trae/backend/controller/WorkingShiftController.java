@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.trae.backend.dto.working_shift.WorkingShiftDto;
+import ru.trae.backend.dto.workingshift.WorkingShiftDto;
 import ru.trae.backend.service.WorkingShiftService;
 
 /**

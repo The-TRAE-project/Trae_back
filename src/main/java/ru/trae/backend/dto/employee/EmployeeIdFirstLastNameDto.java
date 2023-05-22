@@ -16,7 +16,7 @@ package ru.trae.backend.dto.employee;
  * @author Vladimir Olennikov
  */
 public record EmployeeIdFirstLastNameDto(
-    long Id,
+    long id,
     String firstName,
     String lastName
 ) {

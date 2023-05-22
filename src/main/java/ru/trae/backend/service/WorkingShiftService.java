@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.mapper.WorkingShiftDtoMapper;
-import ru.trae.backend.dto.working_shift.WorkingShiftDto;
+import ru.trae.backend.dto.workingshift.WorkingShiftDto;
 import ru.trae.backend.entity.TimeControl;
 import ru.trae.backend.entity.WorkingShift;
 import ru.trae.backend.entity.user.Employee;

@@ -16,7 +16,7 @@ package ru.trae.backend.dto.employee;
  * @author Vladimir Olennikov
  */
 public record EmployeeIdTotalHoursDto(
-    long Id,
+    long id,
     Float totalHours
 ) {
 }

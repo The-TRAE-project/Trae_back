@@ -13,7 +13,7 @@ package ru.trae.backend.dto.mapper;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.working_shift.WorkingShiftDto;
+import ru.trae.backend.dto.workingshift.WorkingShiftDto;
 import ru.trae.backend.entity.WorkingShift;
 
 /**
