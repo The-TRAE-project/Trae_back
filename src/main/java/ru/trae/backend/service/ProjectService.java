@@ -185,27 +185,24 @@ public class ProjectService {
       Boolean isOverdueCurrentOpInProject) {
     Page<Project> page;
     
-    if (Boolean.FALSE.equals(isEnded)) {
-      //проверка на наличие только одного из трех параметров для фильтрации
-      checkOnlyOneInternalParameterForNotEndedProjects(
-          isOnlyFirstOpWithoutAcceptance, isOnlyLastOpInWork, isOverdueCurrentOpInProject);
-    }
+    checkCorrectInternalParametersInRequest(
+        isEnded, isOnlyFirstOpWithoutAcceptance,
+        isOnlyLastOpInWork, isOverdueCurrentOpInProject);
     
-    if (Boolean.TRUE.equals(isEnded)) {
+    if (isEnded != null && isEnded) {
       //выборка всех завершенных проектов
       page = projectRepository.findByIsEnded(true, projectPage);
-    } else if (Boolean.FALSE.equals(isEnded) && Boolean.TRUE.equals(isOverdueCurrentOpInProject)) {
+    } else if (isEnded != null && Boolean.TRUE.equals(isOverdueCurrentOpInProject)) {
       //выборка проектов с просроченной текущей(в работе или доступной для принятия) операцией
       page = projectRepository.findProjectsWithOverdueCurrentOperation(
           LocalDateTime.now(), projectPage);
-    } else if (Boolean.FALSE.equals(isEnded)
-        && Boolean.TRUE.equals(isOnlyFirstOpWithoutAcceptance)) {
+    } else if (isEnded != null && Boolean.TRUE.equals(isOnlyFirstOpWithoutAcceptance)) {
       //выборка проектов с первой операцией доступной для принятия, но не принятой в работу
       page = projectRepository.findFirstByIsEndedAndOpPriorityAndReadyToAcceptance(0, projectPage);
-    } else if (Boolean.FALSE.equals(isEnded) && Boolean.TRUE.equals(isOnlyLastOpInWork)) {
+    } else if (isEnded != null && Boolean.TRUE.equals(isOnlyLastOpInWork)) {
       //выборка проектов с последней операцией (отгрузкой) принятой в работу
       page = projectRepository.findLastByIsEndedAndOpPriorityAndInWorkTrue(projectPage);
-    } else if (Boolean.FALSE.equals(isEnded)) {
+    } else if (isEnded != null) {
       //выборка всех не завершенных проектов
       page = projectRepository.findByIsEnded(false, projectPage);
     } else {
@@ -214,21 +211,40 @@ public class ProjectService {
     return page;
   }
   
-  private void checkOnlyOneInternalParameterForNotEndedProjects(
+  private void checkCorrectInternalParametersInRequest(
+      Boolean isEnded,
       Boolean isOnlyFirstOpWithoutAcceptance,
       Boolean isOnlyLastOpInWork,
       Boolean isOverdueCurrentOpInProject) {
+    
     List<Optional<Boolean>> filterParameters =
         List.of(
             Optional.ofNullable(isOnlyFirstOpWithoutAcceptance),
             Optional.ofNullable(isOnlyLastOpInWork),
             Optional.ofNullable(isOverdueCurrentOpInProject));
     
-    if (filterParameters.stream().filter(Optional::isPresent).count() > 1) {
-      throw new ProjectException(HttpStatus.BAD_REQUEST,
-          "Incorrect number of filters in the request");
+    int numberOfFilterParameters = (int) filterParameters.stream()
+        .filter(Optional::isPresent)
+        .count();
+    
+    if (isEnded == null) {
+      if (numberOfFilterParameters > 0) {
+        throw new ProjectException(HttpStatus.BAD_REQUEST, "Internal parameters without external "
+            + "parameter(isEnded) for filters in the request");
+      }
+    } else if (!isEnded) {
+      if (numberOfFilterParameters > 1) {
+        throw new ProjectException(HttpStatus.BAD_REQUEST,
+            "Incorrect number of internal parameters for filters in the request");
+      }
+    } else {
+      if (numberOfFilterParameters > 0) {
+        throw new ProjectException(HttpStatus.BAD_REQUEST,
+            "Internal parameters for filters are not allowed for closed projects");
+      }
     }
   }
+  
   
   /**
    * Accepts pagination settings, filtering parameters, returns {@link  ProjectShortDto}.
