@@ -32,12 +32,6 @@ import ru.trae.backend.entity.task.Project;
  */
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-  @Query("""
-      select p from Project p
-      where p.isEnded = false and exists (
-                                          select o from Operation o\s
-                                          where o.project.id = p.id and o.inWork = true)""")
-  Page<Project> findByIsEndedFalseAndAnyOperationsInWork(Pageable pageable);
   
   @Query("""
       select p from Project p inner join p.operations operations
@@ -67,6 +61,19 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       and operations.plannedEndDate < ?1""")
   Page<Project> findProjectsWithOverdueCurrentOperation(
       LocalDateTime currentDate, Pageable pageable);
+  
+  @Query("""
+      select p from Project p
+      where p.isEnded = false and exists (
+                                          select o from Operation o\s
+                                          where o.project.id = p.id and o.inWork = true)""")
+  Page<Project> findByIsEndedFalseAndAnyOperationInWork(Pageable pageable);
+  
+  @Query("""
+      select p from Project p
+      where p.isEnded = false and\s
+      (p.plannedEndDate > p.endDateInContract or current_timestamp > p.endDateInContract)""")
+  Page<Project> findOverdueProjects(Pageable pageable);
   
   @Transactional
   @Modifying

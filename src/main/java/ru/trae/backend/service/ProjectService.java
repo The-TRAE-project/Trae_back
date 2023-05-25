@@ -207,9 +207,12 @@ public class ProjectService {
       //выборка проектов с последней операцией (отгрузкой) принятой в работу
       page = projectRepository.findLastByIsEndedAndOpPriorityAndInWorkTrue(projectPage);
     } else if (isEnded != null && Boolean.TRUE.equals(isCurrentOpInWork)) {
-      page = projectRepository.findByIsEndedFalseAndAnyOperationsInWork(projectPage);
-//    } else if (isEnded != null && Boolean.TRUE.equals(isOverdueProject)) {
-//      page = projectRepository.findOverdueProjects();
+      //выборка проектов с наличием операции находящейся в работе
+      page = projectRepository.findByIsEndedFalseAndAnyOperationInWork(projectPage);
+    } else if (isEnded != null && Boolean.TRUE.equals(isOverdueProject)) {
+      //выборка проектов у которых планируемая дата окончания или текущая дата позже
+      // даты окончания по договору
+      page = projectRepository.findOverdueProjects(projectPage);
     } else if (isEnded != null) {
       //выборка всех не завершенных проектов
       page = projectRepository.findByIsEnded(false, projectPage);
