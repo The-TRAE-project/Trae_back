@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
  *
  * @author Vladimir Olennikov
  */
-public interface WorkingShiftEmployeeHoursDto {
+public interface WorkingShiftEmployeeDto {
   @Value("#{target.employee_id}")
   long getEmployeeId();
   
@@ -28,6 +28,6 @@ public interface WorkingShiftEmployeeHoursDto {
   @Value("#{target.shift_date}")
   LocalDate getShiftDate();
   
-  @Value("#{target.hours_on_shift}")
-  Float getHoursOnShift();
+  @Value("#{target.part_of_shift}")
+  Float getPartOfShift();
 }

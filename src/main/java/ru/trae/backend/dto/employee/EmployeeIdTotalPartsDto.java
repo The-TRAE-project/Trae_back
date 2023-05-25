@@ -11,12 +11,12 @@
 package ru.trae.backend.dto.employee;
 
 /**
- * Represents a data transfer object for an employee's id and total hours.
+ * Represents a data transfer object for an employee's id and total parts of shift.
  *
  * @author Vladimir Olennikov
  */
-public record EmployeeIdTotalHoursDto(
+public record EmployeeIdTotalPartsDto(
     long id,
-    Float totalHours
+    Float totalPartsOfShift
 ) {
 }

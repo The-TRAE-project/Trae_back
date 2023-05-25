@@ -18,7 +18,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.trae.backend.entity.WorkingShift;
-import ru.trae.backend.projection.WorkingShiftEmployeeHoursDto;
+import ru.trae.backend.projection.WorkingShiftEmployeeDto;
 
 /**
  * Repository interface for WorkingShift entity which enables basic CRUD operations.
@@ -56,6 +56,7 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
       nativeQuery = true)
   boolean existsEmpOnShift(@Param("isOnShift") boolean isOnShift, @Param("id") Long id);
   
+  //32400 - количество секунд в 9-часовой смене
   @Query(value = """
       select employee_id,
              auto_closing_shift,
@@ -68,16 +69,17 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
                                (case
                                     when cast(ws.start_shift as date) + time '09:00' > tc.arrival
                                         then cast(ws.start_shift as date) + time '09:00'
-                                    else tc.arrival end)) / 60) / 60, 1) as hours_on_shift
+                                    else tc.arrival end))) / 32400, 1) as part_of_shift
       from working_shifts ws
                inner join time_controls tc on ws.id = tc.working_shift_id
       group by tc.employee_id, tc.auto_closing_shift, ws.is_ended, ws.start_shift
       having ws.is_ended = false
          and cast(ws.start_shift as date) between ?1 and ?2""", nativeQuery = true)
   //TODO change ws.is_ended = false on ws.is_ended = true
-  List<WorkingShiftEmployeeHoursDto> getWorkingShiftsDates(
+  List<WorkingShiftEmployeeDto> getWorkingShiftsDates(
       LocalDate startOfPeriod, LocalDate endOfPeriod);
   
+  //32400 - количество секунд в 9-часовой смене
   @Query(value = """
       select employee_id,
              auto_closing_shift,
@@ -90,14 +92,14 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
                                (case
                                     when cast(ws.start_shift as date) + time '09:00' > tc.arrival
                                         then cast(ws.start_shift as date) + time '09:00'
-                                    else tc.arrival end)) / 60) / 60, 1) as hours_on_shift
+                                    else tc.arrival end))) / 32400, 1) as part_of_shift
       from working_shifts ws
                inner join time_controls tc on ws.id = tc.working_shift_id
       group by tc.employee_id, tc.auto_closing_shift, ws.is_ended, ws.start_shift
       having ws.is_ended = false
          and cast(ws.start_shift as date) between ?1 and ?2
          and tc.employee_id in ?3""", nativeQuery = true)
-    //TODO change ws.is_ended = false on ws.is_ended = true
-  List<WorkingShiftEmployeeHoursDto> getWorkingShiftsDatesByEmpIds(
+  //TODO change ws.is_ended = false on ws.is_ended = true
+  List<WorkingShiftEmployeeDto> getWorkingShiftsDatesByEmpIds(
       LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds);
 }

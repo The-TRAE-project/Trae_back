@@ -18,9 +18,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
-import ru.trae.backend.dto.employee.EmployeeIdTotalHoursDto;
+import ru.trae.backend.dto.employee.EmployeeIdTotalPartsDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
-import ru.trae.backend.projection.WorkingShiftEmployeeHoursDto;
+import ru.trae.backend.projection.WorkingShiftEmployeeDto;
 
 /**
  * Service class for generating reports.
@@ -44,29 +44,29 @@ public class ReportService {
    */
   public ReportWorkingShiftForPeriodDto reportWorkingShiftForPeriod(
       LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds) {
-    List<WorkingShiftEmployeeHoursDto> hoursWorkingShiftList =
-        workingShiftService.getWorkingShiftEmployeeHoursByEmpIds(
+    List<WorkingShiftEmployeeDto> workingShiftList =
+        workingShiftService.getWorkingShiftEmployeeByEmpIds(
             startOfPeriod, endOfPeriod, employeeIds);
     
     List<EmployeeIdFirstLastNameDto> shortEmployeeDtoList = employeeService.getEmployeeDtoByListId(
-        hoursWorkingShiftList.stream()
-            .map(WorkingShiftEmployeeHoursDto::getEmployeeId)
+        workingShiftList.stream()
+            .map(WorkingShiftEmployeeDto::getEmployeeId)
             .distinct()
             .toList());
     
-    List<EmployeeIdTotalHoursDto> employeeIdTotalHoursDtoList = hoursWorkingShiftList.stream()
-        .collect(Collectors.groupingBy(WorkingShiftEmployeeHoursDto::getEmployeeId,
-            Collectors.summingDouble(WorkingShiftEmployeeHoursDto::getHoursOnShift)))
+    List<EmployeeIdTotalPartsDto> employeeIdTotalPartsDtoList = workingShiftList.stream()
+        .collect(Collectors.groupingBy(WorkingShiftEmployeeDto::getEmployeeId,
+            Collectors.summingDouble(WorkingShiftEmployeeDto::getPartOfShift)))
         .entrySet()
         .stream()
-        .map(e -> new EmployeeIdTotalHoursDto(e.getKey(), e.getValue().floatValue()))
+        .map(e -> new EmployeeIdTotalPartsDto(e.getKey(), e.getValue().floatValue()))
         .toList();
     
     return new ReportWorkingShiftForPeriodDto(
         startOfPeriod,
         endOfPeriod,
         shortEmployeeDtoList,
-        hoursWorkingShiftList,
-        employeeIdTotalHoursDtoList);
+        workingShiftList,
+        employeeIdTotalPartsDtoList);
   }
 }

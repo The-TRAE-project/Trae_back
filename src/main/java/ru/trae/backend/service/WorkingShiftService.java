@@ -23,7 +23,7 @@ import ru.trae.backend.entity.TimeControl;
 import ru.trae.backend.entity.WorkingShift;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.WorkingShiftException;
-import ru.trae.backend.projection.WorkingShiftEmployeeHoursDto;
+import ru.trae.backend.projection.WorkingShiftEmployeeDto;
 import ru.trae.backend.repository.WorkingShiftRepository;
 
 /**
@@ -121,9 +121,9 @@ public class WorkingShiftService {
     return workingShiftRepository.existsEmpOnShift(isOnShift, empId);
   }
   
-  public List<WorkingShiftEmployeeHoursDto> getWorkingShiftEmployeeHoursByEmpIds(
+  public List<WorkingShiftEmployeeDto> getWorkingShiftEmployeeByEmpIds(
       LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds) {
-    List<WorkingShiftEmployeeHoursDto> hoursWorkingShiftList;
+    List<WorkingShiftEmployeeDto> hoursWorkingShiftList;
     if (employeeIds != null && !employeeIds.isEmpty()) {
       hoursWorkingShiftList = workingShiftRepository.getWorkingShiftsDatesByEmpIds(
           startOfPeriod, endOfPeriod, employeeIds);
