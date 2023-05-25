@@ -33,6 +33,13 @@ import ru.trae.backend.entity.task.Project;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
   @Query("""
+      select p from Project p
+      where p.isEnded = false and exists (
+                                          select o from Operation o\s
+                                          where o.project.id = p.id and o.inWork = true)""")
+  Page<Project> findByIsEndedFalseAndAnyOperationsInWork(Pageable pageable);
+  
+  @Query("""
       select p from Project p inner join p.operations operations
       where p.isEnded = false and operations.priority = (select max(o.priority)\s
       from Operation o where o.project.id = p.id) and operations.inWork = true""")

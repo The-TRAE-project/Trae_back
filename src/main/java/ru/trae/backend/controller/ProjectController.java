@@ -156,15 +156,22 @@ public class ProjectController {
   public ResponseEntity<PageDto<ProjectShortDto>> projects(
       @Valid PageSettings pageSetting,
       @RequestParam(required = false) @Parameter(description =
-          "Фильтрация по статусу открыт/закрыт") Boolean isEnded,
+          "Фильтрация по статусу проекта: открыт/закрыт") Boolean isEnded,
       @RequestParam(required = false) @Parameter(
-          description = "Фильтрация по первому, непринятому в работу, этапу проекта")
+          description = "Фильтрация по по проектам с первой операцией, непринятой в работу")
       Boolean isOnlyFirstOpWithoutAcceptance,
       @RequestParam(required = false) @Parameter(
-          description = "Фильтрация по последнему, находящемуся в работе, этапу проекта")
+          description = "Фильтрация по проектам с последней операцией, находящейся в работе")
       Boolean isOnlyLastOpInWork,
-      @RequestParam(required = false) @Parameter(description = "Фильтрация по просроченному этапу, "
-          + "находящемуся в работе или готовому для принятия в работу")
+      @RequestParam(required = false) @Parameter(
+          description = "Фильтрация по проектам с операциями, находящимися в работе")
+      Boolean isCurrentOpInWork,
+      @RequestParam(required = false) @Parameter(
+          description = "Фильтрация по проектам где планируемая дата окончания позже даты"
+              + " окончания по договору")
+      Boolean isOverdueProject,
+      @RequestParam(required = false) @Parameter(description = "Фильтрация по проектам с "
+          + "операциями, находящимися в работе или готовыми для принятия в работу")
       Boolean isOverdueCurrentOpInProject) {
     
     Sort projectSort = pageSetting.buildProjectSort();
@@ -173,7 +180,8 @@ public class ProjectController {
     
     return ResponseEntity.ok(projectService.getProjectDtoPage(
         projectPage, isEnded, isOnlyFirstOpWithoutAcceptance,
-        isOnlyLastOpInWork, isOverdueCurrentOpInProject));
+        isOnlyLastOpInWork, isOverdueCurrentOpInProject,
+        isCurrentOpInWork, isOverdueProject));
   }
   
   /**

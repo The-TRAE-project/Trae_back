@@ -182,12 +182,16 @@ public class ProjectService {
       Boolean isEnded,
       Boolean isOnlyFirstOpWithoutAcceptance,
       Boolean isOnlyLastOpInWork,
-      Boolean isOverdueCurrentOpInProject) {
+      Boolean isOverdueCurrentOpInProject,
+      Boolean isCurrentOpInWork,
+      Boolean isOverdueProject
+  ) {
     Page<Project> page;
     
     checkCorrectInternalParametersInRequest(
         isEnded, isOnlyFirstOpWithoutAcceptance,
-        isOnlyLastOpInWork, isOverdueCurrentOpInProject);
+        isOnlyLastOpInWork, isOverdueCurrentOpInProject,
+        isCurrentOpInWork, isOverdueProject);
     
     if (isEnded != null && isEnded) {
       //выборка всех завершенных проектов
@@ -202,6 +206,10 @@ public class ProjectService {
     } else if (isEnded != null && Boolean.TRUE.equals(isOnlyLastOpInWork)) {
       //выборка проектов с последней операцией (отгрузкой) принятой в работу
       page = projectRepository.findLastByIsEndedAndOpPriorityAndInWorkTrue(projectPage);
+    } else if (isEnded != null && Boolean.TRUE.equals(isCurrentOpInWork)) {
+      page = projectRepository.findByIsEndedFalseAndAnyOperationsInWork(projectPage);
+//    } else if (isEnded != null && Boolean.TRUE.equals(isOverdueProject)) {
+//      page = projectRepository.findOverdueProjects();
     } else if (isEnded != null) {
       //выборка всех не завершенных проектов
       page = projectRepository.findByIsEnded(false, projectPage);
@@ -215,13 +223,17 @@ public class ProjectService {
       Boolean isEnded,
       Boolean isOnlyFirstOpWithoutAcceptance,
       Boolean isOnlyLastOpInWork,
-      Boolean isOverdueCurrentOpInProject) {
+      Boolean isOverdueCurrentOpInProject,
+      Boolean isCurrentOpInWork,
+      Boolean isOverdueProject) {
     
     List<Optional<Boolean>> filterParameters =
         List.of(
             Optional.ofNullable(isOnlyFirstOpWithoutAcceptance),
             Optional.ofNullable(isOnlyLastOpInWork),
-            Optional.ofNullable(isOverdueCurrentOpInProject));
+            Optional.ofNullable(isOverdueCurrentOpInProject),
+            Optional.ofNullable(isCurrentOpInWork),
+            Optional.ofNullable(isOverdueProject));
     
     int numberOfFilterParameters = (int) filterParameters.stream()
         .filter(Optional::isPresent)
@@ -266,13 +278,17 @@ public class ProjectService {
       Boolean isEnded,
       Boolean isOnlyFirstOpWithoutAcceptance,
       Boolean isOnlyLastOpInWork,
-      Boolean isOverdueCurrentOpInProject) {
+      Boolean isOverdueCurrentOpInProject,
+      Boolean isCurrentOpInWork,
+      Boolean isOverdueProject) {
     return pageToPageDtoMapper.projectPageToPageDto(getProjectPage(
         projectPage,
         isEnded,
         isOnlyFirstOpWithoutAcceptance,
         isOnlyLastOpInWork,
-        isOverdueCurrentOpInProject));
+        isOverdueCurrentOpInProject,
+        isCurrentOpInWork,
+        isOverdueProject));
   }
   
   /**
