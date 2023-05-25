@@ -58,6 +58,7 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
   
   @Query(value = """
       select employee_id,
+             auto_closing_shift,
              cast(ws.start_shift as date) as shift_date,
              round(sum(extract(epoch from
                                (case
@@ -65,14 +66,13 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
                                         then cast(ws.start_shift as date) + time '18:00'
                                     else tc.departure end) -
                                (case
-                                    when cast(ws.start_shift as date) + time '08:00' > tc.arrival
-                                        then cast(ws.start_shift as date) + time '08:00'
+                                    when cast(ws.start_shift as date) + time '09:00' > tc.arrival
+                                        then cast(ws.start_shift as date) + time '09:00'
                                     else tc.arrival end)) / 60) / 60, 1) as hours_on_shift
       from working_shifts ws
                inner join time_controls tc on ws.id = tc.working_shift_id
       group by tc.employee_id, tc.auto_closing_shift, ws.is_ended, ws.start_shift
-      having tc.auto_closing_shift = false
-         and ws.is_ended = false
+      having ws.is_ended = false
          and cast(ws.start_shift as date) between ?1 and ?2""", nativeQuery = true)
   //TODO change ws.is_ended = false on ws.is_ended = true
   List<WorkingShiftEmployeeHoursDto> getWorkingShiftsDates(
@@ -80,6 +80,7 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
   
   @Query(value = """
       select employee_id,
+             auto_closing_shift,
              cast(ws.start_shift as date) as shift_date,
              round(sum(extract(epoch from
                                (case
@@ -87,14 +88,13 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
                                         then cast(ws.start_shift as date) + time '18:00'
                                     else tc.departure end) -
                                (case
-                                    when cast(ws.start_shift as date) + time '08:00' > tc.arrival
-                                        then cast(ws.start_shift as date) + time '08:00'
+                                    when cast(ws.start_shift as date) + time '09:00' > tc.arrival
+                                        then cast(ws.start_shift as date) + time '09:00'
                                     else tc.arrival end)) / 60) / 60, 1) as hours_on_shift
       from working_shifts ws
                inner join time_controls tc on ws.id = tc.working_shift_id
       group by tc.employee_id, tc.auto_closing_shift, ws.is_ended, ws.start_shift
-      having tc.auto_closing_shift = false
-         and ws.is_ended = false
+      having ws.is_ended = false
          and cast(ws.start_shift as date) between ?1 and ?2
          and tc.employee_id in ?3""", nativeQuery = true)
     //TODO change ws.is_ended = false on ws.is_ended = true

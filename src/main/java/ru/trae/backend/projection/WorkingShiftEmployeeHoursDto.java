@@ -22,6 +22,9 @@ public interface WorkingShiftEmployeeHoursDto {
   @Value("#{target.employee_id}")
   long getEmployeeId();
   
+  @Value("#{target.auto_closing_shift}")
+  Boolean isAutoClosed();
+  
   @Value("#{target.shift_date}")
   LocalDate getShiftDate();
   

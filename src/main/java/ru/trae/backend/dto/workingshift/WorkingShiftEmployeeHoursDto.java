@@ -19,6 +19,7 @@ import java.time.LocalDate;
  */
 public record WorkingShiftEmployeeHoursDto(
     long employeeId,
+    Boolean isAutoClosed,
     LocalDate shiftDate,
     Float percentOnShift
 ) {
