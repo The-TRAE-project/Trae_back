@@ -12,6 +12,7 @@ package ru.trae.backend.service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,12 +39,14 @@ public class ReportService {
    *
    * @param startOfPeriod The start date of the period.
    * @param endOfPeriod   The end date of the period.
+   * @param employeeIds   The set of concrete employee ids
    * @return The {@link ReportWorkingShiftForPeriodDto} containing the report data.
    */
   public ReportWorkingShiftForPeriodDto reportWorkingShiftForPeriod(
-      LocalDate startOfPeriod, LocalDate endOfPeriod) {
+      LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds) {
     List<WorkingShiftEmployeeHoursDto> hoursWorkingShiftList =
-        workingShiftService.getWorkingShiftEmployeeHours(startOfPeriod, endOfPeriod);
+        workingShiftService.getWorkingShiftEmployeeHoursByEmpIds(
+            startOfPeriod, endOfPeriod, employeeIds);
     
     List<EmployeeIdFirstLastNameDto> shortEmployeeDtoList = employeeService.getEmployeeDtoByListId(
         hoursWorkingShiftList.stream()

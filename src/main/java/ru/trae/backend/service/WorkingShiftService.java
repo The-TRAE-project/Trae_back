@@ -13,6 +13,7 @@ package ru.trae.backend.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -120,8 +121,16 @@ public class WorkingShiftService {
     return workingShiftRepository.existsEmpOnShift(isOnShift, empId);
   }
   
-  public List<WorkingShiftEmployeeHoursDto> getWorkingShiftEmployeeHours(
-      LocalDate startOfPeriod, LocalDate endOfPeriod) {
-    return workingShiftRepository.getWorkingShiftsDates(startOfPeriod, endOfPeriod);
+  public List<WorkingShiftEmployeeHoursDto> getWorkingShiftEmployeeHoursByEmpIds(
+      LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds) {
+    List<WorkingShiftEmployeeHoursDto> hoursWorkingShiftList;
+    if (employeeIds != null && !employeeIds.isEmpty()) {
+      hoursWorkingShiftList = workingShiftRepository.getWorkingShiftsDatesByEmpIds(
+          startOfPeriod, endOfPeriod, employeeIds);
+    } else {
+      hoursWorkingShiftList =
+          workingShiftRepository.getWorkingShiftsDates(startOfPeriod, endOfPeriod);
+    }
+    return hoursWorkingShiftList;
   }
 }

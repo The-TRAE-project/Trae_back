@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.time.LocalDate;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -70,8 +71,11 @@ public class ReportController {
       @RequestParam(name = "startOfPeriod") @DateTimeFormat(pattern = "yyyy-MM-dd")
       @Parameter(description = "Начало периода запроса рабочих смен") LocalDate startOfPeriod,
       @RequestParam(name = "endOfPeriod") @DateTimeFormat(pattern = "yyyy-MM-dd")
-      @Parameter(description = "Конец периода запроса рабочих смен") LocalDate endOfPeriod
+      @Parameter(description = "Конец периода запроса рабочих смен") LocalDate endOfPeriod,
+      @RequestParam(name = "employeeIds", required = false)
+      @Parameter(description = "Список ID конкретных сотрудников") Set<Long> employeeIds
   ) {
-    return ResponseEntity.ok(reportService.reportWorkingShiftForPeriod(startOfPeriod, endOfPeriod));
+    return ResponseEntity.ok(reportService.reportWorkingShiftForPeriod(
+        startOfPeriod, endOfPeriod, employeeIds));
   }
 }
