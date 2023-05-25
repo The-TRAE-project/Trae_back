@@ -133,6 +133,10 @@ public class ProjectController {
    * @param isOverdueCurrentOpInProject    a boolean flag indicating if the {@link  Project}
    *                                       has overdue current operation in work
    *                                       or ready for acceptance
+   * @param isCurrentOpInWork              a boolean flag indicating if the {@link  Project}
+   *                                       has current operation in work
+   * @param isOverdueProject               a boolean flag indicating if the {@link  Project}
+   *                                       is overdue
    * @return a page of short project dtos
    */
   @Operation(summary = "Список проектов с пагинацией, сортировкой и фильтрацией",

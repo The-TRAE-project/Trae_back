@@ -175,6 +175,10 @@ public class ProjectService {
    * @param isOverdueCurrentOpInProject    a boolean flag indicating if the {@link  Project}
    *                                       has overdue current operation in work
    *                                       or ready for acceptance
+   * @param isCurrentOpInWork              a boolean flag indicating if the {@link  Project}
+   *                                       has current operation in work
+   * @param isOverdueProject               a boolean flag indicating if the {@link  Project}
+   *                                       is overdue
    * @return a page of {@link Project} objects
    */
   public Page<Project> getProjectPage(
@@ -274,6 +278,10 @@ public class ProjectService {
    * @param isOverdueCurrentOpInProject    a boolean flag indicating if the {@link  Project}
    *                                       has overdue current operation in work
    *                                       or ready for acceptance
+   * @param isCurrentOpInWork              a boolean flag indicating if the {@link  Project}
+   *                                       has current operation in work
+   * @param isOverdueProject               a boolean flag indicating if the {@link  Project}
+   *                                       is overdue
    * @return a {@link PageDto} of {@link ProjectShortDto} objects
    */
   public PageDto<ProjectShortDto> getProjectDtoPage(

@@ -121,6 +121,14 @@ public class WorkingShiftService {
     return workingShiftRepository.existsEmpOnShift(isOnShift, empId);
   }
   
+  /**
+   * Retrieves a list of WorkingShiftEmployeeDto objects for the specified employee IDs and time period.
+   *
+   * @param startOfPeriod The start date of the time period.
+   * @param endOfPeriod   The end date of the time period.
+   * @param employeeIds   A set of employee IDs for filtering the results. If null or empty, all employees will be considered.
+   * @return A list of WorkingShiftEmployeeDto objects representing the working shift details.
+   */
   public List<WorkingShiftEmployeeDto> getWorkingShiftEmployeeByEmpIds(
       LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds) {
     List<WorkingShiftEmployeeDto> hoursWorkingShiftList;
