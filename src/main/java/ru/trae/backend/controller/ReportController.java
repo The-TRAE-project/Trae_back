@@ -52,8 +52,7 @@ public class ReportController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200",
           description = "Список отчетов по рабочим сменам за указанный период и список сотрудников,"
-              + " входящих в отчет, список общего количества часов по каждому сотруднику. "
-              + "В схеме указан единичный объект",
+              + " входящих в отчет, список общего количества часов по каждому сотруднику.",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ReportWorkingShiftForPeriodDto.class))}),
       @ApiResponse(responseCode = "400",
@@ -80,6 +79,30 @@ public class ReportController {
         startOfPeriod, endOfPeriod, employeeIds));
   }
   
+  
+  @Operation(summary = "Отчет со списком проектов попадающих в указанный период",
+      description = "Доступен администратору. Возвращает даты с началом и концом запрошенного "
+          + "периода, дату формирования отчета, выборку проектов попадающих в указанный период. "
+          + "В случае, если проект не завершен, то операциям без дат начала и конца рассчитывается "
+          + "планируемые даты начала и конца выполнения таким методом: дата окончания предыдущей "
+          + "операции служит датой начала следующей, а дата окончания следующей = дата начала "
+          + "следующей + период выполнения операций(указан в проекте).")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Отчет со списком проектов попадающих в указанный период",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ReportProjectsForPeriodDto.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "Неправильный формат даты начала и/или конца периода",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Сотрудник с таким идентификатором не найден", content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @GetMapping("/projects-for-period")
   public ResponseEntity<ReportProjectsForPeriodDto> projectsForPeriod(
       @RequestParam(name = "startOfPeriod") @DateTimeFormat(pattern = "yyyy-MM-dd")

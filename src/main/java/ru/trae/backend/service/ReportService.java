@@ -76,6 +76,13 @@ public class ReportService {
         employeeIdTotalPartsDtoList);
   }
   
+  /**
+   * Generates a report of projects for a given period.
+   *
+   * @param startOfPeriod The start date of the period.
+   * @param endOfPeriod   The end date of the period.
+   * @return A DTO (Data Transfer Object) representing the report for the specified period.
+   */
   public ReportProjectsForPeriodDto reportProjectsForPeriod(
       LocalDate startOfPeriod, LocalDate endOfPeriod) {
     
