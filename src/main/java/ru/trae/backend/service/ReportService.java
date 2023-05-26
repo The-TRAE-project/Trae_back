@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.employee.EmployeeIdTotalPartsDto;
@@ -24,6 +25,7 @@ import ru.trae.backend.dto.project.ProjectForReportDto;
 import ru.trae.backend.dto.report.ReportProjectsForPeriodDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.exceptionhandler.exception.ReportException;
 import ru.trae.backend.projection.WorkingShiftEmployeeDto;
 
 /**
@@ -50,6 +52,9 @@ public class ReportService {
    */
   public ReportWorkingShiftForPeriodDto reportWorkingShiftForPeriod(
       LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds) {
+    
+    checkStartEndDates(startOfPeriod, endOfPeriod);
+    
     List<WorkingShiftEmployeeDto> workingShiftList =
         workingShiftService.getWorkingShiftEmployeeByEmpIds(
             startOfPeriod, endOfPeriod, employeeIds);
@@ -86,6 +91,8 @@ public class ReportService {
   public ReportProjectsForPeriodDto reportProjectsForPeriod(
       LocalDate startOfPeriod, LocalDate endOfPeriod) {
     
+    checkStartEndDates(startOfPeriod, endOfPeriod);
+    
     List<Project> projects = projectService.findProjectsForPeriod(startOfPeriod, endOfPeriod);
     List<ProjectForReportDto> projectForReportDtoList = projects.stream()
         .map(projectForReportDtoMapper)
@@ -93,5 +100,11 @@ public class ReportService {
     
     return new ReportProjectsForPeriodDto(
         startOfPeriod, endOfPeriod, LocalDate.now(), projectForReportDtoList);
+  }
+  
+  private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {
+    if (startOfPeriod.isAfter(endOfPeriod)) {
+      throw new ReportException(HttpStatus.BAD_REQUEST, "Start date cannot be after end date.");
+    }
   }
 }
