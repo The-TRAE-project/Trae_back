@@ -10,10 +10,16 @@
 
 package ru.trae.backend.dto.mapper;
 
+import static ru.trae.backend.service.OperationService.SHIPMENT_PERIOD;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.operation.OperationForReportDto;
 import ru.trae.backend.dto.project.ProjectForReportDto;
+import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.util.Util;
 
@@ -30,6 +36,26 @@ public class ProjectForReportDtoMapper implements Function<Project, ProjectForRe
   @Override
   public ProjectForReportDto apply(Project p) {
     
+    List<Operation> operations = p.getOperations().stream()
+        .sorted(Util::prioritySorting)
+        .toList();
+    
+    List<OperationForReportDto> operationForReportDtoList = new ArrayList<>();
+    for (int i = 0; i < operations.size(); i++) {
+      Operation o = operations.get(i);
+      if (o.getStartDate() == null) {
+        o.setStartDate(operations.get(i - 1).getPlannedEndDate());
+        //проверка на последнюю операцию в списке
+        //если это отгрузка, то добавляется другое количество часов
+        if (i == operations.size() - 1) {
+          o.setPlannedEndDate(o.getStartDate().plusHours(SHIPMENT_PERIOD));
+        } else {
+          o.setPlannedEndDate(o.getStartDate().plusHours(p.getOperationPeriod()));
+        }
+      }
+      operationForReportDtoList.add(operationForReportDtoMapper.apply(o));
+    }
+    
     return new ProjectForReportDto(
         p.getId(),
         p.getNumber(),
@@ -41,10 +67,7 @@ public class ProjectForReportDtoMapper implements Function<Project, ProjectForRe
         p.getRealEndDate(),
         p.isEnded(),
         p.getOperationPeriod(),
-        p.getOperations().stream()
-            .sorted(Util::prioritySorting)
-            .map(operationForReportDtoMapper)
-            .toList(),
+        operationForReportDtoList,
         p.getCustomer(),
         p.getComment() != null ? p.getComment() : null
     );

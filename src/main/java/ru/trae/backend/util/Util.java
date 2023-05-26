@@ -14,6 +14,7 @@ import java.security.SecureRandom;
 import java.util.Date;
 import java.util.function.Predicate;
 import ru.trae.backend.dto.operation.OperationDto;
+import ru.trae.backend.dto.operation.OperationForReportDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 
@@ -88,6 +89,17 @@ public class Util {
    * @return An integer representing the comparison result
    */
   public static int prioritySorting(OperationDto o1, OperationDto o2) {
+    return Integer.compare(o1.priority(), o2.priority());
+  }
+  
+  /**
+   * Compares two OperationForReportDtos based on their priorities.
+   *
+   * @param o1 The first OperationForReportDto
+   * @param o2 The second OperationForReportDto
+   * @return An integer representing the comparison result
+   */
+  public static int prioritySorting(OperationForReportDto o1, OperationForReportDto o2) {
     return Integer.compare(o1.priority(), o2.priority());
   }
 
