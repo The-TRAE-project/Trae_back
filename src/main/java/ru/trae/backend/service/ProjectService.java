@@ -14,6 +14,7 @@ import static java.time.temporal.ChronoUnit.HOURS;
 import static ru.trae.backend.service.OperationService.MIN_PERIOD_OPERATION;
 import static ru.trae.backend.service.OperationService.SHIPMENT_PERIOD;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,6 +132,10 @@ public class ProjectService {
         .stream()
         .map(projectDtoMapper)
         .toList();
+  }
+  
+  public List<Project> findProjectsForPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod) {
+    return projectRepository.findProjectsForPeriod(startOfPeriod, endOfPeriod);
   }
   
   public PageDto<ProjectShortDto> findProjectByNumberOrCustomer(

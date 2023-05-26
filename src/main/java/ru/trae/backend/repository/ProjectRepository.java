@@ -10,6 +10,7 @@
 
 package ru.trae.backend.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +75,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       where p.isEnded = false and\s
       (p.plannedEndDate > p.endDateInContract or current_timestamp > p.endDateInContract)""")
   Page<Project> findOverdueProjects(Pageable pageable);
+  
+  @Query("""
+      select p from Project p where (p.startDate between ?1 and ?2)\s
+      and ((p.endDateInContract between ?1 and ?2) or (p.plannedEndDate between ?1 and ?2))""")
+  List<Project> findProjectsForPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod);
   
   @Transactional
   @Modifying

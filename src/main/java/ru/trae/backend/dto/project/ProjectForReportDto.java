@@ -2,8 +2,6 @@ package ru.trae.backend.dto.project;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import ru.trae.backend.dto.manager.ManagerDto;
-import ru.trae.backend.dto.operation.OperationDto;
 import ru.trae.backend.dto.operation.OperationForReportDto;
 
 /**
@@ -23,6 +21,7 @@ public record ProjectForReportDto(
     LocalDateTime endDateInContract,
     LocalDateTime realEndDate,
     boolean isEnded,
+    int operationPeriod,
     List<OperationForReportDto> operations,
     String customer,
     String comment

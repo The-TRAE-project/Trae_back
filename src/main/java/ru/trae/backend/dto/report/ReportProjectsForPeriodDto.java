@@ -9,10 +9,10 @@ import ru.trae.backend.dto.project.ProjectForReportDto;
  *
  * @author Vladimir Olennikov
  */
-public record ReportProjectForPeriodDto(
+public record ReportProjectsForPeriodDto(
     LocalDate startPeriod,
     LocalDate endPeriod,
     LocalDate dateOfReportFormation,
-    List<ProjectForReportDto> projectForReportDtoList
+    List<ProjectForReportDto> projectsForReportDtoList
 ) {
 }

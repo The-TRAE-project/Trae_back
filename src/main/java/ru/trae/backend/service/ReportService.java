@@ -19,9 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.employee.EmployeeIdTotalPartsDto;
+import ru.trae.backend.dto.mapper.ProjectForReportDtoMapper;
 import ru.trae.backend.dto.project.ProjectForReportDto;
-import ru.trae.backend.dto.report.ReportProjectForPeriodDto;
+import ru.trae.backend.dto.report.ReportProjectsForPeriodDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
+import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.projection.WorkingShiftEmployeeDto;
 
 /**
@@ -35,6 +37,8 @@ import ru.trae.backend.projection.WorkingShiftEmployeeDto;
 public class ReportService {
   private final WorkingShiftService workingShiftService;
   private final EmployeeService employeeService;
+  private final ProjectService projectService;
+  private final ProjectForReportDtoMapper projectForReportDtoMapper;
   
   /**
    * Generates a report of working shifts for a specific period.
@@ -72,7 +76,12 @@ public class ReportService {
         employeeIdTotalPartsDtoList);
   }
   
-  public ReportProjectForPeriodDto reportProjectsForPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod) {
-  
+  public ReportProjectsForPeriodDto reportProjectsForPeriod(
+      LocalDate startOfPeriod, LocalDate endOfPeriod) {
+    
+    List<Project> projects = projectService.findProjectsForPeriod(startOfPeriod, endOfPeriod);
+    List<ProjectForReportDto> projectForReportDtoList = projects.stream()
+        .map(projectForReportDtoMapper)
+        .toList();
   }
 }
