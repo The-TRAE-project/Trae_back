@@ -83,5 +83,8 @@ public class ReportService {
     List<ProjectForReportDto> projectForReportDtoList = projects.stream()
         .map(projectForReportDtoMapper)
         .toList();
+    
+    return new ReportProjectsForPeriodDto(
+        startOfPeriod, endOfPeriod, LocalDate.now(), projectForReportDtoList);
   }
 }
