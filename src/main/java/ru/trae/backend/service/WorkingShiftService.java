@@ -122,11 +122,13 @@ public class WorkingShiftService {
   }
   
   /**
-   * Retrieves a list of WorkingShiftEmployeeDto objects for the specified employee IDs and time period.
+   * Retrieves a list of WorkingShiftEmployeeDto objects for the specified employee IDs and time
+   * period.
    *
    * @param startOfPeriod The start date of the time period.
    * @param endOfPeriod   The end date of the time period.
-   * @param employeeIds   A set of employee IDs for filtering the results. If null or empty, all employees will be considered.
+   * @param employeeIds   A set of employee IDs for filtering the results.
+   *                      If null or empty, all employees will be considered.
    * @return A list of WorkingShiftEmployeeDto objects representing the working shift details.
    */
   public List<WorkingShiftEmployeeDto> getWorkingShiftEmployeeByEmpIds(

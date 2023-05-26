@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import ru.trae.backend.dto.project.ProjectForReportDto;
+import ru.trae.backend.dto.report.ReportProjectForPeriodDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
 import ru.trae.backend.service.ReportService;
 
@@ -77,5 +80,16 @@ public class ReportController {
   ) {
     return ResponseEntity.ok(reportService.reportWorkingShiftForPeriod(
         startOfPeriod, endOfPeriod, employeeIds));
+  }
+  
+  @GetMapping("/projects-for-period")
+  public ResponseEntity<ReportProjectForPeriodDto> projectsForPeriod(
+      @RequestParam(name = "startOfPeriod") @DateTimeFormat(pattern = "yyyy-MM-dd")
+      @Parameter(description = "Начало периода запроса информации по проектам")
+      LocalDate startOfPeriod,
+      @RequestParam(name = "endOfPeriod") @DateTimeFormat(pattern = "yyyy-MM-dd")
+      @Parameter(description = "Конец периода запроса информации по проектам") LocalDate endOfPeriod
+  ) {
+    return ResponseEntity.ok(reportService.reportProjectsForPeriod(startOfPeriod, endOfPeriod));
   }
 }

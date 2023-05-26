@@ -1,14 +1,13 @@
 package ru.trae.backend.dto.operation;
 
 import java.time.LocalDateTime;
-import ru.trae.backend.dto.employee.EmployeeFirstLastNameDto;
 
 /**
- * The OperationDto class is used to represent an operation.
+ * The OperationForReportDto class is used to represent an operation.
  *
  * @author Vladimir Olennikov
  */
-public record OperationDto(
+public record OperationForReportDto(
     long id,
     int priority,
     String name,
@@ -16,13 +15,8 @@ public record OperationDto(
     LocalDateTime acceptanceDate,
     LocalDateTime plannedEndDate,
     LocalDateTime realEndDate,
-    int period,
-    Integer actualPeriod,
     boolean isEnded,
     boolean inWork,
-    boolean readyToAcceptance,
-    int projectNumber,
-    String typeWorkName,
-    EmployeeFirstLastNameDto employeeFirstLastNameDto
+    boolean readyToAcceptance
 ) {
 }

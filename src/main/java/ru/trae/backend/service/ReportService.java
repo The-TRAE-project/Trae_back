@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.employee.EmployeeIdTotalPartsDto;
+import ru.trae.backend.dto.project.ProjectForReportDto;
+import ru.trae.backend.dto.report.ReportProjectForPeriodDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
 import ru.trae.backend.projection.WorkingShiftEmployeeDto;
 
@@ -68,5 +70,9 @@ public class ReportService {
         shortEmployeeDtoList,
         workingShiftList,
         employeeIdTotalPartsDtoList);
+  }
+  
+  public ReportProjectForPeriodDto reportProjectsForPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod) {
+  
   }
 }
