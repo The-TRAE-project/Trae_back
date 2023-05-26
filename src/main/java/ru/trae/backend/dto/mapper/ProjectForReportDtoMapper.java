@@ -18,7 +18,7 @@ import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.util.Util;
 
 /**
- * A mapper for mapping a {@link Project} to a {@link ru.trae.backend.dto.project.ProjectForReportDto}.
+ * A mapper for mapping a {@link Project} to a {@link ProjectForReportDto}.
  *
  * @author Vladimir Olennikov
  */

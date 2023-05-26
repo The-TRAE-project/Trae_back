@@ -79,7 +79,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   @Query(value = """
       select p.* from projects p where (cast(p.start_date as date) between ?1 and ?2)\s
       or (cast(p.end_date_in_contract as date) between ?1 and ?2)\s
-      or (cast(p.planned_end_date as date) between ?1 and ?2)""", nativeQuery = true)
+      or (cast(p.planned_end_date as date) between ?1 and ?2)
+      or (?1 between cast(p.start_date as date) and cast(p.end_date_in_contract as date))
+      or (?1 between cast(p.start_date as date) and cast(p.planned_end_date as date))""",
+      nativeQuery = true)
   List<Project> findProjectsForPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod);
   
   @Transactional
