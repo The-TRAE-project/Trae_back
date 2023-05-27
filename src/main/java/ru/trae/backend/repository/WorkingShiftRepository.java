@@ -73,9 +73,8 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
       from working_shifts ws
                inner join time_controls tc on ws.id = tc.working_shift_id
       group by tc.employee_id, tc.auto_closing_shift, ws.is_ended, ws.start_shift
-      having ws.is_ended = false
+      having ws.is_ended = true
          and cast(ws.start_shift as date) between ?1 and ?2""", nativeQuery = true)
-  //TODO change ws.is_ended = false on ws.is_ended = true
   List<WorkingShiftEmployeeDto> getWorkingShiftsDates(
       LocalDate startOfPeriod, LocalDate endOfPeriod);
   
@@ -96,10 +95,9 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
       from working_shifts ws
                inner join time_controls tc on ws.id = tc.working_shift_id
       group by tc.employee_id, tc.auto_closing_shift, ws.is_ended, ws.start_shift
-      having ws.is_ended = false
+      having ws.is_ended = true
          and cast(ws.start_shift as date) between ?1 and ?2
          and tc.employee_id in ?3""", nativeQuery = true)
-  //TODO change ws.is_ended = false on ws.is_ended = true
   List<WorkingShiftEmployeeDto> getWorkingShiftsDatesByEmpIds(
       LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds);
 }
