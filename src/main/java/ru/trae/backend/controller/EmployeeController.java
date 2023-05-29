@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.employee.ChangeDataDtoReq;
 import ru.trae.backend.dto.employee.EmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoReq;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
@@ -55,7 +56,7 @@ import ru.trae.backend.util.PageSettings;
 @RequestMapping("/api/employee")
 public class EmployeeController {
   private final EmployeeService employeeService;
-
+  
   /**
    * Endpoint for checking in an employee with a given pin.
    *
@@ -84,7 +85,7 @@ public class EmployeeController {
       @Max(value = 999, message = "The pin code cannot be more than 999") int pin) {
     return ResponseEntity.ok(employeeService.employeeLogin(pin));
   }
-
+  
   /**
    * Endpoint for confirming the arrival of an employee for a shift.
    *
@@ -111,7 +112,7 @@ public class EmployeeController {
       @PathVariable @Parameter(description = "Идентификатор сотрудника") long employeeId) {
     return ResponseEntity.ok(employeeService.checkInEmployee(employeeId));
   }
-
+  
   /**
    * Endpoint for checking out an employee with a given id.
    *
@@ -138,14 +139,17 @@ public class EmployeeController {
       @PathVariable @Parameter(description = "Идентификатор сотрудника") long employeeId) {
     return ResponseEntity.ok(employeeService.departureEmployee(employeeId));
   }
-
+  
   /**
-   * Endpoint for getting a list of all employees.
+   * Retrieves a paginated list of employees based on the specified parameters.
    *
-   * @return a list of all employees
+   * @param pageSetting The page settings for pagination (e.g., page number, elements per page).
+   * @param typeWorkId  Optional. A list of role IDs used for filtering employees by role(s).
+   * @param isActive    Optional. A flag indicating whether to filter employees by active status.
+   * @return A ResponseEntity containing a PageDto<EmployeeDto> object representing the paginated list of employees.
    */
-  @Operation(summary = "Список сотрудников",
-      description = "Доступен адмнистратору. Возвращает список ДТО сотрудников. "
+  @Operation(summary = "Список ДТО сотрудников с пагинацией",
+      description = "Доступен администратору. Возвращает список ДТО сотрудников. "
           + "В примере указан единичный объект из списка")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Список ДТО сотрудников",
@@ -157,20 +161,43 @@ public class EmployeeController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/employees")
-  public ResponseEntity<PageDto<EmployeeDto>> employees(
+  public ResponseEntity<PageDto<EmployeeDto>> employeesWithPagination(
       @Valid PageSettings pageSetting,
       @RequestParam(required = false) @Parameter(description = "Фильтрация по роли(ям)")
       List<Long> typeWorkId,
       @RequestParam(required = false) @Parameter(description = "Фильтрация по статусу")
       Boolean isActive) {
-
+    
     Sort employeeSort = pageSetting.buildManagerOrEmpSort();
     Pageable employeePage = PageRequest.of(
         pageSetting.getPage(), pageSetting.getElementPerPage(), employeeSort);
     return ResponseEntity.ok(
         employeeService.getEmployeeDtoPage(employeePage, typeWorkId, isActive));
   }
-
+  
+  /**
+   * Endpoint for getting a list of all employees without pagination.
+   *
+   * @return a list of all employees
+   */
+  @Operation(summary = "Список сокращенных ДТО сотрудников без пагинации",
+      description = "Доступен администратору. Возвращает список сокращенных ДТО (id, имя, фамилия) "
+          + "сотрудников. В примере указан единичный объект из списка")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Список сокращенных ДТО сотрудников",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = EmployeeIdFirstLastNameDto.class))}),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @GetMapping("/employees/list")
+  public ResponseEntity<List<EmployeeIdFirstLastNameDto>> employeesWithoutPagination() {
+    return ResponseEntity.ok(
+        employeeService.getAllEmployeeDtoList());
+  }
+  
   /**
    * Endpoint for registering a new employee.
    *
@@ -199,10 +226,10 @@ public class EmployeeController {
   public ResponseEntity<EmployeeRegisterDtoResp> register(
       @Valid @RequestBody EmployeeRegisterDtoReq dto) {
     employeeService.checkAvailableCredentials(dto.firstName(), dto.middleName(), dto.lastName());
-
+    
     return new ResponseEntity<>(employeeService.saveNewEmployee(dto), HttpStatus.CREATED);
   }
-
+  
   /**
    * Endpoint for change employee data and work type.
    *
@@ -235,7 +262,7 @@ public class EmployeeController {
   @PostMapping("/change-data")
   public ResponseEntity<EmployeeDto> changeData(@Valid @RequestBody ChangeDataDtoReq dto) {
     employeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto);
-
+    
     return ResponseEntity.ok(employeeService.getEmpDtoById(dto.employeeId()));
   }
 }

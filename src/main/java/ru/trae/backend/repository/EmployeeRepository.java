@@ -24,7 +24,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
    * @return an {@link Optional} of an {@link Employee}
    */
   Optional<Employee> findByPinCode(int pinCode);
-
+  
   /**
    * Checks if an {@link Employee} exists with the given pin code.
    *
@@ -32,7 +32,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
    * @return true if an {@link Employee} exists with given pin code, false otherwise
    */
   boolean existsByPinCode(int pinCode);
-
+  
   /**
    * Checks if an {@link Employee} exists with the given first, middle and last name
    * (case-insensitive).
@@ -50,7 +50,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
   boolean existsByFirstMiddleLastNameIgnoreCase(String firstName,
                                                 String middleName,
                                                 String lastName);
-
+  
   @Query("select distinct e "
       + "from Employee e "
       + "inner join e.typeWorks tw "
@@ -59,11 +59,11 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
       + "having count(*) = (select count(*) from TypeWork where id in (:idList))")
   Page<Employee> findByIsActiveAndTypeWorksId(
       boolean isActive, Iterable<Long> idList, Pageable pageable);
-
-
+  
+  
   @Query("select e from Employee e where e.isActive = ?1")
   Page<Employee> findByIsActive(boolean isActive, Pageable pageable);
-
+  
   @Query("select distinct e "
       + "from Employee e "
       + "inner join e.typeWorks tw "
@@ -73,4 +73,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
   Page<Employee> findByTypeWorksId(Iterable<Long> idList, Pageable pageable);
   
   List<EmployeeIdFirstLastNameDto> findByIdIn(List<Long> listEmpId);
+  
+  List<EmployeeIdFirstLastNameDto> findAllBy();
 }

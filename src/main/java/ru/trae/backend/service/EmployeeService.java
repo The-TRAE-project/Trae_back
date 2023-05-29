@@ -53,7 +53,7 @@ public class EmployeeService {
   private final TimeControlService timeControlService;
   private final TypeWorkService typeWorkService;
   private final PageToPageDtoMapper pageToPageDtoMapper;
-
+  
   /**
    * Method for saving new employee to the database.
    *
@@ -65,11 +65,11 @@ public class EmployeeService {
     do {
       randomPinCode = Util.generateRandomInteger(100, 999);
     } while (existsEmpByPinCode(randomPinCode));
-
+    
     final Set<TypeWork> typeWorks = dto.typesId().stream()
         .map(typeWorkService::getTypeWorkById)
         .collect(Collectors.toSet());
-
+    
     Employee e = new Employee();
     e.setFirstName(dto.firstName());
     e.setMiddleName(dto.middleName());
@@ -81,15 +81,15 @@ public class EmployeeService {
     e.setDateOfRegister(LocalDate.now());
     e.setDateOfEmployment(dto.dateOfEmployment());
     e.setDateOfDismissal(null);
-
+    
     Employee savedEmp = employeeRepository.save(e);
-
+    
     log.info("employee successfully created with data: " + savedEmp);
-
+    
     return new EmployeeRegisterDtoResp(
         savedEmp.getFirstName(), savedEmp.getLastName(), savedEmp.getPinCode());
   }
-
+  
   /**
    * Retrieves a specific employee by id.
    *
@@ -102,11 +102,11 @@ public class EmployeeService {
         () -> new EmployeeException(HttpStatus.NOT_FOUND,
             "Employee with ID: " + id + " not found"));
   }
-
+  
   public EmployeeDto getEmpDtoById(long id) {
     return employeeDtoMapper.apply(getEmployeeById(id));
   }
-
+  
   /**
    * Method for checking in an employee with a given pin.
    *
@@ -115,23 +115,23 @@ public class EmployeeService {
    */
   public ShortEmployeeDto employeeLogin(int pinCode) {
     Optional<Employee> e = employeeRepository.findByPinCode(pinCode);
-
+    
     if (e.isEmpty()) {
       throw new EmployeeException(HttpStatus.NOT_FOUND,
           "Employee with pin code: " + pinCode + " not found");
     }
-
+    
     if (!e.get().isActive()) {
       throw new EmployeeException(HttpStatus.LOCKED, "The account is disabled");
     }
-
+    
     return new ShortEmployeeDto(
         e.get().getId(),
         e.get().getFirstName(),
         e.get().getLastName(),
         workingShiftService.employeeOnShift(true, e.get().getId()));
   }
-
+  
   /**
    * A method for confirming the arrival of an employee for a shift.
    *
@@ -140,19 +140,19 @@ public class EmployeeService {
    */
   public ShortEmployeeDto checkInEmployee(long employeeId) {
     Employee e = getEmployeeById(employeeId);
-
+    
     if (!workingShiftService.employeeOnShift(true, e.getId())) {
       workingShiftService.arrivalEmployeeOnShift(e);
       log.info("employee with id: " + e.getId() + " successful arrival on working shift");
     }
-
+    
     return new ShortEmployeeDto(
         e.getId(),
         e.getFirstName(),
         e.getLastName(),
         workingShiftService.employeeOnShift(true, e.getId()));
   }
-
+  
   /**
    * Method of confirming the employee's departure from the work shift.
    * Assigns the time of the employee's departure in the active work shift.
@@ -162,19 +162,19 @@ public class EmployeeService {
    */
   public ShortEmployeeDto departureEmployee(long employeeId) {
     Employee e = getEmployeeById(employeeId);
-
+    
     if (workingShiftService.employeeOnShift(true, e.getId())) {
       timeControlService.updateTimeControlForDeparture(employeeId, LocalDateTime.now());
       log.info("employee with id: " + employeeId + " successful departed from working shift");
     }
-
+    
     return new ShortEmployeeDto(
         e.getId(),
         e.getFirstName(),
         e.getLastName(),
         workingShiftService.employeeOnShift(true, e.getId()));
   }
-
+  
   /**
    * Get Employee Page.
    *
@@ -186,7 +186,7 @@ public class EmployeeService {
   public Page<Employee> getEmployeePage(
       Pageable employeePage, List<Long> typeWorkId, Boolean isActive) {
     Page<Employee> page;
-
+    
     if (isActive != null && typeWorkId != null) {
       page = employeeRepository.findByIsActiveAndTypeWorksId(isActive, typeWorkId, employeePage);
     } else if (isActive != null) {
@@ -198,7 +198,7 @@ public class EmployeeService {
     }
     return page;
   }
-
+  
   public PageDto<EmployeeDto> getEmployeeDtoPage(
       Pageable employeePage, List<Long> typeWorkId, Boolean isActive) {
     return pageToPageDtoMapper.employeePageToPageDto(
@@ -208,7 +208,11 @@ public class EmployeeService {
   public List<EmployeeIdFirstLastNameDto> getEmployeeDtoByListId(List<Long> listEmpId) {
     return employeeRepository.findByIdIn(listEmpId);
   }
-
+  
+  public List<EmployeeIdFirstLastNameDto> getAllEmployeeDtoList() {
+    return employeeRepository.findAllBy();
+  }
+  
   /**
    * Checks if an employee exists based on their pin code.
    *
@@ -218,7 +222,7 @@ public class EmployeeService {
   public boolean existsEmpByPinCode(int pinCode) {
     return employeeRepository.existsByPinCode(pinCode);
   }
-
+  
   /**
    * Checks if an employee exists in the database with the given first name, middle name, and last
    * name.
@@ -234,7 +238,7 @@ public class EmployeeService {
         middleName,
         lastName);
   }
-
+  
   /**
    * Checks whether employee with specified credentials already exists.
    *
@@ -248,7 +252,7 @@ public class EmployeeService {
       throw new EmployeeException(HttpStatus.CONFLICT, "Such credentials are already in use");
     }
   }
-
+  
   /**
    * Change employee data, status, pin code and types work.
    *
@@ -257,36 +261,36 @@ public class EmployeeService {
   @Transactional
   public void changeEmployeeDataAndStatusAndPinCodeAndTypesWork(ChangeDataDtoReq dto) {
     Employee e = getEmployeeById(dto.employeeId());
-
+    
     changeEmployeeData(dto, e);
     changeEmployeeStatus(dto, e);
     changePinCode(dto, e);
     changeDateOfEmployment(dto, e);
     changeEmployeeTypesWork(dto, e);
-
+    
     employeeRepository.save(e);
-
+    
     log.info("employee data successfully changed on this data: " + dto);
   }
-
+  
   private void changeDateOfEmployment(ChangeDataDtoReq dto, Employee e) {
     if (dto.dateOfEmployment() != null) {
       e.setDateOfRegister(dto.dateOfEmployment());
     }
   }
-
+  
   private void changePinCode(ChangeDataDtoReq dto, Employee e) {
     if (dto.pinCode() == null) {
       return;
     }
-
+    
     if (existsEmpByPinCode(dto.pinCode())) {
       throw new EmployeeException(HttpStatus.CONFLICT, "This pin code already used");
     } else {
       e.setPinCode(dto.pinCode());
     }
   }
-
+  
   private void changeEmployeeData(ChangeDataDtoReq dto, Employee e) {
     if (dto.firstName() != null) {
       if (dto.firstName().equals(e.getFirstName())) {
@@ -317,25 +321,25 @@ public class EmployeeService {
       e.setPhone(dto.phone());
     }
   }
-
+  
   private void changeEmployeeStatus(ChangeDataDtoReq dto, Employee e) {
     if (dto.dateOfDismissal() == null && dto.isActive() == null) {
       return;
     }
-
+    
     if (dto.isActive() != null) {
       if (Boolean.TRUE.equals(dto.isActive())) {
         if (Boolean.TRUE.equals(dto.isActive()) == e.isActive()) {
           throw new EmployeeException(HttpStatus.CONFLICT, "The employee already has this status");
         }
-
+        
         e.setActive(true);
         e.setDateOfDismissal(null);
       } else if (dto.dateOfDismissal() != null) {
         if (!e.isActive()) {
           throw new EmployeeException(HttpStatus.CONFLICT, "The employee already has this status");
         }
-
+        
         e.setActive(false);
         e.setDateOfDismissal(dto.dateOfDismissal());
       } else {
@@ -344,21 +348,21 @@ public class EmployeeService {
       }
     }
   }
-
+  
   private void changeEmployeeTypesWork(ChangeDataDtoReq dto, Employee e) {
     if (dto.changedTypesId() == null) {
       return;
     }
-
+    
     final Set<TypeWork> typeWorks = dto.changedTypesId().stream()
         .map(typeWorkService::getTypeWorkById)
         .collect(Collectors.toSet());
-
+    
     if (typeWorks.containsAll(e.getTypeWorks()) && e.getTypeWorks().containsAll(typeWorks)) {
       throw new EmployeeException(HttpStatus.CONFLICT,
           "The employee already has these types of works");
     }
-
+    
     e.getTypeWorks().clear();
     e.getTypeWorks().addAll(typeWorks);
   }
