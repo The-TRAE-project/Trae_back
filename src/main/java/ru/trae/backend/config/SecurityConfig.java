@@ -107,7 +107,8 @@ public class SecurityConfig {
         .antMatchers(
             "/api/employee/employees",
             "/api/employee/register",
-            "/api/employee/change-data")
+            "/api/employee/change-data",
+            "/api/employee/employees/list")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
 
         //types-work
