@@ -10,6 +10,7 @@
 
 package ru.trae.backend.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -17,7 +18,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -39,6 +42,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.employee.ChangeDataDtoReq;
+import ru.trae.backend.dto.employee.EmployeeDto;
+import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoReq;
 import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
@@ -66,7 +74,7 @@ class EmployeeServiceTest {
   private EmployeeService employeeService;
   long employeeId = 1L;
   String phoneNumber = "+7 (999) 000 0000";
-  String firstname = "test_first_name";
+  String firstName = "test_first_name";
   String middleName = "test_middle_name";
   String lastName = "test_last_name";
   LocalDate dateOfEmployment = LocalDate.now();
@@ -76,7 +84,7 @@ class EmployeeServiceTest {
   @BeforeEach
   public void init() {
     e.setId(employeeId);
-    e.setFirstName(firstname);
+    e.setFirstName(firstName);
     e.setMiddleName(middleName);
     e.setLastName(lastName);
     e.setPhone(phoneNumber);
@@ -89,7 +97,7 @@ class EmployeeServiceTest {
   void saveNewEmployee_WithValidDto_ShouldReturnEmployeeRegisterDtoResp() {
     //given
     EmployeeRegisterDtoReq dto = new EmployeeRegisterDtoReq(
-        firstname, middleName, lastName,
+        firstName, middleName, lastName,
         phoneNumber, dateOfEmployment, Collections.singletonList(1L));
     
     //when
@@ -106,7 +114,7 @@ class EmployeeServiceTest {
     
     //then
     assertNotNull(response);
-    assertEquals(firstname, response.firstName());
+    assertEquals(firstName, response.firstName());
     assertEquals(lastName, response.lastName());
     assertEquals(pinCode, response.pinCode());
     
@@ -149,7 +157,7 @@ class EmployeeServiceTest {
     //then
     assertNotNull(result);
     assertEquals(1L, result.id());
-    assertEquals(firstname, result.firstName());
+    assertEquals(firstName, result.firstName());
     assertEquals(lastName, result.lastName());
     assertTrue(result.onShift());
     
@@ -183,7 +191,7 @@ class EmployeeServiceTest {
   }
   
   @Test
-  void checkInEmployee_WithNonShiftEmployee_ShouldUpdateShiftAndReturnShortEmployeeDto() {
+  void checkInEmployee_WithShiftEmployee_ShouldUpdateShiftAndReturnShortEmployeeDto() {
     //when
     when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(e));
     when(workingShiftService.employeeOnShift(true, e.getId())).thenReturn(true);
@@ -193,9 +201,27 @@ class EmployeeServiceTest {
     //then
     assertNotNull(result);
     assertEquals(employeeId, result.id());
-    assertEquals(firstname, result.firstName());
+    assertEquals(firstName, result.firstName());
     assertEquals(lastName, result.lastName());
     assertTrue(result.onShift());
+    
+    verify(workingShiftService, times(2)).employeeOnShift(true, e.getId());
+  }
+  
+  @Test
+  void checkInEmployee_WithNonShiftEmployee_ShouldUpdateShiftAndReturnShortEmployeeDto() {
+    //when
+    when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(e));
+    when(workingShiftService.employeeOnShift(true, e.getId())).thenReturn(false);
+    
+    ShortEmployeeDto result = employeeService.checkInEmployee(employeeId);
+    
+    //then
+    assertNotNull(result);
+    assertEquals(employeeId, result.id());
+    assertEquals(firstName, result.firstName());
+    assertEquals(lastName, result.lastName());
+    assertFalse(result.onShift());
     
     verify(workingShiftService, times(2)).employeeOnShift(true, e.getId());
   }
@@ -211,7 +237,7 @@ class EmployeeServiceTest {
     //then
     assertNotNull(result);
     assertEquals(employeeId, result.id());
-    assertEquals(firstname, result.firstName());
+    assertEquals(firstName, result.firstName());
     assertEquals(lastName, result.lastName());
     assertTrue(result.onShift());
     
@@ -229,7 +255,7 @@ class EmployeeServiceTest {
     //then
     assertNotNull(result);
     assertEquals(employeeId, result.id());
-    assertEquals(firstname, result.firstName());
+    assertEquals(firstName, result.firstName());
     assertEquals(lastName, result.lastName());
     assertTrue(result.onShift());
     
@@ -248,7 +274,7 @@ class EmployeeServiceTest {
     //then
     assertNotNull(result);
     assertEquals(employeeId, result.id());
-    assertEquals(firstname, result.firstName());
+    assertEquals(firstName, result.firstName());
     assertEquals(lastName, result.lastName());
     assertFalse(result.onShift());
     
@@ -343,4 +369,134 @@ class EmployeeServiceTest {
     
     verify(employeeRepository, times(1)).findAll(pageable);
   }
+  
+  @Test
+  void testGetEmpDtoById() {
+    //given
+    EmployeeDto employeeDto = new EmployeeDto(employeeId, null, null,
+        null, null, 0, true, null,
+        null, null, null);
+    
+    //when
+    when(employeeRepository.findById(employeeId)).thenReturn(Optional.of(e));
+    when(employeeDtoMapper.apply(e)).thenReturn(employeeDto);
+    
+    EmployeeDto result = employeeService.getEmpDtoById(employeeId);
+    
+    //then
+    assertNotNull(result);
+    assertEquals(employeeId, result.id());
+    
+    verify(employeeRepository, times(1)).findById(employeeId);
+    verify(employeeDtoMapper, times(1)).apply(e);
+  }
+  
+  @Test
+  void testExistsByCredentials() {
+    //when
+    when(employeeRepository.existsByFirstMiddleLastNameIgnoreCase(firstName, middleName, lastName))
+        .thenReturn(true);
+    
+    boolean result = employeeService.existsByCredentials(firstName, middleName, lastName);
+    
+    //then
+    assertTrue(result);
+    
+    verify(employeeRepository, times(1)).existsByFirstMiddleLastNameIgnoreCase(firstName, middleName, lastName);
+  }
+  
+  @Test
+  void testCheckAvailableCredentials_WhenCredentialsExist_ThrowsEmployeeException() {
+    //when
+    when(employeeService.existsByCredentials(firstName, middleName, lastName))
+        .thenReturn(true);
+    
+    EmployeeException exception = assertThrows(EmployeeException.class, () -> {
+      employeeService.checkAvailableCredentials(firstName, middleName, lastName);
+    });
+    
+    //then
+    assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    assertEquals("Such credentials are already in use", exception.getMessage());
+  }
+  
+  @Test
+  void testCheckAvailableCredentials_WhenCredentialsExist_NotThrowsEmployeeException() {
+    //when
+    when(employeeService.existsByCredentials(firstName, middleName, lastName))
+        .thenReturn(false);
+    
+    assertDoesNotThrow(() -> employeeService.checkAvailableCredentials(firstName, middleName, lastName));
+    
+    verify(employeeRepository, times(1)).existsByFirstMiddleLastNameIgnoreCase(firstName, middleName, lastName);
+  }
+  
+  @Test
+  void testGetEmployeeDtoPage() {
+    //given
+    Pageable employeePage = PageRequest.of(0, 10);
+    List<Long> typeWorkId = Arrays.asList(1L, 2L, 3L);
+    Boolean isActive = true;
+    
+    Page<Employee> employeePageResult = new PageImpl<>(Collections.singletonList(new Employee()));
+    PageDto<EmployeeDto> expectedPageDto = new PageDto<>(Collections.emptyList(), 0L, 0, 0);
+    
+    when(employeeService.getEmployeePage(employeePage, typeWorkId, isActive)).thenReturn(employeePageResult);
+    when(pageToPageDtoMapper.employeePageToPageDto(employeePageResult)).thenReturn(expectedPageDto);
+    
+    PageDto<EmployeeDto> result = employeeService.getEmployeeDtoPage(employeePage, typeWorkId, isActive);
+    
+    //then
+    assertEquals(expectedPageDto, result);
+    verify(pageToPageDtoMapper, times(1)).employeePageToPageDto(employeePageResult);
+  }
+  
+  @Test
+  void testGetEmployeeDtoByListId() {
+    //given
+    List<Long> listEmpId = Arrays.asList(1L, 2L, 3L);
+    List<EmployeeIdFirstLastNameDto> expectedDtoList = List.of(new EmployeeIdFirstLastNameDto(employeeId, firstName, lastName));
+    
+    //when
+    when(employeeRepository.findByIdIn(listEmpId)).thenReturn(expectedDtoList);
+
+    List<EmployeeIdFirstLastNameDto> result = employeeService.getEmployeeDtoByListId(listEmpId);
+    
+    //then
+    assertEquals(expectedDtoList, result);
+    verify(employeeRepository, times(1)).findByIdIn(listEmpId);
+  }
+  
+  @Test
+  void testGetAllEmployeeDtoList() {
+    //given
+    List<EmployeeIdFirstLastNameDto> expectedDtoList = List.of(new EmployeeIdFirstLastNameDto(employeeId, firstName, lastName));
+    
+    //when
+    when(employeeRepository.findAllBy()).thenReturn(expectedDtoList);
+
+    List<EmployeeIdFirstLastNameDto> result = employeeService.getAllEmployeeDtoList();
+    
+    //then
+    assertEquals(expectedDtoList, result);
+    verify(employeeRepository, times(1)).findAllBy();
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, 100, false, null, LocalDate.now(), null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto);
+    
+    //then
+    verify(spyEmployeeService, times(1)).getEmployeeById(dto.employeeId());
+    verify(employeeRepository, times(1)).save(e);
+  }
+  
 }
