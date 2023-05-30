@@ -182,6 +182,25 @@ class TypeWorkServiceTest {
   }
   
   @Test
+  void changeNameAndActive_IfChangingTypeIsShipment() {
+    // given
+    ChangeNameAndActiveReq request = new ChangeNameAndActiveReq(1L, "another_shipment", null);
+    
+    // when
+    when(typeWorkRepository.existsById(1L)).thenReturn(true);
+    
+    try {
+      typeWorkService.changeNameAndActive(request);
+    } catch (TypeWorkException e) {
+      
+      // then
+      assertThat(e.getStatus()).isEqualTo(HttpStatus.BAD_REQUEST);
+      assertThat(e.getMessage()).isEqualTo(
+          "The \"Отгрузка\" job type is not available for disabling or renaming");
+    }
+  }
+  
+  @Test
   void changeNameAndActive_conflictName() {
     // given
     ChangeNameAndActiveReq request =
