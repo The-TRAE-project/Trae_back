@@ -360,7 +360,7 @@ public class EmployeeService {
         .map(typeWorkService::getTypeWorkById)
         .collect(Collectors.toSet());
     
-    if (typeWorks.containsAll(e.getTypeWorks()) && e.getTypeWorks().containsAll(typeWorks)) {
+    if (typeWorks.equals(e.getTypeWorks())) {
       throw new EmployeeException(HttpStatus.CONFLICT,
           "The employee already has these types of works");
     }

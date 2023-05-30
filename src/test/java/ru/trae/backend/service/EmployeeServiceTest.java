@@ -30,8 +30,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +54,7 @@ import ru.trae.backend.dto.employee.EmployeeRegisterDtoResp;
 import ru.trae.backend.dto.employee.ShortEmployeeDto;
 import ru.trae.backend.dto.mapper.EmployeeDtoMapper;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
+import ru.trae.backend.entity.TypeWork;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.EmployeeException;
 import ru.trae.backend.repository.EmployeeRepository;
@@ -711,4 +714,49 @@ class EmployeeServiceTest {
     assertEquals("The new phone must not match the current one", exception.getMessage());
   }
   
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_OnlyTypeWorks() {
+    //given
+    TypeWork tw = new TypeWork();
+    tw.setName("test_work");
+    tw.setId(1L);
+    tw.setActive(true);
+    
+    e.setTypeWorks(new HashSet<>(Set.of(tw)));
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, null, null, null, null, List.of(1L,4L,5L));
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto);
+    
+    //then
+    verify(spyEmployeeService, times(1)).getEmployeeById(dto.employeeId());
+    verify(employeeRepository, times(1)).save(e);
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_SuchTypeWorks() {
+    //given
+    TypeWork tw = new TypeWork();
+    tw.setName("test_work");
+    tw.setId(1L);
+    tw.setActive(true);
+    
+    e.setTypeWorks(new HashSet<>(Set.of(tw)));
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, null, null, null, null, List.of(1L));
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    when(typeWorkService.getTypeWorkById(1L)).thenReturn(tw);
+    
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+    assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    assertEquals("The employee already has these types of works", exception.getMessage());
+  }
 }
