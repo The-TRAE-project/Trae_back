@@ -260,7 +260,6 @@ class EmployeeServiceTest {
     assertTrue(result.onShift());
     
     verify(workingShiftService, times(2)).employeeOnShift(true, e.getId());
-    //verify(timeControlService, times(1)).updateTimeControlForDeparture(employeeId, LocalDateTime.now());
   }
   
   @Test
@@ -411,9 +410,8 @@ class EmployeeServiceTest {
     when(employeeService.existsByCredentials(firstName, middleName, lastName))
         .thenReturn(true);
     
-    EmployeeException exception = assertThrows(EmployeeException.class, () -> {
-      employeeService.checkAvailableCredentials(firstName, middleName, lastName);
-    });
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> employeeService.checkAvailableCredentials(firstName, middleName, lastName));
     
     //then
     assertEquals(HttpStatus.CONFLICT, exception.getStatus());
@@ -459,7 +457,7 @@ class EmployeeServiceTest {
     
     //when
     when(employeeRepository.findByIdIn(listEmpId)).thenReturn(expectedDtoList);
-
+    
     List<EmployeeIdFirstLastNameDto> result = employeeService.getEmployeeDtoByListId(listEmpId);
     
     //then
@@ -474,7 +472,7 @@ class EmployeeServiceTest {
     
     //when
     when(employeeRepository.findAllBy()).thenReturn(expectedDtoList);
-
+    
     List<EmployeeIdFirstLastNameDto> result = employeeService.getAllEmployeeDtoList();
     
     //then
@@ -483,10 +481,10 @@ class EmployeeServiceTest {
   }
   
   @Test
-  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork() {
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_OnlyStatusAndDateOfDismissal() {
     //given
     ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
-        null, null, 100, false, null, LocalDate.now(), null);
+        null, null, null, false, null, LocalDate.now(), null);
     EmployeeService spyEmployeeService = spy(employeeService);
     
     //when
@@ -499,4 +497,133 @@ class EmployeeServiceTest {
     verify(employeeRepository, times(1)).save(e);
   }
   
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_OnlyDateOfDeployment() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, null, null, LocalDate.now(), null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto);
+    
+    //then
+    verify(spyEmployeeService, times(1)).getEmployeeById(dto.employeeId());
+    verify(employeeRepository, times(1)).save(e);
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_OnlyPinCode() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, 100, null, null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto);
+    
+    //then
+    verify(spyEmployeeService, times(1)).getEmployeeById(dto.employeeId());
+    verify(employeeRepository, times(1)).save(e);
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_PinCodeThrowException() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, pinCode, null, null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    when(spyEmployeeService.existsEmpByPinCode(pinCode)).thenReturn(true);
+    
+    assertThrows(EmployeeException.class, () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_OnlyFirstLastMiddleNameAndPhone() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, "another_first_name", "another_middle_name",
+        "another_last_name", "another_phone", null, null,
+        null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto);
+    
+    //then
+    verify(spyEmployeeService, times(1)).getEmployeeById(dto.employeeId());
+    verify(employeeRepository, times(1)).save(e);
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_SuchFirstName() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, firstName, null,
+        null, null, null, null, null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+    assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    assertEquals("The new first name must not match the current one", exception.getMessage());
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_SuchMiddleName() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, middleName,
+        null, null, null, null, null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+    assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    assertEquals("The new middle name must not match the current one", exception.getMessage());
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_SuchLastName() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        lastName, null, null, null, null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+    assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    assertEquals("The new last name must not match the current one", exception.getMessage());
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_SuchPhone() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, phoneNumber, null, null, null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+    assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    assertEquals("The new phone must not match the current one", exception.getMessage());
+  }
 }
