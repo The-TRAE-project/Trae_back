@@ -498,6 +498,90 @@ class EmployeeServiceTest {
   }
   
   @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_OnlyTrueStatus() {
+    //given
+    e.setActive(false);
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, null, true, null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto);
+    
+    //then
+    verify(spyEmployeeService, times(1)).getEmployeeById(dto.employeeId());
+    verify(employeeRepository, times(1)).save(e);
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_OnlyDateOfDismissal() {
+    //given
+    e.setActive(false);
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, null, null, null, LocalDate.now(), null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("Date of dismissal without status", exception.getMessage());
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_SuchStatus() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, null, true, null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+    assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    assertEquals("The employee already has this status", exception.getMessage());
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_FalseStatusWithoutDateOfDismissal() {
+    //given
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, null, false, null, null, null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("Incorrect status or missing date of dismissal", exception.getMessage());
+  }
+  
+  @Test
+  void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_SuchFalseStatus() {
+    //given
+    e.setActive(false);
+    ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
+        null, null, null, false, null, LocalDate.now(), null);
+    EmployeeService spyEmployeeService = spy(employeeService);
+    
+    //when
+    doReturn(e).when(spyEmployeeService).getEmployeeById(dto.employeeId());
+    
+    EmployeeException exception = assertThrows(EmployeeException.class,
+        () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
+    assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    assertEquals("The employee already has this status", exception.getMessage());
+  }
+  
+  @Test
   void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_OnlyDateOfDeployment() {
     //given
     ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
@@ -626,4 +710,5 @@ class EmployeeServiceTest {
     assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     assertEquals("The new phone must not match the current one", exception.getMessage());
   }
+  
 }

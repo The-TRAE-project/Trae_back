@@ -346,6 +346,8 @@ public class EmployeeService {
         throw new EmployeeException(HttpStatus.BAD_REQUEST,
             "Incorrect status or missing date of dismissal");
       }
+    } else {
+      throw new EmployeeException(HttpStatus.BAD_REQUEST, "Date of dismissal without status");
     }
   }
   
