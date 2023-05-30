@@ -146,7 +146,8 @@ public class EmployeeController {
    * @param pageSetting The page settings for pagination (e.g., page number, elements per page).
    * @param typeWorkId  Optional. A list of role IDs used for filtering employees by role(s).
    * @param isActive    Optional. A flag indicating whether to filter employees by active status.
-   * @return A ResponseEntity containing a PageDto<EmployeeDto> object representing the paginated list of employees.
+   * @return A ResponseEntity containing a PageDto of EmployeeDto object representing the paginated
+   *     list of employees.
    */
   @Operation(summary = "Список ДТО сотрудников с пагинацией",
       description = "Доступен администратору. Возвращает список ДТО сотрудников. "

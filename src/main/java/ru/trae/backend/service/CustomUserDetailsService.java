@@ -11,12 +11,10 @@
 package ru.trae.backend.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.exceptionhandler.exception.ManagerException;
 import ru.trae.backend.repository.ManagerRepository;
 
 /**
@@ -31,11 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    if (managerRepository.findByUsername(username).isEmpty()) {
-      throw new UsernameNotFoundException("Manager with username " + username + " not found!");
-    }
     return managerRepository.findByUsername(username).orElseThrow(
-        () -> new ManagerException(HttpStatus.NOT_FOUND,
-            "Manager with username " + username + " not found!"));
+        () -> new UsernameNotFoundException("Manager with username " + username + " not found!"));
   }
 }
