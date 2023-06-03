@@ -199,9 +199,9 @@ public class EmployeeController {
   @GetMapping("/employees/list")
   public ResponseEntity<List<EmployeeIdFirstLastNameDto>> employeesForReportWithoutPagination(
       @RequestParam(required = false) @Parameter(description = "Фильтр сотрудников по "
-          + "идентификатором проектов в которых они участвовали") Set<Long> projectIds,
+          + "идентификаторам проектов в которых они участвовали") Set<Long> projectIds,
       @RequestParam(required = false) @Parameter(description = "Фильтр сотрудников по "
-          + "идентификатором операций в которых они участвовали") Set<Long> operationIds) {
+          + "идентификаторам операций в которых они участвовали") Set<Long> operationIds) {
     return ResponseEntity.ok(
         employeeService.getEmployeeIdFirstLastNameDtoList(projectIds, operationIds));
   }

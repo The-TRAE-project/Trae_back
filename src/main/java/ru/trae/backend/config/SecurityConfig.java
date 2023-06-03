@@ -128,6 +128,7 @@ public class SecurityConfig {
         .hasAnyAuthority(ROLE_MANAGER.name(), ROLE_ADMINISTRATOR.name())
         .antMatchers(
             "/api/project/*",
+            "/api/project/projects/list",
             "/api/project/delete-project/*")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
         .antMatchers(

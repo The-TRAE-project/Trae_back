@@ -17,7 +17,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
@@ -25,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -37,6 +40,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.PageDto;
+import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.project.ChangingCommonDataReq;
 import ru.trae.backend.dto.project.ChangingCommonDataResp;
 import ru.trae.backend.dto.project.ChangingEndDatesReq;
@@ -157,7 +161,7 @@ public class ProjectController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/projects")
-  public ResponseEntity<PageDto<ProjectShortDto>> projects(
+  public ResponseEntity<PageDto<ProjectShortDto>> projectsWithPagination(
       @Valid PageSettings pageSetting,
       @RequestParam(required = false) @Parameter(description =
           "Фильтрация по статусу проекта: открыт/закрыт") Boolean isEnded,
@@ -186,6 +190,38 @@ public class ProjectController {
         projectPage, isEnded, isOnlyFirstOpWithoutAcceptance,
         isOnlyLastOpInWork, isOverdueCurrentOpInProject,
         isCurrentOpInWork, isOverdueProject));
+  }
+  
+  @Operation(summary = "Список сокращенных ДТО проектов без пагинации с фильтрами по сотрудникам, "
+      + "операциям и периоду",
+      description = "Доступен администратору. Возвращает список сокращенных ДТО (id, номер) "
+          + "проектов с возможной фильтрацией по идентификаторами сотрудников, операций и периоду. "
+          + "В примере указан единичный объект из списка")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Список сокращенных ДТО проектов",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = .class))}),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @GetMapping("/projects/list")
+  public ResponseEntity<List<>> projectsForReportWithoutPagination(
+      @RequestParam(name = "startOfPeriod", required = false)
+      @DateTimeFormat(pattern = "yyyy-MM-dd")
+      @Parameter(description = "Начало периода запроса информации по проектам")
+      LocalDate startOfPeriod,
+      @RequestParam(name = "endOfPeriod", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")
+      @Parameter(description = "Конец периода запроса информации по проектам")
+      LocalDate endOfPeriod,
+      @RequestParam(required = false) @Parameter(description = "Фильтр проектов по "
+          + "идентификаторам сотрудников, которые участвовали в проекте") Set<Long> employeeIds,
+      @RequestParam(required = false) @Parameter(description = "Фильтр проектов по "
+          + "идентификаторам операций, которые были в рамках проекта") Set<Long> operationIds) {
+    return ResponseEntity.ok(
+        projectService.getProjectIdNumberDtoList(
+            employeeIds, operationIds, startOfPeriod, endOfPeriod));
   }
   
   /**
