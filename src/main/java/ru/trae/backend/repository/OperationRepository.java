@@ -10,14 +10,17 @@
 
 package ru.trae.backend.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.entity.task.Operation;
+import ru.trae.backend.projection.OperationIdNameProjectNumberDto;
 
 /**
  * Repository interface for the {@link Operation} entity.
@@ -87,4 +90,60 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
   
   @Query("select (count(o) > 0) from Operation o where o.id = ?1 and o.priority = ?2")
   boolean existsByIdAndPriority(Long id, int priority);
+  
+  @Query(value = """
+      select o.id, o.name, (select p.number from projects p where p.id = o.project_id)\s
+      as project_number from operations o where\s
+      (cast(?1 as date) is null and cast(?2 as date) is null)\s
+      or (cast(o.start_date as date) between ?1 and ?2)\s
+      or (cast(o.planned_end_date as date) between ?1 and ?2)\s
+      or (cast(o.real_end_date as date) between ?1 and ?2)
+      or (?1 between cast(o.start_date as date) and cast(o.real_end_date as date))
+      or (?1 between cast(o.start_date as date) and cast(o.planned_end_date as date))""",
+      nativeQuery = true)
+  List<OperationIdNameProjectNumberDto> findByPeriod(
+      LocalDate startOfPeriod, LocalDate endOfPeriod);
+  
+  @Query(value = """
+      select o.id, o.name, (select p.number from projects p where p.id = o.project_id)\s
+      as project_number from operations o\s
+      where o.project_id in (select p.id from projects p where p.id in (?3))\s
+      and ((cast(?1 as date) is null and cast(?2 as date) is null)\s
+      or (cast(o.start_date as date) between ?1 and ?2)\s
+      or (cast(o.planned_end_date as date) between ?1 and ?2)\s
+      or (cast(o.real_end_date as date) between ?1 and ?2)
+      or (?1 between cast(o.start_date as date) and cast(o.real_end_date as date))
+      or (?1 between cast(o.start_date as date) and cast(o.planned_end_date as date)))""",
+      nativeQuery = true)
+  List<OperationIdNameProjectNumberDto> findByPeriodAndProjectIds(
+      LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> projectIds);
+  
+  @Query(value = """
+      select o.id, o.name, (select p.number from projects p where p.id = o.project_id)\s
+      as project_number from operations o\s
+      where o.employee_id in (select e.id from employees e where e.id in (?3))\s
+      and ((cast(?1 as date) is null and cast(?2 as date) is null)\s
+      or (cast(o.start_date as date) between ?1 and ?2)\s
+      or (cast(o.planned_end_date as date) between ?1 and ?2)\s
+      or (cast(o.real_end_date as date) between ?1 and ?2)
+      or (?1 between cast(o.start_date as date) and cast(o.real_end_date as date))
+      or (?1 between cast(o.start_date as date) and cast(o.planned_end_date as date)))""",
+      nativeQuery = true)
+  List<OperationIdNameProjectNumberDto> findByPeriodAndEmployeeIds(
+      LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds);
+  
+  @Query(value = """
+      select o.id, o.name, (select p.number from projects p where p.id = o.project_id)\s
+      as project_number from operations o\s
+      where o.employee_id in (select e.id from employees e where e.id in (?3))\s
+      and o.project_id in (select p.id from projects p where p.id in (?4))\s
+      and ((cast(?1 as date) is null and cast(?2 as date) is null)\s
+      or (cast(o.start_date as date) between ?1 and ?2)\s
+      or (cast(o.planned_end_date as date) between ?1 and ?2)\s
+      or (cast(o.real_end_date as date) between ?1 and ?2)
+      or (?1 between cast(o.start_date as date) and cast(o.real_end_date as date))
+      or (?1 between cast(o.start_date as date) and cast(o.planned_end_date as date)))""",
+      nativeQuery = true)
+  List<OperationIdNameProjectNumberDto> findByPeriodAndEmployeeAndProjectIds(
+      LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds, Set<Long> projectIds);
 }

@@ -422,7 +422,21 @@ public class OperationService {
     
     List<OperationIdNameProjectNumberDto> result;
     
+    if (employeeIds != null && !employeeIds.isEmpty()
+        && projectIds != null && !projectIds.isEmpty()) {
+      result = operationRepository.findByPeriodAndEmployeeAndProjectIds(
+          startOfPeriod, endOfPeriod, employeeIds, projectIds);
+    } else if (employeeIds != null && !employeeIds.isEmpty()) {
+      result = operationRepository.findByPeriodAndEmployeeIds(
+          startOfPeriod, endOfPeriod, employeeIds);
+    } else if (projectIds != null && !projectIds.isEmpty()) {
+      result = operationRepository.findByPeriodAndProjectIds(
+          startOfPeriod, endOfPeriod, projectIds);
+    } else {
+      result = operationRepository.findByPeriod(startOfPeriod, endOfPeriod);
+    }
     
+    return result;
   }
   
   private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {

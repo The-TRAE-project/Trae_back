@@ -24,6 +24,6 @@ public interface OperationIdNameProjectNumberDto {
   @Value("#{target.name}")
   String getName();
   
-  @Value("#{target.number}")
+  @Value("#{target.project_number}")
   Integer getProjectNumber();
 }
