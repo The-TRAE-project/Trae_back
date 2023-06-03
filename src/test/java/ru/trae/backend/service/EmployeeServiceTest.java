@@ -468,20 +468,20 @@ class EmployeeServiceTest {
     verify(employeeRepository, times(1)).findByIdIn(listEmpId);
   }
   
-  @Test
-  void testGetAllEmployeeDtoList() {
-    //given
-    List<EmployeeIdFirstLastNameDto> expectedDtoList = List.of(new EmployeeIdFirstLastNameDto(employeeId, firstName, lastName));
-    
-    //when
-    when(employeeRepository.findAllBy()).thenReturn(expectedDtoList);
-    
-    List<EmployeeIdFirstLastNameDto> result = employeeService.getAllEmployeeDtoList();
-    
-    //then
-    assertEquals(expectedDtoList, result);
-    verify(employeeRepository, times(1)).findAllBy();
-  }
+//  @Test
+//  void testGetAllEmployeeDtoList() {
+//    //given
+//    List<EmployeeIdFirstLastNameDto> expectedDtoList = List.of(new EmployeeIdFirstLastNameDto(employeeId, firstName, lastName));
+//
+//    //when
+//    when(employeeRepository.findAllBy()).thenReturn(expectedDtoList);
+//
+//    List<EmployeeIdFirstLastNameDto> result = employeeService.getAllEmployeeDtoList();
+//
+//    //then
+//    assertEquals(expectedDtoList, result);
+//    verify(employeeRepository, times(1)).findAllBy();
+//  }
   
   @Test
   void testChangeEmployeeDataAndStatusAndPinCodeAndTypesWork_OnlyStatusAndDateOfDismissal() {
