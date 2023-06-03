@@ -10,13 +10,17 @@
 
 package ru.trae.backend.controller;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +40,7 @@ import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
 import ru.trae.backend.dto.operation.ReceiveOpReq;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.projection.OperationIdNameProjectNumberDto;
 import ru.trae.backend.service.OperationService;
 import ru.trae.backend.service.ProjectService;
 
@@ -160,6 +165,46 @@ public class OperationController {
     projectService.checkAndUpdateProjectEndDateAfterFinishOperation(o);
     
     return ResponseEntity.ok().build();
+  }
+  
+  /**
+   * Endpoint for getting a list of operations without pagination.
+   *
+   * @return a list of operations
+   */
+  @io.swagger.v3.oas.annotations.Operation(
+      summary = "Список сокращенных ДТО операций без пагинации с фильтрами по проектам "
+          + "и сотрудникам",
+      description = "Доступен администратору. Возвращает список сокращенных ДТО (id, наименование, "
+          + "номер проекта) операций с возможной фильтрацией по идентификаторами проектов или "
+          + "сотрудников. В примере указан единичный объект из списка")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200", description = "Список сокращенных ДТО операций",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = OperationIdNameProjectNumberDto.class))}),
+      @ApiResponse(responseCode = "400", description = "Введены некорректные даты периода",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
+  @GetMapping("/operations/list")
+  public ResponseEntity<List<OperationIdNameProjectNumberDto>> operationForReportWithoutPagination(
+      @RequestParam(name = "startOfPeriod", required = false)
+      @DateTimeFormat(pattern = "yyyy-MM-dd")
+      @Parameter(description = "Начало периода запроса информации по операциям")
+      LocalDate startOfPeriod,
+      @RequestParam(name = "endOfPeriod", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")
+      @Parameter(description = "Конец периода запроса информации по операциям")
+      LocalDate endOfPeriod,
+      @RequestParam(required = false) @Parameter(description = "Фильтр операций по "
+          + "идентификаторам проектов в которые они входят") Set<Long> projectIds,
+      @RequestParam(required = false) @Parameter(description = "Фильтр операций по "
+          + "идентификаторам сотрудников которые в них участвовали") Set<Long> employeeIds) {
+    return ResponseEntity.ok(
+        operationService.getOperationIdNameProjectNumberDtoList(
+            projectIds, employeeIds, startOfPeriod, endOfPeriod));
   }
   
   /**

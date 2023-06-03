@@ -10,9 +10,11 @@
 
 package ru.trae.backend.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,7 +28,9 @@ import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.OperationException;
+import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.factory.OperationFactory;
+import ru.trae.backend.projection.OperationIdNameProjectNumberDto;
 import ru.trae.backend.repository.OperationRepository;
 import ru.trae.backend.util.Util;
 
@@ -409,6 +413,21 @@ public class OperationService {
     if (o.isEnded()) {
       throw new OperationException(HttpStatus.CONFLICT,
           "The operation with id: " + o.getId() + " is already finished or closed");
+    }
+  }
+  
+  public List<OperationIdNameProjectNumberDto> getOperationIdNameProjectNumberDtoList(
+      Set<Long> projectIds, Set<Long> employeeIds, LocalDate startOfPeriod, LocalDate endOfPeriod) {
+    checkStartEndDates(startOfPeriod, endOfPeriod);
+    
+    List<OperationIdNameProjectNumberDto> result;
+    
+    
+  }
+  
+  private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {
+    if (startOfPeriod != null && endOfPeriod != null && startOfPeriod.isAfter(endOfPeriod)) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST, "Start date cannot be after end date.");
     }
   }
 }

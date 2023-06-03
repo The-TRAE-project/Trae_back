@@ -202,6 +202,8 @@ public class ProjectController {
       @ApiResponse(responseCode = "200", description = "Список сокращенных ДТО проектов",
           content = {@Content(mediaType = "application/json",
               schema = @Schema(implementation = ProjectIdNumberDto.class))}),
+      @ApiResponse(responseCode = "400", description = "Введены некорректные даты периода",
+          content = @Content),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content),

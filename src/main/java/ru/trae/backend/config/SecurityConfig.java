@@ -138,6 +138,7 @@ public class SecurityConfig {
         //operations
         .antMatchers(
             "/api/operation/*",
+            "/api/operation/operations/list",
             "/api/operation/delete-operation/*")
         .hasAuthority(ROLE_ADMINISTRATOR.name())
         .antMatchers(
