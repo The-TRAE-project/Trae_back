@@ -139,6 +139,9 @@ public class ProjectService {
   public List<ProjectIdNumberDto> getProjectIdNumberDtoList(
       Set<Long> employeeIds, Set<Long> operationIds,
       LocalDate startOfPeriod, LocalDate endOfPeriod) {
+    
+    checkStartEndDates(startOfPeriod, endOfPeriod);
+    
     List<ProjectIdNumberDto> result;
     
     if (employeeIds != null && !employeeIds.isEmpty()) {
@@ -406,16 +409,6 @@ public class ProjectService {
     return projectDtoMapper.apply(getProjectById(id));
   }
   
-  /**
-   * Returns a {@link ProjectDto} object for the given {@link Project}.
-   *
-   * @param p the {@link Project} to be converted
-   * @return the {@link ProjectDto} object for the given {@link Project}
-   */
-  public ProjectDto convertFromProject(Project p) {
-    return projectDtoMapper.apply(p);
-  }
-  
   public ChangingEndDatesResp getChangingEndDatesResp(long projectId) {
     return projectRepository.findChangedPlannedEndDateById(projectId);
   }
@@ -665,6 +658,12 @@ public class ProjectService {
     if (!projectRepository.existsById(projectId)) {
       throw new ProjectException(HttpStatus.NOT_FOUND,
           "Project with ID: " + projectId + " not found");
+    }
+  }
+  
+  private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {
+    if (startOfPeriod != null && endOfPeriod != null && startOfPeriod.isAfter(endOfPeriod)) {
+      throw new ProjectException(HttpStatus.BAD_REQUEST, "Start date cannot be after end date.");
     }
   }
 }
