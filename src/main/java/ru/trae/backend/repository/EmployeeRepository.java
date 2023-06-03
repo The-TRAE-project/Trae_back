@@ -2,6 +2,7 @@ package ru.trae.backend.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -75,4 +76,14 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
   List<EmployeeIdFirstLastNameDto> findByIdIn(List<Long> listEmpId);
   
   List<EmployeeIdFirstLastNameDto> findAllBy();
+  
+  @Query("select distinct e.id "
+      + "from Employee e "
+      + "where e.id in (select o.employee.id from Operation o where o.id in (?1))")
+  List<Long> findByOperationIds(Set<Long> operationIds);
+  
+  @Query("select distinct e.id "
+      + "from Employee e "
+      + "where e.id in (select o.employee.id from Operation o where o.project.id in (?1))")
+  List<Long> findByProjectIds(Set<Long> projectIds);
 }

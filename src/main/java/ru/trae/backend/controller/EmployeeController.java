@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.util.List;
+import java.util.Set;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -184,6 +185,7 @@ public class EmployeeController {
   @Operation(summary = "Список сокращенных ДТО сотрудников без пагинации",
       description = "Доступен администратору. Возвращает список сокращенных ДТО (id, имя, фамилия) "
           + "сотрудников. В примере указан единичный объект из списка")
+  //TODO дописать фильтры в сваггер
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Список сокращенных ДТО сотрудников",
           content = {@Content(mediaType = "application/json",
@@ -194,9 +196,13 @@ public class EmployeeController {
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/employees/list")
-  public ResponseEntity<List<EmployeeIdFirstLastNameDto>> employeesWithoutPagination() {
+  public ResponseEntity<List<EmployeeIdFirstLastNameDto>> employeesForReportWithoutPagination(
+      @RequestParam(required = false) @Parameter(description = "Фильтр сотрудников по "
+          + "идентификатором проектов в которых они участвовали") Set<Long> projectIds,
+      @RequestParam(required = false) @Parameter(description = "Фильтр сотрудников по "
+          + "идентификатором операций в которых они участвовали") Set<Long> operationIds) {
     return ResponseEntity.ok(
-        employeeService.getAllEmployeeDtoList());
+        employeeService.getEmployeeIdFirstLastNameDtoList(projectIds, operationIds));
   }
   
   /**

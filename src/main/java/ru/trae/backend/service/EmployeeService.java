@@ -209,8 +209,19 @@ public class EmployeeService {
     return employeeRepository.findByIdIn(listEmpId);
   }
   
-  public List<EmployeeIdFirstLastNameDto> getAllEmployeeDtoList() {
-    return employeeRepository.findAllBy();
+  public List<EmployeeIdFirstLastNameDto> getEmployeeIdFirstLastNameDtoList(
+      Set<Long> projectIds, Set<Long> operationIds) {
+    List<Long> result;
+    
+    if (operationIds != null && !operationIds.isEmpty()) {
+      result = employeeRepository.findByOperationIds(operationIds);
+    } else if (projectIds != null && !projectIds.isEmpty()) {
+      result = employeeRepository.findByProjectIds(projectIds);
+    } else {
+      return employeeRepository.findAllBy();
+    }
+    
+    return employeeRepository.findByIdIn(result);
   }
   
   /**
