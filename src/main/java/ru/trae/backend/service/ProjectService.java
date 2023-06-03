@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -44,6 +45,7 @@ import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.factory.ProjectFactory;
+import ru.trae.backend.projection.ProjectIdNumberDto;
 import ru.trae.backend.repository.ProjectRepository;
 import ru.trae.backend.util.Constant;
 import ru.trae.backend.util.Util;
@@ -132,6 +134,24 @@ public class ProjectService {
         .stream()
         .map(projectDtoMapper)
         .toList();
+  }
+  
+  public List<ProjectIdNumberDto> getProjectIdNumberDtoList(
+      Set<Long> employeeIds, Set<Long> operationIds,
+      LocalDate startOfPeriod, LocalDate endOfPeriod) {
+    List<ProjectIdNumberDto> result;
+    
+    if (employeeIds != null && !employeeIds.isEmpty()) {
+      result = projectRepository.findByPeriodAndEmployeeIds(
+          startOfPeriod, endOfPeriod, employeeIds);
+    } else if (operationIds != null && !operationIds.isEmpty()) {
+      result = projectRepository.findByPeriodAndOperationIds(
+          startOfPeriod, endOfPeriod, operationIds);
+    } else {
+      result = projectRepository.findByPeriod(startOfPeriod, endOfPeriod);
+    }
+    
+    return result;
   }
   
   public List<Project> findProjectsForPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod) {

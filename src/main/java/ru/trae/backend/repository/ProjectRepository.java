@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.trae.backend.dto.project.ChangingCommonDataResp;
 import ru.trae.backend.dto.project.ChangingEndDatesResp;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.projection.ProjectIdNumberDto;
 
 /**
  * This repository provides the necessary CRUD operations for working with {@link Project} objects.
@@ -129,4 +131,41 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                   from operations as o
                   where o.id = ?1 and o.in_work = true)""", nativeQuery = true)
   void updateStartFirstOperationDateByOperationId(long operationId);
+  
+  @Query(value = """
+      select p.id, p.number from projects p where\s
+      (cast(?1 as date) is null and cast(?2 as date) is null)\s
+      or (cast(p.start_date as date) between ?1 and ?2)\s
+      or (cast(p.end_date_in_contract as date) between ?1 and ?2)\s
+      or (cast(p.planned_end_date as date) between ?1 and ?2)
+      or (?1 between cast(p.start_date as date) and cast(p.end_date_in_contract as date))
+      or (?1 between cast(p.start_date as date) and cast(p.planned_end_date as date))""",
+      nativeQuery = true)
+  List<ProjectIdNumberDto> findByPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod);
+  
+  @Query(value = """
+      select p.id, p.number from projects p where\s
+      p.id in (select o.project_id from operations o where o.employee_id in (?3))\s
+      and ((cast(?1 as date) is null and cast(?2 as date) is null)\s
+      or (cast(p.start_date as date) between ?1 and ?2)\s
+      or (cast(p.end_date_in_contract as date) between ?1 and ?2)\s
+      or (cast(p.planned_end_date as date) between ?1 and ?2)
+      or (?1 between cast(p.start_date as date) and cast(p.end_date_in_contract as date))
+      or (?1 between cast(p.start_date as date) and cast(p.planned_end_date as date)))""",
+      nativeQuery = true)
+  List<ProjectIdNumberDto> findByPeriodAndEmployeeIds(
+      LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds);
+  
+  @Query(value = """
+      select p.id, p.number from projects p where\s
+      p.id in (select o.project_id from operations o where o.id in (?3))\s
+      and ((cast(?1 as date) is null and cast(?2 as date) is null)\s
+      or (cast(p.start_date as date) between ?1 and ?2)\s
+      or (cast(p.end_date_in_contract as date) between ?1 and ?2)\s
+      or (cast(p.planned_end_date as date) between ?1 and ?2)
+      or (?1 between cast(p.start_date as date) and cast(p.end_date_in_contract as date))
+      or (?1 between cast(p.start_date as date) and cast(p.planned_end_date as date)))""",
+      nativeQuery = true)
+  List<ProjectIdNumberDto> findByPeriodAndOperationIds(
+      LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> operationIds);
 }

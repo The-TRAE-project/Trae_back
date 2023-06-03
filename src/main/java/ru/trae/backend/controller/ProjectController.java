@@ -50,6 +50,7 @@ import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.dto.project.ProjectShortDto;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.projection.ProjectIdNumberDto;
 import ru.trae.backend.service.ProjectService;
 import ru.trae.backend.util.PageSettings;
 import springfox.documentation.annotations.ApiIgnore;
@@ -200,14 +201,14 @@ public class ProjectController {
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Список сокращенных ДТО проектов",
           content = {@Content(mediaType = "application/json",
-              schema = @Schema(implementation = .class))}),
+              schema = @Schema(implementation = ProjectIdNumberDto.class))}),
       @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
           content = @Content),
       @ApiResponse(responseCode = "403", description = "Доступ запрещен", content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/projects/list")
-  public ResponseEntity<List<>> projectsForReportWithoutPagination(
+  public ResponseEntity<List<ProjectIdNumberDto>> projectsForReportWithoutPagination(
       @RequestParam(name = "startOfPeriod", required = false)
       @DateTimeFormat(pattern = "yyyy-MM-dd")
       @Parameter(description = "Начало периода запроса информации по проектам")
