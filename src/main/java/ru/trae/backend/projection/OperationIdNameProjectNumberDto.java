@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
  */
 public interface OperationIdNameProjectNumberDto {
   @Value("#{target.id}")
-  long getProjectId();
+  long getOperationId();
   
   @Value("#{target.name}")
   String getName();

@@ -10,8 +10,11 @@
 
 package ru.trae.backend.service;
 
+import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
+
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +25,13 @@ import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.employee.EmployeeIdTotalPartsDto;
 import ru.trae.backend.dto.mapper.ProjectForReportDtoMapper;
 import ru.trae.backend.dto.project.ProjectForReportDto;
-import ru.trae.backend.dto.report.DeadlinesReq;
+import ru.trae.backend.dto.report.DeadlineReq;
+import ru.trae.backend.dto.report.ReportDeadlineDto;
 import ru.trae.backend.dto.report.ReportProjectsForPeriodDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
+import ru.trae.backend.dto.report.SecondResponseSubDto;
+import ru.trae.backend.dto.report.ThirdResponseSubDto;
+import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.exceptionhandler.exception.ReportException;
 import ru.trae.backend.projection.WorkingShiftEmployeeDto;
@@ -41,6 +48,7 @@ public class ReportService {
   private final WorkingShiftService workingShiftService;
   private final EmployeeService employeeService;
   private final ProjectService projectService;
+  private final OperationService operationService;
   private final ProjectForReportDtoMapper projectForReportDtoMapper;
   
   /**
@@ -103,8 +111,78 @@ public class ReportService {
         startOfPeriod, endOfPeriod, LocalDate.now(), projectForReportDtoList);
   }
   
-  public Object reportDeadlines(DeadlinesReq req) {
-  
+  public ReportDeadlineDto reportDeadlines(DeadlineReq req) {
+    ReportDeadlineDto report = new ReportDeadlineDto();
+    List<Operation> ops;
+    
+    if (req.firstParameter().ordinal() == 1) {
+      ops = operationService.getOperationsByIds(Set.of(req.valueOfFirstParameter()));
+    } else if (req.secondParameter().ordinal() == 1) {
+      ops = operationService.getOperationsByIds(req.valuesOfSecondParameter());
+    } else {
+      ops = operationService.getOperationsByIds(req.valuesOfThirdParameter());
+    }
+    
+    switch (req.firstParameter()) {
+//      case PROJECT -> {
+//        switch (req.secondParameter()) {
+//          case OPERATION -> ;
+//          case EMPLOYEE -> ;
+//        }
+//      };
+//      case OPERATION -> {
+//        switch (req.secondParameter()) {
+//          case PROJECT -> ;
+//          case EMPLOYEE -> ;
+//        }
+//      };
+      case EMPLOYEE -> {
+        report.setFirstRespId(req.valueOfFirstParameter());
+        report.setFirstRespValue(ops.get(0).getEmployee().getFirstName());
+        switch (req.secondParameter()) {
+          case PROJECT -> report.setSecondRespValues(
+              req.valuesOfSecondParameter().stream()
+                  .map(p -> {
+                    Project pr = ops.stream()
+                        .filter(o -> Objects.equals(o.getProject().getId(), p))
+                        .findFirst()
+                        .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
+                            "Project with id: " + p + NOT_FOUND_CONST))
+                        .getProject();
+                    return new SecondResponseSubDto(
+                        pr.getId(), String.valueOf(pr.getNumber()), ops.stream()
+                        .filter(o -> Objects.equals(o.getProject().getId(), p))
+                        .map(o -> new ThirdResponseSubDto(
+                            o.getId(), o.getName(), o.getPlannedEndDate(), o.getRealEndDate()))
+                        .toList());
+                  })
+                  .toList());
+          case OPERATION -> report.setSecondRespValues(
+              req.valuesOfSecondParameter().stream()
+                  .map(oId -> {
+                    Operation op = ops.stream()
+                        .filter(o -> Objects.equals(o.getId(), oId))
+                        .findFirst()
+                        .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
+                            "Operation with id: " + oId + NOT_FOUND_CONST));
+                    Project pr = ops.stream()
+                        .filter(o -> Objects.equals(o.getProject().getId(), op.getProject().getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
+                            "Project with id: " + op.getProject().getId() + NOT_FOUND_CONST))
+                        .getProject();
+                    return new SecondResponseSubDto(
+                        op.getId(), op.getName(),
+                        List.of(new ThirdResponseSubDto(pr.getId(), String.valueOf(pr.getNumber()),
+                            op.getPlannedEndDate(), op.getRealEndDate())));
+                  })
+                  .toList());
+          default -> throw new ReportException(HttpStatus.BAD_REQUEST, "!");
+        }
+      }
+      default -> throw new ReportException(HttpStatus.BAD_REQUEST, "!");
+    }
+    return report;
   }
   
   private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {

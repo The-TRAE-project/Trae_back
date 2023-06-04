@@ -32,6 +32,7 @@ import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.factory.OperationFactory;
 import ru.trae.backend.projection.OperationIdNameProjectNumberDto;
 import ru.trae.backend.repository.OperationRepository;
+import ru.trae.backend.util.ReportParameter;
 import ru.trae.backend.util.Util;
 
 /**
@@ -443,5 +444,9 @@ public class OperationService {
     if (startOfPeriod != null && endOfPeriod != null && startOfPeriod.isAfter(endOfPeriod)) {
       throw new ProjectException(HttpStatus.BAD_REQUEST, "Start date cannot be after end date.");
     }
+  }
+  
+  public List<Operation> getOperationsByIds(Set<Long> operationIds) {
+    return operationRepository.findOpsByIds(operationIds);
   }
 }

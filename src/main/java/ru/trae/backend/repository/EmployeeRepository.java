@@ -86,4 +86,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
       + "from Employee e "
       + "where e.id in (select o.employee.id from Operation o where o.project.id in (?1))")
   List<Long> findByProjectIds(Set<Long> projectIds);
+  
+  @Query("select e.lastName from Employee e where e.id = ?1")
+  String findEmpLastNameById(long employeeId);
 }

@@ -379,4 +379,8 @@ public class EmployeeService {
     e.getTypeWorks().clear();
     e.getTypeWorks().addAll(typeWorks);
   }
+  
+  public String getEmployeeLastNameById(long employeeId) {
+    return employeeRepository.findEmpLastNameById(employeeId);
+  }
 }

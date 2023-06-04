@@ -28,7 +28,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.trae.backend.dto.report.DeadlinesReq;
+import ru.trae.backend.dto.report.DeadlineReq;
+import ru.trae.backend.dto.report.ReportDeadlineDto;
 import ru.trae.backend.dto.report.ReportProjectsForPeriodDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
 import ru.trae.backend.service.ReportService;
@@ -118,7 +119,7 @@ public class ReportController {
   }
   
   @GetMapping("/deadlines")
-  public ResponseEntity<> deadlines(@Valid @RequestBody DeadlinesReq req) {
+  public ResponseEntity<ReportDeadlineDto> deadlines(@Valid @RequestBody DeadlineReq req) {
     return ResponseEntity.ok(reportService.reportDeadlines(req));
   }
 }

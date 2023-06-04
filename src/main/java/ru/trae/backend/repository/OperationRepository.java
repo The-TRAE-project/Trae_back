@@ -12,6 +12,7 @@ package ru.trae.backend.repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,6 +30,8 @@ import ru.trae.backend.projection.OperationIdNameProjectNumberDto;
  */
 @Repository
 public interface OperationRepository extends JpaRepository<Operation, Long> {
+  @Query("select o from Operation o where o.id in ?1")
+  List<Operation> findByIdIn(Collection<Long> ids);
   @Query("select (count(o) > 0) from Operation o where o.id = ?1 and o.typeWork.id = ?2")
   boolean existsByTypeWorkIdEqualsShipment(long operationId, long shipmentId);
   
@@ -146,4 +149,7 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
       nativeQuery = true)
   List<OperationIdNameProjectNumberDto> findByPeriodAndEmployeeAndProjectIds(
       LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds, Set<Long> projectIds);
+  
+  @Query("select o from Operation o where o.id in (?1)")
+  List<Operation> findOpsByIds(Set<Long> operationIds);
 }
