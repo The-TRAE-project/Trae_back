@@ -124,65 +124,111 @@ public class ReportService {
     }
     
     switch (req.firstParameter()) {
-//      case PROJECT -> {
-//        switch (req.secondParameter()) {
-//          case OPERATION -> ;
-//          case EMPLOYEE -> ;
-//        }
-//      };
-//      case OPERATION -> {
-//        switch (req.secondParameter()) {
-//          case PROJECT -> ;
-//          case EMPLOYEE -> ;
-//        }
-//      };
-      case EMPLOYEE -> {
-        report.setFirstRespId(req.valueOfFirstParameter());
-        report.setFirstRespValue(ops.get(0).getEmployee().getFirstName());
+      report.setFirstRespId(req.valueOfFirstParameter());
+      
+      case PROJECT -> {
+        report.setFirstRespValue(String.valueOf(ops.get(0).getProject().getNumber()));
         switch (req.secondParameter()) {
-          case PROJECT -> report.setSecondRespValues(
-              req.valuesOfSecondParameter().stream()
-                  .map(p -> {
-                    Project pr = ops.stream()
-                        .filter(o -> Objects.equals(o.getProject().getId(), p))
-                        .findFirst()
-                        .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                            "Project with id: " + p + NOT_FOUND_CONST))
-                        .getProject();
-                    return new SecondResponseSubDto(
-                        pr.getId(), String.valueOf(pr.getNumber()), ops.stream()
-                        .filter(o -> Objects.equals(o.getProject().getId(), p))
-                        .map(o -> new ThirdResponseSubDto(
-                            o.getId(), o.getName(), o.getPlannedEndDate(), o.getRealEndDate()))
-                        .toList());
-                  })
-                  .toList());
-          case OPERATION -> report.setSecondRespValues(
-              req.valuesOfSecondParameter().stream()
-                  .map(oId -> {
-                    Operation op = ops.stream()
-                        .filter(o -> Objects.equals(o.getId(), oId))
-                        .findFirst()
-                        .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                            "Operation with id: " + oId + NOT_FOUND_CONST));
-                    Project pr = ops.stream()
-                        .filter(o -> Objects.equals(o.getProject().getId(), op.getProject().getId()))
-                        .findFirst()
-                        .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                            "Project with id: " + op.getProject().getId() + NOT_FOUND_CONST))
-                        .getProject();
-                    return new SecondResponseSubDto(
-                        op.getId(), op.getName(),
-                        List.of(new ThirdResponseSubDto(pr.getId(), String.valueOf(pr.getNumber()),
-                            op.getPlannedEndDate(), op.getRealEndDate())));
-                  })
-                  .toList());
-          default -> throw new ReportException(HttpStatus.BAD_REQUEST, "!");
+          case OPERATION -> addToPrReportSecondSubDtoByOperations(req.valuesOfSecondParameter(), report, ops);
+          case EMPLOYEE -> addToPrReportSecondSubDtoByEmployees(req.valuesOfSecondParameter(), report, ops);
+          default -> throw new ReportException(HttpStatus.BAD_REQUEST,
+              "Wrong second or third value in parameters");
         }
       }
-      default -> throw new ReportException(HttpStatus.BAD_REQUEST, "!");
+      
+      case OPERATION -> {
+        report.setFirstRespValue(ops.get(0).getName());
+        switch (req.secondParameter()) {
+          case PROJECT -> addToOpReportSecondSubDtoByProject(report, ops.get(0));
+          case EMPLOYEE -> addToOpReportSecondSubDtoByEmployee(report, ops.get(0));
+          default -> throw new ReportException(HttpStatus.BAD_REQUEST,
+              "Wrong second or third value in parameters");
+        }
+      }
+      
+      case EMPLOYEE -> {
+        report.setFirstRespValue(ops.get(0).getEmployee().getLastName());
+        switch (req.secondParameter()) {
+          case PROJECT ->
+              addToEmpReportSecondSubDtoByProjects(req.valuesOfSecondParameter(), report, ops);
+          case OPERATION ->
+              addToEmpReportSecondSubDtoByOperations(req.valuesOfSecondParameter(), report, ops);
+          default -> throw new ReportException(HttpStatus.BAD_REQUEST,
+              "Wrong second or third value in parameters");
+        }
+      }
+      
+      default -> throw new ReportException(HttpStatus.BAD_REQUEST, "Wrong values in parameters");
     }
+    
     return report;
+  }
+  
+  private void addToEmpReportSecondSubDtoByOperations(
+      Set<Long> values, ReportDeadlineDto report, List<Operation> ops) {
+    report.setSecondRespValues(values.stream()
+        .map(oId -> {
+          Operation op = ops.stream()
+              .filter(o -> Objects.equals(o.getId(), oId))
+              .findFirst()
+              .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
+                  "Operation with id: " + oId + NOT_FOUND_CONST));
+          Project pr = ops.stream()
+              .filter(o -> Objects.equals(o.getProject().getId(), op.getProject().getId()))
+              .findFirst()
+              .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
+                  "Project with id: " + op.getProject().getId() + NOT_FOUND_CONST))
+              .getProject();
+          return new SecondResponseSubDto(
+              op.getId(), op.getName(),
+              List.of(new ThirdResponseSubDto(pr.getId(), String.valueOf(pr.getNumber()),
+                  op.getPlannedEndDate(), op.getRealEndDate())));
+        })
+        .toList());
+  }
+  
+  private void addToEmpReportSecondSubDtoByProjects(
+      Set<Long> values, ReportDeadlineDto report, List<Operation> ops) {
+    report.setSecondRespValues(values.stream()
+        .map(pId -> {
+          Project pr = ops.stream()
+              .filter(o -> Objects.equals(o.getProject().getId(), pId))
+              .findFirst()
+              .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
+                  "Project with id: " + pId + NOT_FOUND_CONST))
+              .getProject();
+          return new SecondResponseSubDto(
+              pr.getId(), String.valueOf(pr.getNumber()), ops.stream()
+              .filter(o -> Objects.equals(o.getProject().getId(), pId))
+              .map(o -> new ThirdResponseSubDto(
+                  o.getId(), o.getName(), o.getPlannedEndDate(), o.getRealEndDate()))
+              .toList());
+        })
+        .toList());
+  }
+  
+  private void addToOpReportSecondSubDtoByProject(ReportDeadlineDto report, Operation op) {
+    report.setSecondRespValues(
+        List.of(new SecondResponseSubDto(
+            op.getProject().getId(),
+            String.valueOf(op.getProject().getNumber()),
+            List.of(new ThirdResponseSubDto(
+                op.getEmployee().getId(),
+                op.getEmployee().getLastName(),
+                op.getPlannedEndDate(),
+                op.getRealEndDate())))));
+  }
+  
+  private void addToOpReportSecondSubDtoByEmployee(ReportDeadlineDto report, Operation op) {
+    report.setSecondRespValues(
+        List.of(new SecondResponseSubDto(
+            op.getEmployee().getId(),
+            op.getEmployee().getLastName(),
+            List.of(new ThirdResponseSubDto(
+                op.getProject().getId(),
+                String.valueOf(op.getProject().getNumber()),
+                op.getPlannedEndDate(),
+                op.getRealEndDate())))));
   }
   
   private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {

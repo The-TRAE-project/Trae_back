@@ -3,7 +3,7 @@ package ru.trae.backend.dto.report;
 import java.time.LocalDateTime;
 
 /**
- * Data transfer object for reporting deadlines.
+ * Sub data transfer object (third path) for reporting deadlines.
  *
  * @author Vladimir Olennikov
  */

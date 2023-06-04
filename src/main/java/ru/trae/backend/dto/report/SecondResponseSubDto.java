@@ -3,7 +3,7 @@ package ru.trae.backend.dto.report;
 import java.util.List;
 
 /**
- * Data transfer object for reporting deadlines.
+ * Sub data transfer object (second path) for reporting deadlines.
  *
  * @author Vladimir Olennikov
  */
