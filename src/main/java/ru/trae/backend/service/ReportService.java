@@ -33,6 +33,7 @@ import ru.trae.backend.dto.report.SecondResponseSubDto;
 import ru.trae.backend.dto.report.ThirdResponseSubDto;
 import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ReportException;
 import ru.trae.backend.projection.WorkingShiftEmployeeDto;
 
@@ -113,6 +114,8 @@ public class ReportService {
   
   public ReportDeadlineDto reportDeadlines(DeadlineReq req) {
     ReportDeadlineDto report = new ReportDeadlineDto();
+    report.setFirstRespId(req.valueOfFirstParameter());
+    
     List<Operation> ops;
     
     if (req.firstParameter().ordinal() == 1) {
@@ -124,13 +127,14 @@ public class ReportService {
     }
     
     switch (req.firstParameter()) {
-      report.setFirstRespId(req.valueOfFirstParameter());
       
       case PROJECT -> {
         report.setFirstRespValue(String.valueOf(ops.get(0).getProject().getNumber()));
         switch (req.secondParameter()) {
-          case OPERATION -> addToPrReportSecondSubDtoByOperations(req.valuesOfSecondParameter(), report, ops);
-          case EMPLOYEE -> addToPrReportSecondSubDtoByEmployees(req.valuesOfSecondParameter(), report, ops);
+          case OPERATION ->
+              addToPrReportSecondSubDtoByOperations(req.valuesOfSecondParameter(), report, ops);
+          case EMPLOYEE ->
+              addToPrReportSecondSubDtoByEmployees(req.valuesOfSecondParameter(), report, ops);
           default -> throw new ReportException(HttpStatus.BAD_REQUEST,
               "Wrong second or third value in parameters");
         }
@@ -164,9 +168,46 @@ public class ReportService {
     return report;
   }
   
+  private void addToPrReportSecondSubDtoByEmployees(
+      Set<Long> secondValues, ReportDeadlineDto report, List<Operation> ops) {
+    report.setSecondRespValues(secondValues.stream()
+        .map(eId -> {
+          Employee e = ops.stream()
+              .filter(o -> Objects.equals(o.getEmployee().getId(), eId))
+              .findFirst()
+              .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
+                  "Employee with id: " + eId + NOT_FOUND_CONST))
+              .getEmployee();
+          return new SecondResponseSubDto(e.getId(), e.getLastName(), ops.stream()
+              .filter(o -> Objects.equals(o.getEmployee().getId(), e.getId()))
+              .map(o -> new ThirdResponseSubDto(o.getId(), o.getName(),
+                  o.getPlannedEndDate(), o.getRealEndDate()))
+              .toList());
+        }).toList());
+  }
+  
+  private void addToPrReportSecondSubDtoByOperations(
+      Set<Long> secondValues, ReportDeadlineDto report, List<Operation> ops) {
+    report.setSecondRespValues(secondValues.stream()
+        .map(oId -> {
+              Operation op = ops.stream()
+                  .filter(o -> Objects.equals(o.getId(), oId))
+                  .findFirst()
+                  .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
+                      "Operation with id: " + oId + NOT_FOUND_CONST));
+              return new SecondResponseSubDto(op.getId(), op.getName(),
+                  List.of(new ThirdResponseSubDto(
+                      op.getEmployee().getId(),
+                      op.getEmployee().getLastName(),
+                      op.getPlannedEndDate(),
+                      op.getRealEndDate())));
+            }
+        ).toList());
+  }
+  
   private void addToEmpReportSecondSubDtoByOperations(
-      Set<Long> values, ReportDeadlineDto report, List<Operation> ops) {
-    report.setSecondRespValues(values.stream()
+      Set<Long> secondValues, ReportDeadlineDto report, List<Operation> ops) {
+    report.setSecondRespValues(secondValues.stream()
         .map(oId -> {
           Operation op = ops.stream()
               .filter(o -> Objects.equals(o.getId(), oId))
@@ -188,8 +229,8 @@ public class ReportService {
   }
   
   private void addToEmpReportSecondSubDtoByProjects(
-      Set<Long> values, ReportDeadlineDto report, List<Operation> ops) {
-    report.setSecondRespValues(values.stream()
+      Set<Long> secondValues, ReportDeadlineDto report, List<Operation> ops) {
+    report.setSecondRespValues(secondValues.stream()
         .map(pId -> {
           Project pr = ops.stream()
               .filter(o -> Objects.equals(o.getProject().getId(), pId))
