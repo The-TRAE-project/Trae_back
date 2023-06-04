@@ -22,6 +22,7 @@ import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.employee.EmployeeIdTotalPartsDto;
 import ru.trae.backend.dto.mapper.ProjectForReportDtoMapper;
 import ru.trae.backend.dto.project.ProjectForReportDto;
+import ru.trae.backend.dto.report.DeadlinesReq;
 import ru.trae.backend.dto.report.ReportProjectsForPeriodDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
 import ru.trae.backend.entity.task.Project;
@@ -100,6 +101,10 @@ public class ReportService {
     
     return new ReportProjectsForPeriodDto(
         startOfPeriod, endOfPeriod, LocalDate.now(), projectForReportDtoList);
+  }
+  
+  public Object reportDeadlines(DeadlinesReq req) {
+  
   }
   
   private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {
