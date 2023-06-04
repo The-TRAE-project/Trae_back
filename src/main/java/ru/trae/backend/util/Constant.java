@@ -14,10 +14,11 @@ package ru.trae.backend.util;
  * Enum class Constant provides constants.
  */
 public enum Constant {
-  NOT_FOUND_CONST(" not found");
-
+  NOT_FOUND_CONST(" not found"),
+  WRONG_PARAMETER("Wrong second or third value in parameters");
+  
   public final String value;
-
+  
   Constant(String value) {
     this.value = value;
   }

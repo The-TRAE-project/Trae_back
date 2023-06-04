@@ -11,6 +11,7 @@
 package ru.trae.backend.service;
 
 import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
+import static ru.trae.backend.util.Constant.WRONG_PARAMETER;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -117,7 +118,6 @@ public class ReportService {
     report.setFirstRespId(req.valueOfFirstParameter());
     
     List<Operation> ops;
-    
     if (req.firstParameter().ordinal() == 1) {
       ops = operationService.getOperationsByIds(Set.of(req.valueOfFirstParameter()));
     } else if (req.secondParameter().ordinal() == 1) {
@@ -135,8 +135,7 @@ public class ReportService {
               addToPrReportSecondSubDtoByOperations(req.valuesOfSecondParameter(), report, ops);
           case EMPLOYEE ->
               addToPrReportSecondSubDtoByEmployees(req.valuesOfSecondParameter(), report, ops);
-          default -> throw new ReportException(HttpStatus.BAD_REQUEST,
-              "Wrong second or third value in parameters");
+          default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
       
@@ -145,8 +144,7 @@ public class ReportService {
         switch (req.secondParameter()) {
           case PROJECT -> addToOpReportSecondSubDtoByProject(report, ops.get(0));
           case EMPLOYEE -> addToOpReportSecondSubDtoByEmployee(report, ops.get(0));
-          default -> throw new ReportException(HttpStatus.BAD_REQUEST,
-              "Wrong second or third value in parameters");
+          default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
       
@@ -157,8 +155,7 @@ public class ReportService {
               addToEmpReportSecondSubDtoByProjects(req.valuesOfSecondParameter(), report, ops);
           case OPERATION ->
               addToEmpReportSecondSubDtoByOperations(req.valuesOfSecondParameter(), report, ops);
-          default -> throw new ReportException(HttpStatus.BAD_REQUEST,
-              "Wrong second or third value in parameters");
+          default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
       
