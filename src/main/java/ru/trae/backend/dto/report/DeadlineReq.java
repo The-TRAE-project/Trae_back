@@ -3,8 +3,8 @@ package ru.trae.backend.dto.report;
 import java.util.Set;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import ru.trae.backend.util.ReportParameter;
 
 /**
@@ -25,11 +25,13 @@ public record DeadlineReq(
     //@Size(min = 6, max = 11, message = "Length name of second parameter is wrong")
     ReportParameter secondParameter,
     @NotNull(message = "Values of second parameter: set values is NULL")
+    @NotEmpty(message = "Values of second parameter: set values is empty")
     Set<Long> valuesOfSecondParameter,
     @NotNull(message = "Name of third parameter is NULL")
     //@Size(min = 6, max = 11, message = "Length name of third parameter is wrong")
     ReportParameter thirdParameter,
     @NotNull(message = "Values of third parameter: set values is NULL")
+    @NotEmpty(message = "Values of third parameter: set values is empty")
     Set<Long> valuesOfThirdParameter
 ) {
 }

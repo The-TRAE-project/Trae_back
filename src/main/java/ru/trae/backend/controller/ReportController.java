@@ -141,6 +141,9 @@ public class ReportController {
           content = @Content),
       @ApiResponse(responseCode = "404",
           description = "Сотрудник с таким идентификатором не найден", content = @Content),
+      @ApiResponse(responseCode = "409",
+          description = "В запросе присутствуют повторяющиеся значения параметров",
+          content = @Content),
       @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
           content = @Content)})
   @GetMapping("/deadlines")

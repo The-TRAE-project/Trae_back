@@ -14,6 +14,7 @@ import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
 import static ru.trae.backend.util.Constant.WRONG_PARAMETER;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -37,6 +38,7 @@ import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ReportException;
 import ru.trae.backend.projection.WorkingShiftEmployeeDto;
+import ru.trae.backend.util.ReportParameter;
 
 /**
  * Service class for generating reports.
@@ -114,6 +116,9 @@ public class ReportService {
   }
   
   public ReportDeadlineDto reportDeadlines(DeadlineReq req) {
+    
+    checkCorrectParametersRequest(req);
+    
     ReportDeadlineDto report = new ReportDeadlineDto();
     report.setFirstRespId(req.valueOfFirstParameter());
     
@@ -125,6 +130,8 @@ public class ReportService {
     } else {
       ops = operationService.getOperationsByIds(req.valuesOfThirdParameter());
     }
+    
+    checkNotEmptyListOps(ops);
     
     switch (req.firstParameter()) {
       
@@ -149,6 +156,8 @@ public class ReportService {
       }
       
       case EMPLOYEE -> {
+        checkCorrectEmpIdFromReqAndEmpIdFromOp(req.valueOfFirstParameter(), ops.get(0));
+        
         report.setFirstRespValue(ops.get(0).getEmployee().getLastName());
         switch (req.secondParameter()) {
           case PROJECT ->
@@ -165,15 +174,46 @@ public class ReportService {
     return report;
   }
   
+  private void checkCorrectEmpIdFromReqAndEmpIdFromOp(long employeeId, Operation firstOperation) {
+    if (firstOperation.getEmployee() == null) {
+      throw new ReportException(HttpStatus.BAD_REQUEST,
+          "The operation from the selection does not have an employee");
+    }
+    
+    if (firstOperation.getEmployee().getId() != employeeId) {
+      throw new ReportException(HttpStatus.BAD_REQUEST,
+          "The operation from the selection does not match the specified employee");
+    }
+  }
+  
+  private void checkNotEmptyListOps(List<Operation> ops) {
+    if (ops.isEmpty()) {
+      throw new ReportException(HttpStatus.BAD_REQUEST,
+          "the parameter values are not correct, the final result is empty");
+    }
+  }
+  
+  private void checkCorrectParametersRequest(DeadlineReq req) {
+    Set<ReportParameter> reqSet = new HashSet<>();
+    reqSet.add(req.firstParameter());
+    reqSet.add(req.secondParameter());
+    reqSet.add(req.thirdParameter());
+    
+    if (reqSet.size() != 3) {
+      throw new ReportException(HttpStatus.CONFLICT, "Parameter values are repeated");
+    }
+  }
+  
   private void addToPrReportSecondSubDtoByEmployees(
       Set<Long> secondValues, ReportDeadlineDto report, List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
         .map(eId -> {
           Employee e = ops.stream()
+              .filter(o -> o.getEmployee() != null)
               .filter(o -> Objects.equals(o.getEmployee().getId(), eId))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Employee with id: " + eId + NOT_FOUND_CONST))
+                  "Employee with id: " + eId + NOT_FOUND_CONST.value))
               .getEmployee();
           return new SecondResponseSubDto(e.getId(), e.getLastName(), ops.stream()
               .filter(o -> Objects.equals(o.getEmployee().getId(), e.getId()))
@@ -191,7 +231,7 @@ public class ReportService {
                   .filter(o -> Objects.equals(o.getId(), oId))
                   .findFirst()
                   .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                      "Operation with id: " + oId + NOT_FOUND_CONST));
+                      "Operation with id: " + oId + NOT_FOUND_CONST.value));
               return new SecondResponseSubDto(op.getId(), op.getName(),
                   List.of(new ThirdResponseSubDto(
                       op.getEmployee().getId(),
@@ -210,7 +250,7 @@ public class ReportService {
               .filter(o -> Objects.equals(o.getId(), oId))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Operation with id: " + oId + NOT_FOUND_CONST));
+                  "Operation with id: " + oId + NOT_FOUND_CONST.value));
           Project pr = ops.stream()
               .filter(o -> Objects.equals(o.getProject().getId(), op.getProject().getId()))
               .findFirst()
@@ -233,7 +273,7 @@ public class ReportService {
               .filter(o -> Objects.equals(o.getProject().getId(), pId))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Project with id: " + pId + NOT_FOUND_CONST))
+                  "Project with id: " + pId + NOT_FOUND_CONST.value))
               .getProject();
           return new SecondResponseSubDto(
               pr.getId(), String.valueOf(pr.getNumber()), ops.stream()
@@ -274,7 +314,4 @@ public class ReportService {
       throw new ReportException(HttpStatus.BAD_REQUEST, "Start date cannot be after end date.");
     }
   }
-  
-  //todo сделать проверку одинаковых полей в запросе
-  //todo сделать проверку на пустые значения параметров
 }
