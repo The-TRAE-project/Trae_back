@@ -156,6 +156,7 @@ public class ReportService {
       }
       
       case EMPLOYEE -> {
+        checkNotNullEmpInOp(ops.get(0));
         checkCorrectEmpIdFromReqAndEmpIdFromOp(req.valueOfFirstParameter(), ops.get(0));
         
         report.setFirstRespValue(ops.get(0).getEmployee().getLastName());
@@ -174,15 +175,17 @@ public class ReportService {
     return report;
   }
   
-  private void checkCorrectEmpIdFromReqAndEmpIdFromOp(long employeeId, Operation firstOperation) {
-    if (firstOperation.getEmployee() == null) {
-      throw new ReportException(HttpStatus.BAD_REQUEST,
-          "The operation from the selection does not have an employee");
-    }
-    
-    if (firstOperation.getEmployee().getId() != employeeId) {
+  private void checkCorrectEmpIdFromReqAndEmpIdFromOp(long employeeId, Operation o) {
+    if (o.getEmployee().getId() != employeeId) {
       throw new ReportException(HttpStatus.BAD_REQUEST,
           "The operation from the selection does not match the specified employee");
+    }
+  }
+  
+  private void checkNotNullEmpInOp(Operation o) {
+    if (o.getEmployee() == null) {
+      throw new ReportException(HttpStatus.BAD_REQUEST,
+          "The operation from the selection does not have an employee");
     }
   }
   
@@ -232,6 +235,9 @@ public class ReportService {
                   .findFirst()
                   .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
                       "Operation with id: " + oId + NOT_FOUND_CONST.value));
+              
+              checkNotNullEmpInOp(op);
+              
               return new SecondResponseSubDto(op.getId(), op.getName(),
                   List.of(new ThirdResponseSubDto(
                       op.getEmployee().getId(),
@@ -286,6 +292,9 @@ public class ReportService {
   }
   
   private void addToOpReportSecondSubDtoByProject(ReportDeadlineDto report, Operation op) {
+    
+    checkNotNullEmpInOp(op);
+    
     report.setSecondRespValues(
         List.of(new SecondResponseSubDto(
             op.getProject().getId(),
@@ -298,6 +307,9 @@ public class ReportService {
   }
   
   private void addToOpReportSecondSubDtoByEmployee(ReportDeadlineDto report, Operation op) {
+    
+    checkNotNullEmpInOp(op);
+    
     report.setSecondRespValues(
         List.of(new SecondResponseSubDto(
             op.getEmployee().getId(),
