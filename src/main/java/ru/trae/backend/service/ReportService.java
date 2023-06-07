@@ -274,4 +274,7 @@ public class ReportService {
       throw new ReportException(HttpStatus.BAD_REQUEST, "Start date cannot be after end date.");
     }
   }
+  
+  //todo сделать проверку одинаковых полей в запросе
+  //todo сделать проверку на пустые значения параметров
 }

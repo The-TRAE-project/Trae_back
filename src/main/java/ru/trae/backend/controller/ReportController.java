@@ -118,6 +118,31 @@ public class ReportController {
     return ResponseEntity.ok(reportService.reportProjectsForPeriod(startOfPeriod, endOfPeriod));
   }
   
+  @Operation(summary = "Отчет по срокам по трем параметрам (сотрудники, операции, проекты)",
+      description = """
+          Доступен администратору. Возвращает выборку по трем параметрам. Для работы с эндпоинтом\s
+          обязательно заполнять все 3 параметра и их значения. Важно: в полях firstParameter,\s
+          secondParameter, thirdParameter - должны быть указаны названия параметров. Названия\s
+          параметров строго определены: PROJECT, OPERATION, EMPLOYEE и не должны повторяться в\s
+          рамках одного запроса.
+          """)
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "Отчет по срокам по трем параметрам (сотрудники, операции, проекты)",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ReportDeadlineDto.class))}),
+      @ApiResponse(responseCode = "400",
+          description = "Отсутствует один или несколько обязательных параметров в теле запроса. "
+              + "Неправильный формат параметра в теле запроса",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "404",
+          description = "Сотрудник с таким идентификатором не найден", content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @GetMapping("/deadlines")
   public ResponseEntity<ReportDeadlineDto> deadlines(@Valid @RequestBody DeadlineReq req) {
     return ResponseEntity.ok(reportService.reportDeadlines(req));
