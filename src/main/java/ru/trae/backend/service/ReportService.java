@@ -151,8 +151,10 @@ public class ReportService {
       case OPERATION -> {
         report.setFirstRespValue(ops.get(0).getName());
         switch (req.secondParameter()) {
-          case PROJECT -> addToOpReportSecondSubDtoByProject(report, ops.get(0));
-          case EMPLOYEE -> addToOpReportSecondSubDtoByEmployee(report, ops.get(0));
+          case PROJECT -> addToOpReportSecondSubDtoByProject(
+              req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops.get(0));
+          case EMPLOYEE -> addToOpReportSecondSubDtoByEmployee(
+              req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops.get(0));
           default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
@@ -314,9 +316,15 @@ public class ReportService {
         .toList());
   }
   
-  private void addToOpReportSecondSubDtoByProject(ReportDeadlineDto report, Operation op) {
+  private void addToOpReportSecondSubDtoByProject(
+      Set<Long> secondValues,
+      Set<Long> thirdValues,
+      ReportDeadlineDto report,
+      Operation op) {
     
     checkNotNullEmpInOp(op);
+    secondValues.forEach(p -> checkCorrectProjectIdFromReqAndOp(p, op));
+    thirdValues.forEach(e -> checkCorrectEmpIdFromReqAndEmpIdFromOp(e, op));
     
     report.setSecondRespValues(
         List.of(new SecondResponseSubDto(
@@ -329,9 +337,15 @@ public class ReportService {
                 op.getRealEndDate())))));
   }
   
-  private void addToOpReportSecondSubDtoByEmployee(ReportDeadlineDto report, Operation op) {
+  private void addToOpReportSecondSubDtoByEmployee(
+      Set<Long> secondValues,
+      Set<Long> thirdValues,
+      ReportDeadlineDto report,
+      Operation op) {
     
     checkNotNullEmpInOp(op);
+    secondValues.forEach(p -> checkCorrectProjectIdFromReqAndOp(p, op));
+    thirdValues.forEach(e -> checkCorrectEmpIdFromReqAndEmpIdFromOp(e, op));
     
     report.setSecondRespValues(
         List.of(new SecondResponseSubDto(
