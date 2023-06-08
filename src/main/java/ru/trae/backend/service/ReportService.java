@@ -136,12 +136,14 @@ public class ReportService {
     switch (req.firstParameter()) {
       
       case PROJECT -> {
+        checkCorrectProjectIdFromReqAndOp(req.valueOfFirstParameter(), ops.get(0));
+        
         report.setFirstRespValue(String.valueOf(ops.get(0).getProject().getNumber()));
         switch (req.secondParameter()) {
-          case OPERATION ->
-              addToPrReportSecondSubDtoByOperations(req.valuesOfSecondParameter(), report, ops);
-          case EMPLOYEE ->
-              addToPrReportSecondSubDtoByEmployees(req.valuesOfSecondParameter(), report, ops);
+          case OPERATION -> addToPrReportSecondSubDtoByOperations(req.valueOfFirstParameter(),
+              req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops);
+          case EMPLOYEE -> addToPrReportSecondSubDtoByEmployees(req.valueOfFirstParameter(),
+              req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops);
           default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
@@ -175,10 +177,17 @@ public class ReportService {
     return report;
   }
   
+  private void checkCorrectProjectIdFromReqAndOp(long projectIdFromReq, Operation o) {
+    if (projectIdFromReq != o.getProject().getId()) {
+      throw new ReportException(HttpStatus.BAD_REQUEST,
+          "The project id does not match the project id from the operation");
+    }
+  }
+  
   private void checkCorrectEmpIdFromReqAndEmpIdFromOp(long employeeId, Operation o) {
     if (o.getEmployee().getId() != employeeId) {
-      throw new ReportException(HttpStatus.BAD_REQUEST,
-          "The operation from the selection does not match the specified employee");
+      throw new ReportException(HttpStatus.BAD_REQUEST, "The operation with id: " + o.getId()
+          + " from the selection does not match the specified employee with id: " + employeeId);
     }
   }
   
@@ -208,18 +217,25 @@ public class ReportService {
   }
   
   private void addToPrReportSecondSubDtoByEmployees(
-      Set<Long> secondValues, ReportDeadlineDto report, List<Operation> ops) {
+      Long firstValue,
+      Set<Long> secondValues,
+      Set<Long> thirdValues,
+      ReportDeadlineDto report,
+      List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
         .map(eId -> {
           Employee e = ops.stream()
               .filter(o -> o.getEmployee() != null)
-              .filter(o -> Objects.equals(o.getEmployee().getId(), eId))
+              .filter(o -> Objects.equals(o.getEmployee().getId(), eId)
+                  && Objects.equals(o.getProject().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Employee with id: " + eId + NOT_FOUND_CONST.value))
+                  "Employee with id: " + eId + NOT_FOUND_CONST.value + " in project with id: "
+                      + firstValue))
               .getEmployee();
           return new SecondResponseSubDto(e.getId(), e.getLastName(), ops.stream()
-              .filter(o -> Objects.equals(o.getEmployee().getId(), e.getId()))
+              .filter(o -> Objects.equals(o.getEmployee().getId(), e.getId())
+                  && thirdValues.contains(o.getId()))
               .map(o -> new ThirdResponseSubDto(o.getId(), o.getName(),
                   o.getPlannedEndDate(), o.getRealEndDate()))
               .toList());
@@ -227,16 +243,23 @@ public class ReportService {
   }
   
   private void addToPrReportSecondSubDtoByOperations(
-      Set<Long> secondValues, ReportDeadlineDto report, List<Operation> ops) {
+      Long firstValue,
+      Set<Long> secondValues,
+      Set<Long> thirdValues,
+      ReportDeadlineDto report,
+      List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
         .map(oId -> {
               Operation op = ops.stream()
-                  .filter(o -> Objects.equals(o.getId(), oId))
+                  .filter(o -> Objects.equals(o.getId(), oId)
+                      && Objects.equals(o.getProject().getId(), firstValue))
                   .findFirst()
                   .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                      "Operation with id: " + oId + NOT_FOUND_CONST.value));
+                      "Operation with id: " + oId + NOT_FOUND_CONST.value + " in project with id: "
+                          + firstValue));
               
               checkNotNullEmpInOp(op);
+              thirdValues.forEach(e -> checkCorrectEmpIdFromReqAndEmpIdFromOp(e, op));
               
               return new SecondResponseSubDto(op.getId(), op.getName(),
                   List.of(new ThirdResponseSubDto(
