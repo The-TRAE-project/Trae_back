@@ -32,6 +32,7 @@ import ru.trae.backend.projection.OperationIdNameProjectNumberDto;
 public interface OperationRepository extends JpaRepository<Operation, Long> {
   @Query("select o from Operation o where o.id in ?1")
   List<Operation> findByIdIn(Collection<Long> ids);
+  
   @Query("select (count(o) > 0) from Operation o where o.id = ?1 and o.typeWork.id = ?2")
   boolean existsByTypeWorkIdEqualsShipment(long operationId, long shipmentId);
   

@@ -242,17 +242,17 @@ public class ReportService {
       ReportDeadlineDto report,
       List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
-        .map(eId -> {
+        .map(eid -> {
           //поиск сотрудника, который соответствует очередному id из значений второго параметра,
           //дополнительно идет проверка, что сотрудник относится к операции из проекта из главного
           // блока отчета
           Employee e = ops.stream()
               .filter(o -> o.getEmployee() != null)
-              .filter(o -> Objects.equals(o.getEmployee().getId(), eId)
+              .filter(o -> Objects.equals(o.getEmployee().getId(), eid)
                   && Objects.equals(o.getProject().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Employee with id: " + eId + NOT_FOUND_CONST.value + " in project with id: "
+                  "Employee with id: " + eid + NOT_FOUND_CONST.value + " in project with id: "
                       + firstValue))
               .getEmployee();
           return new SecondResponseSubDto(e.getId(), e.getLastName(), ops.stream()
@@ -271,16 +271,16 @@ public class ReportService {
       ReportDeadlineDto report,
       List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
-        .map(oId -> {
+        .map(oid -> {
               //поиск операции, которая соответствует очередному id из значений второго параметра,
               //дополнительно идет проверка, что операция относится к проекту из главного
               // блока отчета
               Operation op = ops.stream()
-                  .filter(o -> Objects.equals(o.getId(), oId)
+                  .filter(o -> Objects.equals(o.getId(), oid)
                       && Objects.equals(o.getProject().getId(), firstValue))
                   .findFirst()
                   .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                      "Operation with id: " + oId + NOT_FOUND_CONST.value + " in project with id: "
+                      "Operation with id: " + oid + NOT_FOUND_CONST.value + " in project with id: "
                           + firstValue));
               
               checkNotNullEmpInOp(op);
@@ -312,16 +312,16 @@ public class ReportService {
       ReportDeadlineDto report,
       List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
-        .map(oId -> {
+        .map(oid -> {
           //поиск операции, которая соответствует очередному id из значений второго параметра,
           //дополнительно идет проверка, что операция относится к сотруднику из главного
           // блока отчета
           Operation op = ops.stream()
-              .filter(o -> Objects.equals(o.getId(), oId)
+              .filter(o -> Objects.equals(o.getId(), oid)
                   && Objects.equals(o.getEmployee().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Operation with id: " + oId + " and employee with id: "
+                  "Operation with id: " + oid + " and employee with id: "
                       + firstValue + NOT_FOUND_CONST.value
                       + ". Or not contains in values second parameter"));
           //поиск проекта, который соответствует найденной выше операции,
@@ -353,19 +353,19 @@ public class ReportService {
         //поиск проекта, который соответствует очередному id из значений второго параметра,
         //дополнительно идет проверка, что проект относится к сотруднику из главного
         // блока отчета
-        .map(pId -> {
+        .map(pid -> {
           Project pr = ops.stream()
-              .filter(o -> Objects.equals(o.getProject().getId(), pId)
+              .filter(o -> Objects.equals(o.getProject().getId(), pid)
                   && Objects.equals(o.getEmployee().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Project with id: " + pId + " and employee with id: "
+                  "Project with id: " + pid + " and employee with id: "
                       + firstValue + NOT_FOUND_CONST.value
                       + ". Or not contains in values second parameter"))
               .getProject();
           return new SecondResponseSubDto(
               pr.getId(), String.valueOf(pr.getNumber()), ops.stream()
-              .filter(o -> Objects.equals(o.getProject().getId(), pId)
+              .filter(o -> Objects.equals(o.getProject().getId(), pid)
                   && thirdValues.contains(o.getId()))
               .map(o -> new ThirdResponseSubDto(
                   o.getId(), o.getName(), o.getPlannedEndDate(), o.getRealEndDate()))
