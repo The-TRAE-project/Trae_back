@@ -182,7 +182,8 @@ public class ReportService {
   private void checkCorrectProjectIdFromReqAndOp(long projectIdFromReq, Operation o) {
     if (projectIdFromReq != o.getProject().getId()) {
       throw new ReportException(HttpStatus.BAD_REQUEST,
-          "The project id does not match the project id from the operation");
+          "The project id: " + projectIdFromReq + " does not match the project id: "
+              + o.getProject().getId() + " from the operation");
     }
   }
   
@@ -196,14 +197,14 @@ public class ReportService {
   private void checkNotNullEmpInOp(Operation o) {
     if (o.getEmployee() == null) {
       throw new ReportException(HttpStatus.BAD_REQUEST,
-          "The operation from the selection does not have an employee");
+          "One of the operations from the selection does not have an employee");
     }
   }
   
   private void checkNotEmptyListOps(List<Operation> ops) {
     if (ops.isEmpty()) {
       throw new ReportException(HttpStatus.BAD_REQUEST,
-          "the parameter values are not correct, the final result is empty");
+          "The parameter values are not correct, the final result is empty");
     }
   }
   
@@ -286,13 +287,17 @@ public class ReportService {
                   && Objects.equals(o.getEmployee().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Operation with id: " + oId + NOT_FOUND_CONST.value));
+                  "Operation with id: " + oId + " and employee with id: "
+                      + firstValue + NOT_FOUND_CONST.value
+                      + ". Or not contains in values second parameter"));
           Project pr = ops.stream()
               .filter(o -> Objects.equals(o.getProject().getId(), op.getProject().getId())
                   && thirdValues.contains(o.getProject().getId()))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Project with id: " + op.getProject().getId() + NOT_FOUND_CONST))
+                  "Project with id: " + op.getProject().getId() + " and operation with id: "
+                      + op.getId() + NOT_FOUND_CONST.value
+                      + ". Or not contains in values third parameter"))
               .getProject();
           return new SecondResponseSubDto(
               op.getId(), op.getName(),
@@ -315,7 +320,9 @@ public class ReportService {
                   && Objects.equals(o.getEmployee().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Project with id: " + pId + NOT_FOUND_CONST.value))
+                  "Project with id: " + pId + " and employee with id: "
+                      + firstValue + NOT_FOUND_CONST.value
+                      + ". Or not contains in values second parameter"))
               .getProject();
           return new SecondResponseSubDto(
               pr.getId(), String.valueOf(pr.getNumber()), ops.stream()
