@@ -165,10 +165,10 @@ public class ReportService {
         
         report.setFirstRespValue(ops.get(0).getEmployee().getLastName());
         switch (req.secondParameter()) {
-          case PROJECT ->
-              addToEmpReportSecondSubDtoByProjects(req.valuesOfSecondParameter(), report, ops);
-          case OPERATION ->
-              addToEmpReportSecondSubDtoByOperations(req.valuesOfSecondParameter(), report, ops);
+          case PROJECT -> addToEmpReportSecondSubDtoByProjects(req.valueOfFirstParameter(),
+              req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops);
+          case OPERATION -> addToEmpReportSecondSubDtoByOperations(req.valueOfFirstParameter(),
+              req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops);
           default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
@@ -274,16 +274,22 @@ public class ReportService {
   }
   
   private void addToEmpReportSecondSubDtoByOperations(
-      Set<Long> secondValues, ReportDeadlineDto report, List<Operation> ops) {
+      Long firstValue,
+      Set<Long> secondValues,
+      Set<Long> thirdValues,
+      ReportDeadlineDto report,
+      List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
         .map(oId -> {
           Operation op = ops.stream()
-              .filter(o -> Objects.equals(o.getId(), oId))
+              .filter(o -> Objects.equals(o.getId(), oId)
+                  && Objects.equals(o.getEmployee().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
                   "Operation with id: " + oId + NOT_FOUND_CONST.value));
           Project pr = ops.stream()
-              .filter(o -> Objects.equals(o.getProject().getId(), op.getProject().getId()))
+              .filter(o -> Objects.equals(o.getProject().getId(), op.getProject().getId())
+                  && thirdValues.contains(o.getProject().getId()))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
                   "Project with id: " + op.getProject().getId() + NOT_FOUND_CONST))
@@ -297,18 +303,24 @@ public class ReportService {
   }
   
   private void addToEmpReportSecondSubDtoByProjects(
-      Set<Long> secondValues, ReportDeadlineDto report, List<Operation> ops) {
+      Long firstValue,
+      Set<Long> secondValues,
+      Set<Long> thirdValues,
+      ReportDeadlineDto report,
+      List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
         .map(pId -> {
           Project pr = ops.stream()
-              .filter(o -> Objects.equals(o.getProject().getId(), pId))
+              .filter(o -> Objects.equals(o.getProject().getId(), pId)
+                  && Objects.equals(o.getEmployee().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
                   "Project with id: " + pId + NOT_FOUND_CONST.value))
               .getProject();
           return new SecondResponseSubDto(
               pr.getId(), String.valueOf(pr.getNumber()), ops.stream()
-              .filter(o -> Objects.equals(o.getProject().getId(), pId))
+              .filter(o -> Objects.equals(o.getProject().getId(), pId)
+                  && thirdValues.contains(o.getId()))
               .map(o -> new ThirdResponseSubDto(
                   o.getId(), o.getName(), o.getPlannedEndDate(), o.getRealEndDate()))
               .toList());
