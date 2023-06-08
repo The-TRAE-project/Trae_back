@@ -117,11 +117,15 @@ public class ReportService {
   
   public ReportDeadlineDto reportDeadlines(DeadlineReq req) {
     
+    //проверка на неповторяющиеся значения параметров
     checkCorrectParametersRequest(req);
     
     ReportDeadlineDto report = new ReportDeadlineDto();
+    //здесь присваивается id основному блоку отчета согласно id из значения первого параметра
     report.setFirstRespId(req.valueOfFirstParameter());
     
+    //выборка из базы данных для отчета всегда берется согласно списку операций в запросе
+    //в этом месте происходит поиск в каком из параметров указан список операций
     List<Operation> ops;
     if (req.firstParameter().ordinal() == 1) {
       ops = operationService.getOperationsByIds(Set.of(req.valueOfFirstParameter()));
@@ -135,38 +139,50 @@ public class ReportService {
     
     switch (req.firstParameter()) {
       
+      //кейс, где проект является главным блоком в отчете
       case PROJECT -> {
-        checkCorrectProjectIdFromReqAndOp(req.valueOfFirstParameter(), ops.get(0));
+        //проверка на соответствие id проекта из запроса и id проекта из выборки операций
+        ops.forEach(o -> checkCorrectProjectIdFromReqAndOp(req.valueOfFirstParameter(), o));
         
         report.setFirstRespValue(String.valueOf(ops.get(0).getProject().getNumber()));
         switch (req.secondParameter()) {
+          //кейс, где операции являются вторым блоком в отчете по проекту
           case OPERATION -> addToPrReportSecondSubDtoByOperations(req.valueOfFirstParameter(),
               req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops);
+          //кейс, где сотрудники являются вторым блоком в отчете по проекту
           case EMPLOYEE -> addToPrReportSecondSubDtoByEmployees(req.valueOfFirstParameter(),
               req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops);
           default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
       
+      //кейс, где операция является главным блоком в отчете
       case OPERATION -> {
         report.setFirstRespValue(ops.get(0).getName());
         switch (req.secondParameter()) {
+          //кейс, где проекты являются вторым блоком в отчете по операции
           case PROJECT -> addToOpReportSecondSubDtoByProject(
               req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops.get(0));
+          //кейс, где сотрудники являются вторым блоком в отчете по операции
           case EMPLOYEE -> addToOpReportSecondSubDtoByEmployee(
               req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops.get(0));
           default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
       
+      //кейс, где сотрудник является главным блоком в отчете
       case EMPLOYEE -> {
-        checkNotNullEmpInOp(ops.get(0));
-        checkCorrectEmpIdFromReqAndEmpIdFromOp(req.valueOfFirstParameter(), ops.get(0));
+        //проверка на то, что во всех операциях из выборки есть сотрудник
+        ops.forEach(this::checkNotNullEmpInOp);
+        //проверка на соответствие id сотрудника из запроса с id сотрудника из выборки операций
+        ops.forEach(o -> checkCorrectEmpIdFromReqAndEmpIdFromOp(req.valueOfFirstParameter(), o));
         
         report.setFirstRespValue(ops.get(0).getEmployee().getLastName());
         switch (req.secondParameter()) {
+          //кейс, где проекты являются вторым блоком в отчете по сотруднику
           case PROJECT -> addToEmpReportSecondSubDtoByProjects(req.valueOfFirstParameter(),
               req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops);
+          //кейс, где операции являются вторым блоком в отчете по сотруднику
           case OPERATION -> addToEmpReportSecondSubDtoByOperations(req.valueOfFirstParameter(),
               req.valuesOfSecondParameter(), req.valuesOfThirdParameter(), report, ops);
           default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
@@ -227,6 +243,9 @@ public class ReportService {
       List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
         .map(eId -> {
+          //поиск сотрудника, который соответствует очередному id из значений второго параметра,
+          //дополнительно идет проверка, что сотрудник относится к операции из проекта из главного
+          // блока отчета
           Employee e = ops.stream()
               .filter(o -> o.getEmployee() != null)
               .filter(o -> Objects.equals(o.getEmployee().getId(), eId)
@@ -253,6 +272,9 @@ public class ReportService {
       List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
         .map(oId -> {
+              //поиск операции, которая соответствует очередному id из значений второго параметра,
+              //дополнительно идет проверка, что операция относится к проекту из главного
+              // блока отчета
               Operation op = ops.stream()
                   .filter(o -> Objects.equals(o.getId(), oId)
                       && Objects.equals(o.getProject().getId(), firstValue))
@@ -262,7 +284,9 @@ public class ReportService {
                           + firstValue));
               
               checkNotNullEmpInOp(op);
-              thirdValues.forEach(e -> checkCorrectEmpIdFromReqAndEmpIdFromOp(e, op));
+              //проверка на наличие id сотрудника из выборки операций среди значений
+              // третьего параметра
+              checkIdContainsInSetValues(thirdValues, op.getEmployee().getId());
               
               return new SecondResponseSubDto(op.getId(), op.getName(),
                   List.of(new ThirdResponseSubDto(
@@ -274,6 +298,13 @@ public class ReportService {
         ).toList());
   }
   
+  private void checkIdContainsInSetValues(Set<Long> values, Long id) {
+    if (!values.contains(id)) {
+      throw new ReportException(HttpStatus.BAD_REQUEST,
+          "Values of parameter not contains this id: " + id);
+    }
+  }
+  
   private void addToEmpReportSecondSubDtoByOperations(
       Long firstValue,
       Set<Long> secondValues,
@@ -282,6 +313,9 @@ public class ReportService {
       List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
         .map(oId -> {
+          //поиск операции, которая соответствует очередному id из значений второго параметра,
+          //дополнительно идет проверка, что операция относится к сотруднику из главного
+          // блока отчета
           Operation op = ops.stream()
               .filter(o -> Objects.equals(o.getId(), oId)
                   && Objects.equals(o.getEmployee().getId(), firstValue))
@@ -290,6 +324,8 @@ public class ReportService {
                   "Operation with id: " + oId + " and employee with id: "
                       + firstValue + NOT_FOUND_CONST.value
                       + ". Or not contains in values second parameter"));
+          //поиск проекта, который соответствует найденной выше операции,
+          //дополнительно идет проверка, что id проекта есть среди значений третьего параметра
           Project pr = ops.stream()
               .filter(o -> Objects.equals(o.getProject().getId(), op.getProject().getId())
                   && thirdValues.contains(o.getProject().getId()))
@@ -314,6 +350,9 @@ public class ReportService {
       ReportDeadlineDto report,
       List<Operation> ops) {
     report.setSecondRespValues(secondValues.stream()
+        //поиск проекта, который соответствует очередному id из значений второго параметра,
+        //дополнительно идет проверка, что проект относится к сотруднику из главного
+        // блока отчета
         .map(pId -> {
           Project pr = ops.stream()
               .filter(o -> Objects.equals(o.getProject().getId(), pId)
