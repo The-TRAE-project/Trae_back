@@ -20,6 +20,7 @@ import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -150,6 +151,22 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     
     //статус бед реквест заменен на анавторизед по просьбе фронта
     return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+  }
+  
+  @Override
+  protected ResponseEntity<Object> handleHttpMessageNotReadable(
+      HttpMessageNotReadableException ex,
+      HttpHeaders headers,
+      HttpStatus status,
+      WebRequest request) {
+    
+    Response response = Response.builder()
+        .timestamp(LocalDateTime.now().toString())
+        .error(ex.getCause().getMessage().substring(0, ex.getCause().getMessage().indexOf("\n")))
+        .status(status)
+        .build();
+    
+    return new ResponseEntity<>(response, status);
   }
   
   @Override

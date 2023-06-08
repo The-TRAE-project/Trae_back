@@ -1,5 +1,6 @@
 package ru.trae.backend.dto.report;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Set;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -14,7 +15,6 @@ import ru.trae.backend.util.ReportParameter;
  */
 public record DeadlineReq(
     @NotNull(message = "Name of first parameter is NULL")
-    //@Size(min = 6, max = 11, message = "Length name of first parameter is wrong")
     ReportParameter firstParameter,
     @NotNull(message = "Value of first parameter: parameter is NULL")
     @Min(value = 1, message = "The first parameter cannot be less than 1")
@@ -22,13 +22,11 @@ public record DeadlineReq(
         "The first parameter cannot be more than " + Integer.MAX_VALUE)
     long valueOfFirstParameter,
     @NotNull(message = "Name of second parameter is NULL")
-    //@Size(min = 6, max = 11, message = "Length name of second parameter is wrong")
     ReportParameter secondParameter,
     @NotNull(message = "Values of second parameter: set values is NULL")
     @NotEmpty(message = "Values of second parameter: set values is empty")
     Set<Long> valuesOfSecondParameter,
     @NotNull(message = "Name of third parameter is NULL")
-    //@Size(min = 6, max = 11, message = "Length name of third parameter is wrong")
     ReportParameter thirdParameter,
     @NotNull(message = "Values of third parameter: set values is NULL")
     @NotEmpty(message = "Values of third parameter: set values is empty")
