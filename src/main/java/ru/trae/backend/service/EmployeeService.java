@@ -209,6 +209,16 @@ public class EmployeeService {
     return employeeRepository.findByIdIn(listEmpId);
   }
   
+  /**
+   * Retrieves a list of EmployeeIdFirstLastNameDto objects based on the provided project and
+   * operation IDs.
+   *
+   * @param projectIds   A Set of Long values representing the project IDs. Can be null or empty.
+   * @param operationIds A Set of Long values representing the operation IDs. Can be null or empty.
+   * @return A List of EmployeeIdFirstLastNameDto objects that match the provided project and
+   *     operation IDs. If both projectIds and operationIds are null or empty,
+   *     all employees are returned.
+   */
   public List<EmployeeIdFirstLastNameDto> getEmployeeIdFirstLastNameDtoList(
       Set<Long> projectIds, Set<Long> operationIds) {
     List<Long> result;

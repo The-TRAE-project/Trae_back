@@ -192,6 +192,20 @@ public class ProjectController {
         isCurrentOpInWork, isOverdueProject));
   }
   
+  /**
+   * Retrieves a list of ProjectIdNumberDto objects for generating a report without pagination.
+   *
+   * @param startOfPeriod The start date of the period for querying project information.
+   *                      Can be null if not specified.
+   * @param endOfPeriod   The end date of the period for querying project information.
+   *                      Can be null if not specified.
+   * @param employeeIds   A set of employee IDs used to filter projects based on employee
+   *                      participation. Can be null or empty if not applicable.
+   * @param operationIds  A set of operation IDs used to filter projects based on associated
+   *                      operations. Can be null or empty if not applicable.
+   * @return A ResponseEntity containing the list of ProjectIdNumberDto objects matching the
+   *     specified filters.
+   */
   @Operation(summary = "Список сокращенных ДТО проектов без пагинации с фильтрами по сотрудникам, "
       + "операциям и периоду",
       description = "Доступен администратору. Возвращает список сокращенных ДТО (id, номер) "

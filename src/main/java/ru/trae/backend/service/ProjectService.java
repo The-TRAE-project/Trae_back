@@ -136,6 +136,19 @@ public class ProjectService {
         .toList();
   }
   
+  /**
+   * Retrieves a list of ProjectIdNumberDto objects based on the provided filters.
+   *
+   * @param employeeIds   A set of employee IDs used to filter projects based on employee
+   *                      participation. Can be null or empty if not applicable.
+   * @param operationIds  A set of operation IDs used to filter projects based on associated
+   *                      operations. Can be null or empty if not applicable.
+   * @param startOfPeriod The start date of the period to filter projects. Must not be null.
+   * @param endOfPeriod   The end date of the period to filter projects. Must not be null.
+   * @return A list of ProjectIdNumberDto objects matching the specified filters.
+   * @throws IllegalArgumentException if the startOfPeriod or endOfPeriod is null, or if the
+   *                                  start date is after the end date.
+   */
   public List<ProjectIdNumberDto> getProjectIdNumberDtoListWithFilters(
       Set<Long> employeeIds, Set<Long> operationIds,
       LocalDate startOfPeriod, LocalDate endOfPeriod) {

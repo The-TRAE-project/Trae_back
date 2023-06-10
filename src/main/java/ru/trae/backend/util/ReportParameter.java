@@ -10,6 +10,9 @@
 
 package ru.trae.backend.util;
 
+/**
+ * Enumerates the report parameters that can be used for filtering reports.
+ */
 public enum ReportParameter {
   PROJECT, OPERATION, EMPLOYEE
 }

@@ -32,7 +32,6 @@ import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.factory.OperationFactory;
 import ru.trae.backend.projection.OperationIdNameProjectNumberDto;
 import ru.trae.backend.repository.OperationRepository;
-import ru.trae.backend.util.ReportParameter;
 import ru.trae.backend.util.Util;
 
 /**
@@ -417,6 +416,23 @@ public class OperationService {
     }
   }
   
+  /**
+   * Retrieves a list of OperationIdNameProjectNumberDto objects based on the provided project IDs,
+   * employee IDs, start date, and end date.
+   *
+   * @param projectIds    A set of project IDs used to filter the operation list by project.
+   *                      Can be null or empty if not applicable.
+   * @param employeeIds   A set of employee IDs used to filter the operation list by employee.
+   *                      Can be null or empty if not applicable.
+   * @param startOfPeriod The start date of the period to filter the operation list.
+   *                      Must not be null.
+   * @param endOfPeriod   The end date of the period to filter the operation list.
+   *                      Must not be null.
+   * @return A list of OperationIdNameProjectNumberDto objects matching the specified project IDs,
+   *     employee IDs,
+   * @throws IllegalArgumentException if the startOfPeriod or endOfPeriod is null, or if the start
+   *                                  date is after the end date.
+   */
   public List<OperationIdNameProjectNumberDto> getOperationIdNameProjectNumberDtoList(
       Set<Long> projectIds, Set<Long> employeeIds, LocalDate startOfPeriod, LocalDate endOfPeriod) {
     checkStartEndDates(startOfPeriod, endOfPeriod);

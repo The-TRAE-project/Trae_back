@@ -115,6 +115,13 @@ public class ReportService {
         startOfPeriod, endOfPeriod, LocalDate.now(), projectForReportDtoList);
   }
   
+  /**
+   * Generates a report containing deadlines based on the provided request.
+   *
+   * @param req The request object specifying the parameters for the report.
+   * @return A ReportDeadlineDto object containing the generated report.
+   * @throws ReportException if there is an error generating the report.
+   */
   public ReportDeadlineDto reportDeadlines(DeadlineReq req) {
     
     //проверка на неповторяющиеся значения параметров
