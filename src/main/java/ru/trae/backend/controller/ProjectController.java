@@ -40,7 +40,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.trae.backend.dto.PageDto;
-import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.project.ChangingCommonDataReq;
 import ru.trae.backend.dto.project.ChangingCommonDataResp;
 import ru.trae.backend.dto.project.ChangingEndDatesReq;
@@ -131,10 +130,10 @@ public class ProjectController {
    *
    * @param pageSetting                    the page settings
    * @param isEnded                        filter by open/closed status
-   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@link  Project}
-   *                                       has first operation without acceptance
-   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@link  Project}
-   *                                       has last operation in work
+   * @param isOnlyFirstOpReadyToAcceptance a boolean flag indicating if the {@link  Project}
+   *                                       has first operation ready to acceptance
+   * @param isOnlyLastOpReadyToAcceptance  a boolean flag indicating if the {@link  Project}
+   *                                       has last operation ready to acceptance
    * @param isOverdueCurrentOpInProject    a boolean flag indicating if the {@link  Project}
    *                                       has overdue current operation in work
    *                                       or ready for acceptance
@@ -148,7 +147,7 @@ public class ProjectController {
       description = "Доступен администратору. Возвращает список ДТО проектов с сортировкой по "
           + "контрактной дате окончания, с возможностью фильтрации по статусу(открыт/закрыт) "
           + "проекта, по первой, не взятой в работу, операции, "
-          + "по последней операции, взятой в работу, "
+          + "по последней операции, не взятой в работу, "
           + "по проектам, с просроченному текущему этапу.")
   @ApiResponses(value = {
       @ApiResponse(responseCode = "200", description = "Список ДТО проектов. "
@@ -168,10 +167,10 @@ public class ProjectController {
           "Фильтрация по статусу проекта: открыт/закрыт") Boolean isEnded,
       @RequestParam(required = false) @Parameter(
           description = "Фильтрация по по проектам с первой операцией, непринятой в работу")
-      Boolean isOnlyFirstOpWithoutAcceptance,
+      Boolean isOnlyFirstOpReadyToAcceptance,
       @RequestParam(required = false) @Parameter(
-          description = "Фильтрация по проектам с последней операцией, находящейся в работе")
-      Boolean isOnlyLastOpInWork,
+          description = "Фильтрация по проектам с последней операцией, непринятой в работу")
+      Boolean isOnlyLastOpReadyToAcceptance,
       @RequestParam(required = false) @Parameter(
           description = "Фильтрация по проектам с операциями, находящимися в работе")
       Boolean isCurrentOpInWork,
@@ -188,8 +187,8 @@ public class ProjectController {
         pageSetting.getPage(), pageSetting.getElementPerPage(), projectSort);
     
     return ResponseEntity.ok(projectService.getProjectDtoPage(
-        projectPage, isEnded, isOnlyFirstOpWithoutAcceptance,
-        isOnlyLastOpInWork, isOverdueCurrentOpInProject,
+        projectPage, isEnded, isOnlyFirstOpReadyToAcceptance,
+        isOnlyLastOpReadyToAcceptance, isOverdueCurrentOpInProject,
         isCurrentOpInWork, isOverdueProject));
   }
   
@@ -223,7 +222,7 @@ public class ProjectController {
       @RequestParam(required = false) @Parameter(description = "Фильтр проектов по "
           + "идентификаторам операций, которые были в рамках проекта") Set<Long> operationIds) {
     return ResponseEntity.ok(
-        projectService.getProjectIdNumberDtoList(
+        projectService.getProjectIdNumberDtoListWithFilters(
             employeeIds, operationIds, startOfPeriod, endOfPeriod));
   }
   

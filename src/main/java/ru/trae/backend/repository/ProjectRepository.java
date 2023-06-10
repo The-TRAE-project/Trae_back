@@ -39,8 +39,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   @Query("""
       select p from Project p inner join p.operations operations
       where p.isEnded = false and operations.priority = (select max(o.priority)\s
-      from Operation o where o.project.id = p.id) and operations.inWork = true""")
-  Page<Project> findLastByIsEndedAndOpPriorityAndInWorkTrue(Pageable pageable);
+      from Operation o where o.project.id = p.id) and operations.readyToAcceptance = true""")
+  Page<Project> findLastByIsEndedAndOpPriorityAndReadyToAcceptanceTrue(Pageable pageable);
   
   @Query("""
       select p from Project p inner join p.operations o

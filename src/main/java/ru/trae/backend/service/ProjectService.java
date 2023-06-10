@@ -136,7 +136,7 @@ public class ProjectService {
         .toList();
   }
   
-  public List<ProjectIdNumberDto> getProjectIdNumberDtoList(
+  public List<ProjectIdNumberDto> getProjectIdNumberDtoListWithFilters(
       Set<Long> employeeIds, Set<Long> operationIds,
       LocalDate startOfPeriod, LocalDate endOfPeriod) {
     
@@ -196,10 +196,10 @@ public class ProjectService {
    * @param projectPage                    the requested page for the {@link Project} objects
    * @param isEnded                        a boolean flag indicating if the {@link Project}
    *                                       is ended or not
-   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@link Project}
-   *                                       has first operation without acceptance
-   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@link Project}
-   *                                       has last operation in work
+   * @param isOnlyFirstOpReadyToAcceptance a boolean flag indicating if the {@link Project}
+   *                                       has first operation ready to acceptance
+   * @param isOnlyLastOpReadyToAcceptance  a boolean flag indicating if the {@link Project}
+   *                                       has last operation ready to acceptance
    * @param isOverdueCurrentOpInProject    a boolean flag indicating if the {@link  Project}
    *                                       has overdue current operation in work
    *                                       or ready for acceptance
@@ -212,8 +212,8 @@ public class ProjectService {
   public Page<Project> getProjectPage(
       Pageable projectPage,
       Boolean isEnded,
-      Boolean isOnlyFirstOpWithoutAcceptance,
-      Boolean isOnlyLastOpInWork,
+      Boolean isOnlyFirstOpReadyToAcceptance,
+      Boolean isOnlyLastOpReadyToAcceptance,
       Boolean isOverdueCurrentOpInProject,
       Boolean isCurrentOpInWork,
       Boolean isOverdueProject
@@ -221,8 +221,8 @@ public class ProjectService {
     Page<Project> page;
     
     checkCorrectInternalParametersInRequest(
-        isEnded, isOnlyFirstOpWithoutAcceptance,
-        isOnlyLastOpInWork, isOverdueCurrentOpInProject,
+        isEnded, isOnlyFirstOpReadyToAcceptance,
+        isOnlyLastOpReadyToAcceptance, isOverdueCurrentOpInProject,
         isCurrentOpInWork, isOverdueProject);
     
     if (isEnded != null && isEnded) {
@@ -232,12 +232,12 @@ public class ProjectService {
       //выборка проектов с просроченной текущей(в работе или доступной для принятия) операцией
       page = projectRepository.findProjectsWithOverdueCurrentOperation(
           LocalDateTime.now(), projectPage);
-    } else if (isEnded != null && Boolean.TRUE.equals(isOnlyFirstOpWithoutAcceptance)) {
+    } else if (isEnded != null && Boolean.TRUE.equals(isOnlyFirstOpReadyToAcceptance)) {
       //выборка проектов с первой операцией доступной для принятия, но не принятой в работу
       page = projectRepository.findFirstByIsEndedAndOpPriorityAndReadyToAcceptance(0, projectPage);
-    } else if (isEnded != null && Boolean.TRUE.equals(isOnlyLastOpInWork)) {
-      //выборка проектов с последней операцией (отгрузкой) принятой в работу
-      page = projectRepository.findLastByIsEndedAndOpPriorityAndInWorkTrue(projectPage);
+    } else if (isEnded != null && Boolean.TRUE.equals(isOnlyLastOpReadyToAcceptance)) {
+      //выборка проектов с последней операцией (отгрузкой) доступной для принятия в работу
+      page = projectRepository.findLastByIsEndedAndOpPriorityAndReadyToAcceptanceTrue(projectPage);
     } else if (isEnded != null && Boolean.TRUE.equals(isCurrentOpInWork)) {
       //выборка проектов с наличием операции находящейся в работе
       page = projectRepository.findByIsEndedFalseAndAnyOperationInWork(projectPage);
@@ -299,10 +299,10 @@ public class ProjectService {
    * @param projectPage                    the requested page for the {@link Project} objects
    * @param isEnded                        a boolean flag indicating if the {@link Project}
    *                                       is ended or not
-   * @param isOnlyFirstOpWithoutAcceptance a boolean flag indicating if the {@link Project}
-   *                                       has first operation without acceptance
-   * @param isOnlyLastOpInWork             a boolean flag indicating if the {@link Project}
-   *                                       has last operation in work
+   * @param isOnlyFirstOpReadyToAcceptance a boolean flag indicating if the {@link Project}
+   *                                       has first operation ready to acceptance
+   * @param isOnlyLastOpReadyToAcceptance  a boolean flag indicating if the {@link Project}
+   *                                       has last operation ready to acceptance
    * @param isOverdueCurrentOpInProject    a boolean flag indicating if the {@link  Project}
    *                                       has overdue current operation in work
    *                                       or ready for acceptance
@@ -315,16 +315,16 @@ public class ProjectService {
   public PageDto<ProjectShortDto> getProjectDtoPage(
       Pageable projectPage,
       Boolean isEnded,
-      Boolean isOnlyFirstOpWithoutAcceptance,
-      Boolean isOnlyLastOpInWork,
+      Boolean isOnlyFirstOpReadyToAcceptance,
+      Boolean isOnlyLastOpReadyToAcceptance,
       Boolean isOverdueCurrentOpInProject,
       Boolean isCurrentOpInWork,
       Boolean isOverdueProject) {
     return pageToPageDtoMapper.projectPageToPageDto(getProjectPage(
         projectPage,
         isEnded,
-        isOnlyFirstOpWithoutAcceptance,
-        isOnlyLastOpInWork,
+        isOnlyFirstOpReadyToAcceptance,
+        isOnlyLastOpReadyToAcceptance,
         isOverdueCurrentOpInProject,
         isCurrentOpInWork,
         isOverdueProject));
