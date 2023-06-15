@@ -69,8 +69,10 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       select p from Project p
       where p.isEnded = false and exists (
                                           select o from Operation o\s
-                                          where o.project.id = p.id and o.inWork = true)""")
-  Page<Project> findByIsEndedFalseAndAnyOperationInWork(Pageable pageable);
+                                          where o.project.id = p.id and\s
+                                          (o.inWork = true or\s
+                                          (o.readyToAcceptance = true and o.priority != 0)))""")
+  Page<Project> findOpsInWorkOrReadyToAcceptanceExceptFirstOpReadyToAcceptance(Pageable pageable);
   
   @Query("""
       select p from Project p

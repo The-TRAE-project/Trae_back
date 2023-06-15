@@ -128,19 +128,21 @@ public class ProjectController {
   /**
    * Gets a page of projects.
    *
-   * @param pageSetting                    the page settings
-   * @param isEnded                        filter by open/closed status
-   * @param isOnlyFirstOpReadyToAcceptance a boolean flag indicating if the {@link  Project}
-   *                                       has first operation ready to acceptance
-   * @param isOnlyLastOpReadyToAcceptance  a boolean flag indicating if the {@link  Project}
-   *                                       has last operation ready to acceptance
-   * @param isOverdueCurrentOpInProject    a boolean flag indicating if the {@link  Project}
-   *                                       has overdue current operation in work
-   *                                       or ready for acceptance
-   * @param isCurrentOpInWork              a boolean flag indicating if the {@link  Project}
-   *                                       has current operation in work
-   * @param isOverdueProject               a boolean flag indicating if the {@link  Project}
-   *                                       is overdue
+   * @param pageSetting                          the page settings
+   * @param isEnded                              filter by open/closed status
+   * @param isOnlyFirstOpReadyToAcceptance       a boolean flag indicating if the {@link  Project}
+   *                                             has first operation ready to acceptance
+   * @param isOnlyLastOpReadyToAcceptance        a boolean flag indicating if the {@link  Project}
+   *                                             has last operation ready to acceptance
+   * @param isOverdueCurrentOpInProject          a boolean flag indicating if the {@link  Project}
+   *                                             has overdue current operation in work
+   *                                             or ready for acceptance
+   * @param isCurrentOpInWorkOrReadyToAcceptance a boolean flag indicating if the {@link  Project}
+   *                                             has current operation in work or ready to
+   *                                             acceptance except first operation with
+   *                                             "ready to acceptance" status
+   * @param isOverdueProject                     a boolean flag indicating if the {@link  Project}
+   *                                             is overdue
    * @return a page of short project dtos
    */
   @Operation(summary = "Список проектов с пагинацией, сортировкой и фильтрацией",
@@ -171,15 +173,16 @@ public class ProjectController {
       @RequestParam(required = false) @Parameter(
           description = "Фильтрация по проектам с последней операцией, непринятой в работу")
       Boolean isOnlyLastOpReadyToAcceptance,
-      @RequestParam(required = false) @Parameter(
-          description = "Фильтрация по проектам с операциями, находящимися в работе")
-      Boolean isCurrentOpInWork,
+      @RequestParam(required = false) @Parameter(description = "Фильтрация по проектам с "
+          + "операциями, находящимися в работе или доступными для принятия, за исключением "
+          + "первой операции со статусом \"доступна для принятия)\"")
+      Boolean isCurrentOpInWorkOrReadyToAcceptance,
       @RequestParam(required = false) @Parameter(
           description = "Фильтрация по проектам где планируемая дата окончания позже даты"
               + " окончания по договору")
       Boolean isOverdueProject,
       @RequestParam(required = false) @Parameter(description = "Фильтрация по проектам с "
-          + "операциями, находящимися в работе или готовыми для принятия в работу")
+          + " с текущей операцией, у которой превышен срок выполнения")
       Boolean isOverdueCurrentOpInProject) {
     
     Sort projectSort = pageSetting.buildProjectSort();
@@ -189,7 +192,7 @@ public class ProjectController {
     return ResponseEntity.ok(projectService.getProjectDtoPage(
         projectPage, isEnded, isOnlyFirstOpReadyToAcceptance,
         isOnlyLastOpReadyToAcceptance, isOverdueCurrentOpInProject,
-        isCurrentOpInWork, isOverdueProject));
+        isCurrentOpInWorkOrReadyToAcceptance, isOverdueProject));
   }
   
   /**
