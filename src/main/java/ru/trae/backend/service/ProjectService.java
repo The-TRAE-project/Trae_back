@@ -107,7 +107,7 @@ public class ProjectService {
   public Project getProjectById(long id) {
     return projectRepository.findById(id).orElseThrow(
         () -> new ProjectException(HttpStatus.NOT_FOUND,
-            "Project with ID: " + id + Constant.NOT_FOUND_CONST));
+            "Project with ID: " + id + Constant.NOT_FOUND_CONST.value));
   }
   
   
