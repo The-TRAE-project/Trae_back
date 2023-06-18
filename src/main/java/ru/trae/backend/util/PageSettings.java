@@ -11,6 +11,7 @@
 package ru.trae.backend.util;
 
 import io.swagger.annotations.ApiParam;
+import java.util.Objects;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import lombok.Data;
@@ -36,7 +37,7 @@ public class PageSettings {
   @Pattern(regexp = "[a-z][a-zA-Z0-9]{1,200}", message =
       "Неправильный формат ключа, либо такой ключ отсутствует у запрашиваемого списка")
   private String key = "id";
-
+  
   /**
    * Builds a {@link Sort} instance based on the {@link #direction} and {@link #key} fields.
    * If the {@link #direction} is "dsc", the sort instance will be a descending sort.
@@ -53,7 +54,7 @@ public class PageSettings {
     }
     return Sort.by(key).descending();
   }
-
+  
   /**
    * This method builds a sort for a manager object.
    *
@@ -70,7 +71,7 @@ public class PageSettings {
     }
     return sort;
   }
-
+  
   /**
    * This method builds a sort for a type work object.
    *
@@ -87,7 +88,7 @@ public class PageSettings {
     }
     return sort;
   }
-
+  
   /**
    * This method builds a sort for a project object.
    *
@@ -103,5 +104,22 @@ public class PageSettings {
       sort = Sort.by(key).descending().and(Sort.by(nextKey).descending());
     }
     return sort;
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    PageSettings that = (PageSettings) o;
+    return Objects.equals(direction, that.direction) && Objects.equals(key, that.key);
+  }
+  
+  @Override
+  public int hashCode() {
+    return Objects.hash(direction, key);
   }
 }
