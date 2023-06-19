@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -22,6 +23,7 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
@@ -36,6 +38,8 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -50,10 +54,15 @@ import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectAvailableDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectDtoMapper;
 import ru.trae.backend.dto.operation.NewOperationDto;
+import ru.trae.backend.dto.project.ChangingEndDatesResp;
 import ru.trae.backend.dto.project.NewProjectDto;
+import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
 import ru.trae.backend.dto.project.ProjectDto;
 import ru.trae.backend.dto.project.ProjectShortDto;
+import ru.trae.backend.entity.TypeWork;
+import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
+import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.factory.ProjectFactory;
 import ru.trae.backend.projection.ProjectIdNumberDto;
@@ -652,4 +661,181 @@ class ProjectServiceTest {
     assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
     assertEquals("Internal parameters for filters are not allowed for closed projects", exception.getMessage());
   }
+  
+  @Test
+  void getProjectDtoPage_ShouldReturnPageDtoOfProjectShortDto() {
+    //given
+    Pageable projectPage = PageRequest.of(0, 10);
+    Boolean isEnded = false;
+    Boolean isOnlyFirstOpReadyToAcceptance = true;
+    
+    Page<Project> projectPageResult = new PageImpl<>(List.of(project), projectPage, 1);
+    
+    PageDto<ProjectShortDto> expectedPageDto = new PageDto<>(
+        List.of(),
+        projectPageResult.getTotalElements(),
+        projectPage.getPageSize(),
+        projectPage.getPageNumber());
+    
+    //when
+    when(projectService.getProjectPage(
+        projectPage,
+        isEnded,
+        isOnlyFirstOpReadyToAcceptance,
+        null,
+        null,
+        null,
+        null
+    )).thenReturn(projectPageResult);
+    
+    when(pageToPageDtoMapper.projectPageToPageDto(projectPageResult)).thenReturn(expectedPageDto);
+    
+    PageDto<ProjectShortDto> result = projectService.getProjectDtoPage(
+        projectPage,
+        isEnded,
+        isOnlyFirstOpReadyToAcceptance,
+        null,
+        null,
+        null,
+        null
+    );
+    
+    //then
+    verify(pageToPageDtoMapper).projectPageToPageDto(projectPageResult);
+    assertEquals(expectedPageDto, result);
+  }
+  
+  @Test
+  void getAvailableProjects_ShouldReturnListOfProjectAvailableForEmpDto() {
+    //given
+    long employeeId = 1;
+    Employee employee = new Employee();
+    employee.setId(employeeId);
+    
+    TypeWork typeWork1 = new TypeWork();
+    typeWork1.setId(1L);
+    TypeWork typeWork2 = new TypeWork();
+    typeWork2.setId(2L);
+    
+    employee.setTypeWorks(Set.of(typeWork1, typeWork2));
+    
+    Project project1 = new Project();
+    project1.setId(1L);
+    project1.setEndDateInContract(LocalDateTime.now().plusDays(20));
+    Project project2 = new Project();
+    project2.setId(2L);
+    project2.setEndDateInContract(LocalDateTime.now().plusDays(30));
+    
+    //when
+    when(employeeService.getEmployeeById(employeeId)).thenReturn(employee);
+    when(projectRepository.findAvailableProjectsByTypeWork(anyLong())).thenReturn(List.of(project1, project2));
+    
+    List<ProjectAvailableForEmpDto> result = projectService.getAvailableProjects(employeeId);
+    
+    //then
+    verify(employeeService).getEmployeeById(employeeId);
+    verify(projectRepository, times(2)).findAvailableProjectsByTypeWork(anyLong());
+    assertEquals(4, result.size());
+  }
+  
+  
+  @Test
+  void finishProject_ShouldSetIsEndedAndRealEndDate() {
+    //define a flexible argument matcher for LocalDateTime
+    ArgumentMatcher<LocalDateTime> dateTimeMatcher = actualDateTime ->
+        actualDateTime.isAfter(LocalDateTime.now().minusSeconds(1)) &&
+            actualDateTime.isBefore(LocalDateTime.now().plusSeconds(1));
+    
+    //then
+    projectService.finishProject(projectId);
+    
+    verify(projectRepository).updateIsEndedAndRealEndDateById(
+        eq(true),
+        argThat(dateTimeMatcher),
+        eq(projectId)
+    );
+  }
+  
+  @Test
+  void checkAndUpdateProjectEndDateAfterFinishOperation_ShouldUpdatePlusHoursProjectEndDate() {
+    //given
+    Operation operation = new Operation();
+    LocalDateTime plannedEndDate = LocalDateTime.now().minusHours(2);
+    operation.setPlannedEndDate(plannedEndDate);
+    
+    LocalDateTime currentEndDate = LocalDateTime.now();
+    project.setPlannedEndDate(currentEndDate);
+    project.setId(projectId);
+    operation.setProject(project);
+    
+    //when
+    projectService.checkAndUpdateProjectEndDateAfterFinishOperation(operation);
+    
+    ArgumentCaptor<LocalDateTime> newPlannedEndDateCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+    verify(projectRepository).updatePlannedEndDateById(newPlannedEndDateCaptor.capture(), eq(project.getId()));
+    
+    LocalDateTime newPlannedEndDate = newPlannedEndDateCaptor.getValue();
+    
+    //then
+    assertEquals(currentEndDate.plusHours(2), newPlannedEndDate);
+  }
+  
+  @Test
+  void checkAndUpdateProjectEndDateAfterFinishOperation_ShouldUpdateMinusHoursProjectEndDate() {
+    //given
+    Operation operation = new Operation();
+    LocalDateTime plannedEndDate = LocalDateTime.now().plusHours(2);
+    operation.setPlannedEndDate(plannedEndDate);
+    
+    LocalDateTime currentEndDate = LocalDateTime.now();
+    project.setPlannedEndDate(currentEndDate);
+    project.setId(projectId);
+    operation.setProject(project);
+    
+    //when
+    projectService.checkAndUpdateProjectEndDateAfterFinishOperation(operation);
+    
+    ArgumentCaptor<LocalDateTime> newPlannedEndDateCaptor = ArgumentCaptor.forClass(LocalDateTime.class);
+    verify(projectRepository).updatePlannedEndDateById(newPlannedEndDateCaptor.capture(), eq(project.getId()));
+    
+    LocalDateTime newPlannedEndDate = newPlannedEndDateCaptor.getValue();
+    
+    //then
+    assertEquals(currentEndDate.minusHours(2), newPlannedEndDate);
+  }
+  
+  @Test
+  void checkAndUpdateProjectEndDateAfterFinishOperation_ShouldReturnFromMethod() {
+    //given
+    Operation operation = new Operation();
+    LocalDateTime plannedEndDate = LocalDateTime.now();
+    operation.setPlannedEndDate(plannedEndDate);
+    
+    LocalDateTime currentEndDate = LocalDateTime.now();
+    project.setPlannedEndDate(currentEndDate);
+    project.setId(projectId);
+    operation.setProject(project);
+    
+    //when
+    projectService.checkAndUpdateProjectEndDateAfterFinishOperation(operation);
+    
+    //then
+    verify(projectRepository, never()).updatePlannedEndDateById(LocalDateTime.now(), projectId);
+  }
+  
+  @Test
+  void getChangingEndDatesResp_ShouldReturnChangingEndDatesResp() {
+    //given
+    ChangingEndDatesResp expectedResp = new ChangingEndDatesResp(projectId, LocalDateTime.now());
+    
+    //when
+    when(projectRepository.findChangedPlannedEndDateById(projectId)).thenReturn(expectedResp);
+    
+    ChangingEndDatesResp result = projectService.getChangingEndDatesResp(projectId);
+    
+    //then
+    verify(projectRepository).findChangedPlannedEndDateById(projectId);
+    assertEquals(expectedResp, result);
+  }
+  
 }
