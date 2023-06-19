@@ -10,6 +10,7 @@
 
 package ru.trae.backend.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -26,10 +27,12 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.trae.backend.service.OperationService.SHIPMENT_PERIOD;
 import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -54,6 +57,9 @@ import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectAvailableDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectDtoMapper;
 import ru.trae.backend.dto.operation.NewOperationDto;
+import ru.trae.backend.dto.project.ChangingCommonDataReq;
+import ru.trae.backend.dto.project.ChangingCommonDataResp;
+import ru.trae.backend.dto.project.ChangingEndDatesReq;
 import ru.trae.backend.dto.project.ChangingEndDatesResp;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectAvailableForEmpDto;
@@ -836,6 +842,368 @@ class ProjectServiceTest {
     //then
     verify(projectRepository).findChangedPlannedEndDateById(projectId);
     assertEquals(expectedResp, result);
+  }
+  
+  @Test
+  void testUpdateEndDates() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusDays(15));
+    ArgumentCaptor<Project> projectCaptor = ArgumentCaptor.forClass(Project.class);
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    projectService.updateEndDates(req);
+    
+    //then
+    verify(projectRepository).save(projectCaptor.capture());
+    
+    Project updatedProject = projectCaptor.getValue();
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getEndDateInContract());
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getPlannedEndDate());
+    
+    long expectedPeriod = ChronoUnit.HOURS.between(project.getStartDate(), req.newPlannedAndContractEndDate());
+    
+    assertEquals(expectedPeriod, updatedProject.getPeriod());
+    verify(projectRepository).findById(req.projectId());
+    verify(projectRepository).save(updatedProject);
+  }
+  
+  @Test
+  void testUpdateEndDates_ShouldThrowExceptionWhenCheckNewDateEarlyOldDate() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusDays(5));
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateEndDates(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The new planned and contract end date must not be earlier than the "
+        + "current date under the contract", exception.getMessage());
+  }
+  
+  @Test
+  void testUpdateEndDates_ShouldThrowExceptionWhenProjectIsEnded() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusDays(5));
+    
+    project.setEnded(true);
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateEndDates(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The planned and contract end date cannot be changed in a "
+        + "completed project", exception.getMessage());
+  }
+  
+  @Test
+  void testUpdateEndDates_ShouldThrowExceptionWhenNewDateIsBeforeCurrentDatePlus24hours() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now());
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract.minusDays(12));
+    project.setPlannedEndDate(plannedEndDate);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateEndDates(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The new planned and contract end date must not be earlier"
+        + " than the current date + 24 hours", exception.getMessage());
+  }
+  
+  @Test
+  void testUpdateEndDates_ShouldThrowExceptionSuchDate() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, endDateInContract);
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateEndDates(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The project planned and contract end date must not match an existing one",
+        exception.getMessage());
+  }
+  
+  @Test
+  void testUpdateEndDates_ShouldThrowExceptionNewDateIsTooBig() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusHours(8761));
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateEndDates(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The planned and contract end date cannot be more than "
+        + "start date of project + 1 year (or 8760 hours)", exception.getMessage());
+  }
+  
+  @Test
+  void testUpdatePlannedEndDateAfterInsertDeleteOp() {
+    //given
+    LocalDateTime plannedEndDate = LocalDateTime.now().plusDays(10);
+    project.setPlannedEndDate(plannedEndDate);
+    project.setOperationPeriod(240);
+    
+    boolean isIncreased = true;
+    boolean shipmentIsAdded = true;
+    
+    //when
+    projectService.updatePlannedEndDateAfterInsertDeleteOp(project, isIncreased, shipmentIsAdded);
+    
+    //then
+    LocalDateTime expectedEndDate = plannedEndDate.plusHours(project.getOperationPeriod()).plusHours(SHIPMENT_PERIOD);
+    assertEquals(expectedEndDate, project.getPlannedEndDate());
+    
+    verify(projectRepository).save(project);
+  }
+  
+  @Test
+  void testUpdatePlannedEndDateAfterInsertDeleteOp_WithFalseFlags() {
+    //given
+    LocalDateTime plannedEndDate = LocalDateTime.now().plusDays(10);
+    project.setPlannedEndDate(plannedEndDate);
+    project.setOperationPeriod(240);
+    
+    boolean isIncreased = false;
+    boolean shipmentIsAdded = false;
+    
+    //when
+    projectService.updatePlannedEndDateAfterInsertDeleteOp(project, isIncreased, shipmentIsAdded);
+    
+    //then
+    verify(projectRepository).save(project);
+  }
+  
+  @Test
+  void testUpdateStartFirstOperationDate() {
+    //given
+    long operationId = 1;
+    
+    //when
+    projectService.updateStartFirstOperationDate(operationId);
+    
+    //then
+    verify(projectRepository).updateStartFirstOperationDateByOperationId(operationId);
+  }
+  
+  @Test
+  void testGetChangingCommonDataResp() {
+    //given
+    ChangingCommonDataResp expectedData = new ChangingCommonDataResp(
+        projectId, projectNumber, name, customer, null);
+    
+    //when
+    when(projectRepository.findChangedCommonDataById(projectId)).thenReturn(expectedData);
+    
+    ChangingCommonDataResp result = projectService.getChangingCommonDataResp(projectId);
+    
+    //then
+    assertEquals(expectedData, result);
+    verify(projectRepository).findChangedCommonDataById(projectId);
+  }
+  
+  @Test
+  void testCheckAvailableUpdateCommonData_NoDataAvailable() {
+    //given
+    ChangingCommonDataReq req = new ChangingCommonDataReq(
+        projectId, null, null, null, null);
+    
+    //then
+    assertThrows(ProjectException.class, () -> projectService.checkAvailableUpdateCommonData(req));
+  }
+  
+  @Test
+  void testCheckAvailableUpdateCommonData_WithOnlyNumber() {
+    //given
+    ChangingCommonDataReq req = new ChangingCommonDataReq(
+        projectId, projectNumber, null, null, null);
+    
+    //then
+    assertDoesNotThrow(() -> projectService.checkAvailableUpdateCommonData(req));
+  }
+  
+  @Test
+  void testCheckAvailableUpdateCommonData_WithOnlyName() {
+    //given
+    ChangingCommonDataReq req = new ChangingCommonDataReq(
+        projectId, null, name, null, null);
+    
+    //then
+    assertDoesNotThrow(() -> projectService.checkAvailableUpdateCommonData(req));
+  }
+  
+  @Test
+  void testCheckAvailableUpdateCommonData_WithCustomerAndComment() {
+    //given
+    ChangingCommonDataReq req = new ChangingCommonDataReq(
+        projectId, null, null, customer, "Comment");
+    
+    //then
+    assertDoesNotThrow(() -> projectService.checkAvailableUpdateCommonData(req));
+  }
+  
+  @Test
+  void testUpdateCommonData() {
+    //given
+    ChangingCommonDataReq req = new ChangingCommonDataReq(projectId, projectNumber, name, customer, "Comment");
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    projectService.updateCommonData(req);
+    
+    //then
+    verify(projectRepository).save(project);
+  }
+  
+  @Test
+  void testUpdateCommonData_WithNullComment() {
+    //given
+    ChangingCommonDataReq req = new ChangingCommonDataReq(projectId, projectNumber, name, customer, null);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    projectService.updateCommonData(req);
+    
+    //then
+    verify(projectRepository).save(project);
+  }
+  
+  @Test
+  void testUpdateCommonData_ShouldThrowExceptionWithSuchComment() {
+    //given
+    project.setComment("Comment");
+    ChangingCommonDataReq req = new ChangingCommonDataReq(projectId, projectNumber, name, customer, "Comment");
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateCommonData(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The project commentary info must not match an existing one", exception.getMessage());
+  }
+  
+  @Test
+  void testUpdateCommonData_WithNullCustomer() {
+    //given
+    ChangingCommonDataReq req = new ChangingCommonDataReq(projectId, projectNumber, name, null, null);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    projectService.updateCommonData(req);
+    
+    //then
+    verify(projectRepository).save(project);
+  }
+  
+  @Test
+  void testUpdateCommonData_ShouldThrowExceptionWithSuchCustomer() {
+    //given
+    project.setCustomer(customer);
+    ChangingCommonDataReq req = new ChangingCommonDataReq(projectId, null, null, customer, null);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateCommonData(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The project customer info must not match an existing one", exception.getMessage());
+  }
+  
+  @Test
+  void testUpdateCommonData_ShouldThrowExceptionWithSuchName() {
+    //given
+    project.setName(name);
+    ChangingCommonDataReq req = new ChangingCommonDataReq(projectId, null, name, null, null);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateCommonData(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The project name must not match an existing one", exception.getMessage());
+  }
+  
+  @Test
+  void testUpdateCommonData_ShouldThrowExceptionWithSuchNumber() {
+    //given
+    project.setNumber(projectNumber);
+    ChangingCommonDataReq req = new ChangingCommonDataReq(projectId, projectNumber, null, null, null);
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateCommonData(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The project number must not match an existing one", exception.getMessage());
+  }
+  
+  @Test
+  void testCheckExistsProjectById_ProjectNotFound() {
+    //given
+    when(projectRepository.existsById(projectId)).thenReturn(false);
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.checkExistsProjectById(projectId));
+    
+    //then
+    verify(projectRepository).existsById(projectId);
+    assertEquals("Project with ID: " + projectId + " not found", exception.getMessage());
+  }
+  
+  @Test
+  void testCheckExistsProjectById_ProjectFound() {
+    //given
+    when(projectRepository.existsById(projectId)).thenReturn(true);
+    
+    //then
+    assertDoesNotThrow(() -> projectService.checkExistsProjectById(projectId));
   }
   
 }
