@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.any;
@@ -387,4 +388,268 @@ class ProjectServiceTest {
     verify(projectRepository, never()).findByNumber(anyInt(), any(Pageable.class));
   }
   
+  @Test
+  void getProjectPage_ShouldReturnPageOfAllProjects() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    Page<Project> expectedPage = new PageImpl<>(List.of(project), projectPage, 1);
+    
+    //when
+    when(projectRepository.findAll(projectPage)).thenReturn(expectedPage);
+    
+    //then
+    Page<Project> result = projectService.getProjectPage(
+        projectPage,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+    );
+    
+    //then
+    verify(projectRepository).findAll(projectPage);
+    assertEquals(expectedPage, result);
+  }
+  
+  @Test
+  void getProjectPage_ShouldReturnPageOfAllEndedProjects() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    Page<Project> expectedPage = new PageImpl<>(List.of(project), projectPage, 1);
+    
+    //when
+    when(projectRepository.findByIsEnded(true, projectPage))
+        .thenReturn(expectedPage);
+    
+    //then
+    Page<Project> result = projectService.getProjectPage(
+        projectPage,
+        true,
+        null,
+        null,
+        null,
+        null,
+        null
+    );
+    
+    //then
+    verify(projectRepository).findByIsEnded(true, projectPage);
+    assertEquals(expectedPage, result);
+  }
+  
+  @Test
+  void getProjectPage_ShouldReturnPageOfAllNotEndedProjects() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    Page<Project> expectedPage = new PageImpl<>(List.of(project), projectPage, 1);
+    
+    //when
+    when(projectRepository.findByIsEnded(false, projectPage))
+        .thenReturn(expectedPage);
+    
+    //then
+    Page<Project> result = projectService.getProjectPage(
+        projectPage,
+        false,
+        null,
+        null,
+        null,
+        null,
+        null
+    );
+    
+    //then
+    verify(projectRepository).findByIsEnded(false, projectPage);
+    assertEquals(expectedPage, result);
+  }
+  
+  @Test
+  void getProjectPage_ShouldReturnPageOfNotEndedProjects_WithFirstReadyToAcceptanceOp() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    Page<Project> expectedPage = new PageImpl<>(List.of(project), projectPage, 1);
+    
+    //when
+    when(projectRepository.findFirstByIsEndedAndOpPriorityAndReadyToAcceptance(0, projectPage))
+        .thenReturn(expectedPage);
+    
+    //then
+    Page<Project> result = projectService.getProjectPage(
+        projectPage,
+        false,
+        true,
+        null,
+        null,
+        null,
+        null
+    );
+    
+    //then
+    verify(projectRepository).findFirstByIsEndedAndOpPriorityAndReadyToAcceptance(0, projectPage);
+    assertEquals(expectedPage, result);
+  }
+  
+  @Test
+  void getProjectPage_ShouldReturnPageOfNotEndedProjects_WithOverdueCurrentOperation() {
+    //given
+    Pageable projectPage = PageRequest.of(0, 10);
+    Page<Project> expectedPage = new PageImpl<>(List.of(project), projectPage, 1);
+    LocalDateTime ldt = LocalDateTime.now();
+    
+    //define the acceptable range for LocalDateTime comparison
+    LocalDateTime acceptableStartDateTime = ldt.minusSeconds(1);
+    LocalDateTime acceptableEndDateTime = ldt.plusSeconds(1);
+    
+    //when
+    when(projectRepository.findProjectsWithOverdueCurrentOperation(
+        argThat(dateTime -> dateTime.isAfter(acceptableStartDateTime) && dateTime.isBefore(acceptableEndDateTime)),
+        eq(projectPage)))
+        .thenReturn(expectedPage);
+    
+    Page<Project> result = projectService.getProjectPage(
+        projectPage,
+        false,
+        null,
+        null,
+        true,
+        null,
+        null
+    );
+    
+    //then
+    verify(projectRepository).findProjectsWithOverdueCurrentOperation(
+        argThat(dateTime -> dateTime.isAfter(acceptableStartDateTime) && dateTime.isBefore(acceptableEndDateTime)),
+        eq(projectPage));
+    assertEquals(expectedPage, result);
+  }
+  
+  @Test
+  void getProjectPage_ShouldReturnPageOfNotEndedProjects_WithLastReadyToAcceptanceOp() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    Page<Project> expectedPage = new PageImpl<>(List.of(project), projectPage, 1);
+    
+    //when
+    when(projectRepository.findLastByIsEndedAndOpPriorityAndReadyToAcceptanceTrue(projectPage))
+        .thenReturn(expectedPage);
+    
+    //then
+    Page<Project> result = projectService.getProjectPage(
+        projectPage,
+        false,
+        null,
+        true,
+        null,
+        null,
+        null
+    );
+    
+    //then
+    verify(projectRepository).findLastByIsEndedAndOpPriorityAndReadyToAcceptanceTrue(projectPage);
+    assertEquals(expectedPage, result);
+  }
+  
+  @Test
+  void getProjectPage_ShouldReturnPageOfNotEndedProjects_WithCurrentInWorkOrReadyToAcceptanceOp() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    Page<Project> expectedPage = new PageImpl<>(List.of(project), projectPage, 1);
+    
+    //when
+    when(projectRepository.findOpsInWorkOrReadyToAcceptanceExceptFirstOpReadyToAcceptance(projectPage))
+        .thenReturn(expectedPage);
+    
+    //then
+    Page<Project> result = projectService.getProjectPage(
+        projectPage,
+        false,
+        null,
+        null,
+        null,
+        true,
+        null
+    );
+    
+    //then
+    verify(projectRepository).findOpsInWorkOrReadyToAcceptanceExceptFirstOpReadyToAcceptance(projectPage);
+    assertEquals(expectedPage, result);
+  }
+  
+  @Test
+  void getProjectPage_ShouldReturnPageOfNotEndedProjects_WithOverdueProject() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    Page<Project> expectedPage = new PageImpl<>(List.of(project), projectPage, 1);
+    
+    //when
+    when(projectRepository.findOverdueProjects(projectPage)).thenReturn(expectedPage);
+    
+    //then
+    Page<Project> result = projectService.getProjectPage(
+        projectPage,
+        false,
+        null,
+        null,
+        null,
+        null,
+        true
+    );
+    
+    //then
+    verify(projectRepository).findOverdueProjects(projectPage);
+    assertEquals(expectedPage, result);
+  }
+  
+  @Test
+  void getProjectPage_ShouldThrowException_InternalParametersWithoutExternalParameter() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.getProjectPage(
+            projectPage,
+            null,
+            true,
+            null,
+            null,
+            null,
+            null));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("Internal parameters without external "
+        + "parameter(isEnded) for filters in the request", exception.getMessage());
+  }
+  
+  @Test
+  void getProjectPage_ShouldThrowException_IncorrectNumberOfInternalParametersForFilters() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.getProjectPage(
+            projectPage,
+            false,
+            true,
+            true,
+            null,
+            null,
+            null));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("Incorrect number of internal parameters for filters in the request", exception.getMessage());
+  }
+  
+  @Test
+  void getProjectPage_ShouldThrowException_InternalParametersForFiltersAreNotAllowedForClosedProjects() {
+    Pageable projectPage = PageRequest.of(0, 10);
+    
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.getProjectPage(
+            projectPage,
+            true,
+            true,
+            null,
+            null,
+            null,
+            null));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("Internal parameters for filters are not allowed for closed projects", exception.getMessage());
+  }
 }
