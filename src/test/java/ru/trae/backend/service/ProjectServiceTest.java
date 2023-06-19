@@ -14,25 +14,36 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyInt;
-import static org.mockito.Mockito.anyList;
-import static org.mockito.Mockito.anyString;
-import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import ru.trae.backend.dto.PageDto;
 import ru.trae.backend.dto.manager.ManagerDto;
 import ru.trae.backend.dto.mapper.PageToPageDtoMapper;
 import ru.trae.backend.dto.mapper.ProjectAvailableDtoMapper;
@@ -40,9 +51,11 @@ import ru.trae.backend.dto.mapper.ProjectDtoMapper;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.project.NewProjectDto;
 import ru.trae.backend.dto.project.ProjectDto;
+import ru.trae.backend.dto.project.ProjectShortDto;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.factory.ProjectFactory;
+import ru.trae.backend.projection.ProjectIdNumberDto;
 import ru.trae.backend.repository.ProjectRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,6 +76,7 @@ class ProjectServiceTest {
   private PageToPageDtoMapper pageToPageDtoMapper;
   @InjectMocks
   private ProjectService projectService;
+  Project project;
   private ManagerDto managerDto;
   private NewProjectDto newProjectDto;
   private NewOperationDto newOperationDto;
@@ -80,6 +94,8 @@ class ProjectServiceTest {
   
   @BeforeEach
   void setup() {
+    project = new Project();
+    
     managerDto = new ManagerDto(
         1L, "Man", "Man", "Manager",
         "+7 (999) 999 9999", "test", "test_username",
@@ -98,31 +114,25 @@ class ProjectServiceTest {
         projectAvailableDtoMapper, pageToPageDtoMapper);
   }
   
-//  @Test
-//  void saveNewProject_ValidInput_SuccessfullySaved() {
-//    //given
-//    String authUsername = managerDto.username();
-//    Project project = new Project();
-//    NewProjectDto newProjectDto1 = new NewProjectDto(anyInt(), anyString(),
-//        any(LocalDateTime.class), anyString(), anyString(), null);
-//
-//    //when
-//    when(projectFactory.create(anyInt(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class),
-//        anyInt(), anyString(), anyString(), anyString())).thenReturn(project);
-//
-//    projectService.saveNewProject(newProjectDto1, authUsername);
-//
-//    //then
-//    verify(projectFactory).create(anyInt(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class),
-//        anyInt(), anyString(), anyString(), anyString());
-//    verify(projectRepository).save(project);
-//    verify(operationService).saveNewOperations(eq(project), anyList());
-//  }
+  @Test
+  void saveNewProject_ShouldSaveProjectAndOperations() {
+    //given
+    project.setOperationPeriod(45);
+    
+    //when
+    when(projectFactory.create(anyInt(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class),
+        anyInt(), anyString(), isNull(), anyString())).thenReturn(project);
+    
+    projectService.saveNewProject(newProjectDto, managerDto.username());
+    
+    //then
+    verify(projectRepository).save(project);
+    verify(operationService).saveNewOperations(project, newProjectDto.operations());
+  }
   
   @Test
   void getProjectById_ExistingId_ReturnsProject() {
     //given
-    Project project = new Project();
     when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
     
     //when
@@ -171,9 +181,6 @@ class ProjectServiceTest {
   
   @Test
   void getProject_ValidId_ReturnsProjectDto() {
-    //given
-    Project project = new Project();
-    
     //when
     when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
     when(projectDtoMapper.apply(project)).thenReturn(projectDto);
@@ -190,12 +197,11 @@ class ProjectServiceTest {
   @Test
   void deleteProject_ValidId_SuccessfullyDeleted() {
     //when
-    Project p = new Project();
-    when(projectRepository.findById(projectId)).thenReturn(Optional.of(p));
+    when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
     projectService.deleteProject(projectId);
     
     //then
-    verify(projectRepository).delete(p);
+    verify(projectRepository).delete(project);
   }
   
   @Test
@@ -207,4 +213,178 @@ class ProjectServiceTest {
     assertThrows(ProjectException.class, () -> projectService.deleteProject(projectId));
     verify(projectRepository).findById(projectId);
   }
+  
+  @Test
+  void getProjectByOperationId_WithExistingProject_ShouldReturnProject() {
+    //given
+    long operationId = 1L;
+    
+    //when
+    when(projectRepository.findByOperationId(operationId)).thenReturn(Optional.of(project));
+    
+    Project result = projectService.getProjectByOperationId(operationId);
+    
+    //then
+    assertNotNull(result);
+    assertEquals(project, result);
+    
+    verify(projectRepository).findByOperationId(operationId);
+  }
+  
+  @Test
+  void getProjectByOperationId_WithNonExistingProject_ShouldThrowProjectException() {
+    //given
+    long operationId = 1L;
+    
+    //when
+    when(projectRepository.findByOperationId(operationId)).thenReturn(Optional.empty());
+    
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.getProjectByOperationId(operationId));
+    
+    //then
+    assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
+    assertEquals("Project with operation ID: " + operationId
+        + NOT_FOUND_CONST.value, exception.getMessage());
+    
+    verify(projectRepository).findByOperationId(operationId);
+  }
+  
+  @Test
+  void getProjectIdNumberDtoListWithFilters_WithEmployeeIds_ShouldReturnFilteredProjects() {
+    //given
+    Set<Long> employeeIds = Set.of(1L, 2L);
+    LocalDate startOfPeriod = LocalDate.of(2023, 6, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 6, 30);
+    List<ProjectIdNumberDto> expectedProjects = new ArrayList<>();
+    
+    //when
+    when(projectRepository.findByPeriodAndEmployeeIds(startOfPeriod, endOfPeriod, employeeIds))
+        .thenReturn(expectedProjects);
+    
+    List<ProjectIdNumberDto> result = projectService.getProjectIdNumberDtoListWithFilters(
+        employeeIds, null, startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedProjects, result);
+    verify(projectRepository).findByPeriodAndEmployeeIds(startOfPeriod, endOfPeriod, employeeIds);
+  }
+  
+  @Test
+  void getProjectIdNumberDtoListWithFilters_WithOperationIds_ShouldReturnFilteredProjects() {
+    //given
+    Set<Long> operationIds = Set.of(1L, 2L);
+    LocalDate startOfPeriod = LocalDate.of(2023, 6, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 6, 30);
+    List<ProjectIdNumberDto> expectedProjects = new ArrayList<>();
+    
+    //when
+    when(projectRepository.findByPeriodAndOperationIds(startOfPeriod, endOfPeriod, operationIds))
+        .thenReturn(expectedProjects);
+    
+    List<ProjectIdNumberDto> result = projectService.getProjectIdNumberDtoListWithFilters(
+        null, operationIds, startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedProjects, result);
+    verify(projectRepository).findByPeriodAndOperationIds(startOfPeriod, endOfPeriod, operationIds);
+  }
+  
+  @Test
+  void getProjectIdNumberDtoListWithFilters_WithoutEmployeeIdsAndOperationIds_ShouldReturnAllProjects() {
+    //given
+    LocalDate startOfPeriod = LocalDate.of(2023, 6, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 6, 30);
+    List<ProjectIdNumberDto> expectedProjects = new ArrayList<>();
+    
+    //when
+    when(projectRepository.findByPeriod(startOfPeriod, endOfPeriod)).thenReturn(expectedProjects);
+    
+    List<ProjectIdNumberDto> result = projectService.getProjectIdNumberDtoListWithFilters(
+        null, null, startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedProjects, result);
+    verify(projectRepository).findByPeriod(startOfPeriod, endOfPeriod);
+  }
+  
+  @Test
+  void getProjectIdNumberDtoListWithFilters_WithEmptyEmployeeIdsAndOperationIds_ShouldReturnAllProjects() {
+    //given
+    Set<Long> operationIds = Set.of();
+    Set<Long> employeeIds = Set.of();
+    LocalDate startOfPeriod = LocalDate.of(2023, 6, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 6, 30);
+    List<ProjectIdNumberDto> expectedProjects = new ArrayList<>();
+    
+    //when
+    when(projectRepository.findByPeriod(startOfPeriod, endOfPeriod)).thenReturn(expectedProjects);
+    
+    List<ProjectIdNumberDto> result = projectService.getProjectIdNumberDtoListWithFilters(
+        employeeIds, operationIds, startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedProjects, result);
+    verify(projectRepository).findByPeriod(startOfPeriod, endOfPeriod);
+  }
+  
+  @Test
+  void findProjectsForPeriod_ShouldReturnProjectsInSpecifiedPeriod() {
+    //given
+    LocalDate startOfPeriod = LocalDate.of(2023, 6, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 6, 30);
+    List<Project> expectedProjects = List.of(project);
+    
+    //when
+    when(projectRepository.findProjectsForPeriod(startOfPeriod, endOfPeriod))
+        .thenReturn(expectedProjects);
+    
+    List<Project> result = projectService.findProjectsForPeriod(startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedProjects, result);
+    verify(projectRepository).findProjectsForPeriod(startOfPeriod, endOfPeriod);
+  }
+  
+  @Test
+  void findProjectByNumberOrCustomer_ShouldReturnPageDtoOfProjectShortDto() {
+    //given
+    Pageable projectPage = PageRequest.of(0, 1);
+    String projectNumberOrCustomer = "123";
+    
+    List<Project> projects = List.of(project);
+    Page<Project> projectPageResult = new PageImpl<>(projects, projectPage, projects.size());
+    
+    //when
+    when(projectService.findProjectPage(projectPage, projectNumberOrCustomer))
+        .thenReturn(projectPageResult);
+    
+    PageDto<ProjectShortDto> projectShortDtoPageDto = pageToPageDtoMapper.projectPageToPageDto(projectPageResult);
+    PageDto<ProjectShortDto> result = projectService.findProjectByNumberOrCustomer(projectPage, projectNumberOrCustomer);
+    
+    //then
+    assertEquals(projectShortDtoPageDto, result);
+  }
+  
+  @Test
+  void findProjectPage_ShouldReturnPageOfProjects_ByCustomer() {
+    //given
+    Pageable projectPage = PageRequest.of(0, 10);
+    String projectNumberOrCustomer = "Customer";
+    
+    List<Project> projects = List.of(project);
+    Page<Project> projectPageResult = new PageImpl<>(projects, projectPage, projects.size());
+    
+    //when
+    when(projectRepository.findByCustomerLikeIgnoreCase(anyString(), any(Pageable.class)))
+        .thenReturn(projectPageResult);
+    
+    Page<Project> result = projectService.findProjectPage(projectPage, projectNumberOrCustomer);
+    
+    //then
+    assertEquals(projectPageResult, result);
+    verify(projectRepository).findByCustomerLikeIgnoreCase(eq("CUSTOMER"), eq(projectPage));
+    verify(projectRepository, never()).findByNumber(anyInt(), any(Pageable.class));
+  }
+  
 }
