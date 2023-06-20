@@ -1083,6 +1083,80 @@ class ProjectServiceTest {
   }
   
   @Test
+  void testUpdateEndDates_WithCalcNewPeriodAfterChangingEndDates_CurrentOpEndPlannedDateIsAfterNow() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusDays(15));
+    ArgumentCaptor<Project> projectCaptor = ArgumentCaptor.forClass(Project.class);
+    
+    Operation o1 = new Operation();
+    o1.setEnded(false);
+    o1.setReadyToAcceptance(true);
+    o1.setPlannedEndDate(LocalDateTime.now().plusHours(1));
+    Operation o2 = new Operation();
+    o2.setEnded(false);
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    project.setOperations(List.of(o1,o2));
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    projectService.updateEndDates(req);
+    
+    //then
+    verify(projectRepository).save(projectCaptor.capture());
+    
+    Project updatedProject = projectCaptor.getValue();
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getEndDateInContract());
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getPlannedEndDate());
+    
+    long expectedPeriod = ChronoUnit.HOURS.between(project.getStartDate(), req.newPlannedAndContractEndDate());
+    
+    assertEquals(expectedPeriod, updatedProject.getPeriod());
+    verify(projectRepository).findById(req.projectId());
+    verify(projectRepository).save(updatedProject);
+  }
+  
+  @Test
+  void testUpdateEndDates_WithCalcNewPeriodAfterChangingEndDates_CurrentOpEndPlannedDateIsBeforeNow() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusDays(15));
+    ArgumentCaptor<Project> projectCaptor = ArgumentCaptor.forClass(Project.class);
+    
+    Operation o1 = new Operation();
+    o1.setEnded(false);
+    o1.setInWork(true);
+    o1.setPlannedEndDate(LocalDateTime.now().minusHours(1));
+    Operation o2 = new Operation();
+    o2.setEnded(false);
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    project.setOperations(List.of(o1,o2));
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    projectService.updateEndDates(req);
+    
+    //then
+    verify(projectRepository).save(projectCaptor.capture());
+    
+    Project updatedProject = projectCaptor.getValue();
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getEndDateInContract());
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getPlannedEndDate());
+    
+    long expectedPeriod = ChronoUnit.HOURS.between(project.getStartDate(), req.newPlannedAndContractEndDate());
+    
+    assertEquals(expectedPeriod, updatedProject.getPeriod());
+    verify(projectRepository).findById(req.projectId());
+    verify(projectRepository).save(updatedProject);
+  }
+  
+  @Test
   void testUpdateEndDates_ShouldThrowExceptionCriticalError() {
     //given
     ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusDays(15));
@@ -1296,6 +1370,16 @@ class ProjectServiceTest {
     //given
     ChangingCommonDataReq req = new ChangingCommonDataReq(
         projectId, null, name, null, null);
+    
+    //then
+    assertDoesNotThrow(() -> projectService.checkAvailableUpdateCommonData(req));
+  }
+  
+  @Test
+  void testCheckAvailableUpdateCommonData_WithOnlyComment() {
+    //given
+    ChangingCommonDataReq req = new ChangingCommonDataReq(
+        projectId, null, null, null, "Comment");
     
     //then
     assertDoesNotThrow(() -> projectService.checkAvailableUpdateCommonData(req));
