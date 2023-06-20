@@ -27,6 +27,7 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static ru.trae.backend.service.OperationService.MIN_PERIOD_OPERATION;
 import static ru.trae.backend.service.OperationService.SHIPMENT_PERIOD;
 import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
 
@@ -144,6 +145,90 @@ class ProjectServiceTest {
     //then
     verify(projectRepository).save(project);
     verify(operationService).saveNewOperations(project, newProjectDto.operations());
+  }
+  
+  @Test
+  void saveNewProject_ShouldThrowException_MinimalPeriodOpNotCorrect() {
+    //given
+    project.setOperationPeriod(23);
+    
+    //when
+    when(projectFactory.create(anyInt(), anyString(), any(LocalDateTime.class), any(LocalDateTime.class),
+        anyInt(), anyString(), isNull(), anyString())).thenReturn(project);
+    
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.saveNewProject(newProjectDto, managerDto.username()));
+    
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The calculated period(" + project.getOperationPeriod()
+        + " hours) for performing operations should not be less than "
+        + MIN_PERIOD_OPERATION + " hours", exception.getMessage());
+  }
+  
+  @Test
+  void saveNewProject_ShouldThrowException_EmptyListOps() {
+    //given
+    project.setOperationPeriod(45);
+    newProjectDto = new NewProjectDto(
+        1, name, endDateInContract,
+        customer, null, Collections.emptyList());
+    
+    //when
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.saveNewProject(newProjectDto, managerDto.username()));
+    
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("List of operations cannot be empty", exception.getMessage());
+  }
+  
+  @Test
+  void saveNewProject_ShouldThrowException_NullListOps() {
+    //given
+    project.setOperationPeriod(45);
+    newProjectDto = new NewProjectDto(
+        1, name, endDateInContract,
+        customer, null, null);
+    
+    //when
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.saveNewProject(newProjectDto, managerDto.username()));
+    
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("List of operations cannot be empty", exception.getMessage());
+  }
+  
+  @Test
+  void saveNewProject_ShouldThrowException_IncorrectEndPlannedDate() {
+    //given
+    project.setOperationPeriod(45);
+    newProjectDto = new NewProjectDto(
+        1, name, LocalDateTime.now(),
+        customer, null, List.of(newOperationDto));
+    
+    //when
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.saveNewProject(newProjectDto, managerDto.username()));
+    
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The planned end date cannot be less than current(start) date of project + "
+        + (MIN_PERIOD_OPERATION + SHIPMENT_PERIOD) + " additional hours.", exception.getMessage());
+  }
+  
+  @Test
+  void saveNewProject_ShouldThrowException_IncorrectEndPlannedDateIsTooBig() {
+    //given
+    project.setOperationPeriod(45);
+    newProjectDto = new NewProjectDto(
+        1, name, LocalDateTime.now().plusHours(8761),
+        customer, null, List.of(newOperationDto));
+    
+    //when
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.saveNewProject(newProjectDto, managerDto.username()));
+    
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The planned end date cannot be more than "
+        + "start date of project + 1 year (or 8760 hours).", exception.getMessage());
   }
   
   @Test
@@ -284,6 +369,59 @@ class ProjectServiceTest {
     //then
     assertEquals(expectedProjects, result);
     verify(projectRepository).findByPeriodAndEmployeeIds(startOfPeriod, endOfPeriod, employeeIds);
+  }
+  
+  @Test
+  void getProjectIdNumberDtoListWithFilters_WithEmployeeIds_ShouldThrowException() {
+    //given
+    Set<Long> employeeIds = Set.of(1L, 2L);
+    LocalDate startOfPeriod = LocalDate.of(2023, 6, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 5, 30);
+    
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> projectService.getProjectIdNumberDtoListWithFilters(employeeIds, null, startOfPeriod, endOfPeriod));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("Start date cannot be after end date.", exception.getMessage());
+  }
+  
+  @Test
+  void getProjectIdNumberDtoListWithFilters_WithEndDate() {
+    //given
+    Set<Long> employeeIds = Set.of(1L, 2L);
+    LocalDate endOfPeriod = LocalDate.of(2023, 6, 30);
+    List<ProjectIdNumberDto> expectedProjects = new ArrayList<>();
+    
+    //when
+    when(projectRepository.findByPeriodAndEmployeeIds(null, endOfPeriod, employeeIds))
+        .thenReturn(expectedProjects);
+    
+    List<ProjectIdNumberDto> result = projectService.getProjectIdNumberDtoListWithFilters(
+        employeeIds, null, null, endOfPeriod);
+    
+    //then
+    assertEquals(expectedProjects, result);
+    verify(projectRepository).findByPeriodAndEmployeeIds(null, endOfPeriod, employeeIds);
+  }
+  
+  @Test
+  void getProjectIdNumberDtoListWithFilters_WithStartDate() {
+    //given
+    Set<Long> employeeIds = Set.of(1L, 2L);
+    LocalDate startOfPeriod = LocalDate.of(2023, 6, 30);
+    List<ProjectIdNumberDto> expectedProjects = new ArrayList<>();
+    
+    //when
+    when(projectRepository.findByPeriodAndEmployeeIds(startOfPeriod, null, employeeIds))
+        .thenReturn(expectedProjects);
+    
+    List<ProjectIdNumberDto> result = projectService.getProjectIdNumberDtoListWithFilters(
+        employeeIds, null, startOfPeriod, null);
+    
+    //then
+    assertEquals(expectedProjects, result);
+    verify(projectRepository).findByPeriodAndEmployeeIds(startOfPeriod, null, employeeIds);
   }
   
   @Test
@@ -871,6 +1009,100 @@ class ProjectServiceTest {
     assertEquals(expectedPeriod, updatedProject.getPeriod());
     verify(projectRepository).findById(req.projectId());
     verify(projectRepository).save(updatedProject);
+  }
+  
+  @Test
+  void testUpdateEndDates_WithCalcNewPeriodAfterChangingEndDates_WithAllEnded() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusDays(15));
+    ArgumentCaptor<Project> projectCaptor = ArgumentCaptor.forClass(Project.class);
+    
+    Operation o1 = new Operation();
+    o1.setEnded(true);
+    Operation o2 = new Operation();
+    o2.setEnded(true);
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    project.setOperations(List.of(o1,o2));
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    projectService.updateEndDates(req);
+    
+    //then
+    verify(projectRepository).save(projectCaptor.capture());
+    
+    Project updatedProject = projectCaptor.getValue();
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getEndDateInContract());
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getPlannedEndDate());
+    
+    long expectedPeriod = ChronoUnit.HOURS.between(project.getStartDate(), req.newPlannedAndContractEndDate());
+    
+    assertEquals(expectedPeriod, updatedProject.getPeriod());
+    verify(projectRepository).findById(req.projectId());
+    verify(projectRepository).save(updatedProject);
+  }
+  
+  @Test
+  void testUpdateEndDates_WithCalcNewPeriodAfterChangingEndDates_WithLastOneInWork() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusDays(15));
+    ArgumentCaptor<Project> projectCaptor = ArgumentCaptor.forClass(Project.class);
+    
+    Operation o1 = new Operation();
+    o1.setEnded(true);
+    Operation o2 = new Operation();
+    o2.setEnded(false);
+    o2.setInWork(true);
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    project.setOperations(List.of(o1,o2));
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    projectService.updateEndDates(req);
+    
+    //then
+    verify(projectRepository).save(projectCaptor.capture());
+    
+    Project updatedProject = projectCaptor.getValue();
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getEndDateInContract());
+    assertEquals(req.newPlannedAndContractEndDate(), updatedProject.getPlannedEndDate());
+    
+    long expectedPeriod = ChronoUnit.HOURS.between(project.getStartDate(), req.newPlannedAndContractEndDate());
+    
+    assertEquals(expectedPeriod, updatedProject.getPeriod());
+    verify(projectRepository).findById(req.projectId());
+    verify(projectRepository).save(updatedProject);
+  }
+  
+  @Test
+  void testUpdateEndDates_ShouldThrowExceptionCriticalError() {
+    //given
+    ChangingEndDatesReq req = new ChangingEndDatesReq(projectId, LocalDateTime.now().plusDays(15));
+    
+    Operation o1 = new Operation();
+    Operation o2 = new Operation();
+    
+    project.setStartDate(startDate);
+    project.setEndDateInContract(endDateInContract);
+    project.setPlannedEndDate(plannedEndDate);
+    project.setOperations(List.of(o1,o2));
+    
+    //when
+    when(projectRepository.findById(req.projectId())).thenReturn(Optional.ofNullable(project));
+    
+    ProjectException exception = assertThrows(ProjectException.class, () -> projectService.updateEndDates(req));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("Incorrect state of project operations. Critical error", exception.getMessage());
   }
   
   @Test
