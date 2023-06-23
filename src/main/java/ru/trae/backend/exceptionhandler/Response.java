@@ -11,7 +11,7 @@
 package ru.trae.backend.exceptionhandler;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 /**
@@ -20,11 +20,9 @@ import org.springframework.http.HttpStatus;
  * @author Vladimir Olennikov
  */
 @Builder
-@Data
+@Getter
 public class Response {
-
   String timestamp;
   HttpStatus status;
   String error;
-
 }
