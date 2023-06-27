@@ -467,7 +467,7 @@ class EmployeeServiceTest {
     assertEquals(expectedDtoList, result);
     verify(employeeRepository, times(1)).findByIdIn(listEmpId);
   }
-  
+
 //  @Test
 //  void testGetAllEmployeeDtoList() {
 //    //given
@@ -724,7 +724,7 @@ class EmployeeServiceTest {
     
     e.setTypeWorks(new HashSet<>(Set.of(tw)));
     ChangeDataDtoReq dto = new ChangeDataDtoReq(employeeId, null, null,
-        null, null, null, null, null, null, List.of(1L,4L,5L));
+        null, null, null, null, null, null, List.of(1L, 4L, 5L));
     EmployeeService spyEmployeeService = spy(employeeService);
     
     //when
@@ -758,5 +758,133 @@ class EmployeeServiceTest {
         () -> spyEmployeeService.changeEmployeeDataAndStatusAndPinCodeAndTypesWork(dto));
     assertEquals(HttpStatus.CONFLICT, exception.getStatus());
     assertEquals("The employee already has these types of works", exception.getMessage());
+  }
+  
+  @Test
+  void getEmployeeIdFirstLastNameDtoList_ShouldReturnMatchingEmployees_WhenProjectIdsAndOperationIdsAreProvided() {
+    //given
+    Set<Long> projectIds = new HashSet<>(Arrays.asList(1L, 2L));
+    Set<Long> operationIds = new HashSet<>(Arrays.asList(10L, 20L));
+    List<Long> employeeIds = Arrays.asList(1L, 2L, 3L);
+    List<EmployeeIdFirstLastNameDto> expectedDtoList = Arrays.asList(
+        new EmployeeIdFirstLastNameDto(1L, "test1", "test4"),
+        new EmployeeIdFirstLastNameDto(2L, "test2", "test5"),
+        new EmployeeIdFirstLastNameDto(3L, "test3", "test6")
+    );
+    
+    //when
+    when(employeeRepository.findByOperationIds(operationIds)).thenReturn(employeeIds);
+    when(employeeRepository.findByIdIn(employeeIds)).thenReturn(expectedDtoList);
+    
+    List<EmployeeIdFirstLastNameDto> actualDtoList = employeeService.getEmployeeIdFirstLastNameDtoList(
+        projectIds, operationIds);
+    
+    //then
+    assertNotNull(actualDtoList);
+    assertEquals(expectedDtoList.size(), actualDtoList.size());
+    assertTrue(actualDtoList.containsAll(expectedDtoList));
+    verify(employeeRepository).findByOperationIds(operationIds);
+    verify(employeeRepository).findByIdIn(employeeIds);
+    verify(employeeRepository, never()).findByProjectIds(any());
+    verify(employeeRepository, never()).findAllBy();
+  }
+  
+  @Test
+  void getEmployeeIdFirstLastNameDtoList_ShouldReturnAllEmployees_WhenBothProjectIdsAndOperationIdsAreNull() {
+    //given
+    List<EmployeeIdFirstLastNameDto> expectedDtoList = Arrays.asList(
+        new EmployeeIdFirstLastNameDto(1L, "test1", "test4"),
+        new EmployeeIdFirstLastNameDto(2L, "test2", "test5"),
+        new EmployeeIdFirstLastNameDto(3L, "test3", "test6")
+    );
+    
+    //when
+    when(employeeRepository.findAllBy()).thenReturn(expectedDtoList);
+    
+    List<EmployeeIdFirstLastNameDto> actualDtoList = employeeService.getEmployeeIdFirstLastNameDtoList(
+        null, null);
+    
+    //then
+    assertNotNull(actualDtoList);
+    assertEquals(expectedDtoList.size(), actualDtoList.size());
+    assertTrue(actualDtoList.containsAll(expectedDtoList));
+    verify(employeeRepository, never()).findByProjectIds(any());
+    verify(employeeRepository, never()).findByOperationIds(any());
+    verify(employeeRepository).findAllBy();
+  }
+  
+  @Test
+  void getEmployeeIdFirstLastNameDtoList_ShouldReturnAllEmployees_WhenProjectIdsAreEmptyAndOperationIdsAreNull() {
+    //given
+    List<EmployeeIdFirstLastNameDto> expectedDtoList = Arrays.asList(
+        new EmployeeIdFirstLastNameDto(1L, "test1", "test4"),
+        new EmployeeIdFirstLastNameDto(2L, "test2", "test5"),
+        new EmployeeIdFirstLastNameDto(3L, "test3", "test6")
+    );
+    
+    //when
+    when(employeeRepository.findAllBy()).thenReturn(expectedDtoList);
+    
+    List<EmployeeIdFirstLastNameDto> actualDtoList = employeeService.getEmployeeIdFirstLastNameDtoList(
+        Collections.emptySet(), null);
+    
+    //then
+    assertNotNull(actualDtoList);
+    assertEquals(expectedDtoList.size(), actualDtoList.size());
+    assertTrue(actualDtoList.containsAll(expectedDtoList));
+    verify(employeeRepository, never()).findByProjectIds(any());
+    verify(employeeRepository, never()).findByOperationIds(any());
+    verify(employeeRepository).findAllBy();
+  }
+  
+  @Test
+  void getEmployeeIdFirstLastNameDtoList_ShouldReturnMatchingEmployees_WhenOnlyProjectIdsAreProvided() {
+    //given
+    Set<Long> projectIds = new HashSet<>(Arrays.asList(1L, 2L));
+    List<Long> employeeIds = Arrays.asList(1L, 2L, 3L);
+    List<EmployeeIdFirstLastNameDto> expectedDtoList = Arrays.asList(
+        new EmployeeIdFirstLastNameDto(1L, "test1", "test4"),
+        new EmployeeIdFirstLastNameDto(2L, "test2", "test5"),
+        new EmployeeIdFirstLastNameDto(3L, "test3", "test6")
+    );
+    
+    //when
+    when(employeeRepository.findByProjectIds(any())).thenAnswer(invocation -> {
+      Set<Long> providedProjectIds = invocation.getArgument(0);
+      if (providedProjectIds.equals(projectIds)) {
+        return employeeIds;
+      }
+      return Collections.emptyList();
+    });
+    when(employeeRepository.findByIdIn(employeeIds)).thenReturn(expectedDtoList);
+    
+    List<EmployeeIdFirstLastNameDto> actualDtoList = employeeService.getEmployeeIdFirstLastNameDtoList(
+        projectIds, Collections.emptySet());
+    
+    //then
+    assertNotNull(actualDtoList);
+    assertEquals(expectedDtoList.size(), actualDtoList.size());
+    assertTrue(actualDtoList.containsAll(expectedDtoList));
+    verify(employeeRepository).findByProjectIds(projectIds);
+    verify(employeeRepository).findByIdIn(employeeIds);
+    verify(employeeRepository, never()).findByOperationIds(any());
+    verify(employeeRepository, never()).findAllBy();
+  }
+  
+  @Test
+  void getEmployeeLastNameById_ShouldReturnLastName_WhenValidEmployeeIdIsProvided() {
+    //given
+    long employeeId = 1L;
+    String expectedLastName = "test";
+    
+    //when
+    when(employeeRepository.findEmpLastNameById(employeeId)).thenReturn(expectedLastName);
+    
+    String actualLastName = employeeService.getEmployeeLastNameById(employeeId);
+    
+    //then
+    assertNotNull(actualLastName);
+    assertEquals(expectedLastName, actualLastName);
+    verify(employeeRepository).findEmpLastNameById(employeeId);
   }
 }
