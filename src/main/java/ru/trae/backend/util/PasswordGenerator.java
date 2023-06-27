@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
 public class PasswordGenerator {
   private final List<Rule> rules;
 
-  private PasswordGenerator() {
+  PasswordGenerator() {
     throw new UnsupportedOperationException("Empty constructor is not supported.");
   }
 
