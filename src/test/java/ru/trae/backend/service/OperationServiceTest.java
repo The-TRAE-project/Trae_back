@@ -26,8 +26,11 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -48,7 +51,9 @@ import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.exceptionhandler.exception.OperationException;
+import ru.trae.backend.exceptionhandler.exception.ProjectException;
 import ru.trae.backend.factory.OperationFactory;
+import ru.trae.backend.projection.OperationIdNameProjectNumberDto;
 import ru.trae.backend.repository.OperationRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -509,10 +514,10 @@ class OperationServiceTest {
     o.setInWork(true);
     o.setReadyToAcceptance(false);
     
-    // When
+    //when
     operationService.closeOperation(o);
     
-    // Then
+    //then
     verify(operationRepository).updateRealEndDateAndIsEndedAndReadyToAcceptanceAndInWorkById(
         any(LocalDateTime.class), eq(true), eq(false), eq(false), eq(o.getId()));
   }
@@ -523,10 +528,10 @@ class OperationServiceTest {
     o.setInWork(false);
     o.setReadyToAcceptance(true);
     
-    // When
+    //when
     operationService.closeOperation(o);
     
-    // Then
+    //then
     verify(operationRepository).updateRealEndDateAndIsEndedAndReadyToAcceptanceAndInWorkById(
         any(LocalDateTime.class), eq(true), eq(false), eq(false), eq(o.getId()));
   }
@@ -540,7 +545,7 @@ class OperationServiceTest {
     OperationException operationException = assertThrows(OperationException.class,
         () -> operationService.closeOperation(o));
     
-    // Then
+    //then
     assertEquals(HttpStatus.BAD_REQUEST, operationException.getStatus());
     assertEquals("The operation is not yet in operation or is not available for acceptance",
         operationException.getMessage());
@@ -571,7 +576,7 @@ class OperationServiceTest {
     OperationException operationException = assertThrows(OperationException.class,
         () -> operationService.checkConfirmingEmployee(operation, confirmingEmpId));
     
-    // Then
+    //then
     assertEquals(HttpStatus.BAD_REQUEST, operationException.getStatus());
     assertEquals("The ID of the confirming employee is not equal"
             + " to the ID of the person who accepted the operation",
@@ -588,11 +593,213 @@ class OperationServiceTest {
     OperationException operationException = assertThrows(OperationException.class,
         () -> operationService.checkConfirmingEmployee(operation, confirmingEmpId));
     
-    // Then
+    //then
     assertEquals(HttpStatus.BAD_REQUEST, operationException.getStatus());
     assertEquals("The ID of the confirming employee is not equal"
             + " to the ID of the person who accepted the operation",
         operationException.getMessage());
+  }
+  
+  @Test
+  void getOperationIdNameProjectNumberDtoList_WhenProjectIdsAndEmployeeIdsProvided_ShouldReturnFilteredResult() {
+    //given
+    Set<Long> projectIds = new HashSet<>();
+    projectIds.add(1L);
+    projectIds.add(2L);
+    
+    Set<Long> employeeIds = new HashSet<>();
+    employeeIds.add(10L);
+    employeeIds.add(20L);
+    
+    LocalDate startOfPeriod = LocalDate.of(2023, 1, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 1, 31);
+    
+    List<OperationIdNameProjectNumberDto> expectedResults = new ArrayList<>();
+    
+    //when
+    when(operationRepository.findByPeriodAndEmployeeAndProjectIds(startOfPeriod, endOfPeriod, employeeIds, projectIds))
+        .thenReturn(expectedResults);
+    
+    List<OperationIdNameProjectNumberDto> result = operationService.getOperationIdNameProjectNumberDtoList(
+        projectIds, employeeIds, startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedResults, result);
+  }
+  
+  @Test
+  void getOperationIdNameProjectNumberDtoList_WhenEmployeeIdsProvided_ShouldReturnFilteredResult() {
+    //given
+    Set<Long> employeeIds = new HashSet<>();
+    employeeIds.add(10L);
+    employeeIds.add(20L);
+    
+    LocalDate startOfPeriod = LocalDate.of(2023, 1, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 1, 31);
+    
+    List<OperationIdNameProjectNumberDto> expectedResults = new ArrayList<>();
+    
+    //when
+    when(operationRepository.findByPeriodAndEmployeeIds(startOfPeriod, endOfPeriod, employeeIds))
+        .thenReturn(expectedResults);
+    
+    // When
+    List<OperationIdNameProjectNumberDto> result = operationService.getOperationIdNameProjectNumberDtoList(
+        null, employeeIds, startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedResults, result);
+  }
+  
+  @Test
+  void getOperationIdNameProjectNumberDtoList_WhenEmployeeIdsProvidedAndProjectIdsAreEmpty_ShouldReturnFilteredResult() {
+    //given
+    Set<Long> employeeIds = new HashSet<>();
+    employeeIds.add(10L);
+    employeeIds.add(20L);
+    
+    LocalDate startOfPeriod = LocalDate.of(2023, 1, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 1, 31);
+    
+    List<OperationIdNameProjectNumberDto> expectedResults = new ArrayList<>();
+    
+    //when
+    when(operationRepository.findByPeriodAndEmployeeIds(startOfPeriod, endOfPeriod, employeeIds))
+        .thenReturn(expectedResults);
+    
+    // When
+    List<OperationIdNameProjectNumberDto> result = operationService.getOperationIdNameProjectNumberDtoList(
+        Collections.emptySet(), employeeIds, startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedResults, result);
+  }
+  
+  @Test
+  void getOperationIdNameProjectNumberDtoList_WhenProjectIdsProvided_ShouldReturnFilteredResult() {
+    //given
+    Set<Long> projectIds = new HashSet<>();
+    projectIds.add(1L);
+    projectIds.add(2L);
+    
+    LocalDate startOfPeriod = LocalDate.of(2023, 1, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 1, 31);
+    
+    List<OperationIdNameProjectNumberDto> expectedResults = new ArrayList<>();
+    
+    //when
+    when(operationRepository.findByPeriodAndProjectIds(startOfPeriod, endOfPeriod, projectIds))
+        .thenReturn(expectedResults);
+    
+    List<OperationIdNameProjectNumberDto> result = operationService.getOperationIdNameProjectNumberDtoList(
+        projectIds, null, startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedResults, result);
+  }
+  
+  @Test
+  void getOperationIdNameProjectNumberDtoList_WhenNoProjectIdsAndEmployeeIdsProvided_ShouldReturnAllResults() {
+    //given
+    LocalDate startOfPeriod = LocalDate.of(2023, 1, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 1, 31);
+    
+    List<OperationIdNameProjectNumberDto> expectedResults = new ArrayList<>();
+    
+    //when
+    when(operationRepository.findByPeriod(startOfPeriod, endOfPeriod))
+        .thenReturn(expectedResults);
+    
+    List<OperationIdNameProjectNumberDto> result = operationService.getOperationIdNameProjectNumberDtoList(
+        null, null, startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedResults, result);
+  }
+  
+  @Test
+  void getOperationIdNameProjectNumberDtoList_WhenNoProjectIdsAndEmployeeIdsProvidedNoDates_ShouldReturnAllResults() {
+    //given
+    List<OperationIdNameProjectNumberDto> expectedResults = new ArrayList<>();
+    
+    //when
+    when(operationRepository.findByPeriod(null, null))
+        .thenReturn(expectedResults);
+    
+    List<OperationIdNameProjectNumberDto> result = operationService.getOperationIdNameProjectNumberDtoList(
+        null, null, null, null);
+    
+    //then
+    assertEquals(expectedResults, result);
+  }
+  
+  @Test
+  void getOperationIdNameProjectNumberDtoList_WhenNoProjectIdsAndEmployeeIdsProvidedWithStarDate_ShouldReturnAllResults() {
+    //given
+    LocalDate startOfPeriod = LocalDate.of(2023, 1, 1);
+    List<OperationIdNameProjectNumberDto> expectedResults = new ArrayList<>();
+    
+    //when
+    when(operationRepository.findByPeriod(startOfPeriod, null))
+        .thenReturn(expectedResults);
+    
+    List<OperationIdNameProjectNumberDto> result = operationService.getOperationIdNameProjectNumberDtoList(
+        null, null, startOfPeriod, null);
+    
+    //then
+    assertEquals(expectedResults, result);
+  }
+  
+  @Test
+  void getOperationIdNameProjectNumberDtoList_WhenProjectIdsAndEmployeeIdsAreEmpty_ShouldReturnAllResults() {
+    //given
+    LocalDate startOfPeriod = LocalDate.of(2023, 1, 1);
+    LocalDate endOfPeriod = LocalDate.of(2023, 1, 31);
+    
+    List<OperationIdNameProjectNumberDto> expectedResults = new ArrayList<>();
+    
+    //when
+    when(operationRepository.findByPeriod(startOfPeriod, endOfPeriod))
+        .thenReturn(expectedResults);
+    
+    List<OperationIdNameProjectNumberDto> result = operationService.getOperationIdNameProjectNumberDtoList(
+        Collections.emptySet(), Collections.emptySet(), startOfPeriod, endOfPeriod);
+    
+    //then
+    assertEquals(expectedResults, result);
+  }
+  
+  @Test
+  void getOperationIdNameProjectNumberDtoList_WhenDatesIsIncorrect_ShouldThrowException() {
+    //given
+    LocalDate startOfPeriod = LocalDate.of(2023, 1, 31);
+    LocalDate endOfPeriod = LocalDate.of(2023, 1, 1);
+    
+    ProjectException exception = assertThrows(ProjectException.class,
+        () -> operationService.getOperationIdNameProjectNumberDtoList(
+            Collections.emptySet(), Collections.emptySet(), startOfPeriod, endOfPeriod));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("Start date cannot be after end date.", exception.getMessage());
+  }
+  
+  @Test
+  void getOperationsByIds_WhenOperationIdsProvided_ShouldReturnMatchingOperations() {
+    //given
+    Set<Long> operationIds = new HashSet<>();
+    operationIds.add(1L);
+    operationIds.add(2L);
+    
+    List<Operation> expectedOperations = new ArrayList<>();
+    
+    //when
+    when(operationRepository.findOpsByIds(operationIds)).thenReturn(expectedOperations);
+    
+    List<Operation> result = operationService.getOperationsByIds(operationIds);
+    
+    //then
+    assertEquals(expectedOperations, result);
   }
   
 }
