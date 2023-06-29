@@ -10,6 +10,7 @@
 
 package ru.trae.backend.service;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -450,6 +451,148 @@ class OperationServiceTest {
     assertEquals("Project 2", result.get(1).projectName());
     assertEquals("Operation 2", result.get(1).operationName());
     assertEquals("Customer 2", result.get(1).customerLastName());
+  }
+  
+  @Test
+  void deleteOperation_WhenOperationExists_ShouldDeleteOperation() {
+    //given
+    long operationId = 1L;
+    
+    //when
+    when(operationRepository.existsById(operationId)).thenReturn(true);
+    when(operationRepository.existsByIdOrIsEndedOrInWorkOrReadyToAcceptance(
+        operationId, true, true, true)).thenReturn(false);
+    when(operationRepository.existsByTypeWorkIdEqualsShipment(operationId, 1)).thenReturn(false);
+    
+    operationService.deleteOperation(operationId);
+    
+    //then
+    verify(operationRepository).deleteById(operationId);
+  }
+  
+  
+  @Test
+  void deleteOperation_WhenOperationNotFound_ShouldThrowOperationException() {
+    //when
+    when(operationRepository.existsById(operationId)).thenReturn(false);
+    
+    //then
+    assertThrows(OperationException.class, () -> operationService.deleteOperation(operationId));
+  }
+  
+  @Test
+  void deleteOperation_WhenOperationInWorkOrReadyToAcceptance_ShouldThrowOperationException() {
+    //when
+    when(operationRepository.existsById(operationId)).thenReturn(true);
+    when(operationRepository.existsByIdOrIsEndedOrInWorkOrReadyToAcceptance(
+        operationId, true, true, true)).thenReturn(true);
+    
+    //then
+    assertThrows(OperationException.class, () -> operationService.deleteOperation(operationId));
+  }
+  
+  @Test
+  void deleteOperation_WhenOperationIsShipment_ShouldThrowOperationException() {
+    //when
+    when(operationRepository.existsById(operationId)).thenReturn(true);
+    when(operationRepository.existsByIdOrIsEndedOrInWorkOrReadyToAcceptance(
+        operationId, true, true, true)).thenReturn(false);
+    when(operationRepository.existsByTypeWorkIdEqualsShipment(operationId, 1)).thenReturn(true);
+    
+    //then
+    assertThrows(OperationException.class, () -> operationService.deleteOperation(operationId));
+  }
+  
+  @Test
+  void closeOperation_WhenOperationInWork_ShouldUpdateOperationAndStartNextOperation() {
+    //given
+    o.setInWork(true);
+    o.setReadyToAcceptance(false);
+    
+    // When
+    operationService.closeOperation(o);
+    
+    // Then
+    verify(operationRepository).updateRealEndDateAndIsEndedAndReadyToAcceptanceAndInWorkById(
+        any(LocalDateTime.class), eq(true), eq(false), eq(false), eq(o.getId()));
+  }
+  
+  @Test
+  void closeOperation_WhenOperationReadyToAcceptance_ShouldUpdateOperationAndStartNextOperation() {
+    //given
+    o.setInWork(false);
+    o.setReadyToAcceptance(true);
+    
+    // When
+    operationService.closeOperation(o);
+    
+    // Then
+    verify(operationRepository).updateRealEndDateAndIsEndedAndReadyToAcceptanceAndInWorkById(
+        any(LocalDateTime.class), eq(true), eq(false), eq(false), eq(o.getId()));
+  }
+  
+  @Test
+  void closeOperation_WhenOperationInWorkOrReadyToAcceptanceFalse_ThrowException() {
+    //given
+    o.setInWork(false);
+    o.setReadyToAcceptance(false);
+    
+    OperationException operationException = assertThrows(OperationException.class,
+        () -> operationService.closeOperation(o));
+    
+    // Then
+    assertEquals(HttpStatus.BAD_REQUEST, operationException.getStatus());
+    assertEquals("The operation is not yet in operation or is not available for acceptance",
+        operationException.getMessage());
+  }
+  
+  @Test
+  void checkConfirmingEmployee_WhenEmployeeIdMatches_ShouldNotThrowException() {
+    //given
+    Operation operation = new Operation();
+    Employee employee = new Employee();
+    employee.setId(1L);
+    operation.setEmployee(employee);
+    long confirmingEmpId = 1L;
+    
+    //then
+    assertDoesNotThrow(() -> operationService.checkConfirmingEmployee(operation, confirmingEmpId));
+  }
+  
+  @Test
+  void checkConfirmingEmployee_WhenEmployeeIdDoesNotMatch_ShouldThrowOperationException() {
+    //given
+    Operation operation = new Operation();
+    Employee employee = new Employee();
+    employee.setId(1L);
+    operation.setEmployee(employee);
+    long confirmingEmpId = 2L;
+    
+    OperationException operationException = assertThrows(OperationException.class,
+        () -> operationService.checkConfirmingEmployee(operation, confirmingEmpId));
+    
+    // Then
+    assertEquals(HttpStatus.BAD_REQUEST, operationException.getStatus());
+    assertEquals("The ID of the confirming employee is not equal"
+            + " to the ID of the person who accepted the operation",
+        operationException.getMessage());
+  }
+  
+  @Test
+  void checkConfirmingEmployee_WhenEmployeeNull_ShouldThrowOperationException() {
+    //given
+    Operation operation = new Operation();
+    operation.setEmployee(null);
+    long confirmingEmpId = 2L;
+    
+    OperationException operationException = assertThrows(OperationException.class,
+        () -> operationService.checkConfirmingEmployee(operation, confirmingEmpId));
+    
+    // Then
+    assertEquals(HttpStatus.BAD_REQUEST, operationException.getStatus());
+    assertEquals("The ID of the confirming employee is not equal"
+            + " to the ID of the person who accepted the operation",
+        operationException.getMessage());
   }
   
 }
