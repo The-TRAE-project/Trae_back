@@ -20,8 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -42,6 +44,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import ru.trae.backend.dto.operation.InsertingOperationDto;
 import ru.trae.backend.dto.operation.NewOperationDto;
 import ru.trae.backend.dto.operation.OperationForEmpDto;
 import ru.trae.backend.dto.operation.OperationInWorkForEmpDto;
@@ -801,5 +804,225 @@ class OperationServiceTest {
     //then
     assertEquals(expectedOperations, result);
   }
+  
+  @Test
+  void insertNewOperation_WhenAllOperationsEnded_ShouldCreateNewOperationAndCheckAndUpdateShipmentOp() {
+    //given
+    InsertingOperationDto dto = new InsertingOperationDto(1L, "new_op", 1L, 25);
+    
+    Project p = new Project();
+    p.setOperationPeriod(opPeriod);
+    
+    List<Operation> operations = new ArrayList<>();
+    Operation operation1 = new Operation();
+    operation1.setEnded(true);
+    operations.add(operation1);
+    
+    Operation operation2 = new Operation();
+    operation2.setEnded(true);
+    operations.add(operation2);
+    
+    p.setOperations(operations);
+    
+    Operation newOperation = new Operation();
+    
+    //when
+    when(operationFactory.create(eq(p), eq(dto.name()), eq(p.getOperationPeriod()), eq(dto.priority()),
+        any(LocalDateTime.class), eq(true), eq(dto.typeWorkId()))).thenReturn(newOperation);
+    
+    boolean result = operationService.insertNewOperation(dto, p);
+    
+    //then
+    assertTrue(result);
+    verify(operationRepository).save(newOperation);
+  }
+  
+  
+  @Test
+  void insertNewOperation_WhenSomeOperationsNotEnded_ShouldCreateNewOperationWithoutStartDateAndCheckAndUpdateShipmentOp() {
+    //given
+    InsertingOperationDto dto = new InsertingOperationDto(1L, "new_op", 1L, 25);
+    
+    Project p = new Project();
+    p.setOperationPeriod(opPeriod);
+    
+    List<Operation> operations = new ArrayList<>();
+    Operation operation1 = new Operation();
+    operation1.setEnded(false);
+    operations.add(operation1);
+    
+    Operation operation2 = new Operation();
+    operation2.setEnded(true);
+    operations.add(operation2);
+    
+    p.setOperations(operations);
+    
+    Operation newOperation = new Operation();
+    
+    //when
+    when(operationFactory.create(p, dto.name(), 0, dto.priority(),
+        null, false, dto.typeWorkId())).thenReturn(newOperation);
+    
+    boolean result = operationService.insertNewOperation(dto, p);
+    
+    //then
+    assertTrue(result);
+    verify(operationRepository).save(newOperation);
+  }
+  
+  @Test
+  void insertNewOperation_WhenExistingOperationInWorkOrReadyToAcceptance_ShouldCreateNewOperationAndReturnFalse() {
+    //given
+    InsertingOperationDto dto = new InsertingOperationDto(1L, "new_op", 1L, 25);
+    
+    Project p = new Project();
+    p.setOperationPeriod(opPeriod);
+    
+    List<Operation> operations = new ArrayList<>();
+    Operation operation1 = new Operation();
+    operation1.setInWork(true);
+    operation1.setPriority(10);
+    operations.add(operation1);
+    
+    Operation operation2 = new Operation();
+    operation2.setReadyToAcceptance(true);
+    operation2.setPriority(35);
+    operations.add(operation2);
+    
+    p.setOperations(operations);
+    
+    Operation newOperation = new Operation();
+    when(operationFactory.create(
+        p, dto.name(), 0, dto.priority(), null, false, dto.typeWorkId())
+    ).thenReturn(newOperation);
+    
+    //when
+    boolean result = operationService.insertNewOperation(dto, p);
+    
+    //then
+    assertFalse(result);
+    verify(operationRepository).save(newOperation);
+    verify(operationRepository, never()).updatePriorityById(anyInt(), anyLong());
+  }
+  
+  @Test
+  void insertNewOperation_ShouldThrowExceptionOpWithPriorityAlreadyExists() {
+    //given
+    InsertingOperationDto dto = new InsertingOperationDto(1L, "new_op", 1L, 25);
+    
+    Project p = new Project();
+    p.setOperationPeriod(opPeriod);
+    
+    List<Operation> operations = new ArrayList<>();
+    Operation operation1 = new Operation();
+    operation1.setInWork(true);
+    operation1.setPriority(25);
+    operations.add(operation1);
+    
+    Operation operation2 = new Operation();
+    operation2.setReadyToAcceptance(true);
+    operation2.setPriority(35);
+    operations.add(operation2);
+    
+    p.setOperations(operations);
+    
+    
+    //when
+    OperationException exception = assertThrows(OperationException.class,
+        () -> operationService.insertNewOperation(dto, p));
+    
+    //then
+    assertEquals(HttpStatus.CONFLICT, exception.getStatus());
+    assertEquals("The operation with priority: " + 25 + " already exists", exception.getMessage());
+  }
+  
+  @Test
+  void insertNewOperation_ShouldThrowExceptionLowPriority() {
+    //given
+    InsertingOperationDto dto = new InsertingOperationDto(1L, "new_op", 1L, 10);
+    
+    Project p = new Project();
+    p.setOperationPeriod(opPeriod);
+    
+    List<Operation> operations = new ArrayList<>();
+    Operation operation1 = new Operation();
+    operation1.setReadyToAcceptance(true);
+    operation1.setPriority(25);
+    operations.add(operation1);
+    
+    Operation operation2 = new Operation();
+    operation2.setReadyToAcceptance(false);
+    operation2.setPriority(35);
+    operations.add(operation2);
+    
+    p.setOperations(operations);
+    
+    
+    //when
+    OperationException exception = assertThrows(OperationException.class,
+        () -> operationService.insertNewOperation(dto, p));
+    
+    //then
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatus());
+    assertEquals("The priority of the operation: " + 10
+        + " cannot be lower than the priority of the active operation: "
+        + 25, exception.getMessage());
+  }
+  
+  @Test
+  void checkCorrectIdAndPriority_WhenOperationExists_ShouldNotThrowException() {
+    //given
+    long operationId = 1L;
+    int operationPriority = 2;
+    
+    //when
+    when(operationRepository.existsByIdAndPriority(operationId, operationPriority))
+        .thenReturn(true);
+    
+    //then
+    assertDoesNotThrow(() -> operationService.checkCorrectIdAndPriority(operationId, operationPriority));
+  }
+  
+  @Test
+  void checkCorrectIdAndPriority_WhenOperationDoesNotExist_ShouldThrowException() {
+    //given
+    long operationId = 1L;
+    int operationPriority = 2;
+    
+    //when
+    when(operationRepository.existsByIdAndPriority(operationId, operationPriority))
+        .thenReturn(false);
+    
+    //then
+    assertThrows(OperationException.class, () ->
+        operationService.checkCorrectIdAndPriority(operationId, operationPriority));
+  }
+  
+  @Test
+  void checkIfOpAlreadyFinishedOrClosed_WhenOperationIsEnded_ShouldThrowException() {
+    //given
+    Operation operation = new Operation();
+    operation.setId(1L);
+    operation.setEnded(true);
+    
+    //then
+    assertThrows(OperationException.class, () ->
+        operationService.checkIfOpAlreadyFinishedOrClosed(operation));
+    assertThrows(OperationException.class, () ->
+        operationService.checkIfOpAlreadyFinishedOrClosed(operation), HttpStatus.CONFLICT.toString());
+  }
+  
+  @Test
+  void checkIfOpAlreadyFinishedOrClosed_WhenOperationIsNotEnded_ShouldNotThrowException() {
+    //given
+    Operation operation = new Operation();
+    operation.setId(1L);
+    operation.setEnded(false);
+    
+    //then
+    assertDoesNotThrow(() ->
+        operationService.checkIfOpAlreadyFinishedOrClosed(operation));
+  }
+  
   
 }
