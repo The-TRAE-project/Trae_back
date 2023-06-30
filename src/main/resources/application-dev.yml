@@ -13,7 +13,7 @@ spring:
     database: POSTGRESQL
     show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 logging:
   level:
