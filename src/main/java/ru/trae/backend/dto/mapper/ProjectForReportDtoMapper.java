@@ -44,7 +44,12 @@ public class ProjectForReportDtoMapper implements Function<Project, ProjectForRe
     for (int i = 0; i < operations.size(); i++) {
       Operation o = operations.get(i);
       if (o.getStartDate() == null) {
-        o.setStartDate(operations.get(i - 1).getPlannedEndDate());
+        if (i == 0) {
+          //обработка случая, когда первая операция не имеет предыдущей операции
+          o.setStartDate(p.getStartFirstOperationDate());
+        } else {
+          o.setStartDate(operations.get(i - 1).getPlannedEndDate());
+        }
         //проверка на последнюю операцию в списке
         //если это отгрузка, то добавляется другое количество часов
         if (i == operations.size() - 1) {
