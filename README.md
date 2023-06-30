@@ -18,7 +18,7 @@ Versions:
  - Liquibase: 4.19.0</br>
  - JUnit5: 5.9.2</br>
  - Mockito: 5.2.0</br>
- - Jococo: 0.8.8</br>
+ - Jacoco: 0.8.8</br>
 
 
 
