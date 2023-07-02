@@ -25,7 +25,7 @@ import ru.trae.backend.entity.task.Project;
  * @author Vladimir Olennikov
  */
 public class Util {
-  private Util() {
+  Util() {
     throw new IllegalStateException("Utility class");
   }
 
