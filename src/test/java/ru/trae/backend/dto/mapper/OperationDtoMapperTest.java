@@ -24,96 +24,96 @@ import ru.trae.backend.entity.user.Employee;
 class OperationDtoMapperTest {
   @Test
   void apply_WhenOperationEnded_ShouldMapToOperationDtoWithActualPeriod() {
-    // Arrange
-    Operation operation = new Operation();
-    operation.setId(1L);
-    operation.setPriority(0);
-    operation.setName("Test Operation");
-    operation.setStartDate(LocalDateTime.now().minusHours(2));
-    operation.setAcceptanceDate(LocalDateTime.now().minusHours(1));
-    operation.setPlannedEndDate(LocalDateTime.now().plusHours(2));
-    operation.setRealEndDate(LocalDateTime.now());
-    operation.setPeriod(4);
-    operation.setEnded(true);
-    operation.setInWork(true);
-    operation.setReadyToAcceptance(false);
-    operation.setTypeWork(new TypeWork());
+    //given
+    Operation o = new Operation();
+    o.setId(1L);
+    o.setPriority(0);
+    o.setName("test_operation");
+    o.setStartDate(LocalDateTime.now().minusHours(2));
+    o.setAcceptanceDate(LocalDateTime.now().minusHours(1));
+    o.setPlannedEndDate(LocalDateTime.now().plusHours(2));
+    o.setRealEndDate(LocalDateTime.now());
+    o.setPeriod(4);
+    o.setEnded(true);
+    o.setInWork(true);
+    o.setReadyToAcceptance(false);
+    o.setTypeWork(new TypeWork());
     
-    Project project = new Project();
-    project.setNumber(100);
-    operation.setProject(project);
+    Project p = new Project();
+    p.setNumber(100);
+    o.setProject(p);
     
-    Employee employee = new Employee();
-    employee.setFirstName("John");
-    employee.setLastName("Doe");
-    operation.setEmployee(employee);
+    Employee e = new Employee();
+    e.setFirstName("test_first_name");
+    e.setLastName("test_last_name");
+    o.setEmployee(e);
     
     OperationDtoMapper operationDtoMapper = new OperationDtoMapper();
     
-    // Act
-    OperationDto operationDto = operationDtoMapper.apply(operation);
+    //when
+    OperationDto operationDto = operationDtoMapper.apply(o);
     
-    // Assert
-    assertEquals(operation.getId(), operationDto.id());
-    assertEquals(operation.getPriority(), operationDto.priority());
-    assertEquals(operation.getName(), operationDto.name());
-    assertEquals(operation.getStartDate(), operationDto.startDate());
-    assertEquals(operation.getAcceptanceDate(), operationDto.acceptanceDate());
-    assertEquals(operation.getPlannedEndDate(), operationDto.plannedEndDate());
-    assertEquals(operation.getRealEndDate(), operationDto.realEndDate());
-    assertEquals(operation.getPeriod(), operationDto.period());
-    assertEquals(Math.toIntExact(operation.getRealEndDate().toLocalTime().getHour()
-        - operation.getStartDate().toLocalTime().getHour()), operationDto.actualPeriod());
-    assertEquals(operation.isEnded(), operationDto.isEnded());
-    assertEquals(operation.isInWork(), operationDto.inWork());
-    assertEquals(operation.isReadyToAcceptance(), operationDto.readyToAcceptance());
-    assertEquals(operation.getProject().getNumber(), operationDto.projectNumber());
-    assertEquals(operation.getTypeWork().getName(), operationDto.typeWorkName());
-    assertEquals(operation.getEmployee().getFirstName(), operationDto.employeeFirstLastNameDto().firstName());
-    assertEquals(operation.getEmployee().getLastName(), operationDto.employeeFirstLastNameDto().lastName());
+    //then
+    assertEquals(o.getId(), operationDto.id());
+    assertEquals(o.getPriority(), operationDto.priority());
+    assertEquals(o.getName(), operationDto.name());
+    assertEquals(o.getStartDate(), operationDto.startDate());
+    assertEquals(o.getAcceptanceDate(), operationDto.acceptanceDate());
+    assertEquals(o.getPlannedEndDate(), operationDto.plannedEndDate());
+    assertEquals(o.getRealEndDate(), operationDto.realEndDate());
+    assertEquals(o.getPeriod(), operationDto.period());
+    assertEquals(Math.toIntExact(o.getRealEndDate().toLocalTime().getHour()
+        - o.getStartDate().toLocalTime().getHour()), operationDto.actualPeriod());
+    assertEquals(o.isEnded(), operationDto.isEnded());
+    assertEquals(o.isInWork(), operationDto.inWork());
+    assertEquals(o.isReadyToAcceptance(), operationDto.readyToAcceptance());
+    assertEquals(o.getProject().getNumber(), operationDto.projectNumber());
+    assertEquals(o.getTypeWork().getName(), operationDto.typeWorkName());
+    assertEquals(o.getEmployee().getFirstName(), operationDto.employeeFirstLastNameDto().firstName());
+    assertEquals(o.getEmployee().getLastName(), operationDto.employeeFirstLastNameDto().lastName());
   }
   
   @Test
   void apply_WhenOperationNotEnded_ShouldMapToOperationDtoWithNullActualPeriod() {
-    // Arrange
-    Operation operation = new Operation();
-    operation.setId(2L);
-    operation.setPriority(1);
-    operation.setName("Another Operation");
-    operation.setStartDate(LocalDateTime.now().minusHours(4));
-    operation.setAcceptanceDate(null);
-    operation.setPlannedEndDate(LocalDateTime.now().plusHours(6));
-    operation.setRealEndDate(null);
-    operation.setPeriod(10);
-    operation.setEnded(false);
-    operation.setInWork(true);
-    operation.setReadyToAcceptance(true);
-    operation.setTypeWork(new TypeWork());
+    //given
+    Operation o = new Operation();
+    o.setId(2L);
+    o.setPriority(1);
+    o.setName("another_operation");
+    o.setStartDate(LocalDateTime.now().minusHours(4));
+    o.setAcceptanceDate(null);
+    o.setPlannedEndDate(LocalDateTime.now().plusHours(6));
+    o.setRealEndDate(null);
+    o.setPeriod(10);
+    o.setEnded(false);
+    o.setInWork(true);
+    o.setReadyToAcceptance(true);
+    o.setTypeWork(new TypeWork());
     
-    Project project = new Project();
-    project.setNumber(200);
-    operation.setProject(project);
+    Project p = new Project();
+    p.setNumber(200);
+    o.setProject(p);
     
     OperationDtoMapper operationDtoMapper = new OperationDtoMapper();
     
-    // Act
-    OperationDto operationDto = operationDtoMapper.apply(operation);
+    //when
+    OperationDto dto = operationDtoMapper.apply(o);
     
-    // Assert
-    assertEquals(operation.getId(), operationDto.id());
-    assertEquals(operation.getPriority(), operationDto.priority());
-    assertEquals(operation.getName(), operationDto.name());
-    assertEquals(operation.getStartDate(), operationDto.startDate());
-    assertEquals(operation.getAcceptanceDate(), operationDto.acceptanceDate());
-    assertEquals(operation.getPlannedEndDate(), operationDto.plannedEndDate());
-    assertEquals(operation.getRealEndDate(), operationDto.realEndDate());
-    assertEquals(operation.getPeriod(), operationDto.period());
-    assertNull(operationDto.actualPeriod());
-    assertEquals(operation.isEnded(), operationDto.isEnded());
-    assertEquals(operation.isInWork(), operationDto.inWork());
-    assertEquals(operation.isReadyToAcceptance(), operationDto.readyToAcceptance());
-    assertEquals(operation.getProject().getNumber(), operationDto.projectNumber());
-    assertEquals(operation.getTypeWork().getName(), operationDto.typeWorkName());
-    assertNull(operationDto.employeeFirstLastNameDto());
+    //then
+    assertEquals(o.getId(), dto.id());
+    assertEquals(o.getPriority(), dto.priority());
+    assertEquals(o.getName(), dto.name());
+    assertEquals(o.getStartDate(), dto.startDate());
+    assertEquals(o.getAcceptanceDate(), dto.acceptanceDate());
+    assertEquals(o.getPlannedEndDate(), dto.plannedEndDate());
+    assertEquals(o.getRealEndDate(), dto.realEndDate());
+    assertEquals(o.getPeriod(), dto.period());
+    assertNull(dto.actualPeriod());
+    assertEquals(o.isEnded(), dto.isEnded());
+    assertEquals(o.isInWork(), dto.inWork());
+    assertEquals(o.isReadyToAcceptance(), dto.readyToAcceptance());
+    assertEquals(o.getProject().getNumber(), dto.projectNumber());
+    assertEquals(o.getTypeWork().getName(), dto.typeWorkName());
+    assertNull(dto.employeeFirstLastNameDto());
   }
 }
