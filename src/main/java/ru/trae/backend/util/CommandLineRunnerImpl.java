@@ -218,12 +218,12 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
           "Шишкина М.М.",
           "Комментарий",
           List.of(
-              new NewOperationDto("Раскрой", 1),
-              new NewOperationDto("Кромка", 2),
-              new NewOperationDto("Фрезеровка", 4),
-              new NewOperationDto("Присадка", 3),
-              new NewOperationDto("Сборка", 6),
-              new NewOperationDto("Покраска", 7)));
+              new NewOperationDto("Раскрой", 2),
+              new NewOperationDto("Кромка", 3),
+              new NewOperationDto("Фрезеровка", 5),
+              new NewOperationDto("Присадка", 4),
+              new NewOperationDto("Сборка", 7),
+              new NewOperationDto("Покраска", 9)));
       
       NewProjectDto dto2 = new NewProjectDto(
           346,
@@ -232,11 +232,11 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
           "ГосСтройБыт",
           "Комментарий",
           List.of(
-              new NewOperationDto("Раскрой", 1),
-              new NewOperationDto("Кромка", 2),
-              new NewOperationDto("Фрезеровка", 4),
-              new NewOperationDto("Сборка", 6),
-              new NewOperationDto("Лакировка", 7)));
+              new NewOperationDto("Раскрой", 2),
+              new NewOperationDto("Кромка", 3),
+              new NewOperationDto("Фрезеровка", 5),
+              new NewOperationDto("Сборка", 7),
+              new NewOperationDto("Лакировка", 9)));
       
       NewProjectDto dto3 = new NewProjectDto(
           284,
@@ -245,12 +245,12 @@ public class CommandLineRunnerImpl implements CommandLineRunner {
           "Петров В.Г.",
           null,
           List.of(
-              new NewOperationDto("Раскрой", 1),
-              new NewOperationDto("Кромка", 2),
-              new NewOperationDto("Фрезеровка", 4),
-              new NewOperationDto("Сборка", 6),
-              new NewOperationDto("Покраска", 7),
-              new NewOperationDto("Покраска", 7)));
+              new NewOperationDto("Раскрой", 2),
+              new NewOperationDto("Кромка", 3),
+              new NewOperationDto("Фрезеровка", 5),
+              new NewOperationDto("Сборка", 7),
+              new NewOperationDto("Покраска", 9),
+              new NewOperationDto("Покраска", 9)));
       
       projectService.saveNewProject(dto1, "manager8");
       projectService.saveNewProject(dto2, "manager8");
