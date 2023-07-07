@@ -13,10 +13,23 @@ package ru.trae.backend.entity;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
 class TypeWorkTest {
+
+  @Test
+  void setId_AfterSaving_ShouldSetId() {
+    //given
+    TypeWork tw = new TypeWork();
+    tw.setId(1L);
+
+    //then
+    assertNotNull(tw.getId());
+    assertTrue(tw.getId() > 0);
+  }
 
   @Test
   void equals_SameObject_ShouldReturnTrue() {
@@ -27,6 +40,7 @@ class TypeWorkTest {
 
     //then
     assertEquals(tw, tw);
+    assertNotNull(tw.getId());
   }
 
   @Test

@@ -11,6 +11,7 @@
 package ru.trae.backend.entity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Set;
@@ -28,6 +29,40 @@ class PayloadRandomPieceTest {
     ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
     validator = factory.getValidator();
   }
+
+  @Test
+  void setId_AfterSaving_ShouldSetId() {
+    //given
+    PayloadRandomPiece piece = new PayloadRandomPiece();
+    piece.setId(1L);
+
+    //then
+    assertNotNull(piece.getId());
+    assertTrue(piece.getId() > 0);
+  }
+
+  @Test
+  void setUsername_ValidUsername_ShouldSetUsername() {
+    //given
+    String username = "testUser";
+    PayloadRandomPiece piece = new PayloadRandomPiece();
+
+    //when
+    piece.setUsername(username);
+
+    //then
+    assertEquals(username, piece.getUsername());
+  }
+
+//  @Test
+//  void setUsername_InvalidUsername_ShouldThrowIllegalArgumentException() {
+//    //given
+//    String username = "ab";
+//    PayloadRandomPiece piece = new PayloadRandomPiece();
+//
+//    //then
+//    assertThrows(IllegalArgumentException.class, () -> piece.setUsername(username));
+//  }
 
   @Test
   void payloadRandomPiece_ValidData_ShouldPassValidation() {
