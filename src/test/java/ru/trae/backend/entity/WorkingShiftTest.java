@@ -48,7 +48,7 @@ class WorkingShiftTest {
     ws.setId(1L);
 
     //then
-    assertNotEquals(null, ws);
+    assertFalse(ws.equals(null));
   }
 
   @Test

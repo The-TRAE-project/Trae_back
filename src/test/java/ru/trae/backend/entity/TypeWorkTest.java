@@ -16,7 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import ru.trae.backend.entity.task.Operation;
 
 class TypeWorkTest {
 
@@ -51,7 +55,7 @@ class TypeWorkTest {
     tw.setName("work");
 
     //then
-    assertNotEquals(null, tw);
+    assertFalse(tw.equals(null));
   }
 
   @Test
@@ -142,5 +146,25 @@ class TypeWorkTest {
 
     //then
     assertEquals(expected, actual);
+  }
+
+  @Test
+  void setOperations_AfterCreation_ShouldSetOperations() throws NoSuchFieldException, IllegalAccessException {
+    //given
+    TypeWork tw = new TypeWork();
+    List<Operation> operations = new ArrayList<>();
+
+    //when
+    setPrivateField(tw, operations);
+
+    //then
+    List<Operation> retrievedOperations = tw.getOperations();
+    assertEquals(operations, retrievedOperations);
+  }
+
+  private void setPrivateField(Object object, Object value) throws NoSuchFieldException, IllegalAccessException {
+    Field field = object.getClass().getDeclaredField("operations");
+    field.setAccessible(true);
+    field.set(object, value);
   }
 }
