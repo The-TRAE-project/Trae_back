@@ -440,4 +440,92 @@ class ReportServiceTest {
     //then
     assertThrows(ReportException.class, () -> reportService.reportDeadlines(req));
   }
+
+  @Test
+  void reportDeadlines_ProjectAsFirstParameter_OperationWithIncorrectProjectId_ThrowsReportException() {
+    //given
+    DeadlineReq req = new DeadlineReq(
+        ReportParameter.PROJECT, 1L,
+        ReportParameter.OPERATION, Collections.singleton(2L),
+        ReportParameter.EMPLOYEE, Collections.singleton(3L));
+
+    Project p = new Project();
+    p.setId(10L);
+    p.setNumber(100);
+    Operation o = new Operation();
+    o.setId(2L);
+    o.setEmployee(null);
+    o.setProject(p);
+    o.setName("operation_name");
+    o.setPlannedEndDate(LocalDateTime.now().minusDays(1));
+    o.setRealEndDate(LocalDateTime.now().minusDays(2));
+    p.setOperations(List.of(o));
+
+    List<Operation> operations = Collections.singletonList(o);
+
+    //when
+    when(operationService.getOperationsByIds(anySet())).thenReturn(operations);
+
+    //then
+    assertThrows(ReportException.class, () -> reportService.reportDeadlines(req));
+  }
+
+  @Test
+  void reportDeadlines_OperationAsFirstParameter_ProjectWithIncorrectOperationId_ThrowsReportException() {
+    //given
+    DeadlineReq req = new DeadlineReq(
+        ReportParameter.OPERATION, 4L,
+        ReportParameter.PROJECT, Collections.singleton(5L),
+        ReportParameter.EMPLOYEE, Collections.singleton(6L));
+
+    Project p = new Project();
+    p.setId(11L);
+    p.setNumber(100);
+    Operation o = new Operation();
+    o.setId(2L);
+    o.setEmployee(null);
+    o.setProject(p);
+    o.setName("operation_name");
+    o.setPlannedEndDate(LocalDateTime.now().minusDays(1));
+    o.setRealEndDate(LocalDateTime.now().minusDays(2));
+    p.setOperations(List.of(o));
+
+    List<Operation> operations = Collections.singletonList(new Operation());
+
+    //when
+    when(operationService.getOperationsByIds(anySet())).thenReturn(operations);
+
+
+    //then
+    assertThrows(ReportException.class, () -> reportService.reportDeadlines(req));
+  }
+
+  @Test
+  void reportDeadlines_EmployeeAsFirstParameter_IncompleteEmployeeData_ThrowsReportException() {
+    //given
+    DeadlineReq req = new DeadlineReq(
+        ReportParameter.EMPLOYEE, 7L,
+        ReportParameter.PROJECT, Collections.singleton(8L),
+        ReportParameter.OPERATION, Collections.singleton(9L));
+
+    Project p = new Project();
+    p.setId(12L);
+    p.setNumber(100);
+    Operation o = new Operation();
+    o.setId(2L);
+    o.setEmployee(null);
+    o.setProject(p);
+    o.setName("operation_name");
+    o.setPlannedEndDate(LocalDateTime.now().minusDays(1));
+    o.setRealEndDate(LocalDateTime.now().minusDays(2));
+    p.setOperations(List.of(o));
+
+    List<Operation> operations = Collections.singletonList(new Operation());
+
+    //when
+    when(operationService.getOperationsByIds(anySet())).thenReturn(operations);
+
+    //then
+    assertThrows(ReportException.class, () -> reportService.reportDeadlines(req));
+  }
 }
