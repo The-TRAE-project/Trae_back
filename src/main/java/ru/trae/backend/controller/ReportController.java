@@ -47,7 +47,7 @@ import ru.trae.backend.service.ReportService;
 @RequestMapping("/api/report")
 public class ReportController {
   private final ReportService reportService;
-  
+
   @Operation(summary = "Список отчетов по рабочим сменам за указанный период, список сотрудников, "
       + "входящих в отчет, список общего количества часов по каждому сотруднику",
       description = "Доступен администратору. Возвращает даты с началом и концом запрошенного "
@@ -83,8 +83,8 @@ public class ReportController {
     return ResponseEntity.ok(reportService.reportWorkingShiftForPeriod(
         startOfPeriod, endOfPeriod, employeeIds));
   }
-  
-  
+
+
   @Operation(summary = "Отчет со списком проектов попадающих в указанный период",
       description = "Доступен администратору. Возвращает даты с началом и концом запрошенного "
           + "периода, дату формирования отчета, выборку проектов попадающих в указанный период. "
@@ -118,7 +118,7 @@ public class ReportController {
   ) {
     return ResponseEntity.ok(reportService.reportProjectsForPeriod(startOfPeriod, endOfPeriod));
   }
-  
+
   @Operation(summary = "Отчет по срокам по трем параметрам (сотрудники, операции, проекты)",
       description = """
           Доступен администратору. Возвращает выборку по трем параметрам. Для работы с эндпоинтом\s
@@ -152,6 +152,31 @@ public class ReportController {
     return ResponseEntity.ok(reportService.reportDeadlines(req));
   }
 
+  /**
+   * Retrieves the dashboard statistics for the report.
+   *
+   * @return A ResponseEntity containing the {@link ReportDashboardStatsDto} object with the
+   *     dashboard statistics.
+   */
+  @io.swagger.v3.oas.annotations.Operation(
+      summary = "Статистика для дашборда",
+      description = "Доступен администратору. Возвращает ДТО с количеством сотрудников на активной "
+          + "рабочей смене, незавершенных проектов, проектов с просроченной датой по договору, "
+          + "проектов с текущим этапом у которого просрочено временем выполнения, проектов с "
+          + "последней операцией в статусе \"готова для принятия\"")
+  @ApiResponses(value = {
+      @ApiResponse(responseCode = "200",
+          description = "ДТО со статистикой для дашборда",
+          content = {@Content(mediaType = "application/json",
+              schema = @Schema(implementation = ReportDashboardStatsDto.class))}),
+      @ApiResponse(responseCode = "400", description = "Неправильный формат идентификатора",
+          content = @Content),
+      @ApiResponse(responseCode = "401", description = "Требуется аутентификация",
+          content = @Content),
+      @ApiResponse(responseCode = "403", description = "Доступ запрещен",
+          content = @Content),
+      @ApiResponse(responseCode = "423", description = "Учетная запись заблокирована",
+          content = @Content)})
   @GetMapping("/dashboard")
   public ResponseEntity<ReportDashboardStatsDto> dashboardStats() {
     return ResponseEntity.ok(reportService.getDashboardStatsDto());
