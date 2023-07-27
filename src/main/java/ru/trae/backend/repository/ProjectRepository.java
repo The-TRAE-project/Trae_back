@@ -52,10 +52,9 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
   long getCountOverdueProjects();
 
   @Query("""
-      select count(p) from Project p inner join p.operations o
-      where p.isEnded = false and\s
-      o.priority = (select max(o.priority)\s
-      from Operation inO where inO.project.id = p.id) and o.readyToAcceptance = true""")
+      select count(p) from Project p inner join p.operations operations
+      where p.isEnded = false and operations.priority = (select max(o.priority)\s
+      from Operation o where o.project.id = p.id) and operations.readyToAcceptance = true""")
   long getCountProjectsWithLastOpReadyToAcceptance();
 
   @Query("""

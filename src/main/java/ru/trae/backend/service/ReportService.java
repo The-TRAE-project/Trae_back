@@ -28,6 +28,7 @@ import ru.trae.backend.dto.employee.EmployeeIdTotalPartsDto;
 import ru.trae.backend.dto.mapper.ProjectForReportDtoMapper;
 import ru.trae.backend.dto.project.ProjectForReportDto;
 import ru.trae.backend.dto.report.DeadlineReq;
+import ru.trae.backend.dto.report.ReportDashboardStatsDto;
 import ru.trae.backend.dto.report.ReportDeadlineDto;
 import ru.trae.backend.dto.report.ReportProjectsForPeriodDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
@@ -55,12 +56,19 @@ public class ReportService {
   private final OperationService operationService;
   private final ProjectForReportDtoMapper projectForReportDtoMapper;
 
-  public void getDashboardStats() {
-    workingShiftService.getCountEmpsOnActiveWorkingShift();
-    projectService.getCountNotEndedProjects();
-    projectService.getCountProjectsWithOverdueCurrentOperation();
-    projectService.getCountOverdueProjects();
-    projectService.getCountProjectsWithLastOpReadyToAcceptance();
+  /**
+   * Retrieves the dashboard statistics for the report.
+   *
+   * @return A {@link ReportDashboardStatsDto} object containing the dashboard statistics.
+   */
+  public ReportDashboardStatsDto getDashboardStatsDto() {
+    return new ReportDashboardStatsDto(
+        workingShiftService.getCountEmpsOnActiveWorkingShift(),
+        projectService.getCountNotEndedProjects(),
+        projectService.getCountProjectsWithOverdueCurrentOperation(),
+        projectService.getCountOverdueProjects(),
+        projectService.getCountProjectsWithLastOpReadyToAcceptance()
+    );
   }
 
   /**
