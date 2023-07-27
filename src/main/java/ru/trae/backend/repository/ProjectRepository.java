@@ -35,19 +35,28 @@ import ru.trae.backend.projection.ProjectIdNumberDto;
  */
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
-  
+  @Query("select count(p) from Project p where p.isEnded = false")
+  long getCountNotEndedProjects();
+
+  @Query("""
+      select count(p) from Project p left join p.operations operations
+      where p.isEnded = false\s
+      and (operations.inWork = true or operations.readyToAcceptance = true)\s
+      and operations.plannedEndDate < ?1""")
+  long getCountProjectsWithOverdueCurrentOperation(LocalDateTime currentDate);
+
   @Query("""
       select p from Project p inner join p.operations operations
       where p.isEnded = false and operations.priority = (select max(o.priority)\s
       from Operation o where o.project.id = p.id) and operations.readyToAcceptance = true""")
   Page<Project> findLastByIsEndedAndOpPriorityAndReadyToAcceptanceTrue(Pageable pageable);
-  
+
   @Query("""
       select p from Project p inner join p.operations o
       where p.isEnded = false and o.priority = ?1 and o.readyToAcceptance = true""")
   Page<Project> findFirstByIsEndedAndOpPriorityAndReadyToAcceptance(
       int priority, Pageable pageable);
-  
+
   @Query("""
       select p from Project p inner join p.operations operations
       where p.isEnded = false and\s
@@ -56,7 +65,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       (operations.priority = (select min(o.priority)\s
       from Operation o where o.project.id = p.id) and operations.readyToAcceptance = true)""")
   Page<Project> findFirstAndLast(Pageable pageable);
-  
+
   @Query("""
       select p from Project p left join p.operations operations
       where p.isEnded = false\s
@@ -64,7 +73,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       and operations.plannedEndDate < ?1""")
   Page<Project> findProjectsWithOverdueCurrentOperation(
       LocalDateTime currentDate, Pageable pageable);
-  
+
   @Query("""
       select p from Project p
       where p.isEnded = false and exists (
@@ -73,13 +82,13 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                                           (o.inWork = true or\s
                                           (o.readyToAcceptance = true and o.priority != 0)))""")
   Page<Project> findOpsInWorkOrReadyToAcceptanceExceptFirstOpReadyToAcceptance(Pageable pageable);
-  
+
   @Query("""
       select p from Project p
       where p.isEnded = false and\s
       (p.plannedEndDate > p.endDateInContract or current_timestamp > p.endDateInContract)""")
   Page<Project> findOverdueProjects(Pageable pageable);
-  
+
   @Query(value = """
       select p.* from projects p where (cast(p.start_date as date) between ?1 and ?2)\s
       or (cast(p.end_date_in_contract as date) between ?1 and ?2)\s
@@ -88,40 +97,40 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       or (?1 between cast(p.start_date as date) and cast(p.planned_end_date as date))""",
       nativeQuery = true)
   List<Project> findProjectsForPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod);
-  
+
   @Transactional
   @Modifying
   @Query("update Project p set p.plannedEndDate = ?1 where p.id = ?2")
   void updatePlannedEndDateById(LocalDateTime plannedEndDate, Long id);
-  
+
   @Query("""
       select p from Project p inner join p.operations operations
       where p.isEnded = false and operations.readyToAcceptance = true\s
       and operations.typeWork.id = ?1""")
   List<Project> findAvailableProjectsByTypeWork(long typeWorkId);
-  
+
   @Transactional
   @Modifying
   @Query("update Project p set p.isEnded = ?1, p.realEndDate = ?2 where p.id = ?3")
   void updateIsEndedAndRealEndDateById(boolean isEnded, LocalDateTime realEndDate, Long id);
-  
+
   @Query("select p from Project p where p.isEnded = ?1")
   Page<Project> findByIsEnded(boolean isEnded, Pageable pageable);
-  
+
   @Query("select p from Project p where p.number = ?1")
   Page<Project> findByNumber(int number, Pageable pageable);
-  
+
   @Query("select p from Project p where upper(p.customer) like %?1%")
   Page<Project> findByCustomerLikeIgnoreCase(String customer, Pageable pageable);
-  
+
   ChangingCommonDataResp findChangedCommonDataById(long projectId);
-  
+
   ChangingEndDatesResp findChangedPlannedEndDateById(long projectId);
-  
+
   @Query("select p from Project p where p.id = "
       + "(select o.project.id from Operation o where o.id = ?1)")
   Optional<Project> findByOperationId(long id);
-  
+
   @Transactional
   @Modifying
   @Query(value = """
@@ -133,7 +142,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
                   from operations as o
                   where o.id = ?1 and o.in_work = true)""", nativeQuery = true)
   void updateStartFirstOperationDateByOperationId(long operationId);
-  
+
   @Query(value = """
       select p.id, p.number from projects p where\s
       (cast(?1 as date) is null and cast(?2 as date) is null)\s
@@ -144,7 +153,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       or (?1 between cast(p.start_date as date) and cast(p.planned_end_date as date))""",
       nativeQuery = true)
   List<ProjectIdNumberDto> findByPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod);
-  
+
   @Query(value = """
       select p.id, p.number from projects p where\s
       p.id in (select o.project_id from operations o where o.employee_id in (?3))\s
@@ -157,7 +166,7 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       nativeQuery = true)
   List<ProjectIdNumberDto> findByPeriodAndEmployeeIds(
       LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds);
-  
+
   @Query(value = """
       select p.id, p.number from projects p where\s
       p.id in (select o.project_id from operations o where o.id in (?3))\s

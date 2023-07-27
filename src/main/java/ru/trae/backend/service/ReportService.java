@@ -54,6 +54,12 @@ public class ReportService {
   private final ProjectService projectService;
   private final OperationService operationService;
   private final ProjectForReportDtoMapper projectForReportDtoMapper;
+
+  public void getDashboardStats() {
+    workingShiftService.getCountEmpsOnActiveWorkingShift();
+    projectService.getCountNotEndedProjects();
+    projectService.getCountProjectsWithOverdueCurrentOperation();
+  }
   
   /**
    * Generates a report of working shifts for a specific period.

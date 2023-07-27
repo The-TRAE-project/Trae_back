@@ -169,6 +169,14 @@ public class ProjectService {
     
     return result;
   }
+
+  public long getCountNotEndedProjects() {
+    return projectRepository.getCountNotEndedProjects();
+  }
+
+  public long getCountProjectsWithOverdueCurrentOperation() {
+    return projectRepository.getCountProjectsWithOverdueCurrentOperation(LocalDateTime.now());
+  }
   
   public List<Project> findProjectsForPeriod(LocalDate startOfPeriod, LocalDate endOfPeriod) {
     return projectRepository.findProjectsForPeriod(startOfPeriod, endOfPeriod);
