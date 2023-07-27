@@ -42,8 +42,21 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
       select count(p) from Project p left join p.operations operations
       where p.isEnded = false\s
       and (operations.inWork = true or operations.readyToAcceptance = true)\s
-      and operations.plannedEndDate < ?1""")
-  long getCountProjectsWithOverdueCurrentOperation(LocalDateTime currentDate);
+      and operations.plannedEndDate < current_timestamp""")
+  long getCountProjectsWithOverdueCurrentOperation();
+
+  @Query("""
+      select count(p) from Project p
+      where p.isEnded = false and\s
+      (p.plannedEndDate > p.endDateInContract or current_timestamp > p.endDateInContract)""")
+  long getCountOverdueProjects();
+
+  @Query("""
+      select count(p) from Project p inner join p.operations o
+      where p.isEnded = false and\s
+      o.priority = (select max(o.priority)\s
+      from Operation inO where inO.project.id = p.id) and o.readyToAcceptance = true""")
+  long getCountProjectsWithLastOpReadyToAcceptance();
 
   @Query("""
       select p from Project p inner join p.operations operations

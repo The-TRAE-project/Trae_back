@@ -59,8 +59,10 @@ public class ReportService {
     workingShiftService.getCountEmpsOnActiveWorkingShift();
     projectService.getCountNotEndedProjects();
     projectService.getCountProjectsWithOverdueCurrentOperation();
+    projectService.getCountOverdueProjects();
+    projectService.getCountProjectsWithLastOpReadyToAcceptance();
   }
-  
+
   /**
    * Generates a report of working shifts for a specific period.
    *
@@ -71,19 +73,19 @@ public class ReportService {
    */
   public ReportWorkingShiftForPeriodDto reportWorkingShiftForPeriod(
       LocalDate startOfPeriod, LocalDate endOfPeriod, Set<Long> employeeIds) {
-    
+
     checkStartEndDates(startOfPeriod, endOfPeriod);
-    
+
     List<WorkingShiftEmployeeDto> workingShiftList =
         workingShiftService.getWorkingShiftEmployeeByEmpIds(
             startOfPeriod, endOfPeriod, employeeIds);
-    
+
     List<EmployeeIdFirstLastNameDto> shortEmployeeDtoList = employeeService.getEmployeeDtoByListId(
         workingShiftList.stream()
             .map(WorkingShiftEmployeeDto::getEmployeeId)
             .distinct()
             .toList());
-    
+
     List<EmployeeIdTotalPartsDto> employeeIdTotalPartsDtoList = workingShiftList.stream()
         .collect(Collectors.groupingBy(WorkingShiftEmployeeDto::getEmployeeId,
             Collectors.summingDouble(WorkingShiftEmployeeDto::getPartOfShift)))
@@ -91,7 +93,7 @@ public class ReportService {
         .stream()
         .map(e -> new EmployeeIdTotalPartsDto(e.getKey(), e.getValue().floatValue()))
         .toList();
-    
+
     return new ReportWorkingShiftForPeriodDto(
         startOfPeriod,
         endOfPeriod,
@@ -99,7 +101,7 @@ public class ReportService {
         workingShiftList,
         employeeIdTotalPartsDtoList);
   }
-  
+
   /**
    * Generates a report of projects for a given period.
    *
@@ -109,18 +111,18 @@ public class ReportService {
    */
   public ReportProjectsForPeriodDto reportProjectsForPeriod(
       LocalDate startOfPeriod, LocalDate endOfPeriod) {
-    
+
     checkStartEndDates(startOfPeriod, endOfPeriod);
-    
+
     List<Project> projects = projectService.findProjectsForPeriod(startOfPeriod, endOfPeriod);
     List<ProjectForReportDto> projectForReportDtoList = projects.stream()
         .map(projectForReportDtoMapper)
         .toList();
-    
+
     return new ReportProjectsForPeriodDto(
         startOfPeriod, endOfPeriod, LocalDate.now(), projectForReportDtoList);
   }
-  
+
   /**
    * Generates a report containing deadlines based on the provided request.
    *
@@ -129,14 +131,14 @@ public class ReportService {
    * @throws ReportException if there is an error generating the report.
    */
   public ReportDeadlineDto reportDeadlines(DeadlineReq req) {
-    
+
     //проверка на неповторяющиеся значения параметров
     checkCorrectParametersRequest(req);
-    
+
     ReportDeadlineDto report = new ReportDeadlineDto();
     //здесь присваивается id основному блоку отчета согласно id из значения первого параметра
     report.setFirstRespId(req.valueOfFirstParameter());
-    
+
     //выборка из базы данных для отчета всегда берется согласно списку операций в запросе
     //в этом месте происходит поиск в каком из параметров указан список операций
     List<Operation> ops;
@@ -147,16 +149,16 @@ public class ReportService {
     } else {
       ops = operationService.getOperationsByIds(req.valuesOfThirdParameter());
     }
-    
+
     checkNotEmptyListOps(ops);
-    
+
     switch (req.firstParameter()) {
-      
+
       //кейс, где проект является главным блоком в отчете
       case PROJECT -> {
         //проверка на соответствие id проекта из запроса и id проекта из выборки операций
         ops.forEach(o -> checkCorrectProjectIdFromReqAndOp(req.valueOfFirstParameter(), o));
-        
+
         report.setFirstRespValue(String.valueOf(ops.get(0).getProject().getNumber()));
         switch (req.secondParameter()) {
           //кейс, где операции являются вторым блоком в отчете по проекту
@@ -168,7 +170,7 @@ public class ReportService {
           default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
-      
+
       //кейс, где операция является главным блоком в отчете
       case OPERATION -> {
         report.setFirstRespValue(ops.get(0).getName());
@@ -182,14 +184,14 @@ public class ReportService {
           default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
-      
+
       //кейс, где сотрудник является главным блоком в отчете
       case EMPLOYEE -> {
         //проверка на то, что во всех операциях из выборки есть сотрудник
         ops.forEach(this::checkNotNullEmpInOp);
         //проверка на соответствие id сотрудника из запроса с id сотрудника из выборки операций
         ops.forEach(o -> checkCorrectEmpIdFromReqAndEmpIdFromOp(req.valueOfFirstParameter(), o));
-        
+
         report.setFirstRespValue(ops.get(0).getEmployee().getLastName());
         switch (req.secondParameter()) {
           //кейс, где проекты являются вторым блоком в отчете по сотруднику
@@ -201,13 +203,13 @@ public class ReportService {
           default -> throw new ReportException(HttpStatus.BAD_REQUEST, WRONG_PARAMETER.value);
         }
       }
-      
+
       default -> throw new ReportException(HttpStatus.BAD_REQUEST, "Wrong values in parameters");
     }
-    
+
     return report;
   }
-  
+
   private void checkCorrectProjectIdFromReqAndOp(long projectIdFromReq, Operation o) {
     if (projectIdFromReq != o.getProject().getId()) {
       throw new ReportException(HttpStatus.BAD_REQUEST,
@@ -215,39 +217,39 @@ public class ReportService {
               + o.getProject().getId() + " from the operation");
     }
   }
-  
+
   private void checkCorrectEmpIdFromReqAndEmpIdFromOp(long employeeId, Operation o) {
     if (o.getEmployee().getId() != employeeId) {
       throw new ReportException(HttpStatus.BAD_REQUEST, "The operation with id: " + o.getId()
           + " from the selection does not match the specified employee with id: " + employeeId);
     }
   }
-  
+
   private void checkNotNullEmpInOp(Operation o) {
     if (o.getEmployee() == null) {
       throw new ReportException(HttpStatus.BAD_REQUEST,
           "One of the operations from the selection does not have an employee");
     }
   }
-  
+
   private void checkNotEmptyListOps(List<Operation> ops) {
     if (ops.isEmpty()) {
       throw new ReportException(HttpStatus.BAD_REQUEST,
           "The parameter values are not correct, the final result is empty");
     }
   }
-  
+
   private void checkCorrectParametersRequest(DeadlineReq req) {
     Set<ReportParameter> reqSet = new HashSet<>();
     reqSet.add(req.firstParameter());
     reqSet.add(req.secondParameter());
     reqSet.add(req.thirdParameter());
-    
+
     if (reqSet.size() != 3) {
       throw new ReportException(HttpStatus.CONFLICT, "Parameter values are repeated");
     }
   }
-  
+
   private void addToPrReportSecondSubDtoByEmployees(
       Long firstValue,
       Set<Long> secondValues,
@@ -276,7 +278,7 @@ public class ReportService {
               .toList());
         }).toList());
   }
-  
+
   private void addToPrReportSecondSubDtoByOperations(
       Long firstValue,
       Set<Long> secondValues,
@@ -295,12 +297,12 @@ public class ReportService {
                   .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
                       "Operation with id: " + oid + NOT_FOUND_CONST.value + " in project with id: "
                           + firstValue));
-              
+
               checkNotNullEmpInOp(op);
               //проверка на наличие id сотрудника из выборки операций среди значений
               // третьего параметра
               checkIdContainsInSetValues(thirdValues, op.getEmployee().getId());
-              
+
               return new SecondResponseSubDto(op.getId(), op.getName(),
                   List.of(new ThirdResponseSubDto(
                       op.getEmployee().getId(),
@@ -310,14 +312,14 @@ public class ReportService {
             }
         ).toList());
   }
-  
+
   private void checkIdContainsInSetValues(Set<Long> values, Long id) {
     if (!values.contains(id)) {
       throw new ReportException(HttpStatus.BAD_REQUEST,
           "Values of parameter not contains this id: " + id);
     }
   }
-  
+
   private void addToEmpReportSecondSubDtoByOperations(
       Long firstValue,
       Set<Long> secondValues,
@@ -355,7 +357,7 @@ public class ReportService {
         })
         .toList());
   }
-  
+
   private void addToEmpReportSecondSubDtoByProjects(
       Long firstValue,
       Set<Long> secondValues,
@@ -386,17 +388,17 @@ public class ReportService {
         })
         .toList());
   }
-  
+
   private void addToOpReportSecondSubDtoByProject(
       Set<Long> secondValues,
       Set<Long> thirdValues,
       ReportDeadlineDto report,
       Operation op) {
-    
+
     checkNotNullEmpInOp(op);
     secondValues.forEach(p -> checkCorrectProjectIdFromReqAndOp(p, op));
     thirdValues.forEach(e -> checkCorrectEmpIdFromReqAndEmpIdFromOp(e, op));
-    
+
     report.setSecondRespValues(
         List.of(new SecondResponseSubDto(
             op.getProject().getId(),
@@ -407,17 +409,17 @@ public class ReportService {
                 op.getPlannedEndDate(),
                 op.getRealEndDate())))));
   }
-  
+
   private void addToOpReportSecondSubDtoByEmployee(
       Set<Long> secondValues,
       Set<Long> thirdValues,
       ReportDeadlineDto report,
       Operation op) {
-    
+
     checkNotNullEmpInOp(op);
     secondValues.forEach(p -> checkCorrectProjectIdFromReqAndOp(p, op));
     thirdValues.forEach(e -> checkCorrectEmpIdFromReqAndEmpIdFromOp(e, op));
-    
+
     report.setSecondRespValues(
         List.of(new SecondResponseSubDto(
             op.getEmployee().getId(),
@@ -428,7 +430,7 @@ public class ReportService {
                 op.getPlannedEndDate(),
                 op.getRealEndDate())))));
   }
-  
+
   private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {
     if (startOfPeriod.isAfter(endOfPeriod)) {
       throw new ReportException(HttpStatus.BAD_REQUEST, "Start date cannot be after end date.");
