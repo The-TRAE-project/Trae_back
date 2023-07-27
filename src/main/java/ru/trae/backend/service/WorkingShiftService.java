@@ -17,6 +17,7 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.trae.backend.dto.TimeControlDto;
 import ru.trae.backend.dto.mapper.WorkingShiftDtoMapper;
 import ru.trae.backend.dto.workingshift.WorkingShiftDto;
 import ru.trae.backend.entity.TimeControl;
@@ -142,5 +143,14 @@ public class WorkingShiftService {
           workingShiftRepository.getWorkingShiftsDates(startOfPeriod, endOfPeriod);
     }
     return hoursWorkingShiftList;
+  }
+
+  /**
+   * Returns the count of employees who are currently on an active working shift.
+   *
+   * @return The count of employees on active working shifts.
+   */
+  public long getCountEmpsOnActiveWorkingShift() {
+    return workingShiftRepository.countEmployeeOnActiveWorkingShift();
   }
 }

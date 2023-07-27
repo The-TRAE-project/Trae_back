@@ -28,19 +28,29 @@ import ru.trae.backend.projection.WorkingShiftEmployeeDto;
 @Repository
 public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long> {
   /**
+   * Returns the count of employees who are currently on an active working shift.
+   *
+   * @return The count of employees on active working shift.
+   */
+  @Query("""
+      select count(tc) from WorkingShift w inner join w.timeControls tc
+      where w.isEnded = false and tc.isOnShift = true""")
+  long countEmployeeOnActiveWorkingShift();
+
+  /**
    * Check if there is an active WorkingShift.
    *
    * @return true if there is an active WorkingShift, false otherwise.
    */
   boolean existsByIsEndedFalse();
-  
+
   /**
    * Find the active WorkingShift.
    *
    * @return active WorkingShift if there is one, null otherwise.
    */
   WorkingShift findByIsEndedFalse();
-  
+
   /**
    * Check if an employee is on shift for the current active WorkingShift.
    *
@@ -55,7 +65,7 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
       + "where ws.is_ended = false and tc.is_on_shift = :isOnShift and e.id = :id)",
       nativeQuery = true)
   boolean existsEmpOnShift(@Param("isOnShift") boolean isOnShift, @Param("id") Long id);
-  
+
   //32400 - количество секунд в 9-часовой смене
   @Query(value = """
       select employee_id,
@@ -77,7 +87,7 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
          and cast(ws.start_shift as date) between ?1 and ?2""", nativeQuery = true)
   List<WorkingShiftEmployeeDto> getWorkingShiftsDates(
       LocalDate startOfPeriod, LocalDate endOfPeriod);
-  
+
   //32400 - количество секунд в 9-часовой смене
   @Query(value = """
       select employee_id,
