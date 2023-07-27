@@ -11,6 +11,7 @@
 package ru.trae.backend.service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.entity.TimeControl;
@@ -71,8 +72,11 @@ public class TimeControlService {
    * @param tc The {@link TimeControl} to close the shift of.
    */
   public void autoClosingShift(TimeControl tc) {
+    LocalTime specificTime = LocalTime.of(18, 0);
+
     tc.setOnShift(false);
     tc.setAutoClosingShift(true);
+    tc.setDeparture(LocalDateTime.now().with(specificTime));
 
     timeControlRepository.save(tc);
   }

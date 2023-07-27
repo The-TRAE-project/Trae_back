@@ -162,7 +162,9 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
     
     Response response = Response.builder()
         .timestamp(LocalDateTime.now().toString())
-        .error(ex.getCause().getMessage().substring(0, ex.getCause().getMessage().indexOf("\n")))
+        .error(ex.getCause() != null
+            ? ex.getCause().getMessage().substring(0, ex.getCause().getMessage().indexOf("\n"))
+            : "Exception cause is empty!")
         .status(status)
         .build();
     
