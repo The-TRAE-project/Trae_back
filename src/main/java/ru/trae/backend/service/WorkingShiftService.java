@@ -12,12 +12,12 @@ package ru.trae.backend.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import ru.trae.backend.dto.TimeControlDto;
 import ru.trae.backend.dto.mapper.WorkingShiftDtoMapper;
 import ru.trae.backend.dto.workingshift.WorkingShiftDto;
 import ru.trae.backend.entity.TimeControl;
@@ -38,7 +38,7 @@ public class WorkingShiftService {
   private final WorkingShiftRepository workingShiftRepository;
   private final TimeControlService timeControlService;
   private final WorkingShiftDtoMapper workingShiftDtoMapper;
-  
+
   /**
    * Creates a new WorkingShift.
    */
@@ -46,10 +46,10 @@ public class WorkingShiftService {
     WorkingShift ws = new WorkingShift();
     ws.setStartShift(LocalDateTime.now());
     ws.setEnded(false);
-    
+
     workingShiftRepository.save(ws);
   }
-  
+
   /**
    * Gets the active WorkingShift.
    *
@@ -60,10 +60,10 @@ public class WorkingShiftService {
     if (!existsActiveWorkingShift()) {
       throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Active work shift not found");
     }
-    
+
     return workingShiftDtoMapper.apply(workingShiftRepository.findByIsEndedFalse());
   }
-  
+
   /**
    * Closes the active WorkingShift.
    */
@@ -71,19 +71,20 @@ public class WorkingShiftService {
     if (!existsActiveWorkingShift()) {
       return;
     }
-    
+
     WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
-    
+    LocalTime specificTime = LocalTime.of(23, 0);
+
     ws.getTimeControls().stream()
         .filter(TimeControl::isOnShift)
         .forEach(timeControlService::autoClosingShift);
-    
+
     ws.setEnded(true);
-    ws.setEndShift(LocalDateTime.now());
-    
+    ws.setEndShift(ws.getStartShift().with(specificTime));
+
     workingShiftRepository.save(ws);
   }
-  
+
   /**
    * Creates a TimeControl for the employee who has arrived.
    *
@@ -94,14 +95,14 @@ public class WorkingShiftService {
     if (!existsActiveWorkingShift()) {
       throw new WorkingShiftException(HttpStatus.BAD_REQUEST, "Active work shift not found");
     }
-    
+
     WorkingShift ws = workingShiftRepository.findByIsEndedFalse();
-    
+
     ws.getTimeControls().add(timeControlService.createArrivalTimeControl(employee, ws,
         true, LocalDateTime.now()));
     workingShiftRepository.save(ws);
   }
-  
+
   /**
    * Checks if there is an active WorkingShift.
    *
@@ -110,7 +111,7 @@ public class WorkingShiftService {
   public boolean existsActiveWorkingShift() {
     return workingShiftRepository.existsByIsEndedFalse();
   }
-  
+
   /**
    * Checks if an employee is on shift.
    *
@@ -121,7 +122,7 @@ public class WorkingShiftService {
   public boolean employeeOnShift(boolean isOnShift, long empId) {
     return workingShiftRepository.existsEmpOnShift(isOnShift, empId);
   }
-  
+
   /**
    * Retrieves a list of WorkingShiftEmployeeDto objects for the specified employee IDs and time
    * period.

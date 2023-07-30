@@ -76,7 +76,7 @@ public class TimeControlService {
 
     tc.setOnShift(false);
     tc.setAutoClosingShift(true);
-    tc.setDeparture(LocalDateTime.now().with(specificTime));
+    tc.setDeparture(tc.getWorkingShift().getStartShift().with(specificTime));
 
     timeControlRepository.save(tc);
   }
