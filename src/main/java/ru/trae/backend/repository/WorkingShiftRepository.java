@@ -11,6 +11,7 @@
 package ru.trae.backend.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -50,6 +51,20 @@ public interface WorkingShiftRepository extends JpaRepository<WorkingShift, Long
    * @return active WorkingShift if there is one, null otherwise.
    */
   WorkingShift findByIsEndedFalse();
+
+  /**
+   * Checks if there exists a working shift that is not ended and has a start shift date
+   * different from the current date.
+   *
+   * @return {@code true} if such a working shift exists, {@code false} otherwise.
+   */
+  @Query(value = """
+      select exists(select 1
+                    from working_shifts ws
+                    where ws.is_ended = false and date(ws.start_shift) != current_date)""",
+      nativeQuery = true)
+  boolean existsByIsEndedFalseAndStartShiftNotCurrentDate();
+
 
   /**
    * Check if an employee is on shift for the current active WorkingShift.

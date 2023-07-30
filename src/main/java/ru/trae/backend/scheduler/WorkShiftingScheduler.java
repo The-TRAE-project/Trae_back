@@ -32,7 +32,7 @@ import ru.trae.backend.service.WorkingShiftService;
 @RequiredArgsConstructor
 public class WorkShiftingScheduler {
   private final WorkingShiftService workingShiftService;
-  
+
   /**
    * This cron job is used to start a new work shifting day.
    */
@@ -41,10 +41,10 @@ public class WorkShiftingScheduler {
     if (!workingShiftService.existsActiveWorkingShift()) {
       workingShiftService.closeWorkingShift();
     }
-    
+
     workingShiftService.createWorkingShift();
   }
-  
+
   /**
    * This cron job is used to end a work shifting day.
    */
@@ -52,7 +52,7 @@ public class WorkShiftingScheduler {
   protected void workShiftingDayEndHandler() {
     workingShiftService.closeWorkingShift();
   }
-  
+
   /**
    * This method is used to create a working shift during initialization, if one doesn't already
    * exist.
@@ -61,7 +61,12 @@ public class WorkShiftingScheduler {
   protected void createWorkingShiftAfterInit() {
     LocalTime start = LocalTime.of(7, 0, 0);
     LocalTime end = LocalTime.of(23, 0, 0);
-    
+
+    //проверка, что не закрытая сменя открыта сегодня, если нет, то смена завершается
+    if (workingShiftService.existsByIsEndedFalseAndStartShiftNotCurrentDate()) {
+      workingShiftService.closeWorkingShift();
+    }
+    //проверка, нет открытой смены между 7 утра и 23 вечера, если нет, то сменя открывается
     if (!workingShiftService.existsActiveWorkingShift()
         && LocalTime.now().isBefore(end) && LocalTime.now().isAfter(start)) {
       workingShiftService.createWorkingShift();

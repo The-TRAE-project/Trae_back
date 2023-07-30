@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
+import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,7 @@ public class WorkingShiftService {
   /**
    * Closes the active WorkingShift.
    */
+  @Transactional
   public void closeWorkingShift() {
     if (!existsActiveWorkingShift()) {
       return;
@@ -110,6 +112,16 @@ public class WorkingShiftService {
    */
   public boolean existsActiveWorkingShift() {
     return workingShiftRepository.existsByIsEndedFalse();
+  }
+
+  /**
+   * Checks if there exists a working shift that is not ended and has a start shift date
+   * different from the current date.
+   *
+   * @return {@code true} if such a working shift exists, {@code false} otherwise.
+   */
+  public boolean existsByIsEndedFalseAndStartShiftNotCurrentDate() {
+    return workingShiftRepository.existsByIsEndedFalseAndStartShiftNotCurrentDate();
   }
 
   /**
