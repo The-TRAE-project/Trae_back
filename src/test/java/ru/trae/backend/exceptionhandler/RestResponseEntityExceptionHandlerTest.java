@@ -83,7 +83,6 @@ class RestResponseEntityExceptionHandlerTest {
     //then
     assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
     assertEquals("Error message", Objects.requireNonNull(responseEntity.getBody()).getError());
-    assertEquals(LocalDateTime.now().toString(), responseEntity.getBody().getTimestamp());
   }
   
   @Test
