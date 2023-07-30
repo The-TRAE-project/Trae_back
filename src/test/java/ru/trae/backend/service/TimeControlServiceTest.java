@@ -19,6 +19,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import ru.trae.backend.entity.TimeControl;
@@ -27,7 +28,7 @@ import ru.trae.backend.entity.user.Employee;
 import ru.trae.backend.repository.TimeControlRepository;
 
 class TimeControlServiceTest {
-  
+
   @Test
   void createArrivalTimeControl_ShouldSaveTimeControlWithCorrectValues() {
     //given
@@ -39,16 +40,16 @@ class TimeControlServiceTest {
     LocalDateTime time = LocalDateTime.now();
     TimeControl expectedTimeControl = new TimeControl();
     ArgumentCaptor<TimeControl> timeControlCaptor = ArgumentCaptor.forClass(TimeControl.class);
-    
+
     //when
     when(timeControlRepository.save(timeControlCaptor.capture())).thenReturn(expectedTimeControl);
-    
+
     TimeControl result = timeControlService.createArrivalTimeControl(employee, workingShift, onShift, time);
-    
+
     //then
     verify(timeControlRepository).save(timeControlCaptor.capture());
     assertEquals(expectedTimeControl, result);
-    
+
     TimeControl capturedTimeControl = timeControlCaptor.getValue();
     assertEquals(time, capturedTimeControl.getArrival());
     assertNull(capturedTimeControl.getDeparture());
@@ -57,7 +58,7 @@ class TimeControlServiceTest {
     assertFalse(capturedTimeControl.isAutoClosingShift());
     assertEquals(workingShift, capturedTimeControl.getWorkingShift());
   }
-  
+
   @Test
   void updateTimeControlForDeparture_ShouldUpdateTimeControlWithCorrectValues() {
     //given
@@ -66,32 +67,39 @@ class TimeControlServiceTest {
     Long empId = 1L;
     LocalDateTime time = LocalDateTime.now();
     TimeControl timeControl = new TimeControl();
-    
+
     //when
     when(timeControlRepository.findByEmployeeIdAndIsOnShiftTrueAndWorkingShiftIsEndedFalse(empId))
         .thenReturn(timeControl);
-    
+
     timeControlService.updateTimeControlForDeparture(empId, time);
-    
+
     //then
     verify(timeControlRepository).save(timeControl);
     assertEquals(time, timeControl.getDeparture());
     assertFalse(timeControl.isOnShift());
   }
-  
+
   @Test
   void autoClosingShift_ShouldUpdateTimeControlWithCorrectValues() {
     //given
+    LocalTime specificTime = LocalTime.of(18, 0);
+
+    WorkingShift workingShift = new WorkingShift();
+    workingShift.setStartShift(LocalDateTime.now().minusDays(1));
+
     TimeControlRepository timeControlRepository = mock(TimeControlRepository.class);
     TimeControlService timeControlService = new TimeControlService(timeControlRepository);
     TimeControl timeControl = new TimeControl();
-    
+    timeControl.setWorkingShift(workingShift);
+
     //when
     timeControlService.autoClosingShift(timeControl);
-    
+
     //then
     verify(timeControlRepository).save(timeControl);
     assertFalse(timeControl.isOnShift());
     assertTrue(timeControl.isAutoClosingShift());
+    assertEquals(timeControl.getDeparture(), workingShift.getStartShift().with(specificTime));
   }
 }
