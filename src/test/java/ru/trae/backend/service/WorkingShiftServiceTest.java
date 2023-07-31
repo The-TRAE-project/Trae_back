@@ -189,6 +189,30 @@ class WorkingShiftServiceTest {
   }
 
   @Test
+  void testExistsByIsEndedFalseAndStartShiftNotCurrentDateExists() {
+    //when
+    when(workingShiftRepository.existsByIsEndedFalseAndStartShiftNotCurrentDate()).thenReturn(true);
+
+    boolean onShift = workingShiftService.existsByIsEndedFalseAndStartShiftNotCurrentDate();
+
+    //then
+    verify(workingShiftRepository).existsByIsEndedFalseAndStartShiftNotCurrentDate();
+    Assertions.assertTrue(onShift);
+  }
+
+  @Test
+  void testGetCountEmpsOnActiveWorkingShift() {
+    //when
+    when(workingShiftRepository.countEmployeeOnActiveWorkingShift()).thenReturn(10L);
+
+    long count = workingShiftService.getCountEmpsOnActiveWorkingShift();
+
+    //then
+    verify(workingShiftRepository).countEmployeeOnActiveWorkingShift();
+    Assertions.assertEquals(10L, count);
+  }
+
+  @Test
   void testEmployeeOnShiftNotExists() {
     //when
     when(workingShiftRepository.existsEmpOnShift(true, 123L)).thenReturn(false);
