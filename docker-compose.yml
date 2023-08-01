@@ -2,7 +2,7 @@ version: "3.9"
 services:
 
   react-app:
-    image: eld11ar/trae-front
+    image: traebuilds/frontend
     container_name: trae_front
     ports:
       - '3000:80'
@@ -15,7 +15,7 @@ services:
       - backend
 
   backend:
-    image: ath31st/trae_back
+    image: traebuilds/backend
     container_name: trae_back
     ports:
       - "8088:8088"
