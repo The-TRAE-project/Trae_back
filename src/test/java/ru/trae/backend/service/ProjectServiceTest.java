@@ -1503,7 +1503,7 @@ class ProjectServiceTest {
   
   @Test
   void testCheckExistsProjectById_ProjectNotFound() {
-    //given
+    //when
     when(projectRepository.existsById(projectId)).thenReturn(false);
     
     ProjectException exception = assertThrows(ProjectException.class, () -> projectService.checkExistsProjectById(projectId));
@@ -1515,11 +1515,47 @@ class ProjectServiceTest {
   
   @Test
   void testCheckExistsProjectById_ProjectFound() {
-    //given
+    //when
     when(projectRepository.existsById(projectId)).thenReturn(true);
     
     //then
     assertDoesNotThrow(() -> projectService.checkExistsProjectById(projectId));
   }
-  
+
+  @Test
+  void testGetCountNotEndedProjects() {
+    //when
+    when(projectRepository.getCountNotEndedProjects()).thenReturn(1L);
+
+    //then
+    assertEquals(1, projectService.getCountNotEndedProjects());
+  }
+
+
+  @Test
+  void testCountProjectsWithOverdueCurrentOperations() {
+    //when
+    when(projectRepository.getCountProjectsWithOverdueCurrentOperation()).thenReturn(2L);
+
+    //then
+    assertEquals(2, projectService.getCountProjectsWithOverdueCurrentOperation());
+  }
+
+  @Test
+  void testCountOverdueProjects() {
+    //when
+    when(projectRepository.getCountOverdueProjects()).thenReturn(3L);
+
+    //then
+    assertEquals(3, projectService.getCountOverdueProjects());
+  }
+
+  @Test
+  void testCountProjectsWithLastOpReadyToAcceptance() {
+    //when
+    when(projectRepository.getCountProjectsWithLastOpReadyToAcceptance()).thenReturn(4L);
+
+    //then
+    assertEquals(4, projectService.getCountProjectsWithLastOpReadyToAcceptance());
+  }
 }
