@@ -88,11 +88,18 @@ public class ReportService {
         workingShiftService.getWorkingShiftEmployeeByEmpIds(
             startOfPeriod, endOfPeriod, employeeIds);
 
-    List<EmployeeIdFirstLastNameDto> shortEmployeeDtoList = employeeService.getEmployeeDtoByListId(
-        workingShiftList.stream()
-            .map(WorkingShiftEmployeeDto::getEmployeeId)
-            .distinct()
-            .toList());
+    List<EmployeeIdFirstLastNameDto> shortEmployeeDtoList;
+    if (employeeIds == null || employeeIds.isEmpty()) {
+      shortEmployeeDtoList = employeeService.getEmployeeDtoByListId(
+          workingShiftList.stream()
+              .map(WorkingShiftEmployeeDto::getEmployeeId)
+              .distinct()
+              .toList());
+    } else {
+      shortEmployeeDtoList = employeeService.getEmployeeDtoByListId(
+          employeeIds.stream()
+              .toList());
+    }
 
     List<EmployeeIdTotalPartsDto> employeeIdTotalPartsDtoList = workingShiftList.stream()
         .collect(Collectors.groupingBy(WorkingShiftEmployeeDto::getEmployeeId,
