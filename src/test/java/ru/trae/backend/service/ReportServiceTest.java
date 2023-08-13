@@ -34,6 +34,7 @@ import ru.trae.backend.dto.employee.EmployeeIdFirstLastNameDto;
 import ru.trae.backend.dto.mapper.ProjectForReportDtoMapper;
 import ru.trae.backend.dto.project.ProjectForReportDto;
 import ru.trae.backend.dto.report.DeadlineReq;
+import ru.trae.backend.dto.report.ReportDashboardStatsDto;
 import ru.trae.backend.dto.report.ReportDeadlineDto;
 import ru.trae.backend.dto.report.ReportProjectsForPeriodDto;
 import ru.trae.backend.dto.report.ReportWorkingShiftForPeriodDto;
@@ -95,6 +96,37 @@ class ReportServiceTest {
     assertEquals(workingShiftList, result.workingShiftEmployeeDtoList());
 
     verify(workingShiftService).getWorkingShiftEmployeeByEmpIds(startOfPeriod, endOfPeriod, employeeIds);
+    verify(employeeService).getEmployeeDtoByListId(anyList());
+  }
+
+  @Test
+  void testReportWorkingShiftForPeriodWithoutEmpIds() {
+    //given
+    LocalDate startOfPeriod = LocalDate.now();
+    LocalDate endOfPeriod = LocalDate.now().plusDays(7);
+
+    //when
+    List<WorkingShiftEmployeeDto> workingShiftList = List.of();
+    when(workingShiftService.getWorkingShiftEmployeeByEmpIds(startOfPeriod, endOfPeriod, null))
+        .thenReturn(workingShiftList);
+
+    List<EmployeeIdFirstLastNameDto> shortEmployeeDtoList = List.of(
+        new EmployeeIdFirstLastNameDto(1L, "test_name_1", "test_lastname_1"),
+        new EmployeeIdFirstLastNameDto(2L, "test_name_2", "test_lastname_2"),
+        new EmployeeIdFirstLastNameDto(3L, "test_name_3", "test_lastname_3")
+    );
+    when(employeeService.getEmployeeDtoByListId(anyList())).thenReturn(shortEmployeeDtoList);
+
+    ReportWorkingShiftForPeriodDto result = reportService.reportWorkingShiftForPeriod(startOfPeriod, endOfPeriod, null);
+
+    //then
+    assertNotNull(result);
+    assertEquals(startOfPeriod, result.startPeriod());
+    assertEquals(endOfPeriod, result.endPeriod());
+    assertEquals(shortEmployeeDtoList, result.shortEmployeeDtoList());
+    assertEquals(workingShiftList, result.workingShiftEmployeeDtoList());
+
+    verify(workingShiftService).getWorkingShiftEmployeeByEmpIds(startOfPeriod, endOfPeriod, null);
     verify(employeeService).getEmployeeDtoByListId(anyList());
   }
 
@@ -527,5 +559,31 @@ class ReportServiceTest {
 
     //then
     assertThrows(ReportException.class, () -> reportService.reportDeadlines(req));
+  }
+
+  @Test
+  void testReportDashboard() {
+    //given
+    long expectedNotEndedProjects = 1;
+    long expectedProjectsWithOverdueCurrentOperation = 2;
+    long expectedOverdueProjects = 3;
+    long expectedProjectsWithLastOpReadyToAcceptance = 4;
+
+    //when
+    when(projectService.getCountNotEndedProjects()).thenReturn(expectedNotEndedProjects);
+    when(projectService.getCountOverdueProjects()).thenReturn(expectedOverdueProjects);
+    when(projectService.getCountProjectsWithOverdueCurrentOperation())
+        .thenReturn(expectedProjectsWithOverdueCurrentOperation);
+    when(projectService.getCountProjectsWithLastOpReadyToAcceptance())
+        .thenReturn(expectedProjectsWithLastOpReadyToAcceptance);
+    ReportDashboardStatsDto dto = reportService.getDashboardStatsDto();
+
+    //then
+    assertEquals(expectedNotEndedProjects, dto.countNotEndedProjects());
+    assertEquals(expectedProjectsWithOverdueCurrentOperation,
+        dto.countProjectsWithOverdueCurrentOperation());
+    assertEquals(expectedOverdueProjects, dto.countOverdueProjects());
+    assertEquals(expectedProjectsWithLastOpReadyToAcceptance,
+        dto.countProjectsWithLastOpReadyToAcceptance());
   }
 }
