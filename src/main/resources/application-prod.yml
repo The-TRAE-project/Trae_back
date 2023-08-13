@@ -1,7 +1,15 @@
+jwt:
+  access:
+    secret: ${JWT_ACCESS_SECRET}
+    duration: 50 # minutes
+  refresh:
+    secret: ${JWT_REFRESH_SECRET}
+    duration: 30 # days
+
 spring:
   liquibase:
-    enabled: false
-    change-log: classpath:./db/changelog/db.changelog-master.xml
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.xml
 
   datasource:
     url: ${POSTGRES_URL}
@@ -13,7 +21,7 @@ spring:
     database: POSTGRESQL
     show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
 
 logging:
   level:

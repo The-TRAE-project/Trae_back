@@ -26,6 +26,8 @@ services:
       - "POSTGRES_URL=${PG_URL}"
       - "POSTGRES_USER=${PG_USER}"
       - "POSTGRES_PASS=${PG_PASSWORD}"
+      - "JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}"
+      - "JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}"
     networks:
       - trae-net
     depends_on:
