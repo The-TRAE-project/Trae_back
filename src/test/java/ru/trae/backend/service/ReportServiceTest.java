@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -194,7 +195,7 @@ class ReportServiceTest {
   }
 
   @Test
-  void reportDeadlines_ProjectAsFirstParameter_GeneratesReportWithCorrectValues() {
+  void reportDeadlines_ProjectAsFirstParameter_OperationAsSecondParameter_GeneratesReportWithCorrectValues() {
     //given
     DeadlineReq req = new DeadlineReq(
         ReportParameter.PROJECT, 1L,
@@ -240,6 +241,57 @@ class ReportServiceTest {
     ThirdResponseSubDto thirdResponseSubDto = thirdRespValues.get(0);
     assertEquals(3L, thirdResponseSubDto.thirdRespId());
     assertEquals("employee_last_name", thirdResponseSubDto.thirdRespValue());
+
+    verify(operationService, times(1)).getOperationsByIds(anySet());
+  }
+
+  @Test
+  void reportDeadlines_ProjectAsFirstParameter_EmployeeAsSecondParameter_GeneratesReportWithCorrectValues() {
+    //given
+    DeadlineReq req = new DeadlineReq(
+        ReportParameter.PROJECT, 1L,
+        ReportParameter.EMPLOYEE, Collections.singleton(2L),
+        ReportParameter.OPERATION, Collections.singleton(3L));
+
+    Project p = new Project();
+    p.setId(1L);
+    p.setNumber(100);
+    Employee e = new Employee();
+    e.setId(2L);
+    e.setLastName("employee_last_name");
+    Operation o = new Operation();
+    o.setId(3L);
+    o.setEmployee(e);
+    o.setProject(p);
+    o.setName("operation_name");
+    o.setPlannedEndDate(LocalDateTime.now().minusDays(1));
+    o.setRealEndDate(LocalDateTime.now().minusDays(2));
+    p.setOperations(List.of(o));
+
+    List<Operation> operations = Collections.singletonList(o);
+
+    //when
+    when(operationService.getOperationsByIds(anySet())).thenReturn(operations);
+
+    ReportDeadlineDto report = reportService.reportDeadlines(req);
+
+    //then
+    assertEquals(1L, report.getFirstRespId());
+    assertEquals("100", report.getFirstRespValue());
+
+    List<SecondResponseSubDto> secondRespValues = report.getSecondRespValues();
+    assertEquals(1, secondRespValues.size());
+
+    SecondResponseSubDto secondResponseSubDto = secondRespValues.get(0);
+    assertEquals(2L, secondResponseSubDto.secondRespId());
+    assertEquals("employee_last_name", secondResponseSubDto.secondRespValue());
+
+    List<ThirdResponseSubDto> thirdRespValues = secondResponseSubDto.thirdRespValues();
+    assertEquals(1, thirdRespValues.size());
+
+    ThirdResponseSubDto thirdResponseSubDto = thirdRespValues.get(0);
+    assertEquals(3L, thirdResponseSubDto.thirdRespId());
+    assertEquals("operation_name", thirdResponseSubDto.thirdRespValue());
 
     verify(operationService, times(1)).getOperationsByIds(anySet());
   }
