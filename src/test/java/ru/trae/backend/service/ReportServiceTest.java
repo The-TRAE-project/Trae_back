@@ -411,7 +411,7 @@ class ReportServiceTest {
   }
 
   @Test
-  void reportDeadlines_EmployeeAsFirstParameter_GeneratesReportWithCorrectValues() {
+  void reportDeadlines_EmployeeAsFirstParameter_ProjectAsSecondParameter_GeneratesReportWithCorrectValues() {
     //given
     DeadlineReq req = new DeadlineReq(
         ReportParameter.EMPLOYEE, 7L,
@@ -457,6 +457,57 @@ class ReportServiceTest {
     ThirdResponseSubDto thirdResponseSubDto = thirdRespValues.get(0);
     assertEquals(9L, thirdResponseSubDto.thirdRespId());
     assertEquals("operation_name", thirdResponseSubDto.thirdRespValue());
+
+    verify(operationService, times(1)).getOperationsByIds(anySet());
+  }
+
+  @Test
+  void reportDeadlines_EmployeeAsFirstParameter_OperationAsSecondParameter_GeneratesReportWithCorrectValues() {
+    //given
+    DeadlineReq req = new DeadlineReq(
+        ReportParameter.EMPLOYEE, 7L,
+        ReportParameter.OPERATION, Collections.singleton(8L),
+        ReportParameter.PROJECT, Collections.singleton(9L));
+
+    Project p = new Project();
+    p.setId(9L);
+    p.setNumber(100);
+    Employee e = new Employee();
+    e.setId(7L);
+    e.setLastName("employee_last_name");
+    Operation o = new Operation();
+    o.setId(8L);
+    o.setEmployee(e);
+    o.setProject(p);
+    o.setName("operation_name");
+    o.setPlannedEndDate(LocalDateTime.now().minusDays(1));
+    o.setRealEndDate(LocalDateTime.now().minusDays(2));
+    p.setOperations(List.of(o));
+
+    List<Operation> operations = Collections.singletonList(o);
+
+    //when
+    when(operationService.getOperationsByIds(anySet())).thenReturn(operations);
+
+    ReportDeadlineDto report = reportService.reportDeadlines(req);
+
+    //then
+    assertEquals(7L, report.getFirstRespId());
+    assertEquals("employee_last_name", report.getFirstRespValue());
+
+    List<SecondResponseSubDto> secondRespValues = report.getSecondRespValues();
+    assertEquals(1, secondRespValues.size());
+
+    SecondResponseSubDto secondResponseSubDto = secondRespValues.get(0);
+    assertEquals(8L, secondResponseSubDto.secondRespId());
+    assertEquals("operation_name", secondResponseSubDto.secondRespValue());
+
+    List<ThirdResponseSubDto> thirdRespValues = secondResponseSubDto.thirdRespValues();
+    assertEquals(1, thirdRespValues.size());
+
+    ThirdResponseSubDto thirdResponseSubDto = thirdRespValues.get(0);
+    assertEquals(9L, thirdResponseSubDto.thirdRespId());
+    assertEquals("100", thirdResponseSubDto.thirdRespValue());
 
     verify(operationService, times(1)).getOperationsByIds(anySet());
   }
