@@ -15,6 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import ru.trae.backend.dto.operation.OperationInfoForProjectTemplateDto;
@@ -28,6 +29,7 @@ class ProjectShortDtoMapperTest {
   void apply_WhenProjectHasOperations_ShouldMapToProjectShortDtoWithOperationInfo() {
     //given
     Project project = new Project();
+    project.setEndDateInContract(LocalDateTime.now().plusDays(30));
     project.setId(1L);
     project.setEnded(true);
     project.setNumber(100);
@@ -35,6 +37,7 @@ class ProjectShortDtoMapperTest {
     project.setCustomer("test_customer");
     
     Operation o1 = new Operation();
+    o1.setPlannedEndDate(LocalDateTime.now().plusDays(5));
     o1.setId(1L);
     o1.setPriority(0);
     o1.setName("operation_1");
@@ -42,6 +45,7 @@ class ProjectShortDtoMapperTest {
     o1.setReadyToAcceptance(false);
     
     Operation o2 = new Operation();
+    o1.setPlannedEndDate(LocalDateTime.now().plusDays(10));
     o2.setId(2L);
     o2.setPriority(1);
     o2.setName("operation_2");

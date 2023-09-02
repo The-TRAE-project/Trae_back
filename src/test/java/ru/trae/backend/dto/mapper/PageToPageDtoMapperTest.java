@@ -45,12 +45,12 @@ class PageToPageDtoMapperTest {
   private ProjectShortDtoMapper projectShortDtoMapper;
   @InjectMocks
   private PageToPageDtoMapper pageToPageDtoMapper;
-  
+
   @BeforeEach
   void setUp() {
     MockitoAnnotations.openMocks(this);
   }
-  
+
   @Test
   void managerPageToPageDto_ShouldMapManagerPageToManagerShortDtoPage() {
     //given
@@ -60,15 +60,15 @@ class PageToPageDtoMapperTest {
     manager2.setId(2L);
     List<Manager> managers = List.of(manager1, manager2);
     Page<Manager> managerPage = new PageImpl<>(managers);
-    
+
     //when
     ManagerShortDto managerDto1 = new ManagerShortDto(1L, null, null);
     ManagerShortDto managerDto2 = new ManagerShortDto(2L, null, null);
     when(managerShortDtoMapper.apply(manager1)).thenReturn(managerDto1);
     when(managerShortDtoMapper.apply(manager2)).thenReturn(managerDto2);
-    
+
     PageDto<ManagerShortDto> result = pageToPageDtoMapper.managerPageToPageDto(managerPage);
-    
+
     //then
     assertEquals(managers.size(), result.content().size());
     assertEquals(managerDto1, result.content().get(0));
@@ -76,10 +76,10 @@ class PageToPageDtoMapperTest {
     assertEquals(managerPage.getTotalElements(), result.totalElements());
     assertEquals(managerPage.getTotalPages(), result.totalPages());
     assertEquals(managerPage.getNumber(), result.currentNumberPage());
-    
+
     verify(managerShortDtoMapper, times(2)).apply(any(Manager.class));
   }
-  
+
   @Test
   void employeePageToPageDto_ShouldMapEmployeePageToEmployeeDtoPage() {
     //given
@@ -89,7 +89,7 @@ class PageToPageDtoMapperTest {
     employee2.setId(2L);
     List<Employee> employees = List.of(employee1, employee2);
     Page<Employee> employeePage = new PageImpl<>(employees);
-    
+
     //when
     EmployeeDto employeeDto1 = new EmployeeDto(1L, null, null, null,
         null, null, true, null, null, null, null);
@@ -97,9 +97,9 @@ class PageToPageDtoMapperTest {
         null, null, true, null, null, null, null);
     when(employeeDtoMapper.apply(employee1)).thenReturn(employeeDto1);
     when(employeeDtoMapper.apply(employee2)).thenReturn(employeeDto2);
-    
+
     PageDto<EmployeeDto> result = pageToPageDtoMapper.employeePageToPageDto(employeePage);
-    
+
     //then
     assertEquals(employees.size(), result.content().size());
     assertEquals(employeeDto1, result.content().get(0));
@@ -107,10 +107,10 @@ class PageToPageDtoMapperTest {
     assertEquals(employeePage.getTotalElements(), result.totalElements());
     assertEquals(employeePage.getTotalPages(), result.totalPages());
     assertEquals(employeePage.getNumber(), result.currentNumberPage());
-    
+
     verify(employeeDtoMapper, times(2)).apply(any(Employee.class));
   }
-  
+
   @Test
   void typeWorkPageToPageDto_ShouldMapTypeWorkPageToTypeWorkDtoPage() {
     //given
@@ -120,14 +120,14 @@ class PageToPageDtoMapperTest {
     typeWork2.setId(2L);
     List<TypeWork> typeWorks = List.of(typeWork1, typeWork2);
     Page<TypeWork> typeWorkPage = new PageImpl<>(typeWorks);
-    
+
     TypeWorkDto typeWorkDto1 = new TypeWorkDto(1L, null, true);
     TypeWorkDto typeWorkDto2 = new TypeWorkDto(2L, null, true);
     when(typeWorkDtoMapper.apply(typeWork1)).thenReturn(typeWorkDto1);
     when(typeWorkDtoMapper.apply(typeWork2)).thenReturn(typeWorkDto2);
-    
+
     PageDto<TypeWorkDto> result = pageToPageDtoMapper.typeWorkPageToPageDto(typeWorkPage);
-    
+
     //then
     assertEquals(typeWorks.size(), result.content().size());
     assertEquals(typeWorkDto1, result.content().get(0));
@@ -135,10 +135,10 @@ class PageToPageDtoMapperTest {
     assertEquals(typeWorkPage.getTotalElements(), result.totalElements());
     assertEquals(typeWorkPage.getTotalPages(), result.totalPages());
     assertEquals(typeWorkPage.getNumber(), result.currentNumberPage());
-    
+
     verify(typeWorkDtoMapper, times(2)).apply(any(TypeWork.class));
   }
-  
+
   @Test
   void projectPageToPageDto_ShouldMapProjectPageToProjectShortDtoPage() {
     //given
@@ -148,15 +148,17 @@ class PageToPageDtoMapperTest {
     project2.setId(2L);
     List<Project> projects = List.of(project1, project2);
     Page<Project> projectPage = new PageImpl<>(projects);
-    
+
     //when
-    ProjectShortDto projectDto1 = new ProjectShortDto(1L, true, 1, null, null, null);
-    ProjectShortDto projectDto2 = new ProjectShortDto(2L, true, 2, null, null, null);
+    ProjectShortDto projectDto1 = new ProjectShortDto(1L, true,
+        false, false, 1, null, null, null);
+    ProjectShortDto projectDto2 = new ProjectShortDto(2L, true,
+        false, false, 2, null, null, null);
     when(projectShortDtoMapper.apply(project1)).thenReturn(projectDto1);
     when(projectShortDtoMapper.apply(project2)).thenReturn(projectDto2);
-    
+
     PageDto<ProjectShortDto> result = pageToPageDtoMapper.projectPageToPageDto(projectPage);
-    
+
     //then
     assertEquals(projects.size(), result.content().size());
     assertEquals(projectDto1, result.content().get(0));
@@ -164,7 +166,7 @@ class PageToPageDtoMapperTest {
     assertEquals(projectPage.getTotalElements(), result.totalElements());
     assertEquals(projectPage.getTotalPages(), result.totalPages());
     assertEquals(projectPage.getNumber(), result.currentNumberPage());
-    
+
     verify(projectShortDtoMapper, times(2)).apply(any(Project.class));
   }
 }
