@@ -10,11 +10,15 @@
 
 package ru.trae.backend.dto.mapper;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.operation.OperationInfoForProjectTemplateDto;
 import ru.trae.backend.dto.project.ProjectShortDto;
+import ru.trae.backend.entity.task.Operation;
 import ru.trae.backend.entity.task.Project;
 import ru.trae.backend.util.Util;
 
@@ -43,10 +47,24 @@ public class ProjectShortDtoMapper implements Function<Project, ProjectShortDto>
     return new ProjectShortDto(
         p.getId(),
         p.isEnded(),
+        checkIsOverdue(p),
+        checkIsOverdueByCurrentOp(p.getOperations()),
         p.getNumber(),
         p.getName(),
         p.getCustomer(),
         opDto
     );
+  }
+
+  private boolean checkIsOverdue(Project p) {
+    return p.getEndDateInContract().isBefore(LocalDateTime.now());
+  }
+
+  private boolean checkIsOverdueByCurrentOp(List<Operation> operations) {
+    Optional<Operation> currentOp = operations.stream()
+        .filter(o -> o.isInWork() || o.isReadyToAcceptance())
+        .findFirst();
+
+    return currentOp.isEmpty() || currentOp.get().getPlannedEndDate().isBefore(LocalDateTime.now());
   }
 }

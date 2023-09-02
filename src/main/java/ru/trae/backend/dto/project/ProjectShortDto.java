@@ -11,6 +11,8 @@ import ru.trae.backend.dto.operation.OperationInfoForProjectTemplateDto;
 public record ProjectShortDto(
     long id,
     boolean isEnded,
+    boolean isOverdueByContractDate,
+    boolean isOverdueByCurrentOperation,
     long number,
     String name,
     String customer,
