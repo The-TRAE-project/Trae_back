@@ -57,7 +57,13 @@ public class ProjectShortDtoMapper implements Function<Project, ProjectShortDto>
   }
 
   private boolean checkIsOverdue(Project p) {
-    return p.getEndDateInContract().isBefore(LocalDateTime.now());
+    boolean result;
+    if (p.isEnded()) {
+      result = p.getEndDateInContract().isBefore(p.getRealEndDate());
+    } else {
+      result = p.getEndDateInContract().isBefore(LocalDateTime.now());
+    }
+    return result;
   }
 
   private boolean checkIsOverdueByCurrentOp(List<Operation> operations) {
