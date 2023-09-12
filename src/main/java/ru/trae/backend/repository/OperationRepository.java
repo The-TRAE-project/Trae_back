@@ -98,6 +98,7 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
   @Query(value = """
       select o.id, o.name, (select p.number from projects p where p.id = o.project_id)\s
       as project_number from operations o where\s
+      o.employee_id is not NULL and\s
       (cast(?1 as date) is null and cast(?2 as date) is null)\s
       or (cast(o.start_date as date) between ?1 and ?2)\s
       or (cast(o.planned_end_date as date) between ?1 and ?2)\s
@@ -111,7 +112,8 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
   @Query(value = """
       select o.id, o.name, (select p.number from projects p where p.id = o.project_id)\s
       as project_number from operations o\s
-      where o.project_id in (select p.id from projects p where p.id in (?3))\s
+      where o.employee_id is not NULL and\s
+      o.project_id in (select p.id from projects p where p.id in (?3))\s
       and ((cast(?1 as date) is null and cast(?2 as date) is null)\s
       or (cast(o.start_date as date) between ?1 and ?2)\s
       or (cast(o.planned_end_date as date) between ?1 and ?2)\s
