@@ -11,6 +11,8 @@
 package ru.trae.backend.service;
 
 import static ru.trae.backend.util.Constant.NOT_FOUND_CONST;
+import static ru.trae.backend.util.Constant.OPERATION_WITH_ID;
+import static ru.trae.backend.util.Constant.PROJECT_WITH_ID;
 import static ru.trae.backend.util.Constant.WRONG_PARAMETER;
 
 import java.time.LocalDate;
@@ -228,14 +230,14 @@ public class ReportService {
   private void checkCorrectProjectIdFromReqAndOp(long projectIdFromReq, Operation o) {
     if (projectIdFromReq != o.getProject().getId()) {
       throw new ReportException(HttpStatus.BAD_REQUEST,
-          "The project id: " + projectIdFromReq + " does not match the project id: "
+          PROJECT_WITH_ID.value + projectIdFromReq + " does not match the project id: "
               + o.getProject().getId() + " from the operation");
     }
   }
 
   private void checkCorrectEmpIdFromReqAndEmpIdFromOp(long employeeId, Operation o) {
     if (o.getEmployee().getId() != employeeId) {
-      throw new ReportException(HttpStatus.BAD_REQUEST, "The operation with id: " + o.getId()
+      throw new ReportException(HttpStatus.BAD_REQUEST, OPERATION_WITH_ID.value + o.getId()
           + " from the selection does not match the specified employee with id: " + employeeId);
     }
   }
@@ -312,8 +314,8 @@ public class ReportService {
                       && Objects.equals(o.getProject().getId(), firstValue))
                   .findFirst()
                   .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                      "Operation with id: " + oid + NOT_FOUND_CONST.value + " in project with id: "
-                          + firstValue));
+                      OPERATION_WITH_ID.value + oid + NOT_FOUND_CONST.value
+                          + " in project with id: " + firstValue));
 
               checkNotNullEmpInOp(op);
               //проверка на наличие id сотрудника из выборки операций среди значений
@@ -353,7 +355,7 @@ public class ReportService {
                   && Objects.equals(o.getEmployee().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Operation with id: " + oid + " and employee with id: "
+                  OPERATION_WITH_ID.value + oid + " and employee with id: "
                       + firstValue + NOT_FOUND_CONST.value
                       + ". Or not contains in values second parameter"));
           //поиск проекта, который соответствует найденной выше операции,
@@ -363,7 +365,7 @@ public class ReportService {
                   && thirdValues.contains(o.getProject().getId()))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Project with id: " + op.getProject().getId() + " and operation with id: "
+                  PROJECT_WITH_ID.value + op.getProject().getId() + " and operation with id: "
                       + op.getId() + NOT_FOUND_CONST.value
                       + ". Or not contains in values third parameter"))
               .getProject();
@@ -391,7 +393,7 @@ public class ReportService {
                   && Objects.equals(o.getEmployee().getId(), firstValue))
               .findFirst()
               .orElseThrow(() -> new ReportException(HttpStatus.BAD_REQUEST,
-                  "Project with id: " + pid + " and employee with id: "
+                  PROJECT_WITH_ID.value + pid + " and employee with id: "
                       + firstValue + NOT_FOUND_CONST.value
                       + ". Or not contains in values second parameter"))
               .getProject();
@@ -461,7 +463,7 @@ public class ReportService {
         && thirdValues.contains(o.getId())) {
       return true;
     } else {
-      throw new ReportException(HttpStatus.BAD_REQUEST, "Operation with id: " + o.getId()
+      throw new ReportException(HttpStatus.BAD_REQUEST, OPERATION_WITH_ID.value + o.getId()
           + " does not have an employee or the operation is not included in the "
           + "list of values from the request");
     }

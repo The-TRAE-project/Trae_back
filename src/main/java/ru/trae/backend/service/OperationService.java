@@ -10,6 +10,8 @@
 
 package ru.trae.backend.service;
 
+import static ru.trae.backend.util.Constant.OPERATION_WITH_ID;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -48,7 +50,7 @@ public class OperationService {
   private final OperationFactory operationFactory;
   public static final int MIN_PERIOD_OPERATION = 24;
   public static final int SHIPMENT_PERIOD = 24;
-  
+
   /**
    * Gets an operation by its ID.
    *
@@ -59,9 +61,9 @@ public class OperationService {
   public Operation getOperationById(long id) {
     return operationRepository.findById(id).orElseThrow(
         () -> new OperationException(HttpStatus.NOT_FOUND,
-            "Operation with ID " + id + " not found"));
+            OPERATION_WITH_ID.value + id + " not found"));
   }
-  
+
   /**
    * This method saves new operations to the project.
    * If operations size is greater than 0, the first operation is created.
@@ -75,18 +77,18 @@ public class OperationService {
     if (operations == null || operations.isEmpty()) {
       return;
     }
-    
+
     NewOperationDto dto = operations.get(0);
-    
+
     int period = p.getOperationPeriod();
-    
+
     Operation fo = operationFactory.create(
         p, dto.name(), period, 0,
         LocalDateTime.now(),
         true, dto.typeWorkId());
-    
+
     operationRepository.save(fo);
-    
+
     if (operations.size() > 1) {
       operations.stream()
           .skip(1)
@@ -95,15 +97,15 @@ public class OperationService {
                 p, no.name(), 0, operations.indexOf(no) * 10,
                 null,
                 false, no.typeWorkId());
-            
+
             operationRepository.save(o);
           });
     }
-    
+
     Operation shipment = operationFactory.createShipmentOp(p, operations.size() * 10);
     operationRepository.save(shipment);
   }
-  
+
   /**
    * Use to receive operation.
    *
@@ -112,18 +114,18 @@ public class OperationService {
   public void receiveOperation(ReceiveOpReq dto) {
     Employee e = employeeService.getEmployeeById(dto.employeeId());
     Operation o = getOperationById(dto.operationId());
-    
+
     checkForAcceptance(o);
     checkCompatibilityTypeWork(o, e);
-    
+
     o.setInWork(true);
     o.setReadyToAcceptance(false);
     o.setEmployee(e);
     o.setAcceptanceDate(LocalDateTime.now());
-    
+
     operationRepository.save(o);
   }
-  
+
   /**
    * Finishes the operation.
    *
@@ -133,14 +135,14 @@ public class OperationService {
     o.setInWork(false);
     o.setEnded(true);
     o.setRealEndDate(LocalDateTime.now());
-    
+
     Operation op = operationRepository.save(o);
     log.info("the employee with id {} has finished the operation with id {}",
         o.getEmployee().getId(), o.getId());
-    
+
     startNextOperation(op);
   }
-  
+
   /**
    * This is method sets the start date, the period, and the planned end date to the next operation
    * in the project. Recalculate the remaining period of the operation.
@@ -154,25 +156,25 @@ public class OperationService {
         .stream()
         .sorted(Comparator.comparing(Operation::getPriority))
         .toList();
-    
+
     if (operations.indexOf(o) + 1 < operations.size()) {
       Operation nextOp = operations.get(operations.indexOf(o) + 1);
       log.info("next operation with id {} from project with id {}",
           nextOp.getId(), nextOp.getProject().getId());
-      
+
       int operationPeriod = getOperationPeriod(nextOp, operations);
       log.info("period for next operation with id {} = {}", nextOp.getId(), operationPeriod);
-      
+
       nextOp.setReadyToAcceptance(true);
       nextOp.setStartDate(LocalDateTime.now());
       nextOp.setPeriod(operationPeriod);
       nextOp.setPlannedEndDate(nextOp.getStartDate().plusHours(operationPeriod));
-      
+
       operationRepository.save(nextOp);
       log.info("next operation with id {} started", nextOp.getId());
     }
   }
-  
+
   /**
    * Retrieves the list of operations for the specified project in the {@link OperationForEmpDto}
    * format.
@@ -183,7 +185,7 @@ public class OperationService {
    */
   public List<OperationForEmpDto> getOperationsByProjectIdForEmp(long projectId) {
     List<Operation> operations = operationRepository.findByProjectId(projectId);
-    
+
     return operations.stream()
         .sorted(Util::prioritySorting)
         .map(o -> new OperationForEmpDto(
@@ -198,7 +200,7 @@ public class OperationService {
         ))
         .toList();
   }
-  
+
   /**
    * Retrieves a list of operations for a given employee, where the operation is in work.
    *
@@ -219,7 +221,7 @@ public class OperationService {
         ))
         .toList();
   }
-  
+
   /**
    * A method to insert new operation without close the active operations.
    *
@@ -230,10 +232,10 @@ public class OperationService {
    */
   public boolean insertNewOperation(InsertingOperationDto dto, Project p) {
     List<Operation> operations = p.getOperations();
-    
+
     checkExistsPriority(operations, dto.priority());
     checkAvailablePriority(operations, dto.priority());
-    
+
     Operation newOp;
     if (operations.stream().allMatch(Operation::isEnded)) {
       //Вставка операции, когда другие уже закончены.
@@ -247,12 +249,12 @@ public class OperationService {
           p, dto.name(), 0, dto.priority(),
           null, false, dto.typeWorkId());
     }
-    
+
     operationRepository.save(newOp);
-    
+
     return checkAndUpdateShipmentOp(operations, dto.priority());
   }
-  
+
   /**
    * Deletes operation.
    *
@@ -262,7 +264,7 @@ public class OperationService {
   public void deleteOperation(long operationId) {
     if (!operationRepository.existsById(operationId)) {
       throw new OperationException(HttpStatus.NOT_FOUND,
-          "Operation with ID " + operationId + " not found");
+          OPERATION_WITH_ID.value + operationId + " not found");
     }
     //проверка, что операция не доступна для принятия и не находится в работе
     if (operationRepository.existsByIdOrIsEndedOrInWorkOrReadyToAcceptance(
@@ -273,13 +275,13 @@ public class OperationService {
     }
     //проверка, что операция не является отгрузкой
     if (operationRepository.existsByTypeWorkIdEqualsShipment(operationId, 1)) {
-      throw new OperationException(HttpStatus.BAD_REQUEST, "Operation with ID " + operationId
+      throw new OperationException(HttpStatus.BAD_REQUEST, OPERATION_WITH_ID.value + operationId
           + " is shipment. Shipment operation cannot be deleted");
     }
-    
+
     operationRepository.deleteById(operationId);
   }
-  
+
   /**
    * Closes the operation.
    *
@@ -295,10 +297,10 @@ public class OperationService {
       throw new OperationException(HttpStatus.BAD_REQUEST,
           "The operation is not yet in operation or is not available for acceptance");
     }
-    
+
     startNextOperation(o);
   }
-  
+
   private boolean checkAndUpdateShipmentOp(List<Operation> operations, int priority) {
     int maxPriority = operations.stream()
         .mapToInt(Operation::getPriority)
@@ -309,7 +311,7 @@ public class OperationService {
     }
     return false;
   }
-  
+
   private void createOrUpdateShipmentOp(List<Operation> operations,
                                         int maxPriority, int priorityNewOp) {
     //здесь происходит поиск этапа "отгрузка" текущего проекта
@@ -329,14 +331,14 @@ public class OperationService {
       operationRepository.save(shipment);
     }
   }
-  
+
   private void checkExistsPriority(List<Operation> operations, int priority) {
     if (operations.stream().anyMatch(o -> o.getPriority() == priority)) {
       throw new OperationException(HttpStatus.CONFLICT,
           "The operation with priority: " + priority + " already exists");
     }
   }
-  
+
   private void checkAvailablePriority(List<Operation> operations, int priority) {
     int actualPriority = operations.stream()
         .filter(o -> o.isInWork() || o.isReadyToAcceptance())
@@ -350,20 +352,20 @@ public class OperationService {
               + actualPriority);
     }
   }
-  
+
   private void checkForAcceptance(Operation o) {
     if (!o.isReadyToAcceptance()) {
       throw new OperationException(HttpStatus.BAD_REQUEST,
           "The operation is currently unavailable for acceptance.");
     }
   }
-  
+
   private void checkCompatibilityTypeWork(Operation o, Employee e) {
     if (!e.getTypeWorks().contains(o.getTypeWork())) {
       throw new OperationException(HttpStatus.BAD_REQUEST, "Types of work are not compatible.");
     }
   }
-  
+
   /**
    * Checks if the confirming employee is the same as the one who accepted the operation.
    *
@@ -378,10 +380,10 @@ public class OperationService {
               + " to the ID of the person who accepted the operation");
     }
   }
-  
+
   private int getOperationPeriod(Operation nextOp, List<Operation> operations) {
     long opRemaining = operations.stream().filter(op -> !op.isEnded()).count();
-    
+
     // здесь отслеживается последний этап "отгрузка" = на него всегда 24 часа.
     if (opRemaining == 1) {
       return 24;
@@ -389,7 +391,7 @@ public class OperationService {
       return nextOp.getProject().getOperationPeriod();
     }
   }
-  
+
   /**
    * Checks whether the priority of the operation matches its id.
    *
@@ -402,7 +404,7 @@ public class OperationService {
           "The priority of the operation does not match the operation id");
     }
   }
-  
+
   /**
    * Checks if an operation is already finished or closed.
    *
@@ -412,10 +414,10 @@ public class OperationService {
   public void checkIfOpAlreadyFinishedOrClosed(Operation o) {
     if (o.isEnded()) {
       throw new OperationException(HttpStatus.CONFLICT,
-          "The operation with id: " + o.getId() + " is already finished or closed");
+          OPERATION_WITH_ID.value + o.getId() + " is already finished or closed");
     }
   }
-  
+
   /**
    * Retrieves a list of OperationIdNameProjectNumberDto objects based on the provided project IDs,
    * employee IDs, start date, and end date.
@@ -436,9 +438,9 @@ public class OperationService {
   public List<OperationIdNameProjectNumberDto> getOperationIdNameProjectNumberDtoList(
       Set<Long> projectIds, Set<Long> employeeIds, LocalDate startOfPeriod, LocalDate endOfPeriod) {
     checkStartEndDates(startOfPeriod, endOfPeriod);
-    
+
     List<OperationIdNameProjectNumberDto> result;
-    
+
     if (employeeIds != null && !employeeIds.isEmpty()
         && projectIds != null && !projectIds.isEmpty()) {
       result = operationRepository.findByPeriodAndEmployeeAndProjectIds(
@@ -452,16 +454,16 @@ public class OperationService {
     } else {
       result = operationRepository.findByPeriod(startOfPeriod, endOfPeriod);
     }
-    
+
     return result;
   }
-  
+
   private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {
     if (startOfPeriod != null && endOfPeriod != null && startOfPeriod.isAfter(endOfPeriod)) {
       throw new ProjectException(HttpStatus.BAD_REQUEST, "Start date cannot be after end date.");
     }
   }
-  
+
   public List<Operation> getOperationsByIds(Set<Long> operationIds) {
     return operationRepository.findOpsByIds(operationIds);
   }

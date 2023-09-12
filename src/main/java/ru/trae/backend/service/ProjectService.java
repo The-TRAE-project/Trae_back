@@ -13,6 +13,7 @@ package ru.trae.backend.service;
 import static java.time.temporal.ChronoUnit.HOURS;
 import static ru.trae.backend.service.OperationService.MIN_PERIOD_OPERATION;
 import static ru.trae.backend.service.OperationService.SHIPMENT_PERIOD;
+import static ru.trae.backend.util.Constant.PROJECT_WITH_ID;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -107,7 +108,7 @@ public class ProjectService {
   public Project getProjectById(long id) {
     return projectRepository.findById(id).orElseThrow(
         () -> new ProjectException(HttpStatus.NOT_FOUND,
-            "Project with ID: " + id + Constant.NOT_FOUND_CONST.value));
+            PROJECT_WITH_ID.value + id + Constant.NOT_FOUND_CONST.value));
   }
 
 
@@ -121,7 +122,7 @@ public class ProjectService {
   public Project getProjectByOperationId(long operationId) {
     return projectRepository.findByOperationId(operationId).orElseThrow(
         () -> new ProjectException(HttpStatus.NOT_FOUND,
-            "Project with operation ID: " + operationId + Constant.NOT_FOUND_CONST.value));
+            "Project with operation id: " + operationId + Constant.NOT_FOUND_CONST.value));
   }
 
   /**
@@ -692,7 +693,7 @@ public class ProjectService {
   public void checkExistsProjectById(long projectId) {
     if (!projectRepository.existsById(projectId)) {
       throw new ProjectException(HttpStatus.NOT_FOUND,
-          "Project with ID: " + projectId + " not found");
+          PROJECT_WITH_ID.value + projectId + " not found");
     }
   }
 
