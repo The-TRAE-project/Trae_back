@@ -285,12 +285,14 @@ public class ReportService {
                   "Employee with id: " + eid + NOT_FOUND_CONST.value + " in project with id: "
                       + firstValue))
               .getEmployee();
-          return new SecondResponseSubDto(e.getId(), e.getLastName(), ops.stream()
-              .filter(o -> Objects.equals(o.getEmployee().getId(), e.getId())
-                  && thirdValues.contains(o.getId()))
-              .map(o -> new ThirdResponseSubDto(o.getId(), o.getName(),
-                  o.getPlannedEndDate(), o.getRealEndDate()))
-              .toList());
+
+          return new SecondResponseSubDto(
+              e.getId(), e.getLastName(),
+              ops.stream()
+                  .filter(o -> checkParticipatingEmployeeInOperation(e, o, thirdValues))
+                  .map(o -> new ThirdResponseSubDto(o.getId(), o.getName(),
+                      o.getPlannedEndDate(), o.getRealEndDate()))
+                  .toList());
         }).toList());
   }
 
@@ -449,6 +451,19 @@ public class ReportService {
   private void checkStartEndDates(LocalDate startOfPeriod, LocalDate endOfPeriod) {
     if (startOfPeriod.isAfter(endOfPeriod)) {
       throw new ReportException(HttpStatus.BAD_REQUEST, "Start date cannot be after end date.");
+    }
+  }
+
+  private boolean checkParticipatingEmployeeInOperation(
+      Employee e, Operation o, Set<Long> thirdValues) {
+    if (o.getEmployee() != null
+        && Objects.equals(o.getEmployee().getId(), e.getId())
+        && thirdValues.contains(o.getId())) {
+      return true;
+    } else {
+      throw new ReportException(HttpStatus.BAD_REQUEST, "Operation with id: " + o.getId()
+          + " does not have an employee or the operation is not included in the "
+          + "list of values from the request");
     }
   }
 }
