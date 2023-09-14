@@ -129,7 +129,7 @@ class OperationServiceTest {
     
     //then
     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-    assertEquals("Operation with ID " + operationId + " not found", exception.getMessage());
+    assertEquals("Operation with id: " + operationId + " not found", exception.getMessage());
     verify(operationRepository, times(1)).findById(operationId);
   }
   

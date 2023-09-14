@@ -345,7 +345,7 @@ class ProjectServiceTest {
     
     //then
     assertEquals(HttpStatus.NOT_FOUND, exception.getStatus());
-    assertEquals("Project with operation ID: " + operationId
+    assertEquals("Project with operation id: " + operationId
         + NOT_FOUND_CONST.value, exception.getMessage());
     
     verify(projectRepository).findByOperationId(operationId);
@@ -1510,7 +1510,7 @@ class ProjectServiceTest {
     
     //then
     verify(projectRepository).existsById(projectId);
-    assertEquals("Project with ID: " + projectId + " not found", exception.getMessage());
+    assertEquals("Project with id: " + projectId + " not found", exception.getMessage());
   }
   
   @Test
