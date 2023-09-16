@@ -458,14 +458,8 @@ public class ReportService {
 
   private boolean checkParticipatingEmployeeInOperation(
       Employee e, Operation o, Set<Long> thirdValues) {
-    if (o.getEmployee() != null
+    return (o.getEmployee() != null
         && Objects.equals(o.getEmployee().getId(), e.getId())
-        && thirdValues.contains(o.getId())) {
-      return true;
-    } else {
-      throw new ReportException(HttpStatus.BAD_REQUEST, OPERATION_WITH_ID.value + o.getId()
-          + " does not have an employee or the operation is not included in the "
-          + "list of values from the request");
-    }
+        && thirdValues.contains(o.getId()));
   }
 }
