@@ -436,8 +436,8 @@ public class ReportService {
       Operation op) {
 
     checkNotNullEmpInOp(op);
-    secondValues.forEach(p -> checkCorrectProjectIdFromReqAndOp(p, op));
-    thirdValues.forEach(e -> checkCorrectEmpIdFromReqAndEmpIdFromOp(e, op));
+    secondValues.forEach(e -> checkCorrectEmpIdFromReqAndEmpIdFromOp(e, op));
+    thirdValues.forEach(p -> checkCorrectProjectIdFromReqAndOp(p, op));
 
     report.setSecondRespValues(
         List.of(new SecondResponseSubDto(
