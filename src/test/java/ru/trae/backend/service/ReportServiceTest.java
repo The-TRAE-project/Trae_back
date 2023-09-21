@@ -364,8 +364,8 @@ class ReportServiceTest {
     //given
     DeadlineReq req = new DeadlineReq(
         ReportParameter.OPERATION, 4L,
-        ReportParameter.EMPLOYEE, Collections.singleton(6L),
-        ReportParameter.PROJECT, Collections.singleton(5L));
+        ReportParameter.EMPLOYEE, Collections.singleton(5L),
+        ReportParameter.PROJECT, Collections.singleton(6L));
 
     Project p = new Project();
     p.setId(6L);
