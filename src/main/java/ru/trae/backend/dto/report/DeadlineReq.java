@@ -1,6 +1,5 @@
 package ru.trae.backend.dto.report;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.util.Set;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
