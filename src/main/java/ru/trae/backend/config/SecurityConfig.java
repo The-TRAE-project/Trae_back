@@ -51,7 +51,6 @@ public class SecurityConfig {
       "/configuration/ui",
       "/configuration/security",
       "/swagger-ui.html",
-      "/webjars/**",
       // -- Swagger UI v3 (OpenAPI)
       "/v3/api-docs/**",
       "/swagger-ui/**"
@@ -68,7 +67,6 @@ public class SecurityConfig {
   public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
     httpSecurity
         .csrf().disable()
-        //TODO delete CORS after deploying front on server
         .cors().configurationSource(request -> {
           CorsConfiguration configuration = new CorsConfiguration();
           configuration.setAllowedOrigins(List.of("*"));
@@ -83,7 +81,9 @@ public class SecurityConfig {
         .and()
         .authorizeRequests()
         .antMatchers("/api/auth/login", "/api/auth/token").permitAll()
-        .antMatchers(AUTH_WHITELIST).permitAll()
+        .antMatchers("/webjars/**").permitAll()
+        //.antMatchers(AUTH_WHITELIST).permitAll() - чтобы включить доступ к Swagger,
+        // надо снять комментарий
 
         //auth
         .antMatchers(
