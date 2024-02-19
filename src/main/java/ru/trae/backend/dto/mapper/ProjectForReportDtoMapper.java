@@ -12,9 +12,11 @@ package ru.trae.backend.dto.mapper;
 
 import static ru.trae.backend.service.OperationService.SHIPMENT_PERIOD;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.trae.backend.dto.operation.OperationForReportDto;
@@ -32,17 +34,21 @@ import ru.trae.backend.util.Util;
 @RequiredArgsConstructor
 public class ProjectForReportDtoMapper implements Function<Project, ProjectForReportDto> {
   private final OperationForReportDtoMapper operationForReportDtoMapper;
-  
+
   @Override
   public ProjectForReportDto apply(Project p) {
-    
+
     List<Operation> operations = p.getOperations().stream()
-        .sorted(Util::prioritySorting)
-        .toList();
-    
+            .sorted(Util::prioritySorting)
+            .toList();
+    LocalDateTime currentDate = LocalDateTime.now();
     List<OperationForReportDto> operationForReportDtoList = new ArrayList<>();
     for (int i = 0; i < operations.size(); i++) {
       Operation o = operations.get(i);
+      //изменяет планируюмую дату окончания операции на текущую, в случаи возникновения задержки FIXME:
+      if (o.getPlannedEndDate() != null && o.getPlannedEndDate().toLocalDate().isBefore(currentDate.toLocalDate()) && !o.isEnded()) {
+        o.setPlannedEndDate(currentDate.plusHours(SHIPMENT_PERIOD));
+      }
       if (o.getStartDate() == null) {
         if (i == 0) {
           //обработка случая, когда первая операция не имеет предыдущей операции
@@ -60,21 +66,21 @@ public class ProjectForReportDtoMapper implements Function<Project, ProjectForRe
       }
       operationForReportDtoList.add(operationForReportDtoMapper.apply(o));
     }
-    
+
     return new ProjectForReportDto(
-        p.getId(),
-        p.getNumber(),
-        p.getName(),
-        p.getStartDate(),
-        p.getStartFirstOperationDate(),
-        p.getPlannedEndDate(),
-        p.getEndDateInContract(),
-        p.getRealEndDate(),
-        p.isEnded(),
-        p.getOperationPeriod(),
-        operationForReportDtoList,
-        p.getCustomer(),
-        p.getComment() != null ? p.getComment() : null
+            p.getId(),
+            p.getNumber(),
+            p.getName(),
+            p.getStartDate(),
+            p.getStartFirstOperationDate(),
+            p.getPlannedEndDate(),
+            p.getEndDateInContract(),
+            p.getRealEndDate(),
+            p.isEnded(),
+            p.getOperationPeriod(),
+            operationForReportDtoList,
+            p.getCustomer(),
+            p.getComment() != null ? p.getComment() : null
     );
   }
 }
